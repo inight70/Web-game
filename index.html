@@ -2,152 +2,353 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة مستودع الخداع - تصميم احترافي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>مستودع الخداع - اللوحة الرئيسية</title>
     <style>
-        /* إعدادات الخلفية العامة */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        /* إعدادات الأساس - مينيماليست صارم (أبيض وأسود) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent; /* إزالة لون الضغط على الجوال */
+        }
+        
+        :root {
+            --bg-color: #000000; /* خلفية سوداء قاتمة */
+            --text-color: #ffffff; /* نص أبيض نقي */
+            --card-bg: #111111; /* خلفية الكروت (مربعات) - أسود فاتح جداً */
+            --border-color: #222222; /* لون الحدود (Borders) - رمادي غامق جداً */
+            --accent-color: #ffffff; /* لون التمييز */
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
         body {
-            background: radial-gradient(circle at top right, #1a233a 0%, #08090d 100%);
-            color: #ffffff;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
             min-height: 100vh;
             display: flex;
+            overflow: hidden; /* لمنع التمرير المزدوج */
+        }
+
+        /* تخطيط الصفحة الرئيسي (Desktop First) */
+        .app-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* --- الشريط الجانبي (Sidebar) - يظهر فقط على الكومبيوتر --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-color);
+            border-left: 1px solid var(--border-color); /* لأننا RTL */
+            display: flex;
             flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 50px;
+            color: var(--accent-color);
+            text-align: center;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: #888888;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item:hover {
+            background-color: #1a1a1a;
+            color: var(--text-color);
+        }
+
+        .nav-item.active {
+            background-color: #1a1a1a;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        /* --- المحتوى الرئيسي (Main Content) --- */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* التمرير داخل المحتوى فقط */
+            height: 100%;
+        }
+
+        /* الهيدر العلوي (Top Bar) - مينيماليست */
+        .top-header {
+            height: 65px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.9); /* شفافية بسيطة جداً عند التمرير */
+            z-index: 10;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #888888;
+        }
+        
+        /* بديل الصورة المستديرة المينيماليست */
+        .avatar-placeholder {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #222222;
+            display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
+            font-weight: 800;
+            color: white;
+            border: 1px solid var(--border-color);
         }
 
-        /* ستايل الكارد الزجاجي الفخم */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
-            transition: transform 0.3s ease;
+        /* منطقة التمرير (Content Area) */
+        .content-body {
+            padding: 30px;
+            padding-bottom: 100px; /* مساحة إضافية للجوال */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1200px; /* لمنع الكروت من التمدد بشكل مبالغ */
+            width: 100%;
+            margin: 0 auto;
         }
 
-        /* --- تصميم الكمبيوتر (Desktop) --- */
-        @media (min-width: 1024px) {
-            .auth-container {
-                width: 100%;
-                max-width: 650px;
-                padding: 50px;
-                margin-bottom: 50px;
+        /* ستايل المربعات (Cards) - توتر ستايل */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #333333;
+        }
+
+        .card-header {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .card-body {
+            font-size: 14px;
+            color: #aaaaaa;
+            line-height: 1.6;
+        }
+        
+        .card-action-btn {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.2s ease;
+        }
+        .card-action-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* --- شريط النشر السفلي (Bottom Nav) - للجوال فقط (يختفي على الكومبيوتر) --- */
+        .bottom-nav {
+            display: none; /* مخفي افتراضياً على الكومبيوتر */
+        }
+
+        /* ==========================================================
+           قواعد المتجاوبة (Responsive Queries) - السحر هنا
+           ========================================================== */
+        
+        /* للجوالات والأجهزة اللوحية (الشاشات أصغر من 992px) */
+        @media (max-width: 991px) {
+            .sidebar {
+                display: none; /* إخفاء الشريط الجانبي فوراً */
             }
-            .brand-title { font-size: 34px; letter-spacing: 2px; }
-            .brand-subtitle { font-size: 16px; }
-            .auth-buttons-container { display: flex; gap: 20px; }
-            .auth-btn { flex: 1; padding: 18px; font-size: 18px; }
+
+            .main-content {
+                width: 100%;
+            }
             
-            /* شريط المربعات الأربعة السفلية */
-            .bottom-panels-container {
+            .top-header {
+                padding: 0 15px; /* تقليل الحشو على الجوال */
+            }
+
+            .content-body {
+                padding: 15px;
+                padding-bottom: 110px; /* مساحة أكبر لمنع المحتوى من الاختفاء تحت البار السفلي */
+            }
+
+            .card {
+                padding: 20px; /* كروت أصغر قليلاً */
+                border-radius: 10px;
+            }
+
+            /* تفعيل شريط النشر السفلي (تويتر ستايل للجوال) */
+            .bottom-nav {
                 display: flex;
-                gap: 20px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
                 width: 100%;
-                max-width: 900px;
+                height: 70px;
+                background-color: var(--bg-color);
+                border-top: 1px solid var(--border-color);
+                justify-content: space-around;
+                align-items: center;
+                z-index: 100;
+                padding-bottom: env(safe-area-inset-bottom); /* لدعم آيفون إكس وأحدث */
             }
-            .bottom-panel { flex: 1; padding: 25px; min-height: 150px; }
-        }
 
-        /* --- تصميم الجوال (Mobile) --- */
-        @media (max-width: 1023px) {
-            .auth-container {
-                width: 100%;
-                max-width: 400px;
-                padding: 40px 25px;
-                margin-bottom: 30px;
-            }
-            .brand-title { font-size: 28px; }
-            .brand-subtitle { font-size: 14px; }
-            .auth-buttons-container { display: flex; flex-direction: column; gap: 15px; }
-            .auth-btn { width: 100%; padding: 16px; font-size: 16px; }
-            
-            /* المربعات الأربعة السفلية مرتبة عمودياً */
-            .bottom-panels-container {
+            .bottom-nav-item {
                 display: flex;
                 flex-direction: column;
-                gap: 15px;
-                width: 100%;
-                max-width: 400px;
+                justify-content: center;
+                align-items: center;
+                color: #888888;
+                text-decoration: none;
+                font-size: 11px;
+                font-weight: 500;
+                gap: 5px;
+                flex: 1;
+                height: 100%;
             }
-            .bottom-panel { width: 100%; padding: 20px; min-height: 120px; }
-        }
+            
+            /* تمثيل أيقونات بسيطة بالنص (مينيماليست صارم) */
+            .nav-icon-placeholder {
+                font-size: 22px;
+                font-weight: 400;
+            }
 
-        /* --- ستايلات العناصر المشتركة --- */
-        .brand-title {
-            text-align: center; font-weight: 900; margin-bottom: 10px;
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            .bottom-nav-item.active {
+                color: var(--accent-color);
+                font-weight: 700;
+            }
         }
-        .brand-subtitle { text-align: center; color: #8a99ad; margin-bottom: 40px; }
-
-        /* الأزرار المضيئة */
-        .auth-btn {
-            border: none; color: white; font-weight: 700; border-radius: 16px; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0, 198, 255, 0.3); transition: 0.3s ease; text-align: center;
-        }
-        .login-btn { background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%); }
-        .signup-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); color: #b4c6ef; }
-        .signup-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: #00f2fe; color: white; }
-        .auth-btn:active { transform: scale(0.98); }
-
-        .forgot-password { text-align: center; color: #8a99ad; font-size: 13px; margin-top: 25px; cursor: pointer; display: block; }
-        .forgot-password:hover { color: #00f2fe; text-decoration: underline; }
-
-        /* ستايل المربعات السفلية */
-        .bottom-panel {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            text-align: center;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .panel-icon { font-size: 32px; margin-bottom: 15px; }
-        .panel-title { font-size: 16px; font-weight: 700; color: #ffffff; }
     </style>
 </head>
 <body>
 
-    <div class="glass-panel auth-container">
-        <div class="brand-title">مستودع الخداع</div>
-        <div class="brand-subtitle">الجيل الجديد من ألعاب التحدي أونلاين</div>
+    <div class="app-wrapper">
+        <nav class="sidebar">
+            <div class="brand-logo">L O B B Y</div>
+            <ul class="nav-links">
+                <a href="#" class="nav-item active">● الرئيسية</a>
+                <a href="#" class="nav-item"> الملعب</a>
+                <a href="#" class="nav-item"> الفرق</a>
+                <a href="#" class="nav-item"> الحساب</a>
+                <a href="#" class="nav-item" style="margin-top: auto; color: #ff4444;"> خروج</a>
+            </ul>
+        </nav>
 
-        <div class="auth-buttons-container">
-            <button class="auth-btn login-btn" onclick="goToAuthPage()">تسجيل الدخول</button>
-            <button class="auth-btn signup-btn" onclick="goToAuthPage()">حساب جديد</button>
-        </div>
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-title">الرئيسية</div>
+                <div class="user-profile">
+                    <span>لاعب_99</span>
+                    <div class="avatar-placeholder">A</div>
+                </div>
+            </header>
 
-        <span class="forgot-password">نسيت كلمة المرور؟</span>
+            <div class="content-body">
+                
+                <div class="card">
+                    <div class="card-header">تحدي الخداع اليومي</div>
+                    <div class="card-body">
+                        مرحباً بك في مستودع الخداع. جهز استراتيجيتك، التحدي القادم سيبدأ خلال 10 دقائق. هل أنت جاهز؟
+                    </div>
+                    <button class="card-action-btn">انضم الآن</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">حالة الفرق</div>
+                    <div class="card-body">
+                        الفريق (أ) متصدر بـ 150 نقطة. الفريق (ب) يحتاج 50 نقطة للتعادل.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">آخر الأخبار</div>
+                    <div class="card-body">
+                        تم تحديث نظام الأسئلة. استعد لأسئلة خداع أكثر ذكاءً.
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">المتجر</div>
+                    <div class="card-body">
+                        تتوفر الآن حزم تخصيص جديدة للحساب.
+                    </div>
+                </div>
+
+            </div>
+        </main>
     </div>
 
-    <div class="bottom-panels-container">
-        <div class="glass-panel bottom-panel">
-            <div class="panel-icon">📢</div>
-            <div class="panel-title">آخر الأخبار</div>
-        </div>
-        <div class="glass-panel bottom-panel">
-            <div class="panel-icon">🛒</div>
-            <div class="panel-title">المتجر</div>
-        </div>
-        <div class="glass-panel bottom-panel">
-            <div class="panel-icon">👥</div>
-            <div class="panel-title">المجتمع</div>
-        </div>
-        <div class="glass-panel bottom-panel">
-            <div class="panel-icon">⚙️</div>
-            <div class="panel-title">الإعدادات</div>
-        </div>
-    </div>
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active">
+            <span class="nav-icon-placeholder">⌂</span>
+            <span>الرئيسية</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <span class="nav-icon-placeholder">⛂</span>
+            <span>الملعب</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <span class="nav-icon-placeholder">⚐</span>
+            <span>الفرق</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <span class="nav-icon-placeholder">👤</span>
+            <span>الحساب</span>
+        </a>
+    </nav>
 
-    <script type="module">
-        // وظيفة التوجيه لصفحة اللعب بعد ثانية ونصف
-        window.goToAuthPage = function() {
-            window.location.href = 'auth.html';
-        };
-    </script>
 </body>
 </html>
