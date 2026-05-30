@@ -2,273 +2,277 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مستودع الخداع - اللوحة الرئيسية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مستودع الخداع - اللعب</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
     <style>
-        /* إعدادات الأساس - مينيماليست صارم (أبيض وأسود) */
+        /* الإعدادات الأساسية والألوان المطابقة للصورة */
+        :root {
+            --bg-dark: #12141d;
+            --bg-darker: #0a0b10;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --text-main: #ffffff;
+            --text-muted: #8a99ad;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            outline: none;
-            -webkit-tap-highlight-color: transparent; /* إزالة لون الضغط على الجوال */
-        }
-        
-        :root {
-            --bg-color: #000000; /* خلفية سوداء قاتمة */
-            --text-color: #ffffff; /* نص أبيض نقي */
-            --card-bg: #111111; /* خلفية الكروت (مربعات) - أسود فاتح جداً */
-            --border-color: #222222; /* لون الحدود (Borders) - رمادي غامق جداً */
-            --accent-color: #ffffff; /* لون التمييز */
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
+            /* خلفية متدرجة فخمة تشبه الصورة */
+            background: radial-gradient(circle at top right, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
-            overflow: hidden; /* لمنع التمرير المزدوج */
+            overflow: hidden;
         }
 
-        /* تخطيط الصفحة الرئيسي (Desktop First) */
+        /* --- الهيكل الرئيسي --- */
         .app-wrapper {
             display: flex;
             width: 100%;
             height: 100vh;
         }
 
-        /* --- الشريط الجانبي (Sidebar) - يظهر فقط على الكومبيوتر --- */
+        /* --- الشريط الجانبي (للكمبيوتر فقط) --- */
         .sidebar {
-            width: 260px;
-            background-color: var(--bg-color);
-            border-left: 1px solid var(--border-color); /* لأننا RTL */
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            flex-shrink: 0;
-        }
-
-        .brand-logo {
-            font-size: 20px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 50px;
-            color: var(--accent-color);
-            text-align: center;
-        }
-
-        .nav-links {
-            list-style: none;
+            width: 280px;
+            background: rgba(10, 11, 16, 0.8);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--glass-border);
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
-        .nav-item {
-            padding: 12px 15px;
-            border-radius: 8px;
-            color: #888888;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s ease;
-            text-decoration: none;
+        .brand-logo {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: 0.3s ease;
         }
 
-        .nav-item:hover {
-            background-color: #1a1a1a;
-            color: var(--text-color);
+        .sidebar-item i {
+            font-size: 22px;
         }
 
-        .nav-item.active {
-            background-color: #1a1a1a;
-            color: var(--text-color);
-            font-weight: 700;
+        .sidebar-item:hover, .sidebar-item.active {
+            background: var(--glass-bg);
+            color: var(--accent-cyan);
+            border: 1px solid var(--glass-border);
         }
 
-        /* --- المحتوى الرئيسي (Main Content) --- */
+        /* --- المحتوى الرئيسي --- */
         .main-content {
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto; /* التمرير داخل المحتوى فقط */
-            height: 100%;
+            padding: 40px 30px;
+            overflow-y: auto;
+            padding-bottom: 120px; /* مساحة للبار السفلي في الجوال */
         }
 
-        /* الهيدر العلوي (Top Bar) - مينيماليست */
-        .top-header {
-            height: 65px;
-            border-bottom: 1px solid var(--border-color);
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 30px;
-            position: sticky;
-            top: 0;
-            background-color: rgba(0, 0, 0, 0.9); /* شفافية بسيطة جداً عند التمرير */
-            z-index: 10;
+            margin-bottom: 40px;
         }
 
-        .page-title {
-            font-size: 18px;
-            font-weight: 700;
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
         }
 
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: #888888;
+            gap: 12px;
+            background: var(--glass-bg);
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
         }
-        
-        /* بديل الصورة المستديرة المينيماليست */
-        .avatar-placeholder {
+
+        .avatar {
             width: 35px;
             height: 35px;
             border-radius: 50%;
-            background-color: #222222;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: 800;
-            color: white;
-            border: 1px solid var(--border-color);
+            font-weight: bold;
         }
 
-        /* منطقة التمرير (Content Area) */
-        .content-body {
+        /* --- تصميم الكروت الزجاجية (Glassmorphism) --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
             padding: 30px;
-            padding-bottom: 100px; /* مساحة إضافية للجوال */
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 1200px; /* لمنع الكروت من التمدد بشكل مبالغ */
-            width: 100%;
-            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
         }
 
-        /* ستايل المربعات (Cards) - توتر ستايل */
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
-            transition: transform 0.2s ease, border-color 0.2s ease;
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border: 1px solid rgba(0, 242, 254, 0.3);
         }
 
-        .card:hover {
-            border-color: #333333;
+        /* لمعة زجاجية خفيفة في زاوية الكرت */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent-cyan);
+            filter: blur(60px);
+            opacity: 0.15;
+            border-radius: 50%;
         }
 
-        .card-header {
-            font-size: 16px;
+        .card-title {
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            margin-bottom: 10px;
         }
 
-        .card-body {
+        .card-desc {
+            color: var(--text-muted);
             font-size: 14px;
-            color: #aaaaaa;
             line-height: 1.6;
+            margin-bottom: 25px;
         }
-        
-        .card-action-btn {
-            background-color: white;
-            color: black;
+
+        /* زر فخم مضيء (نفس الصورة) */
+        .glow-btn {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
+            color: #000;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
             cursor: pointer;
-            margin-top: 15px;
-            transition: 0.2s ease;
-        }
-        .card-action-btn:hover {
-            opacity: 0.8;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3);
+            transition: 0.3s ease;
         }
 
-        /* --- شريط النشر السفلي (Bottom Nav) - للجوال فقط (يختفي على الكومبيوتر) --- */
+        .glow-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.2);
+        }
+
+        /* --- البار السفلي للجوال (Bottom Navigation) --- */
         .bottom-nav {
-            display: none; /* مخفي افتراضياً على الكومبيوتر */
+            display: none; /* مخفي في الكمبيوتر */
         }
 
-        /* ==========================================================
-           قواعد المتجاوبة (Responsive Queries) - السحر هنا
-           ========================================================== */
-        
-        /* للجوالات والأجهزة اللوحية (الشاشات أصغر من 992px) */
-        @media (max-width: 991px) {
+        /* --- التجاوب مع الجوال (Mobile Styling) --- */
+        @media (max-width: 900px) {
             .sidebar {
-                display: none; /* إخفاء الشريط الجانبي فوراً */
+                display: none; /* إخفاء القائمة الجانبية بالكامل */
+            }
+
+            .header h1 {
+                font-size: 24px;
             }
 
             .main-content {
-                width: 100%;
-            }
-            
-            .top-header {
-                padding: 0 15px; /* تقليل الحشو على الجوال */
+                padding: 25px 20px;
+                padding-bottom: 110px;
             }
 
-            .content-body {
-                padding: 15px;
-                padding-bottom: 110px; /* مساحة أكبر لمنع المحتوى من الاختفاء تحت البار السفلي */
-            }
-
-            .card {
-                padding: 20px; /* كروت أصغر قليلاً */
-                border-radius: 10px;
-            }
-
-            /* تفعيل شريط النشر السفلي (تويتر ستايل للجوال) */
+            /* تفعيل بار الجوال */
             .bottom-nav {
                 display: flex;
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 width: 100%;
-                height: 70px;
-                background-color: var(--bg-color);
-                border-top: 1px solid var(--border-color);
+                height: 85px;
+                background: rgba(10, 11, 16, 0.85);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
                 justify-content: space-around;
                 align-items: center;
-                z-index: 100;
-                padding-bottom: env(safe-area-inset-bottom); /* لدعم آيفون إكس وأحدث */
+                z-index: 1000;
+                padding-bottom: env(safe-area-inset-bottom);
+                border-radius: 30px 30px 0 0; /* حواف دائرية من الأعلى */
             }
 
-            .bottom-nav-item {
+            .nav-item {
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
                 align-items: center;
-                color: #888888;
+                justify-content: center;
+                color: var(--text-muted);
                 text-decoration: none;
-                font-size: 11px;
-                font-weight: 500;
-                gap: 5px;
+                gap: 6px;
                 flex: 1;
                 height: 100%;
-            }
-            
-            /* تمثيل أيقونات بسيطة بالنص (مينيماليست صارم) */
-            .nav-icon-placeholder {
-                font-size: 22px;
-                font-weight: 400;
+                transition: 0.3s ease;
             }
 
-            .bottom-nav-item.active {
-                color: var(--accent-color);
-                font-weight: 700;
+            .nav-item i {
+                font-size: 24px;
+                transition: 0.3s ease;
+            }
+
+            .nav-item span {
+                font-size: 11px;
+                font-weight: 500;
+            }
+
+            .nav-item.active {
+                color: var(--accent-cyan);
+            }
+
+            .nav-item.active i {
+                transform: translateY(-3px);
+                text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
             }
         }
     </style>
@@ -276,55 +280,44 @@
 <body>
 
     <div class="app-wrapper">
-        <nav class="sidebar">
-            <div class="brand-logo">L O B B Y</div>
-            <ul class="nav-links">
-                <a href="#" class="nav-item active">● الرئيسية</a>
-                <a href="#" class="nav-item"> الملعب</a>
-                <a href="#" class="nav-item"> الفرق</a>
-                <a href="#" class="nav-item"> الحساب</a>
-                <a href="#" class="nav-item" style="margin-top: auto; color: #ff4444;"> خروج</a>
-            </ul>
-        </nav>
+        
+        <aside class="sidebar">
+            <div class="brand-logo">مستودع الخداع</div>
+            <a href="#" class="sidebar-item active"><i class='bx bx-home-alt'></i> الرئيسية</a>
+            <a href="#" class="sidebar-item"><i class='bx bx-game'></i> العب</a>
+            <a href="#" class="sidebar-item"><i class='bx bx-history'></i> السجل</a>
+            <a href="#" class="sidebar-item"><i class='bx bx-user-circle'></i> الحساب</a>
+        </aside>
 
         <main class="main-content">
-            <header class="top-header">
-                <div class="page-title">الرئيسية</div>
+            
+            <header class="header">
+                <h1>مرحباً، جاهز للتحدي؟</h1>
                 <div class="user-profile">
-                    <span>لاعب_99</span>
-                    <div class="avatar-placeholder">A</div>
+                    <span style="font-size: 14px; font-weight: 700;">اللاعب</span>
+                    <div class="avatar">U</div>
                 </div>
             </header>
 
-            <div class="content-body">
+            <div class="cards-grid">
                 
-                <div class="card">
-                    <div class="card-header">تحدي الخداع اليومي</div>
-                    <div class="card-body">
-                        مرحباً بك في مستودع الخداع. جهز استراتيجيتك، التحدي القادم سيبدأ خلال 10 دقائق. هل أنت جاهز؟
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <div class="card-title">تحدي الخداع الجماعي</div>
+                    <div class="card-desc">
+                        استعد لكشف الكاذبين أو خداع أصدقائك. المباراة القادمة جاهزة للبدء.
+                        فريق (أ) يواجه فريق (ب) في جولة مصيرية.
                     </div>
-                    <button class="card-action-btn">انضم الآن</button>
+                    <button class="glow-btn" style="max-width: 250px;">دخول المباراة الآن</button>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">حالة الفرق</div>
-                    <div class="card-body">
-                        الفريق (أ) متصدر بـ 150 نقطة. الفريق (ب) يحتاج 50 نقطة للتعادل.
-                    </div>
+                <div class="glass-card">
+                    <div class="card-title">نقاطك الحالية</div>
+                    <div class="card-desc">أنت تمتلك 1,200 نقطة خداع. يمكنك استخدامها للحصول على تلميحات في الجولات القادمة.</div>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">آخر الأخبار</div>
-                    <div class="card-body">
-                        تم تحديث نظام الأسئلة. استعد لأسئلة خداع أكثر ذكاءً.
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">المتجر</div>
-                    <div class="card-body">
-                        تتوفر الآن حزم تخصيص جديدة للحساب.
-                    </div>
+                <div class="glass-card">
+                    <div class="card-title">آخر مباراة</div>
+                    <div class="card-desc">لعبت في فريق (أ) وتمكنت من كشف الجاسوس بنجاح. معدل الذكاء: 98%</div>
                 </div>
 
             </div>
@@ -332,20 +325,20 @@
     </div>
 
     <nav class="bottom-nav">
-        <a href="#" class="bottom-nav-item active">
-            <span class="nav-icon-placeholder">⌂</span>
+        <a href="#" class="nav-item active">
+            <i class='bx bxs-home-alt-2'></i>
             <span>الرئيسية</span>
         </a>
-        <a href="#" class="bottom-nav-item">
-            <span class="nav-icon-placeholder">⛂</span>
-            <span>الملعب</span>
+        <a href="#" class="nav-item">
+            <i class='bx bx-game'></i>
+            <span>العب</span>
         </a>
-        <a href="#" class="bottom-nav-item">
-            <span class="nav-icon-placeholder">⚐</span>
-            <span>الفرق</span>
+        <a href="#" class="nav-item">
+            <i class='bx bx-history'></i>
+            <span>السجل</span>
         </a>
-        <a href="#" class="bottom-nav-item">
-            <span class="nav-icon-placeholder">👤</span>
+        <a href="#" class="nav-item">
+            <i class='bx bx-user'></i>
             <span>الحساب</span>
         </a>
     </nav>
