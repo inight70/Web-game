@@ -2,24 +2,22 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مستودع الخداع - اللعب</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>مستودع الخداع - اللوحة الرئيسية</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
-        /* الإعدادات الأساسية والألوان المطابقة للصورة */
+        /* إعدادات الأساس - Monochrome Premium */
         :root {
-            --bg-dark: #12141d;
-            --bg-darker: #0a0b10;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --accent-cyan: #00f2fe;
-            --accent-blue: #4facfe;
-            --text-main: #ffffff;
-            --text-muted: #8a99ad;
+            --bg-pure-black: #000000;
+            --surface-color: #0a0a0a;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #737373;
+            --white-accent: #ffffff;
         }
 
         * {
@@ -31,9 +29,8 @@
         }
 
         body {
-            /* خلفية متدرجة فخمة تشبه الصورة */
-            background: radial-gradient(circle at top right, var(--bg-dark) 0%, var(--bg-darker) 100%);
-            color: var(--text-main);
+            background-color: var(--bg-pure-black);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             overflow: hidden;
@@ -48,183 +45,206 @@
 
         /* --- الشريط الجانبي (للكمبيوتر فقط) --- */
         .sidebar {
-            width: 280px;
-            background: rgba(10, 11, 16, 0.8);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--glass-border);
-            padding: 30px 20px;
+            width: 260px;
+            background-color: var(--bg-pure-black);
+            border-left: 1px solid var(--border-color);
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 8px;
         }
 
         .brand-logo {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 40px;
-            text-align: center;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 50px;
+            padding-right: 15px;
+            letter-spacing: 1px;
+            color: var(--text-primary);
         }
 
         .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-radius: 16px;
-            color: var(--text-muted);
+            gap: 14px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
-            transition: 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .sidebar-item i {
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .sidebar-item:hover, .sidebar-item.active {
-            background: var(--glass-bg);
-            color: var(--accent-cyan);
-            border: 1px solid var(--glass-border);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
         }
 
         /* --- المحتوى الرئيسي --- */
         .main-content {
             flex-grow: 1;
-            padding: 40px 30px;
+            padding: 40px;
             overflow-y: auto;
-            padding-bottom: 120px; /* مساحة للبار السفلي في الجوال */
+            padding-bottom: 120px;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
         }
 
         .header h1 {
-            font-size: 28px;
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         .user-profile {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--glass-bg);
-            padding: 8px 15px;
-            border-radius: 30px;
-            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            cursor: pointer;
         }
 
         .avatar {
-            width: 35px;
-            height: 35px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            background-color: var(--white-accent);
+            color: var(--bg-pure-black);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 12px;
         }
 
-        /* --- تصميم الكروت الزجاجية (Glassmorphism) --- */
+        /* --- الكروت الأنيقة (Minimalist Cards) --- */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
+        .premium-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
             padding: 30px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease;
+            transition: border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            border: 1px solid rgba(0, 242, 254, 0.3);
+        .premium-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* لمعة زجاجية خفيفة في زاوية الكرت */
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 100px;
-            height: 100px;
-            background: var(--accent-cyan);
-            filter: blur(60px);
-            opacity: 0.15;
-            border-radius: 50%;
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card-header i {
+            font-size: 20px;
+            color: var(--text-primary);
         }
 
         .card-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 10px;
         }
 
         .card-desc {
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 25px;
+            line-height: 1.7;
+            margin-bottom: 30px;
         }
 
-        /* زر فخم مضيء (نفس الصورة) */
-        .glow-btn {
-            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
-            color: #000;
+        /* زر التباين العالي (High Contrast Button) */
+        .primary-btn {
+            background-color: var(--white-accent);
+            color: var(--bg-pure-black);
             border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 800;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
-            width: 100%;
-            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3);
-            transition: 0.3s ease;
+            width: fit-content;
+            transition: opacity 0.2s ease;
         }
 
-        .glow-btn:active {
-            transform: scale(0.96);
-            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.2);
+        .primary-btn:hover {
+            opacity: 0.85;
         }
 
-        /* --- البار السفلي للجوال (Bottom Navigation) --- */
+        .secondary-btn {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .secondary-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- البار السفلي للجوال (Glassmorphism Bottom Nav) --- */
         .bottom-nav {
-            display: none; /* مخفي في الكمبيوتر */
+            display: none;
         }
 
         /* --- التجاوب مع الجوال (Mobile Styling) --- */
         @media (max-width: 900px) {
             .sidebar {
-                display: none; /* إخفاء القائمة الجانبية بالكامل */
-            }
-
-            .header h1 {
-                font-size: 24px;
+                display: none;
             }
 
             .main-content {
-                padding: 25px 20px;
-                padding-bottom: 110px;
+                padding: 20px;
+                padding-bottom: 120px;
             }
 
-            /* تفعيل بار الجوال */
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .premium-card {
+                padding: 25px;
+            }
+
+            .primary-btn {
+                width: 100%;
+            }
+
+            /* تفعيل البار السفلي الاحترافي */
             .bottom-nav {
                 display: flex;
                 position: fixed;
@@ -232,15 +252,14 @@
                 left: 0;
                 width: 100%;
                 height: 85px;
-                background: rgba(10, 11, 16, 0.85);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border-top: 1px solid var(--border-color);
                 justify-content: space-around;
                 align-items: center;
                 z-index: 1000;
                 padding-bottom: env(safe-area-inset-bottom);
-                border-radius: 30px 30px 0 0; /* حواف دائرية من الأعلى */
             }
 
             .nav-item {
@@ -248,31 +267,26 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                color: var(--text-muted);
+                color: var(--text-secondary);
                 text-decoration: none;
-                gap: 6px;
+                gap: 4px;
                 flex: 1;
                 height: 100%;
-                transition: 0.3s ease;
+                transition: color 0.2s ease;
             }
 
             .nav-item i {
                 font-size: 24px;
-                transition: 0.3s ease;
+                margin-bottom: 2px;
             }
 
             .nav-item span {
-                font-size: 11px;
+                font-size: 10px;
                 font-weight: 500;
             }
 
             .nav-item.active {
-                color: var(--accent-cyan);
-            }
-
-            .nav-item.active i {
-                transform: translateY(-3px);
-                text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
+                color: var(--text-primary);
             }
         }
     </style>
@@ -283,41 +297,56 @@
         
         <aside class="sidebar">
             <div class="brand-logo">مستودع الخداع</div>
-            <a href="#" class="sidebar-item active"><i class='bx bx-home-alt'></i> الرئيسية</a>
-            <a href="#" class="sidebar-item"><i class='bx bx-game'></i> العب</a>
-            <a href="#" class="sidebar-item"><i class='bx bx-history'></i> السجل</a>
-            <a href="#" class="sidebar-item"><i class='bx bx-user-circle'></i> الحساب</a>
+            <a href="#" class="sidebar-item active"><i class="ph ph-house"></i> الرئيسية</a>
+            <a href="#" class="sidebar-item"><i class="ph ph-game-controller"></i> العب</a>
+            <a href="#" class="sidebar-item"><i class="ph ph-clock-counter-clockwise"></i> السجل</a>
+            <a href="#" class="sidebar-item"><i class="ph ph-user"></i> الحساب</a>
         </aside>
 
         <main class="main-content">
             
             <header class="header">
-                <h1>مرحباً، جاهز للتحدي؟</h1>
+                <h1>الرئيسية</h1>
                 <div class="user-profile">
-                    <span style="font-size: 14px; font-weight: 700;">اللاعب</span>
+                    <span style="font-size: 13px; font-weight: 500;">اللاعب</span>
                     <div class="avatar">U</div>
                 </div>
             </header>
 
             <div class="cards-grid">
                 
-                <div class="glass-card" style="grid-column: 1 / -1;">
-                    <div class="card-title">تحدي الخداع الجماعي</div>
-                    <div class="card-desc">
-                        استعد لكشف الكاذبين أو خداع أصدقائك. المباراة القادمة جاهزة للبدء.
-                        فريق (أ) يواجه فريق (ب) في جولة مصيرية.
+                <div class="premium-card" style="grid-column: 1 / -1;">
+                    <div>
+                        <div class="card-header">
+                            <i class="ph ph-sword"></i>
+                            <div class="card-title">تحدي الخداع الجماعي</div>
+                        </div>
+                        <div class="card-desc">
+                            المباراة القادمة جاهزة للبدء. اكتشف من يكذب في فريقك، أو قُد فريقك للانتصار بالخداع التام. لا توجد قواعد هنا، فقط البقاء للأذكى.
+                        </div>
                     </div>
-                    <button class="glow-btn" style="max-width: 250px;">دخول المباراة الآن</button>
+                    <button class="primary-btn">بدء التحدي الآن</button>
                 </div>
 
-                <div class="glass-card">
-                    <div class="card-title">نقاطك الحالية</div>
-                    <div class="card-desc">أنت تمتلك 1,200 نقطة خداع. يمكنك استخدامها للحصول على تلميحات في الجولات القادمة.</div>
+                <div class="premium-card">
+                    <div>
+                        <div class="card-header">
+                            <i class="ph ph-chart-line-up"></i>
+                            <div class="card-title">نقاط الخداع</div>
+                        </div>
+                        <div class="card-desc">أنت تمتلك 1,200 نقطة. استخدمها بحكمة لفتح ميزات جديدة في التحديث القادم.</div>
+                    </div>
+                    <button class="secondary-btn">سجل النقاط</button>
                 </div>
 
-                <div class="glass-card">
-                    <div class="card-title">آخر مباراة</div>
-                    <div class="card-desc">لعبت في فريق (أ) وتمكنت من كشف الجاسوس بنجاح. معدل الذكاء: 98%</div>
+                <div class="premium-card">
+                    <div>
+                        <div class="card-header">
+                            <i class="ph ph-clock-counter-clockwise"></i>
+                            <div class="card-title">آخر نشاط</div>
+                        </div>
+                        <div class="card-desc">فوز ساحق مع الفريق (أ). نسبة دقة التخمين لديك وصلت إلى 98% في الجولة الأخيرة.</div>
+                    </div>
                 </div>
 
             </div>
@@ -326,19 +355,19 @@
 
     <nav class="bottom-nav">
         <a href="#" class="nav-item active">
-            <i class='bx bxs-home-alt-2'></i>
+            <i class="ph ph-house"></i>
             <span>الرئيسية</span>
         </a>
         <a href="#" class="nav-item">
-            <i class='bx bx-game'></i>
+            <i class="ph ph-game-controller"></i>
             <span>العب</span>
         </a>
         <a href="#" class="nav-item">
-            <i class='bx bx-history'></i>
+            <i class="ph ph-clock-counter-clockwise"></i>
             <span>السجل</span>
         </a>
         <a href="#" class="nav-item">
-            <i class='bx bx-user'></i>
+            <i class="ph ph-user"></i>
             <span>الحساب</span>
         </a>
     </nav>
