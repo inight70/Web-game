@@ -3,75 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة التخمين والخداع</title>
+    <title>بوابة التحدي والخداع - تسجيل الدخول</title>
     <style>
+        /* إعدادات الخلفية العامة والخطوط */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #121826 0%, #0b0c10 100%);
+            background: radial-gradient(circle at top right, #1e2640 0%, #0b0c10 100%);
             color: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-x: hidden;
         }
-        /* ستايل الزجاج الشفاف - Glassmorphism */
-        .card {
+
+        /* ستايل الكارد الزجاجي الفخم - Glassmorphism */
+        .auth-container {
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 30px;
+            border-radius: 28px;
+            padding: 40px 30px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #00f2fe, #4facfe);
+
+        .brand-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
         }
-        p {
+
+        .brand-subtitle {
             color: #8a99ad;
             font-size: 14px;
             margin-bottom: 30px;
         }
-        /* الأزرار المضيئة */
-        .btn {
+
+        /* نظام التبويب للتبديل بين اللوق إن والسين أب */
+        .tab-container {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: #8a99ad;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 9px;
+            transition: 0.3s ease;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #4facfe 0%, #0072ff 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        /* الحقول والنصوص */
+        .form-group {
+            margin-bottom: 18px;
+            text-align: right;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #b4c6ef;
+            margin-bottom: 6px;
+            padding-right: 4px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: #00f2fe;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+        }
+
+        /* الأزرار المضيئة تفاعلياً */
+        .submit-btn {
             background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
             border: none;
             color: white;
-            padding: 15px 30px;
+            padding: 15px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 14px;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 0 20px rgba(0, 198, 255, 0.4);
+            margin-top: 10px;
+            box-shadow: 0 5px 20px rgba(0, 198, 255, 0.3);
             transition: 0.3s ease;
         }
-        .btn:active {
+        .submit-btn:active {
             transform: scale(0.98);
-            box-shadow: 0 0 10px rgba(0, 198, 255, 0.2);
+        }
+
+        /* رسائل الأخطاء والنجاح */
+        .message {
+            margin-top: 15px;
+            font-size: 13px;
+            display: none;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .error-msg {
+            background: rgba(255, 75, 75, 0.1);
+            color: #ff4b4b;
+            border: 1px solid rgba(255, 75, 75, 0.2);
+        }
+        .success-msg {
+            background: rgba(75, 255, 120, 0.1);
+            color: #4bff78;
+            border: 1px solid rgba(75, 255, 120, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>لعبة التحدي والخداع</h1>
-        <p>مرحباً بك في الجيل الجديد من ألعاب الحفلات أونلاين</p>
-        <button class="btn">ابدأ اللعب الآن</button>
+    <div class="auth-container">
+        <div class="brand-title">مستودع الخداع</div>
+        <div class="brand-subtitle">الجيل الجديد من ألعاب التحدي أونلاين</div>
+
+        <div class="tab-container">
+            <button class="tab active" id="login-tab" onclick="switchTab('login')">تسجيل الدخول</button>
+            <button class="tab" id="signup-tab" onclick="switchTab('signup')">حساب جديد</button>
+        </div>
+
+        <form id="auth-form">
+            <div class="form-group" id="name-group" style="display: none;">
+                <label>اسم اللاعب</label>
+                <input type="text" id="auth-name" class="form-input" placeholder="اكتب اسمك المستعار">
+            </div>
+
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="auth-email" class="form-input" placeholder="name@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="auth-password" class="form-input" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submit-button">دخول اللعبة</button>
+        </form>
+
+        <div id="msg-box" class="message"></div>
     </div>
 
+    <script type="module">
+        // استدعاء الاتصال المركزي من الملف الذي أنشأته
+        import { auth } from './firebase-config.js';
+        // استدعاء دوال الحسابات الرسمية من سيرفرات Google
+        import { 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        let currentMode = 'login';
+        const form = document.getElementById('auth-form');
+        const msgBox = document.getElementById('msg-box');
+
+        // وظيفة التبديل بين اللوق إن والسين أب مرئياً
+        window.switchTab = function(mode) {
+            currentMode = mode;
+            const nameGroup = document.getElementById('name-group');
+            const submitBtn = document.getElementById('submit-button');
+            
+            document.getElementById('login-tab').classList.toggle('active', mode === 'login');
+            document.getElementById('signup-tab').classList.toggle('active', mode === 'signup');
+
+            if (mode === 'signup') {
+                nameGroup.style.display = 'block';
+                submitBtn.innerText = 'إنشاء الحساب وبدء التحدي';
+            } else {
+                nameGroup.style.display = 'none';
+                submitBtn.innerText = 'دخول اللعبة';
+            }
+        };
+
+        // معالجة إرسال البيانات والربط الفعلي مع فايربيس
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            
+            msgBox.style.display = 'none';
+
+            try {
+                if (currentMode === 'login') {
+                    // تسجيل دخول حقيقي
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showMsg('تم تسجيل الدخول بنجاح! جاري تحويلك للملعب...', 'success');
+                } else {
+                    // إنشاء حساب حقيقي
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    showMsg('تم إنشاء حسابك بنجاح! جاري تجهيز مقعدك...', 'success');
+                }
+                
+                // التوجيه التلقائي لصفحة اللعبة بعد ثانية ونصف
+                setTimeout(() => {
+                    window.location.href = 'game.html';
+                }, 1500);
+
+            } catch (error) {
+                // ترجمة أشهر أخطاء السيرفر للعربية بأسلوب احترافي
+                let friendlyMessage = "حدث خطأ أثناء الاتصال بالسيرفر.";
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    friendlyMessage = "كلمة المرور أو البريد الإلكتروني غير صحيح.";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    friendlyMessage = "هذا البريد الإلكتروني مسجل ومستخدم بالفعل.";
+                } else if (error.code === 'auth/weak-password') {
+                    friendlyMessage = "كلمة المرور ضعيفة جداً، يجب أن تكون 6 خانات على الأقل.";
+                }
+                showMsg(friendlyMessage, 'error');
+            }
+        });
+
+        function showMsg(text, type) {
+            msgBox.innerText = text;
+            msgBox.className = `message ${type === 'success' ? 'success-msg' : 'error-msg'}`;
+            msgBox.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
