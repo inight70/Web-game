@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة التخمين والخداع</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #121826 0%, #0b0c10 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        /* ستايل الزجاج الشفاف - Glassmorphism */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p {
+            color: #8a99ad;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        /* الأزرار المضيئة */
+        .btn {
+            background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 0 20px rgba(0, 198, 255, 0.4);
+            transition: 0.3s ease;
+        }
+        .btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>لعبة التحدي والخداع</h1>
+        <p>مرحباً بك في الجيل الجديد من ألعاب الحفلات أونلاين</p>
+        <button class="btn">ابدأ اللعب الآن</button>
+    </div>
+
+</body>
+</html>
