@@ -3,332 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مستودع الخداع - اللوحة الرئيسية</title>
+    <title>مستودع الخداع</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <style>
-        :root {
-            /* هوية اللون الأسود الفاخر مع تدرجات معدنية */
-            --bg-deep: #050505;
-            --surface-elevated: #111111;
-            --surface-float: rgba(20, 20, 20, 0.7);
-            --border-glow: rgba(255, 255, 255, 0.06);
-            --text-pure: #ffffff;
-            --text-dim: #71717a;
-            --accent-light: #f4f4f5;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Tajawal', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-pure);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* 1. تأثير العمق الفراغي (Mesh Light / Ambient Glow) */
-        .ambient-glow {
-            position: fixed;
-            top: -10%;
-            left: -10%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
-            filter: blur(40px);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .ambient-glow.bottom {
-            top: auto;
-            bottom: -10%;
-            left: auto;
-            right: -10%;
-        }
-
-        .main-container {
-            padding: 40px 25px 140px 25px; /* مساحة واسعة للبار السفلي */
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* 2. الهيدر والترحيب (Typography Hierarchy) */
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
-        .hero-title {
-            font-size: 38px;
-            font-weight: 900;
-            line-height: 1.1;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
-        }
-
-        .hero-subtitle {
-            font-size: 15px;
-            color: var(--text-dim);
-            font-weight: 500;
-        }
-
-        /* زر الأكشن الدائري العائم (كالموجود في الصورة) */
-        .icon-btn-float {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--surface-elevated);
-            border: 1px solid var(--border-glow);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            color: var(--text-pure);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .icon-btn-float:active { transform: scale(0.9); }
-
-        /* 3. الكروت بشكل كبسولات فاخرة (Pill Shaped Cards) */
-        .pill-card {
-            background: var(--surface-elevated);
-            border: 1px solid var(--border-glow);
-            border-radius: 35px; /* انحناء شديد يطابق الصورة */
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-        }
-
-        .pill-card-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 25px;
-            background: linear-gradient(135deg, #222, #111);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .pill-card-info {
-            flex-grow: 1;
-        }
-
-        .pill-card-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .pill-card-desc {
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-
-        /* زر الإجراء العائم على الكرت (Overlapping Action) */
-        .pill-action-btn {
-            position: absolute;
-            left: -15px; /* يبرز خارج حدود الكرت */
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--text-pure);
-            color: var(--bg-deep);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.15);
-            cursor: pointer;
-        }
-
-        /* 4. الكرت البطل (Featured Hero Card) */
-        .hero-card {
-            background: linear-gradient(180deg, rgba(30,30,30,0.4) 0%, var(--surface-elevated) 100%);
-            border: 1px solid var(--border-glow);
-            border-radius: 45px;
-            padding: 30px;
-            position: relative;
-            margin-bottom: 40px;
-            height: 350px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            overflow: visible; /* للسماح للعناصر بالبروز للخارج */
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-        }
-
-        /* حاوية الشخصية 3D (كمثال) */
-        .hero-character-placeholder {
-            position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 250px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-dim);
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .hero-card-badge {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            border: 1px solid var(--border-glow);
-        }
-
-        /* 5. شريط التصفح العائم (Floating Pill Nav) */
-        .floating-nav {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 85%;
-            max-width: 400px;
-            background: var(--surface-float);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border-glow);
-            border-radius: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 25px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-        }
-
-        .nav-icon {
-            color: var(--text-dim);
-            font-size: 26px;
-            transition: 0.3s ease;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-        }
-
-        .nav-icon.active {
-            color: var(--bg-deep);
-            background: var(--text-pure);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
-        }
-
-    </style>
 </head>
 <body>
 
-    <!-- إضاءة محيطية (Ambient Lighting) -->
-    <div class="ambient-glow"></div>
-    <div class="ambient-glow bottom"></div>
-
-    <div class="main-container">
+    <div class="app-container">
         
-        <!-- الترحيب والأيقونة العائمة -->
-        <header class="header-section">
-            <div>
-                <div class="hero-title">مساء الخير،<br>أيها اللاعب!</div>
-                <div class="hero-subtitle">استعد لجولة جديدة من الخداع ✧</div>
-            </div>
-            <div class="icon-btn-float">
-                <i class="ph ph-bell"></i>
-            </div>
-        </header>
+        <aside class="desktop-sidebar">
+            <div class="sidebar-logo">M_KHADAA</div>
+            <a href="#" class="sidebar-link active" onclick="showSection('home-view')"><i class="ph ph-house"></i> الرئيسية</a>
+            <a href="#" class="sidebar-link" onclick="showSection('play-view')"><i class="ph ph-game-controller"></i> العب</a>
+            <a href="#" class="sidebar-link" onclick="showSection('history-view')"><i class="ph ph-clock-counter-clockwise"></i> السجل</a>
+            <a href="#" class="sidebar-link" onclick="showSection('profile-view')"><i class="ph ph-user"></i> الحساب</a>
+        </aside>
 
-        <!-- الكرت البطل (نفس فكرة كرت فايبرانت بالصورة) -->
-        <div class="hero-card">
-            <div class="hero-card-badge">🔥 تحدي اليوم</div>
+        <main class="main-viewport">
             
-            <!-- هنا يتم وضع صورة الشخصية الـ 3D مستقبلاً لتخرج عن حدود الكرت -->
-            <div class="hero-character-placeholder">
-                [مساحة لشخصية 3D<br>بدون خلفية PNG]
-            </div>
+            <header class="top-navbar">
+                <div class="view-title" id="navbar-title">الرئيسية</div>
+                <div style="font-size: 13px; color: #8c8c8c;">لاعب_01</div>
+            </header>
 
-            <div>
-                <h2 style="font-size: 26px; font-weight: 900; margin-bottom: 5px;">مباراة مصيرية</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">الفريق (أ) يواجه الفريق (ب) الآن.</p>
-                
-                <div style="background: var(--text-pure); color: var(--bg-deep); border-radius: 20px; padding: 15px; text-align: center; font-weight: 800; cursor: pointer; font-size: 16px;">
-                    بدء اللعب <i class="ph-bold ph-arrow-left" style="vertical-align: middle; margin-right: 5px;"></i>
+            <section id="home-view" class="view-section active-view">
+                <div class="grid-layout">
+                    <div class="premium-card">
+                        <div class="card-title">غرفة الانتظار الرئيسية</div>
+                        <div class="card-content">مرحباً بك في مستودع الخداع. نظام المباريات جاهز الآن، يمكنك بدء البحث عن تحدي جديد أو الانضمام لفريقك الحالي.</div>
+                        <button class="btn-primary" onclick="showSection('play-view')">دخول اللوبي</button>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- كروت قائمة بستايل كبسولات (نفس فكرة فيفا 23 بالصورة) -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="font-size: 20px; font-weight: 800;">السجل والإحصائيات</h3>
-            <i class="ph ph-arrow-left" style="font-size: 22px; color: var(--text-dim);"></i>
-        </div>
+            <section id="play-view" class="view-section">
+                <div class="grid-layout">
+                    <div class="premium-card">
+                        <div class="card-title">البحث عن مباراة</div>
+                        <div class="card-content">جاري تجهيز السيرفرات اللحظية. اختر نوع الجولة لبدء توزيع الفرق (فريق أ / فريق ب).</div>
+                        <button class="btn-primary">البدء فوراً</button>
+                    </div>
+                </div>
+            </section>
 
-        <div class="pill-card">
-            <div class="pill-card-img">
-                <i class="ph ph-target"></i>
-            </div>
-            <div class="pill-card-info">
-                <div class="pill-card-title">نقاط الذكاء</div>
-                <div class="pill-card-desc">أنت تتفوق على 85% من اللاعبين</div>
-            </div>
-            <div class="pill-action-btn">
-                <i class="ph-fill ph-play"></i>
-            </div>
-        </div>
+            <section id="history-view" class="view-section">
+                <div class="grid-layout">
+                    <div class="premium-card">
+                        <div class="card-title">سجل الجولات السابقة</div>
+                        <div class="card-content">لم تلعب أي مباريات في الجولة الحالية بعد. سجل انتصاراتك ونقاطك سيظهر بالتفصيل هنا.</div>
+                    </div>
+                </div>
+            </section>
 
-        <div class="pill-card">
-            <div class="pill-card-img">
-                <i class="ph ph-users"></i>
-            </div>
-            <div class="pill-card-info">
-                <div class="pill-card-title">الفرق الحالية</div>
-                <div class="pill-card-desc">فريق (أ) متصدر الجولة</div>
-            </div>
-            <div class="pill-action-btn">
-                <i class="ph-fill ph-caret-left"></i>
-            </div>
-        </div>
+            <section id="profile-view" class="view-section">
+                <div class="grid-layout">
+                    <div class="premium-card">
+                        <div class="card-title">إعدادات ملف اللاعب</div>
+                        <div class="card-content">تعديل الاسم المستعار، الحساب المربوط بـ Firebase، وإحصائيات مستوى الخداع الإجمالي الخاص بك.</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <nav class="mobile-floating-nav">
+            <a href="#" class="mobile-nav-link active" onclick="showSection('home-view')"><i class="ph ph-house"></i><span>الرئيسية</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showSection('play-view')"><i class="ph ph-game-controller"></i><span>العب</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showSection('history-view')"><i class="ph ph-clock-counter-clockwise"></i><span>السجل</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showSection('profile-view')"><i class="ph ph-user"></i><span>الحساب</span></a>
+        </nav>
 
     </div>
 
-    <!-- شريط التصفح الكبسولة العائم (Floating Pill Bottom Nav) -->
-    <nav class="floating-nav">
-        <a href="#" class="nav-icon active"><i class="ph-fill ph-house"></i></a>
-        <a href="#" class="nav-icon"><i class="ph-bold ph-game-controller"></i></a>
-        <a href="#" class="nav-icon"><i class="ph-bold ph-chart-pie-slice"></i></a>
-        <a href="#" class="nav-icon"><i class="ph-bold ph-user"></i></a>
-    </nav>
+    <script>
+        function showSection(sectionId) {
+            // إخفاء كل الحاويات
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.remove('active-view');
+            });
+            // إظهار الحاوية المطلوبة فقط
+            document.getElementById(sectionId).classList.add('active-view');
 
+            // تحديث عنوان الهيدر العلوي
+            const titles = {
+                'home-view': 'الرئيسية',
+                'play-view': 'الملعب',
+                'history-view': 'السجل',
+                'profile-view': 'الحساب'
+            };
+            document.getElementById('navbar-title').innerText = titles[sectionId];
+
+            // تحديث حالة الأزرار في القائمة الجانبية (Desktop)
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.innerText.includes(titles[sectionId])) {
+                    link.classList.add('active');
+                }
+            });
+
+            // تحديث حالة الأزرار في الكبسولة العائمة (Mobile)
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.querySelector('span').innerText === titles[sectionId]) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
