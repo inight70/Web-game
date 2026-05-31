@@ -29,10 +29,17 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-stack); -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; overflow: hidden; transition: 0.3s; }
+        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; overflow: hidden; transition: background-color 0.4s, color 0.4s; }
 
+        /* شاشة التحميل الفخمة لمنع ظهور نافذة الدخول للمسجلين */
+        #global-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-base); z-index: 999999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease, visibility 0.5s ease; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--border-line); border-top-color: var(--text-main); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* النافذة مخفية افتراضياً لمنع الوميض المزعج */
         .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--glass-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); display: flex; justify-content: center; align-items: center; z-index: 100000; transition: 0.4s; }
-        .auth-overlay.hidden { opacity: 0; visibility: hidden; }
+        .auth-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        
         .auth-card { background-color: var(--surface-panel); border: 1px solid var(--border-line); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.6); position: relative; }
         .close-modal-btn { position: absolute; top: 20px; left: 20px; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; }
         .close-modal-btn:hover { color: var(--text-main); }
@@ -65,8 +72,8 @@
         .header-title { font-size: 18px; font-weight: 600; }
         
         .header-actions { display: flex; align-items: center; gap: 20px; position: relative; }
-        .theme-btn { background: none; border: none; color: var(--text-main); font-size: 22px; cursor: pointer; }
-
+        .theme-btn { background: none; border: none; color: var(--text-main); font-size: 22px; cursor: pointer; transition: 0.2s; }
+        
         .avatar-circle { width: 38px; height: 38px; border-radius: 50%; background-color: var(--text-main); color: var(--bg-base); display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 16px; cursor: pointer; user-select: none; border: 2px solid transparent; transition: 0.2s; }
         .avatar-circle:hover { border-color: var(--border-line); opacity: 0.9; }
         
@@ -104,7 +111,11 @@
 </head>
 <body>
 
-    <div id="auth-modal" class="auth-overlay">
+    <div id="global-loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
             
@@ -125,7 +136,6 @@
                 <div id="auth-error" class="auth-error-msg"></div>
 
                 <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
-                    
                     <div id="login-fields">
                         <div class="input-wrapper">
                             <label>البريد الإلكتروني أو اسم المستخدم</label>
@@ -198,7 +208,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
@@ -214,11 +224,13 @@
         const db = getFirestore(app);
         
         window.authInstance = auth; 
+        window.dbInstance = db;
+        window.updateDocFunc = updateDoc;
+        window.docFunc = doc;
         window.signOutFunc = signOut;
         window.isGuest = false;
         window.currentFormMode = 'login'; 
 
-        // دالة التفريغ التي تمسح كل الخانات المنفصلة (يتم استدعاؤها عند الإغلاق والخروج فقط)
         window.clearAuthInputs = function() {
             document.getElementById('login-id').value = "";
             document.getElementById('login-password').value = "";
@@ -226,8 +238,15 @@
             document.getElementById('reg-email').value = "";
             document.getElementById('reg-password').value = "";
             document.getElementById('reg-confirm').value = "";
-            if(document.getElementById('auth-error')) {
-                document.getElementById('auth-error').style.display = 'none';
+            if(document.getElementById('auth-error')) document.getElementById('auth-error').style.display = 'none';
+        };
+
+        // دالة مخفية لإزالة شاشة التحميل بعد التأكد من حالة اللاعب
+        const hideLoader = () => {
+            const loader = document.getElementById('global-loader');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 500);
             }
         };
 
@@ -248,13 +267,19 @@
                         displayName = data.username || displayName;
                         matches = data.matches || 0;
                         wins = data.wins || 0;
+                        
+                        // سحب إعدادات الثيم الخاصة باللاعب من السيرفر وتطبيقها فوراً
+                        if(data.theme === 'light') {
+                            document.body.setAttribute('data-theme', 'light');
+                            document.getElementById('theme-icon').className = 'ph ph-moon';
+                        } else {
+                            document.body.removeAttribute('data-theme');
+                            document.getElementById('theme-icon').className = 'ph ph-sun';
+                        }
                     }
-                } catch (err) {
-                    console.warn("تأخير سحابي مؤقت في جلب البيانات.", err);
-                }
+                } catch (err) { console.warn("Delay reading settings", err); }
 
                 avatar.innerText = displayName.charAt(0).toUpperCase();
-                
                 dropdown.innerHTML = `
                     <div class="dropdown-header">
                         <div class="dropdown-name">${displayName}</div>
@@ -267,17 +292,18 @@
                     <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
                 `;
 
-                window.clearAuthInputs(); // تفريغ فور نجاح الدخول
-
+                window.clearAuthInputs();
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
                 window.loadFragment('home', document.querySelector('.nav-btn'));
+                hideLoader();
             } else {
                 if (!window.isGuest) {
                     window.clearAuthInputs();
                     document.getElementById('auth-modal').classList.remove('hidden');
                     document.getElementById('app-shell').classList.remove('unlocked');
                 }
+                hideLoader();
             }
         });
 
@@ -300,10 +326,7 @@
                         const usersRef = collection(db, "users");
                         const q = query(usersRef, where("username", "==", loginId));
                         const querySnapshot = await getDocs(q);
-                        
-                        if (querySnapshot.empty) {
-                            throw { message: "اسم المستخدم غير موجود." };
-                        }
+                        if (querySnapshot.empty) throw { message: "اسم المستخدم غير موجود." };
                         loginEmail = querySnapshot.docs[0].data().email;
                     }
                     await signInWithEmailAndPassword(auth, loginEmail, password);
@@ -319,19 +342,18 @@
                     const usersRef = collection(db, "users");
                     const q = query(usersRef, where("username", "==", username));
                     const querySnapshot = await getDocs(q);
-                    
-                    if (!querySnapshot.empty) {
-                        throw { message: "اسم المستخدم محجوز مسبقاً، اختر اسماً آخر." };
-                    }
+                    if (!querySnapshot.empty) throw { message: "اسم المستخدم محجوز مسبقاً، اختر اسماً آخر." };
 
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
+                    // حفظ الثيم الافتراضي مع بيانات الحساب الجديد
                     await setDoc(doc(db, "users", user.uid), {
                         username: username,
                         email: email,
                         matches: 0,
                         wins: 0,
+                        theme: 'dark', // إعداد افتراضي يربط بالحساب
                         createdAt: new Date().toISOString()
                     });
                 }
@@ -367,6 +389,11 @@
 
         function handleLogout() {
             if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+            
+            // عند الخروج، نرجع الواجهة للثيم الافتراضي المظلم
+            document.body.removeAttribute('data-theme');
+            document.getElementById('theme-icon').className = 'ph ph-sun';
+
             window.signOutFunc(window.authInstance).then(() => {
                 toggleUserDropdown();
                 document.getElementById('auth-modal').classList.remove('hidden');
@@ -383,20 +410,14 @@
 
         function setFormType(type) {
             window.currentFormMode = type;
-            
-            // قمنا بإزالة كود المسح من هنا، لكي نحافظ على بياناتك مكتوبة عند التبديل
-            
             document.getElementById('tab-login').classList.toggle('active', type === 'login');
             document.getElementById('tab-register').classList.toggle('active', type === 'register');
             
-            // إظهار وإخفاء الأقسام المعزولة
             document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
             document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
             
-            // تفعيل حقول القسم المعروض فقط برمجياً
             document.getElementById('login-id').required = type === 'login';
             document.getElementById('login-password').required = type === 'login';
-            
             document.getElementById('reg-username').required = type === 'register';
             document.getElementById('reg-email').required = type === 'register';
             document.getElementById('reg-password').required = type === 'register';
@@ -425,23 +446,37 @@
         }
 
         function closeAuthModal() {
-            // يمسح كل شيء بمجرد إغلاق النافذة أثناء الكتابة
             if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
-            
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
             if(!window.isGuest) enterAsGuest();
         }
 
-        function toggleTheme() {
+        // تطوير دالة الثيم لتقوم بالحفظ في حساب السيرفر مباشرة
+        async function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('theme-icon');
+            let newTheme = 'dark';
+
             if (body.getAttribute('data-theme') === 'light') {
                 body.removeAttribute('data-theme');
                 icon.className = 'ph ph-sun';
+                newTheme = 'dark';
             } else {
                 body.setAttribute('data-theme', 'light');
                 icon.className = 'ph ph-moon';
+                newTheme = 'light';
+            }
+
+            // تحديث السيرفر إذا كان اللاعب مسجلاً دخوله
+            if (window.authInstance && window.authInstance.currentUser && !window.isGuest) {
+                try {
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
+                        theme: newTheme
+                    });
+                } catch (e) {
+                    console.warn("تعذر حفظ الثيم سحابياً", e);
+                }
             }
         }
 
