@@ -1,0 +1,61 @@
+<style>
+    /* ستايل المربعات المخصصة للمتجر - تصميم عالمي حاد */
+    .store-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .store-card {
+        background-color: #09090b;
+        border: 1px solid #1e1e20;
+        border-radius: 14px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .store-card:hover {
+        border-color: #2e2e33;
+    }
+    .item-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .item-desc {
+        color: #71717a;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+    .buy-button {
+        background-color: #ffffff;
+        color: #000000;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+    }
+</style>
+
+<div class="store-grid">
+    <div class="store-card">
+        <div>
+            <div class="item-title">بطاقة تلميح التلكوميتر</div>
+            <div class="item-desc">تمنحك كشفاً أسرع للأثر المترتب في الراوند الثاني قبل بقية المحققين.</div>
+        </div>
+        <button class="buy-button">استبدال بـ 400 نقطة</button>
+    </div>
+
+    <div class="store-card">
+        <div>
+            <div class="item-title">قناع التمويه السري</div>
+            <div class="item-desc">خاص بالشريك؛ تمنع الشاهد من معرفة هويتك الحقيقية لمدة راوند كامل.</div>
+        </div>
+        <button class="buy-button">استبدال بـ 600 نقطة</button>
+    </div>
+</div>
