@@ -5,110 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>مستودع الخداع - اللوبي</title>
     
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <style>
-        :root {
-            --bg-base: #000000;
-            --surface-panel: #09090b;
-            --border-line: #1e1e20;
-            --text-main: #ffffff;
-            --text-dim: #71717a;
-            --glass-bg: rgba(0, 0, 0, 0.85);
-            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            --accent-red: #ff453a;
-        }
-
-        [data-theme="light"] {
-            --bg-base: #f4f4f5;
-            --surface-panel: #ffffff;
-            --border-line: #e4e4e7;
-            --text-main: #09090b;
-            --text-dim: #a1a1aa;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-stack); -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; overflow: hidden; transition: 0.3s; }
-
-        /* --- النافذة الزجاجية --- */
-        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--glass-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); display: flex; justify-content: center; align-items: center; z-index: 100000; transition: 0.4s; }
-        .auth-overlay.hidden { opacity: 0; visibility: hidden; }
-        .auth-card { background-color: var(--surface-panel); border: 1px solid var(--border-line); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.6); position: relative; }
-        .close-modal-btn { position: absolute; top: 20px; left: 20px; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; }
-        .close-modal-btn:hover { color: var(--text-main); }
-        .auth-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
-        .auth-card p { color: var(--text-dim); font-size: 13.5px; margin-bottom: 30px; line-height: 1.6; }
-        .btn-core { background-color: var(--text-main); color: var(--bg-base); border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; }
-        .btn-core:hover { opacity: 0.9; }
-        .link-guest { display: inline-block; margin-top: 18px; color: var(--text-dim); font-size: 13px; text-decoration: none; background: none; border: none; cursor: pointer; font-weight: 500; }
-        .link-guest:hover { color: var(--text-main); text-decoration: underline; }
-        
-        .modal-tabs { display: flex; border-bottom: 1px solid var(--border-line); margin-bottom: 25px; }
-        .modal-tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-weight: 600; font-size: 14px; cursor: pointer; }
-        .modal-tab-btn.active { color: var(--text-main); border-bottom: 2px solid var(--text-main); }
-        
-        .input-wrapper { margin-bottom: 16px; text-align: right; }
-        .input-wrapper label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; padding-right: 4px; }
-        .premium-input { width: 100%; padding: 14px; background-color: var(--bg-base); border: 1px solid var(--border-line); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; }
-        .premium-input:focus { border-color: var(--text-main); }
-        .auth-error-msg { color: var(--accent-red); font-size: 12px; margin-bottom: 15px; text-align: center; display: none; }
-
-        /* --- الإطار الرئيسي --- */
-        .app-shell { display: flex; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; transition: 0.5s; }
-        .app-shell.unlocked { filter: blur(0); pointer-events: auto; }
-        .sidebar { width: 250px; background-color: var(--bg-base); border-left: 1px solid var(--border-line); padding: 40px 20px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-        .sidebar-brand { font-size: 13px; font-weight: 700; letter-spacing: 2.5px; margin-bottom: 40px; padding-right: 12px; }
-        .nav-btn { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 10px; color: var(--text-dim); background: none; border: none; font-size: 15px; font-weight: 500; cursor: pointer; text-align: right; width: 100%; }
-        .nav-btn:hover, .nav-btn.active { background-color: var(--surface-panel); color: var(--text-main); }
-
-        .main-viewport { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; }
-        .top-header { height: 75px; border-bottom: 1px solid var(--border-line); display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
-        .header-title { font-size: 18px; font-weight: 600; }
-        
-        .header-actions { display: flex; align-items: center; gap: 20px; position: relative; }
-        .theme-btn { background: none; border: none; color: var(--text-main); font-size: 22px; cursor: pointer; }
-
-        /* --- قائمة الأفاتار المنسدلة (الاحترافية بدون إيموجي) --- */
-        .avatar-circle { width: 38px; height: 38px; border-radius: 50%; background-color: var(--text-main); color: var(--bg-base); display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 16px; cursor: pointer; user-select: none; border: 2px solid transparent; transition: 0.2s; }
-        .avatar-circle:hover { border-color: var(--border-line); opacity: 0.9; }
-        
-        .user-dropdown { position: absolute; top: 55px; left: 0; background-color: var(--surface-panel); border: 1px solid var(--border-line); border-radius: 16px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 100; animation: dropDownFade 0.2s ease; }
-        .user-dropdown.show { display: flex; }
-        @keyframes dropDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* تصميم الإحصائيات (Mini-Dashboard Style) */
-        .dropdown-header { padding: 20px 16px; border-bottom: 1px solid var(--border-line); text-align: right; background: linear-gradient(180deg, var(--surface-panel) 0%, rgba(20,20,20,0.4) 100%); }
-        .dropdown-name { font-weight: 700; font-size: 16px; margin-bottom: 12px; letter-spacing: 0.5px; }
-        .dropdown-stats { display: flex; gap: 20px; }
-        .stat-item { display: flex; flex-direction: column; }
-        .stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
-        .stat-value { font-size: 15px; font-weight: 600; color: var(--text-main); }
-        
-        .dropdown-item { padding: 14px 16px; color: var(--text-dim); text-decoration: none; display: flex; align-items: center; gap: 12px; background: none; border: none; width: 100%; text-align: right; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
-        .dropdown-item:hover { background-color: var(--bg-base); color: var(--text-main); }
-        .dropdown-item i { font-size: 18px; }
-        .dropdown-item.logout { color: var(--accent-red); border-top: 1px solid var(--border-line); }
-        .dropdown-item.logout:hover { background-color: rgba(255, 69, 58, 0.1); }
-
-        .dynamic-content { flex-grow: 1; overflow-y: auto; padding: 40px; width: 100%; max-width: 1100px; margin: 0 auto; }
-        .bottom-bar { display: none; }
-
-        @media (max-width: 900px) {
-            .sidebar { display: none; }
-            .top-header { padding: 0 24px; }
-            .dynamic-content { padding: 24px 20px 130px 20px; }
-            .bottom-bar { display: flex; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 450px; height: 66px; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border-line); border-radius: 33px; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 9999; }
-            .bottom-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); background: none; border: none; height: 100%; flex: 1; cursor: pointer; }
-            .bottom-tab i { font-size: 22px; }
-            .bottom-tab span { font-size: 9px; font-weight: 500; margin-top: 3px; }
-            .bottom-tab.active { color: var(--text-main); }
-        }
-    </style>
 </head>
 <body>
 
-    <!-- النافذة الزجاجية -->
     <div id="auth-modal" class="auth-overlay">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
@@ -161,7 +63,6 @@
         </div>
     </div>
 
-    <!-- الإطار الخارجي الثابت -->
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
             <div class="sidebar-brand">DECEPTION.SYS</div>
@@ -177,17 +78,12 @@
                 <div class="header-title" id="page-title">الرئيسية</div>
                 <div class="header-actions">
                     <button class="theme-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-sun"></i></button>
-                    
                     <div style="position: relative;">
                         <div class="avatar-circle" id="header-avatar" onclick="toggleUserDropdown()">ز</div>
-                        
-                        <div class="user-dropdown" id="user-dropdown">
-                            <!-- يتم الحقن برمجياً -->
-                        </div>
+                        <div class="user-dropdown" id="user-dropdown"></div>
                     </div>
                 </div>
             </header>
-
             <div class="dynamic-content" id="content-holder"></div>
         </main>
 
@@ -200,195 +96,6 @@
         </nav>
     </div>
 
-    <!-- الربط مع فايربيس -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
-            authDomain: "web-game-260b5.firebaseapp.com",
-            projectId: "web-game-260b5",
-            storageBucket: "web-game-260b5.firebasestorage.app",
-            messagingSenderId: "682229509792",
-            appId: "1:682229509792:web:11b4a404459630fcd6a3c5"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        
-        window.authInstance = auth; 
-        window.signOutFunc = signOut;
-
-        window.isGuest = false;
-        window.currentFormMode = 'login'; 
-
-        onAuthStateChanged(auth, (user) => {
-            const dropdown = document.getElementById('user-dropdown');
-            const avatar = document.getElementById('header-avatar');
-
-            if (user) {
-                window.isGuest = false;
-                let displayName = user.email.split('@')[0]; // مؤقت حتى نربط الداتابيس
-                avatar.innerText = displayName.charAt(0).toUpperCase();
-                
-                // القائمة الاحترافية بدون ايموجي
-                dropdown.innerHTML = `
-                    <div class="dropdown-header">
-                        <div class="dropdown-name">${displayName}</div>
-                        <div class="dropdown-stats">
-                            <div class="stat-item"><span class="stat-label">المباريات</span><span class="stat-value">0</span></div>
-                            <div class="stat-item"><span class="stat-label">الانتصارات</span><span class="stat-value">0</span></div>
-                        </div>
-                    </div>
-                    <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي</button>
-                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
-                `;
-
-                document.getElementById('auth-modal').classList.add('hidden');
-                document.getElementById('app-shell').classList.add('unlocked');
-                window.loadFragment('home', document.querySelector('.nav-btn'));
-            } else {
-                if (!window.isGuest) {
-                    document.getElementById('auth-modal').classList.remove('hidden');
-                    document.getElementById('app-shell').classList.remove('unlocked');
-                }
-            }
-        });
-
-        window.handleAuthSubmit = async function(e) {
-            e.preventDefault();
-            const password = document.getElementById('input-password').value;
-            const errorDiv = document.getElementById('auth-error');
-            errorDiv.style.display = 'none';
-
-            try {
-                if (window.currentFormMode === 'login') {
-                    const loginId = document.getElementById('input-email-username').value;
-                    await signInWithEmailAndPassword(auth, loginId, password);
-                } else {
-                    const email = document.getElementById('input-email-only').value;
-                    const confirmPass = document.getElementById('input-confirm').value;
-                    if (password !== confirmPass) throw { message: "كلمات المرور غير متطابقة." };
-                    
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
-            } catch (error) {
-                errorDiv.innerText = error.message.includes("credential") ? "بيانات الدخول غير صحيحة." : error.message;
-                errorDiv.style.display = 'block';
-            }
-        }
-    </script>
-
-    <script>
-        function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('show'); }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.avatar-circle') && !event.target.closest('.user-dropdown')) {
-                const dropdowns = document.getElementsByClassName("user-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
-                }
-            }
-        }
-
-        function handleLogout() {
-            window.signOutFunc(window.authInstance).then(() => {
-                toggleUserDropdown();
-                document.getElementById('auth-modal').classList.remove('hidden');
-                document.getElementById('app-shell').classList.remove('unlocked');
-            });
-        }
-
-        function switchModalMode(mode) {
-            if(mode === 'forms') {
-                document.getElementById('modal-welcome-view').style.display = 'none';
-                document.getElementById('modal-form-view').style.display = 'block';
-            }
-        }
-
-        function setFormType(type) {
-            window.currentFormMode = type;
-            document.getElementById('tab-login').classList.toggle('active', type === 'login');
-            document.getElementById('tab-register').classList.toggle('active', type === 'register');
-            
-            document.getElementById('wrapper-login-id').style.display = type === 'login' ? 'block' : 'none';
-            document.getElementById('wrapper-username-only').style.display = type === 'register' ? 'block' : 'none';
-            document.getElementById('wrapper-email-only').style.display = type === 'register' ? 'block' : 'none';
-            document.getElementById('wrapper-confirm').style.display = type === 'register' ? 'block' : 'none';
-            
-            document.getElementById('input-email-username').required = type === 'login';
-            document.getElementById('input-username-only').required = type === 'register';
-            document.getElementById('input-email-only').required = type === 'register';
-
-            document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
-        }
-
-        function enterAsGuest() {
-            window.isGuest = true;
-            const avatar = document.getElementById('header-avatar');
-            const dropdown = document.getElementById('user-dropdown');
-            
-            avatar.innerText = "ز";
-            dropdown.innerHTML = `
-                <div class="dropdown-header">
-                    <div class="dropdown-name" style="color: var(--text-dim);">زائر غير مسجل</div>
-                </div>
-                <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول لحفظ تقدمك</button>
-            `;
-
-            document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('unlocked');
-            loadFragment('home', document.querySelector('.nav-btn'));
-        }
-
-        function closeAuthModal() {
-            document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('unlocked');
-            if(!window.isGuest) enterAsGuest();
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('theme-icon');
-            if (body.getAttribute('data-theme') === 'light') {
-                body.removeAttribute('data-theme');
-                icon.className = 'ph ph-sun';
-            } else {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'ph ph-moon';
-            }
-        }
-
-        function loadFragment(pageName, element) {
-            const contentHolder = document.getElementById('content-holder');
-            const titles = { 'home': 'الرئيسية', 'play': 'غرف اللعب', 'leaderboard': 'المتصدرون', 'store': 'متجر المزايا', 'profile': 'إعدادات الحساب' };
-            
-            document.getElementById('page-title').innerText = titles[pageName];
-            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => btn.classList.remove('active'));
-            if(element) element.classList.add('active');
-
-            if (pageName === 'profile' && window.isGuest) {
-                contentHolder.innerHTML = `
-                    <div style="padding: 40px; border: 1px solid var(--border-line); background-color: var(--surface-panel); border-radius: 20px; text-align: center; max-width: 500px; margin: 40px auto;">
-                        <i class="ph ph-user-circle-plus" style="font-size: 40px; margin-bottom: 15px; color: var(--text-dim);"></i>
-                        <h3 style="font-size: 18px; margin-bottom: 10px;">أنت تتصفح كزائر</h3>
-                        <p style="color: var(--text-dim); font-size: 13.5px; margin-bottom: 25px; line-height: 1.6;">قسم الحساب مخصص للاعبين المسجلين. أنشئ حسابك الآن لحفظ تقدمك.</p>
-                        <button class="btn-core" style="max-width: 200px; margin: 0 auto; display: block;" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">سجل دخولك الآن</button>
-                    </div>`;
-                return;
-            }
-
-            fetch(pageName + '.html')
-                .then(response => { if (!response.ok) throw new Error(); return response.text(); })
-                .then(html => { contentHolder.innerHTML = html; })
-                .catch(() => {
-                    contentHolder.innerHTML = `
-                        <div style="padding: 40px; border: 1px dashed var(--border-line); border-radius: 16px; text-align: center;">
-                            <p style="color: var(--text-dim); font-size: 14px;">ملف <b>${pageName}.html</b> جاهز هندسياً ومحمي بالكامل.</p>
-                        </div>`;
-                });
-        }
-    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
