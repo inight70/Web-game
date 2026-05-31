@@ -1,376 +1,121 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مستودع الخداع - اللوحة الرئيسية</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* إعدادات الأساس - Monochrome Premium */
-        :root {
-            --bg-pure-black: #000000;
-            --surface-color: #0a0a0a;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: #737373;
-            --white-accent: #ffffff;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Tajawal', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        
         body {
-            background-color: var(--bg-pure-black);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* --- الهيكل الرئيسي --- */
-        .app-wrapper {
-            display: flex;
-            width: 100%;
+            /* خلفية تحاكي الإضاءة العميقة في الصورة */
+            background: radial-gradient(circle at top left, #3b151d 0%, #11090b 50%, #000000 100%);
             height: 100vh;
-        }
-
-        /* --- الشريط الجانبي (للكمبيوتر فقط) --- */
-        .sidebar {
-            width: 260px;
-            background-color: var(--bg-pure-black);
-            border-left: 1px solid var(--border-color);
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .brand-logo {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 50px;
-            padding-right: 15px;
-            letter-spacing: 1px;
-            color: var(--text-primary);
-        }
-
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 15px;
-            border-radius: 8px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-item i {
-            font-size: 20px;
-        }
-
-        .sidebar-item:hover, .sidebar-item.active {
-            background-color: var(--surface-color);
-            color: var(--text-primary);
-        }
-
-        /* --- المحتوى الرئيسي --- */
-        .main-content {
-            flex-grow: 1;
-            padding: 40px;
-            overflow-y: auto;
-            padding-bottom: 120px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 50px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-            cursor: pointer;
-        }
-
-        .avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background-color: var(--white-accent);
-            color: var(--bg-pure-black);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: 700;
-            font-size: 12px;
         }
 
-        /* --- الكروت الأنيقة (Minimalist Cards) --- */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .premium-card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
-            transition: border-color 0.3s ease;
+        /* حاوية الكرت الأساسية */
+        .hero-card {
+            width: 320px;
+            height: 450px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.8) 100%);
+            border-radius: 40px;
+            position: relative; /* مهم جداً لنجاح خدعة الطبقات */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-end;
+            padding: 30px;
+            /* لاحظ أننا لم نضع overflow: hidden لكي نسمح للشخصية بالبروز */
         }
 
-        .premium-card:hover {
-            border-color: rgba(255, 255, 255, 0.2);
+        /* الشخصية المقصوصة (سر البعد الثلاثي) */
+        .character-art {
+            position: absolute;
+            top: -60px; /* القيمة السالبة ترفع الصورة خارج الإطار */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110%; /* أكبر من الكرت قليلاً */
+            z-index: 10;
+            pointer-events: none; /* عشان ما تخرب الضغط على الأزرار */
+            filter: drop-shadow(0 20px 20px rgba(0,0,0,0.5)); /* ظل على الشخصية نفسها */
         }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+        /* النصوص والأزرار أسفل الكرت */
+        .content {
+            position: relative;
+            z-index: 20; /* يجب أن تكون فوق الشخصية */
+            color: white;
         }
 
-        .card-header i {
-            font-size: 20px;
-            color: var(--text-primary);
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.1;
         }
 
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .card-desc {
-            color: var(--text-secondary);
+        .subtitle {
             font-size: 14px;
-            line-height: 1.7;
+            color: #a09a9a;
             margin-bottom: 30px;
         }
 
-        /* زر التباين العالي (High Contrast Button) */
-        .primary-btn {
-            background-color: var(--white-accent);
-            color: var(--bg-pure-black);
+        /* زر مشع */
+        .action-btn {
+            background: #d84545;
+            color: white;
             border: none;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 18px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
             cursor: pointer;
-            width: fit-content;
-            transition: opacity 0.2s ease;
+            box-shadow: 0 15px 25px rgba(216, 69, 69, 0.4); /* ظل أحمر مشع */
+            transition: 0.3s;
         }
 
-        .primary-btn:hover {
-            opacity: 0.85;
+        .action-btn:hover {
+            transform: scale(0.95);
+            box-shadow: 0 5px 10px rgba(216, 69, 69, 0.6);
         }
 
-        .secondary-btn {
-            background-color: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .secondary-btn:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        /* --- البار السفلي للجوال (Glassmorphism Bottom Nav) --- */
-        .bottom-nav {
-            display: none;
-        }
-
-        /* --- التجاوب مع الجوال (Mobile Styling) --- */
-        @media (max-width: 900px) {
-            .sidebar {
-                display: none;
-            }
-
-            .main-content {
-                padding: 20px;
-                padding-bottom: 120px;
-            }
-
-            .header {
-                margin-bottom: 30px;
-            }
-
-            .header h1 {
-                font-size: 20px;
-            }
-
-            .premium-card {
-                padding: 25px;
-            }
-
-            .primary-btn {
-                width: 100%;
-            }
-
-            /* تفعيل البار السفلي الاحترافي */
-            .bottom-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: 85px;
-                background: rgba(0, 0, 0, 0.7);
-                backdrop-filter: blur(25px);
-                -webkit-backdrop-filter: blur(25px);
-                border-top: 1px solid var(--border-color);
-                justify-content: space-around;
-                align-items: center;
-                z-index: 1000;
-                padding-bottom: env(safe-area-inset-bottom);
-            }
-
-            .nav-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                color: var(--text-secondary);
-                text-decoration: none;
-                gap: 4px;
-                flex: 1;
-                height: 100%;
-                transition: color 0.2s ease;
-            }
-
-            .nav-item i {
-                font-size: 24px;
-                margin-bottom: 2px;
-            }
-
-            .nav-item span {
-                font-size: 10px;
-                font-weight: 500;
-            }
-
-            .nav-item.active {
-                color: var(--text-primary);
-            }
+        /* أيقونة عائمة (Floating UI) */
+        .floating-icon {
+            position: absolute;
+            right: -20px;
+            top: 40%;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            z-index: 30;
         }
     </style>
 </head>
 <body>
 
-    <div class="app-wrapper">
+    <div class="hero-card">
+        <!-- استخدمت صورة مقصوصة للتجربة لتوضيح الفكرة -->
+        <img src="https://pngimg.com/d/fortnite_PNG90.png" alt="Character" class="character-art">
         
-        <aside class="sidebar">
-            <div class="brand-logo">مستودع الخداع</div>
-            <a href="#" class="sidebar-item active"><i class="ph ph-house"></i> الرئيسية</a>
-            <a href="#" class="sidebar-item"><i class="ph ph-game-controller"></i> العب</a>
-            <a href="#" class="sidebar-item"><i class="ph ph-clock-counter-clockwise"></i> السجل</a>
-            <a href="#" class="sidebar-item"><i class="ph ph-user"></i> الحساب</a>
-        </aside>
+        <div class="floating-icon">🎯</div>
 
-        <main class="main-content">
-            
-            <header class="header">
-                <h1>الرئيسية</h1>
-                <div class="user-profile">
-                    <span style="font-size: 13px; font-weight: 500;">اللاعب</span>
-                    <div class="avatar">U</div>
-                </div>
-            </header>
-
-            <div class="cards-grid">
-                
-                <div class="premium-card" style="grid-column: 1 / -1;">
-                    <div>
-                        <div class="card-header">
-                            <i class="ph ph-sword"></i>
-                            <div class="card-title">تحدي الخداع الجماعي</div>
-                        </div>
-                        <div class="card-desc">
-                            المباراة القادمة جاهزة للبدء. اكتشف من يكذب في فريقك، أو قُد فريقك للانتصار بالخداع التام. لا توجد قواعد هنا، فقط البقاء للأذكى.
-                        </div>
-                    </div>
-                    <button class="primary-btn">بدء التحدي الآن</button>
-                </div>
-
-                <div class="premium-card">
-                    <div>
-                        <div class="card-header">
-                            <i class="ph ph-chart-line-up"></i>
-                            <div class="card-title">نقاط الخداع</div>
-                        </div>
-                        <div class="card-desc">أنت تمتلك 1,200 نقطة. استخدمها بحكمة لفتح ميزات جديدة في التحديث القادم.</div>
-                    </div>
-                    <button class="secondary-btn">سجل النقاط</button>
-                </div>
-
-                <div class="premium-card">
-                    <div>
-                        <div class="card-header">
-                            <i class="ph ph-clock-counter-clockwise"></i>
-                            <div class="card-title">آخر نشاط</div>
-                        </div>
-                        <div class="card-desc">فوز ساحق مع الفريق (أ). نسبة دقة التخمين لديك وصلت إلى 98% في الجولة الأخيرة.</div>
-                    </div>
-                </div>
-
-            </div>
-        </main>
+        <div class="content">
+            <h1 class="title">Good evening,<br>Hero!</h1>
+            <p class="subtitle">May your gaming exploits be legendary! 🎮✨</p>
+            <button class="action-btn">Start</button>
+        </div>
     </div>
-
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item active">
-            <i class="ph ph-house"></i>
-            <span>الرئيسية</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="ph ph-game-controller"></i>
-            <span>العب</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="ph ph-clock-counter-clockwise"></i>
-            <span>السجل</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="ph ph-user"></i>
-            <span>الحساب</span>
-        </a>
-    </nav>
 
 </body>
 </html>
