@@ -11,15 +11,15 @@
 </head>
 <body>
 
-    <div id="auth-modal" class="auth-overlay">
-        <div class="auth-card">
-            <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
+    <div id="auth-modal" class="auth-modal-overlay">
+        <div class="glass-modal-content">
+            <button class="close-modal-btn" onclick="closeAuthModal()" style="position: absolute; top: 20px; left: 20px; background: none; border: none; color: var(--text-muted-gray); font-size: 20px; cursor: pointer;"><i class="ph ph-x"></i></button>
             
             <div id="modal-welcome-view">
                 <i class="ph ph-fingerprint" style="font-size: 38px; margin-bottom: 15px; display: inline-block;"></i>
-                <h2>سجل دخولك</h2>
-                <p>سجل دخولك الآن لتلعب، وتحفظ تقدمك، إحصائياتك، وإعداداتك السحابية بشكل آمن.</p>
-                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول</button>
+                <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">سجل دخولك</h2>
+                <p style="color: var(--text-muted-gray); font-size: 13.5px; margin-bottom: 30px; line-height: 1.6;">سجل دخولك الآن لتلعب، وتحفظ تقدمك، إحصائياتك، وإعداداتك السحابية بشكل آمن.</p>
+                <button class="btn-primary" onclick="switchModalMode('forms')">تسجيل الدخول</button>
                 <button class="link-guest" onclick="enterAsGuest()">المتابعة كزائر</button>
             </div>
 
@@ -57,43 +57,47 @@
                         <input type="password" id="input-confirm" class="premium-input" placeholder="••••••••">
                     </div>
 
-                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
+                    <button type="submit" class="btn-primary" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="app-shell" class="app-shell">
-        <aside class="sidebar">
-            <div class="sidebar-brand">DECEPTION.SYS</div>
-            <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph ph-house"></i> الرئيسية</button>
-            <button class="nav-btn" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i> اللعب</button>
-            <button class="nav-btn" onclick="loadFragment('leaderboard', this)"><i class="ph ph-trophy"></i> المتصدرون</button>
-            <button class="nav-btn" onclick="loadFragment('store', this)"><i class="ph ph-storefront"></i> المتجر</button>
-            <button class="nav-btn" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i> الحساب</button>
+    <div id="app-shell" class="phase-container blur-lock">
+        
+        <aside class="desktop-sidebar">
+            <div class="sidebar-logo">DECEPTION.SYS</div>
+            <button class="sidebar-link active" onclick="loadFragment('home', this)"><i class="ph ph-house"></i> الرئيسية</button>
+            <button class="sidebar-link" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i> اللعب</button>
+            <button class="sidebar-link" onclick="loadFragment('leaderboard', this)"><i class="ph ph-trophy"></i> المتصدرون</button>
+            <button class="sidebar-link" onclick="loadFragment('store', this)"><i class="ph ph-storefront"></i> المتجر</button>
+            <button class="sidebar-link" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i> الحساب</button>
         </aside>
 
         <main class="main-viewport">
-            <header class="top-header">
-                <div class="header-title" id="page-title">الرئيسية</div>
+            <nav class="top-navbar">
+                <div class="view-title" id="page-title">الرئيسية</div>
                 <div class="header-actions">
-                    <button class="theme-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-sun"></i></button>
-                    <div style="position: relative;">
-                        <div class="avatar-circle" id="header-avatar" onclick="toggleUserDropdown()">ز</div>
+                    <button class="theme-btn" onclick="toggleTheme()" style="background: none; border: none; color: var(--text-pure-white); font-size: 22px; cursor: pointer;"><i id="theme-icon" class="ph ph-sun"></i></button>
+                    
+                    <div style="position: relative; display: inline-block;">
+                        <div class="avatar-circle" id="header-avatar" onclick="toggleUserDropdown()" style="width: 38px; height: 38px; border-radius: 50%; background-color: var(--text-pure-white); color: var(--bg-pure-black); display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 16px; cursor: pointer; user-select: none;">ز</div>
                         <div class="user-dropdown" id="user-dropdown"></div>
                     </div>
                 </div>
-            </header>
-            <div class="dynamic-content" id="content-holder"></div>
+            </nav>
+
+            <div class="dynamic-content" id="content-holder" style="padding: 40px; width: 100%; max-width: 900px; margin: 0 auto; flex-grow: 1;"></div>
         </main>
 
-        <nav class="bottom-bar">
-            <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph ph-house"></i><span>الرئيسية</span></button>
-            <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i><span>اللعب</span></button>
-            <button class="bottom-tab" onclick="loadFragment('leaderboard', this)"><i class="ph ph-trophy"></i><span>المتصدرون</span></button>
-            <button class="bottom-tab" onclick="loadFragment('store', this)"><i class="ph ph-storefront"></i><span>المتجر</span></button>
-            <button class="bottom-tab" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i><span>الحساب</span></button>
+        <nav class="mobile-floating-nav">
+            <button class="mobile-nav-link active" onclick="loadFragment('home', this)"><i class="ph ph-house"></i><span>الرئيسية</span></button>
+            <button class="mobile-nav-link" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i><span>اللعب</span></button>
+            <button class="mobile-nav-link" onclick="loadFragment('leaderboard', this)"><i class="ph ph-trophy"></i><span>المتصدرون</span></button>
+            <button class="mobile-nav-link" onclick="loadFragment('store', this)"><i class="ph ph-storefront"></i><span>المتجر</span></button>
+            <button class="mobile-nav-link" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i><span>الحساب</span></button>
         </nav>
+
     </div>
 
     <script type="module" src="app.js"></script>
