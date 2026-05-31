@@ -1,121 +1,334 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>مستودع الخداع - اللوحة الرئيسية</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        
+        :root {
+            /* هوية اللون الأسود الفاخر مع تدرجات معدنية */
+            --bg-deep: #050505;
+            --surface-elevated: #111111;
+            --surface-float: rgba(20, 20, 20, 0.7);
+            --border-glow: rgba(255, 255, 255, 0.06);
+            --text-pure: #ffffff;
+            --text-dim: #71717a;
+            --accent-light: #f4f4f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            /* خلفية تحاكي الإضاءة العميقة في الصورة */
-            background: radial-gradient(circle at top left, #3b151d 0%, #11090b 50%, #000000 100%);
-            height: 100vh;
+            background-color: var(--bg-deep);
+            color: var(--text-pure);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 1. تأثير العمق الفراغي (Mesh Light / Ambient Glow) */
+        .ambient-glow {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .ambient-glow.bottom {
+            top: auto;
+            bottom: -10%;
+            left: auto;
+            right: -10%;
+        }
+
+        .main-container {
+            padding: 40px 25px 140px 25px; /* مساحة واسعة للبار السفلي */
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 2. الهيدر والترحيب (Typography Hierarchy) */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-title {
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .hero-subtitle {
+            font-size: 15px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* زر الأكشن الدائري العائم (كالموجود في الصورة) */
+        .icon-btn-float {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-glow);
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 24px;
+            color: var(--text-pure);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .icon-btn-float:active { transform: scale(0.9); }
+
+        /* 3. الكروت بشكل كبسولات فاخرة (Pill Shaped Cards) */
+        .pill-card {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-glow);
+            border-radius: 35px; /* انحناء شديد يطابق الصورة */
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
 
-        /* حاوية الكرت الأساسية */
+        .pill-card-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .pill-card-info {
+            flex-grow: 1;
+        }
+
+        .pill-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .pill-card-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        /* زر الإجراء العائم على الكرت (Overlapping Action) */
+        .pill-action-btn {
+            position: absolute;
+            left: -15px; /* يبرز خارج حدود الكرت */
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--text-pure);
+            color: var(--bg-deep);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+        }
+
+        /* 4. الكرت البطل (Featured Hero Card) */
         .hero-card {
-            width: 320px;
-            height: 450px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.8) 100%);
-            border-radius: 40px;
-            position: relative; /* مهم جداً لنجاح خدعة الطبقات */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            background: linear-gradient(180deg, rgba(30,30,30,0.4) 0%, var(--surface-elevated) 100%);
+            border: 1px solid var(--border-glow);
+            border-radius: 45px;
+            padding: 30px;
+            position: relative;
+            margin-bottom: 40px;
+            height: 350px;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 30px;
-            /* لاحظ أننا لم نضع overflow: hidden لكي نسمح للشخصية بالبروز */
+            overflow: visible; /* للسماح للعناصر بالبروز للخارج */
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
         }
 
-        /* الشخصية المقصوصة (سر البعد الثلاثي) */
-        .character-art {
+        /* حاوية الشخصية 3D (كمثال) */
+        .hero-character-placeholder {
             position: absolute;
-            top: -60px; /* القيمة السالبة ترفع الصورة خارج الإطار */
+            top: -40px;
             left: 50%;
             transform: translateX(-50%);
-            width: 110%; /* أكبر من الكرت قليلاً */
-            z-index: 10;
-            pointer-events: none; /* عشان ما تخرب الضغط على الأزرار */
-            filter: drop-shadow(0 20px 20px rgba(0,0,0,0.5)); /* ظل على الشخصية نفسها */
-        }
-
-        /* النصوص والأزرار أسفل الكرت */
-        .content {
-            position: relative;
-            z-index: 20; /* يجب أن تكون فوق الشخصية */
-            color: white;
-        }
-
-        .title {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            line-height: 1.1;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #a09a9a;
-            margin-bottom: 30px;
-        }
-
-        /* زر مشع */
-        .action-btn {
-            background: #d84545;
-            color: white;
-            border: none;
-            padding: 18px;
+            width: 200px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             border-radius: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            box-shadow: 0 15px 25px rgba(216, 69, 69, 0.4); /* ظل أحمر مشع */
-            transition: 0.3s;
-        }
-
-        .action-btn:hover {
-            transform: scale(0.95);
-            box-shadow: 0 5px 10px rgba(216, 69, 69, 0.6);
-        }
-
-        /* أيقونة عائمة (Floating UI) */
-        .floating-icon {
-            position: absolute;
-            right: -20px;
-            top: 40%;
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            z-index: 30;
+            color: var(--text-dim);
+            font-size: 14px;
+            text-align: center;
         }
+
+        .hero-card-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid var(--border-glow);
+        }
+
+        /* 5. شريط التصفح العائم (Floating Pill Nav) */
+        .floating-nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 400px;
+            background: var(--surface-float);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-glow);
+            border-radius: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .nav-icon {
+            color: var(--text-dim);
+            font-size: 26px;
+            transition: 0.3s ease;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .nav-icon.active {
+            color: var(--bg-deep);
+            background: var(--text-pure);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="hero-card">
-        <!-- استخدمت صورة مقصوصة للتجربة لتوضيح الفكرة -->
-        <img src="https://pngimg.com/d/fortnite_PNG90.png" alt="Character" class="character-art">
-        
-        <div class="floating-icon">🎯</div>
+    <!-- إضاءة محيطية (Ambient Lighting) -->
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow bottom"></div>
 
-        <div class="content">
-            <h1 class="title">Good evening,<br>Hero!</h1>
-            <p class="subtitle">May your gaming exploits be legendary! 🎮✨</p>
-            <button class="action-btn">Start</button>
+    <div class="main-container">
+        
+        <!-- الترحيب والأيقونة العائمة -->
+        <header class="header-section">
+            <div>
+                <div class="hero-title">مساء الخير،<br>أيها اللاعب!</div>
+                <div class="hero-subtitle">استعد لجولة جديدة من الخداع ✧</div>
+            </div>
+            <div class="icon-btn-float">
+                <i class="ph ph-bell"></i>
+            </div>
+        </header>
+
+        <!-- الكرت البطل (نفس فكرة كرت فايبرانت بالصورة) -->
+        <div class="hero-card">
+            <div class="hero-card-badge">🔥 تحدي اليوم</div>
+            
+            <!-- هنا يتم وضع صورة الشخصية الـ 3D مستقبلاً لتخرج عن حدود الكرت -->
+            <div class="hero-character-placeholder">
+                [مساحة لشخصية 3D<br>بدون خلفية PNG]
+            </div>
+
+            <div>
+                <h2 style="font-size: 26px; font-weight: 900; margin-bottom: 5px;">مباراة مصيرية</h2>
+                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">الفريق (أ) يواجه الفريق (ب) الآن.</p>
+                
+                <div style="background: var(--text-pure); color: var(--bg-deep); border-radius: 20px; padding: 15px; text-align: center; font-weight: 800; cursor: pointer; font-size: 16px;">
+                    بدء اللعب <i class="ph-bold ph-arrow-left" style="vertical-align: middle; margin-right: 5px;"></i>
+                </div>
+            </div>
         </div>
+
+        <!-- كروت قائمة بستايل كبسولات (نفس فكرة فيفا 23 بالصورة) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 20px; font-weight: 800;">السجل والإحصائيات</h3>
+            <i class="ph ph-arrow-left" style="font-size: 22px; color: var(--text-dim);"></i>
+        </div>
+
+        <div class="pill-card">
+            <div class="pill-card-img">
+                <i class="ph ph-target"></i>
+            </div>
+            <div class="pill-card-info">
+                <div class="pill-card-title">نقاط الذكاء</div>
+                <div class="pill-card-desc">أنت تتفوق على 85% من اللاعبين</div>
+            </div>
+            <div class="pill-action-btn">
+                <i class="ph-fill ph-play"></i>
+            </div>
+        </div>
+
+        <div class="pill-card">
+            <div class="pill-card-img">
+                <i class="ph ph-users"></i>
+            </div>
+            <div class="pill-card-info">
+                <div class="pill-card-title">الفرق الحالية</div>
+                <div class="pill-card-desc">فريق (أ) متصدر الجولة</div>
+            </div>
+            <div class="pill-action-btn">
+                <i class="ph-fill ph-caret-left"></i>
+            </div>
+        </div>
+
     </div>
+
+    <!-- شريط التصفح الكبسولة العائم (Floating Pill Bottom Nav) -->
+    <nav class="floating-nav">
+        <a href="#" class="nav-icon active"><i class="ph-fill ph-house"></i></a>
+        <a href="#" class="nav-icon"><i class="ph-bold ph-game-controller"></i></a>
+        <a href="#" class="nav-icon"><i class="ph-bold ph-chart-pie-slice"></i></a>
+        <a href="#" class="nav-icon"><i class="ph-bold ph-user"></i></a>
+    </nav>
 
 </body>
 </html>
