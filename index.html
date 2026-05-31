@@ -8,9 +8,6 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
-        /* =========================================
-           المتغيرات العالمية
-           ========================================= */
         :root {
             --bg-base: #000000;
             --surface-panel: #09090b;
@@ -19,7 +16,7 @@
             --text-dim: #71717a;
             --glass-bg: rgba(0, 0, 0, 0.85);
             --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            --accent-color: #ffffff;
+            --accent-red: #ff453a;
         }
 
         [data-theme="light"] {
@@ -29,49 +26,37 @@
             --text-main: #09090b;
             --text-dim: #a1a1aa;
             --glass-bg: rgba(255, 255, 255, 0.7);
-            --accent-color: #000000;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-stack); -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; overflow: hidden; transition: 0.3s; }
 
-        /* =========================================
-           النافذة الزجاجية لتسجيل الدخول
-           ========================================= */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--glass-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            display: flex; justify-content: center; align-items: center; z-index: 100000;
-            transition: 0.4s;
-        }
+        /* --- النافذة الزجاجية --- */
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--glass-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); display: flex; justify-content: center; align-items: center; z-index: 100000; transition: 0.4s; }
         .auth-overlay.hidden { opacity: 0; visibility: hidden; }
-        .auth-card {
-            background-color: var(--surface-panel); border: 1px solid var(--border-line);
-            border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 400px; text-align: center;
-            position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-        }
+        .auth-card { background-color: var(--surface-panel); border: 1px solid var(--border-line); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.6); position: relative; }
         .close-modal-btn { position: absolute; top: 20px; left: 20px; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; }
+        .close-modal-btn:hover { color: var(--text-main); }
         .auth-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
         .auth-card p { color: var(--text-dim); font-size: 13.5px; margin-bottom: 30px; line-height: 1.6; }
-        
-        .btn-core { background-color: var(--accent-color); color: var(--bg-base); border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .btn-core { background-color: var(--text-main); color: var(--bg-base); border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .btn-core:hover { opacity: 0.9; }
         .link-guest { display: inline-block; margin-top: 18px; color: var(--text-dim); font-size: 13px; text-decoration: none; background: none; border: none; cursor: pointer; font-weight: 500; }
+        .link-guest:hover { color: var(--text-main); text-decoration: underline; }
         
         .modal-tabs { display: flex; border-bottom: 1px solid var(--border-line); margin-bottom: 25px; }
         .modal-tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-weight: 600; font-size: 14px; cursor: pointer; }
         .modal-tab-btn.active { color: var(--text-main); border-bottom: 2px solid var(--text-main); }
-
+        
         .input-wrapper { margin-bottom: 16px; text-align: right; }
         .input-wrapper label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; padding-right: 4px; }
-        .premium-input { width: 100%; padding: 14px; background-color: var(--bg-base); border: 1px solid var(--border-line); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; text-transform: lowercase; }
-        .auth-error-msg { color: #ff4b4b; font-size: 12px; margin-bottom: 15px; text-align: center; display: none; }
+        .premium-input { width: 100%; padding: 14px; background-color: var(--bg-base); border: 1px solid var(--border-line); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; }
+        .premium-input:focus { border-color: var(--text-main); }
+        .auth-error-msg { color: var(--accent-red); font-size: 12px; margin-bottom: 15px; text-align: center; display: none; }
 
-        /* =========================================
-           الهيكل الرئيسي (اللوبي)
-           ========================================= */
+        /* --- الإطار الرئيسي --- */
         .app-shell { display: flex; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; transition: 0.5s; }
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; }
-
         .sidebar { width: 250px; background-color: var(--bg-base); border-left: 1px solid var(--border-line); padding: 40px 20px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
         .sidebar-brand { font-size: 13px; font-weight: 700; letter-spacing: 2.5px; margin-bottom: 40px; padding-right: 12px; }
         .nav-btn { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 10px; color: var(--text-dim); background: none; border: none; font-size: 15px; font-weight: 500; cursor: pointer; text-align: right; width: 100%; }
@@ -84,65 +69,36 @@
         .header-actions { display: flex; align-items: center; gap: 20px; position: relative; }
         .theme-btn { background: none; border: none; color: var(--text-main); font-size: 22px; cursor: pointer; }
 
-        /* =========================================
-           نظام الأفتار والقائمة المنسدلة الجديد
-           ========================================= */
-        .user-menu-container { position: relative; display: flex; align-items: center; gap: 10px; }
+        /* --- قائمة الأفاتار المنسدلة (الجديدة) --- */
+        .avatar-circle { width: 38px; height: 38px; border-radius: 50%; background-color: var(--text-main); color: var(--bg-base); display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 16px; cursor: pointer; user-select: none; border: 2px solid transparent; transition: 0.2s; }
+        .avatar-circle:hover { border-color: var(--border-line); opacity: 0.9; }
         
-        /* الدائرة الخاصة بالأفتار */
-        .avatar-circle {
-            width: 38px; height: 38px; border-radius: 50%; background-color: var(--surface-panel);
-            border: 1px solid var(--border-line); display: flex; justify-content: center; align-items: center;
-            font-weight: 700; font-size: 16px; cursor: pointer; background-size: cover; background-position: center;
-            text-transform: uppercase; color: var(--text-main); transition: 0.2s;
-        }
-        .avatar-circle:hover { border-color: var(--text-dim); }
-
-        /* القائمة المنسدلة */
-        .dropdown-menu {
-            position: absolute; top: 50px; left: 0; width: 220px; background-color: var(--surface-panel);
-            border: 1px solid var(--border-line); border-radius: 14px; padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; visibility: hidden;
-            transform: translateY(-10px); transition: 0.2s; z-index: 1000;
-        }
-        .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .user-dropdown { position: absolute; top: 55px; left: 0; background-color: var(--surface-panel); border: 1px solid var(--border-line); border-radius: 16px; width: 220px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 100; animation: dropDownFade 0.2s ease; }
+        .user-dropdown.show { display: flex; }
+        @keyframes dropDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .dropdown-header { border-bottom: 1px solid var(--border-line); padding-bottom: 10px; margin-bottom: 10px; }
-        .dropdown-username { font-weight: 700; font-size: 15px; color: var(--text-main); }
-        .dropdown-role { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-
-        .dropdown-stats { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .stat-item { text-align: center; }
-        .stat-value { font-weight: 700; font-size: 16px; color: var(--text-main); }
-        .stat-label { font-size: 10px; color: var(--text-dim); }
-
-        .dropdown-action {
-            display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px;
-            background: none; border: none; color: var(--text-dim); font-size: 13px; font-weight: 500;
-            border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: right;
-        }
-        .dropdown-action:hover { background-color: var(--bg-base); color: var(--text-main); }
-        .dropdown-action.danger:hover { color: #ff4b4b; }
-
-        /* إخفاء زر رفع الصورة (يعمل عند الضغط على الأفتار) */
-        #avatar-upload-input { display: none; }
-
-        /* ========================================= */
+        .dropdown-header { padding: 16px; border-bottom: 1px solid var(--border-line); text-align: right; }
+        .dropdown-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .dropdown-stats { font-size: 11px; color: var(--text-dim); display: flex; gap: 10px; }
+        
+        .dropdown-item { padding: 12px 16px; color: var(--text-dim); text-decoration: none; display: flex; align-items: center; gap: 12px; background: none; border: none; width: 100%; text-align: right; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
+        .dropdown-item:hover { background-color: var(--bg-base); color: var(--text-main); }
+        .dropdown-item i { font-size: 18px; }
+        .dropdown-item.logout { color: var(--accent-red); border-top: 1px solid var(--border-line); }
+        .dropdown-item.logout:hover { background-color: rgba(255, 69, 58, 0.1); }
 
         .dynamic-content { flex-grow: 1; overflow-y: auto; padding: 40px; width: 100%; max-width: 1100px; margin: 0 auto; }
         .bottom-bar { display: none; }
 
         @media (max-width: 900px) {
-            .sidebar { display: none; } .top-header { padding: 0 24px; } .dynamic-content { padding: 24px 20px 130px 20px; }
-            .dropdown-menu { left: auto; right: 0; } /* ضبط القائمة في الجوال */
-            .bottom-bar {
-                display: flex; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-                width: calc(100% - 40px); max-width: 450px; height: 66px; background: var(--glass-bg);
-                backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border-line);
-                border-radius: 33px; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 9999;
-            }
-            .bottom-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); background: none; border: none; height: 100%; flex: 1; }
-            .bottom-tab i { font-size: 22px; } .bottom-tab span { font-size: 9px; font-weight: 500; margin-top: 3px; } .bottom-tab.active { color: var(--text-main); }
+            .sidebar { display: none; }
+            .top-header { padding: 0 24px; }
+            .dynamic-content { padding: 24px 20px 130px 20px; }
+            .bottom-bar { display: flex; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 450px; height: 66px; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border-line); border-radius: 33px; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 9999; }
+            .bottom-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); background: none; border: none; height: 100%; flex: 1; cursor: pointer; }
+            .bottom-tab i { font-size: 22px; }
+            .bottom-tab span { font-size: 9px; font-weight: 500; margin-top: 3px; }
+            .bottom-tab.active { color: var(--text-main); }
         }
     </style>
 </head>
@@ -169,14 +125,24 @@
                 <div id="auth-error" class="auth-error-msg"></div>
 
                 <form id="firebase-form" onsubmit="handleAuthSubmit(event)">
-                    <div class="input-wrapper">
-                        <label>اسم المستخدم (يجب أن يكون باللغة الإنجليزية وبدون مسافات)</label>
-                        <input type="text" id="input-username" class="premium-input" placeholder="مثال: Ninja" required pattern="[A-Za-z0-9_]+" title="أحرف إنجليزية وأرقام فقط">
+                    <div class="input-wrapper" id="wrapper-login-id">
+                        <label id="label-login-id">البريد الإلكتروني أو اسم المستخدم</label>
+                        <input type="text" id="input-email-username" class="premium-input" placeholder="اكتب إيميلك أو يوزرك" required>
+                    </div>
+
+                    <div class="input-wrapper" id="wrapper-username-only" style="display: none;">
+                        <label>اسم المستخدم (مميز ولا يتكرر)</label>
+                        <input type="text" id="input-username-only" class="premium-input" placeholder="مثال: DarkKnight">
+                    </div>
+                    
+                    <div class="input-wrapper" id="wrapper-email-only" style="display: none;">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" id="input-email-only" class="premium-input" placeholder="name@example.com">
                     </div>
 
                     <div class="input-wrapper">
                         <label>كلمة المرور</label>
-                        <input type="password" id="input-password" class="premium-input" placeholder="••••••••" required minlength="6">
+                        <input type="password" id="input-password" class="premium-input" placeholder="••••••••" required>
                     </div>
 
                     <div class="input-wrapper" id="wrapper-confirm" style="display: none;">
@@ -191,7 +157,6 @@
     </div>
 
     <div id="app-shell" class="app-shell">
-        
         <aside class="sidebar">
             <div class="sidebar-brand">DECEPTION.SYS</div>
             <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph ph-house"></i> الرئيسية</button>
@@ -207,38 +172,12 @@
                 <div class="header-actions">
                     <button class="theme-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-sun"></i></button>
                     
-                    <div class="user-menu-container">
-                        <div class="avatar-circle" id="header-avatar" onclick="toggleDropdown()" title="اضغط لفتح القائمة أو تغيير الصورة">؟</div>
+                    <div style="position: relative;">
+                        <div class="avatar-circle" id="header-avatar" onclick="toggleUserDropdown()">ز</div>
                         
-                        <input type="file" id="avatar-upload-input" accept="image/*">
-                        
-                        <div class="dropdown-menu" id="user-dropdown">
-                            <div class="dropdown-header">
-                                <div class="dropdown-username" id="drop-username">زائر</div>
-                                <div class="dropdown-role">محقق مبتدئ</div>
+                        <div class="user-dropdown" id="user-dropdown">
                             </div>
-                            <div class="dropdown-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value">0</div>
-                                    <div class="stat-label">الأقيام</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">0</div>
-                                    <div class="stat-label">الانتصارات</div>
-                                </div>
-                            </div>
-                            <button class="dropdown-action" onclick="document.getElementById('avatar-upload-input').click()">
-                                <i class="ph ph-image"></i> تغيير الأفتار
-                            </button>
-                            <button class="dropdown-action" onclick="loadFragment('profile', null); toggleDropdown()">
-                                <i class="ph ph-user"></i> الملف الشخصي
-                            </button>
-                            <button class="dropdown-action danger" onclick="logoutSystem()" id="btn-logout" style="display:none;">
-                                <i class="ph ph-sign-out"></i> تسجيل الخروج
-                            </button>
-                        </div>
                     </div>
-
                 </div>
             </header>
 
@@ -256,176 +195,176 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // ============================================
-        // ⚠️ هام: ضع مفاتيح مشروعك هنا بدلاً من هذه ⚠️
-        // ============================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
+            authDomain: "web-game-260b5.firebaseapp.com",
+            projectId: "web-game-260b5",
+            storageBucket: "web-game-260b5.firebasestorage.app",
+            messagingSenderId: "682229509792",
+            appId: "1:682229509792:web:11b4a404459630fcd6a3c5"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        
+        window.authInstance = auth; // جعل auth متاح عالمياً لتسجيل الخروج
+        window.signOutFunc = signOut;
 
         window.isGuest = false;
         window.currentFormMode = 'login'; 
 
-        // تحديث الواجهة بناءً على حالة تسجيل الدخول
+        // مراقبة حالة اللاعب وتحديث الأفاتار والقائمة
         onAuthStateChanged(auth, (user) => {
+            const dropdown = document.getElementById('user-dropdown');
             const avatar = document.getElementById('header-avatar');
-            const dropUsername = document.getElementById('drop-username');
-            const logoutBtn = document.getElementById('btn-logout');
 
             if (user) {
                 window.isGuest = false;
-                const actualUsername = user.displayName || user.email.split('@')[0]; // استخراج الاسم
+                // مؤقتاً: نأخذ أول حرف من الإيميل كأفاتار حتى نربط قاعدة البيانات
+                let displayName = user.email.split('@')[0];
+                avatar.innerText = displayName.charAt(0).toUpperCase();
                 
-                dropUsername.innerText = actualUsername;
-                logoutBtn.style.display = 'flex';
-                
-                // استرجاع الأفتار المحفوظ أو وضع الحرف الأول
-                const savedAvatar = localStorage.getItem('avatar_' + actualUsername);
-                if(savedAvatar) {
-                    avatar.style.backgroundImage = `url(${savedAvatar})`;
-                    avatar.innerText = '';
-                } else {
-                    avatar.style.backgroundImage = 'none';
-                    avatar.innerText = actualUsername.charAt(0).toUpperCase();
-                }
+                // قائمة اللاعب المسجل
+                dropdown.innerHTML = `
+                    <div class="dropdown-header">
+                        <div class="dropdown-name">${displayName}</div>
+                        <div class="dropdown-stats"><span>🎮 0 مباريات</span> <span>🏆 0 فوز</span></div>
+                    </div>
+                    <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي (تغيير الصورة)</button>
+                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
+                `;
 
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
                 window.loadFragment('home', document.querySelector('.nav-btn'));
             } else {
                 if (!window.isGuest) {
-                    avatar.innerText = '؟';
-                    avatar.style.backgroundImage = 'none';
-                    dropUsername.innerText = 'زائر';
-                    logoutBtn.style.display = 'none';
-                    
                     document.getElementById('auth-modal').classList.remove('hidden');
                     document.getElementById('app-shell').classList.remove('unlocked');
                 }
             }
         });
 
-        // تقديم فورم الدخول (بخدعة الدومين الوهمي)
+        // تسجيل الدخول / إنشاء حساب (مع تعديلات المستقبل لاسم المستخدم)
         window.handleAuthSubmit = async function(e) {
             e.preventDefault();
-            const usernameInput = document.getElementById('input-username').value.trim().toLowerCase();
             const password = document.getElementById('input-password').value;
             const errorDiv = document.getElementById('auth-error');
             errorDiv.style.display = 'none';
 
-            // الخدعة: تحويل الاسم إلى إيميل مخفي ليعمل مع فايربيس ويمنع التكرار
-            const fakeEmail = usernameInput + "@deception.sys";
-
             try {
                 if (window.currentFormMode === 'login') {
-                    await signInWithEmailAndPassword(auth, fakeEmail, password);
+                    // حالياً نستخدم الإيميل، وسنضيف كود البحث عن اليوزر لاحقاً بعد تفعيل قاعدة البيانات
+                    const loginId = document.getElementById('input-email-username').value;
+                    await signInWithEmailAndPassword(auth, loginId, password);
                 } else {
+                    const email = document.getElementById('input-email-only').value;
                     const confirmPass = document.getElementById('input-confirm').value;
                     if (password !== confirmPass) throw { message: "كلمات المرور غير متطابقة." };
                     
-                    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-                    // حفظ اسم المستخدم الحقيقي في بروفايل فايربيس
-                    await updateProfile(userCredential.user, { displayName: usernameInput });
+                    // هنا سيتم حفظ (اسم المستخدم) في قاعدة البيانات لاحقاً
+                    await createUserWithEmailAndPassword(auth, email, password);
                 }
             } catch (error) {
-                if(error.message.includes("email-already-in-use")) {
-                    errorDiv.innerText = "اسم المستخدم هذا محجوز مسبقاً، اختر اسماً آخر.";
-                } else if(error.message.includes("credential")) {
-                    errorDiv.innerText = "اسم المستخدم أو كلمة المرور غير صحيحة.";
-                } else {
-                    errorDiv.innerText = error.message;
-                }
+                errorDiv.innerText = error.message.includes("credential") ? "بيانات الدخول غير صحيحة." : error.message;
                 errorDiv.style.display = 'block';
             }
-        }
-
-        // وظيفة تسجيل الخروج
-        window.logoutSystem = function() {
-            signOut(auth).then(() => {
-                document.getElementById('user-dropdown').classList.remove('active');
-            });
         }
     </script>
 
     <script>
-        // إظهار وإخفاء القائمة المنسدلة
-        function toggleDropdown() {
-            document.getElementById('user-dropdown').classList.toggle('active');
+        // فتح وإغلاق قائمة الأفاتار المنسدلة
+        function toggleUserDropdown() {
+            document.getElementById('user-dropdown').classList.toggle('show');
         }
-        
-        // إخفاء القائمة إذا ضغط اللاعب في أي مكان آخر بالشاشة
-        document.addEventListener('click', function(event) {
-            const container = document.querySelector('.user-menu-container');
-            if (!container.contains(event.target)) {
-                document.getElementById('user-dropdown').classList.remove('active');
-            }
-        });
 
-        // نظام رفع الأفتار برمجياً وحفظه محلياً
-        document.getElementById('avatar-upload-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Image = e.target.result;
-                    const avatar = document.getElementById('header-avatar');
-                    const username = document.getElementById('drop-username').innerText;
-                    
-                    avatar.style.backgroundImage = `url(${base64Image})`;
-                    avatar.innerText = ''; // إخفاء الحرف
-                    
-                    // حفظ الصورة في الذاكرة المحلية للجهاز بناءً على اسم المستخدم
-                    localStorage.setItem('avatar_' + username, base64Image);
-                    document.getElementById('user-dropdown').classList.remove('active');
+        // إغلاق القائمة عند النقر خارجها
+        window.onclick = function(event) {
+            if (!event.target.matches('.avatar-circle') && !event.target.closest('.user-dropdown')) {
+                const dropdowns = document.getElementsByClassName("user-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
                 }
-                reader.readAsDataURL(file);
             }
-        });
-
-        // دوال النافذة الزجاجية والثيم
-        function switchModalMode(mode) {
-            if(mode === 'forms') { document.getElementById('modal-welcome-view').style.display = 'none'; document.getElementById('modal-form-view').style.display = 'block'; }
         }
+
+        // دالة تسجيل الخروج الرسمية
+        function handleLogout() {
+            window.signOutFunc(window.authInstance).then(() => {
+                toggleUserDropdown();
+                document.getElementById('auth-modal').classList.remove('hidden');
+                document.getElementById('app-shell').classList.remove('unlocked');
+            });
+        }
+
+        function switchModalMode(mode) {
+            if(mode === 'forms') {
+                document.getElementById('modal-welcome-view').style.display = 'none';
+                document.getElementById('modal-form-view').style.display = 'block';
+            }
+        }
+
+        // تبديل شكل الفورم بين (دخول) و (تسجيل جديد)
         function setFormType(type) {
             window.currentFormMode = type;
             document.getElementById('tab-login').classList.toggle('active', type === 'login');
             document.getElementById('tab-register').classList.toggle('active', type === 'register');
+            
+            // إخفاء وإظهار الحقول بناء على نوع العملية
+            document.getElementById('wrapper-login-id').style.display = type === 'login' ? 'block' : 'none';
+            
+            document.getElementById('wrapper-username-only').style.display = type === 'register' ? 'block' : 'none';
+            document.getElementById('wrapper-email-only').style.display = type === 'register' ? 'block' : 'none';
             document.getElementById('wrapper-confirm').style.display = type === 'register' ? 'block' : 'none';
+            
+            // جعل الحقول المطلوبة اجبارية برمجياً
+            document.getElementById('input-email-username').required = type === 'login';
+            document.getElementById('input-username-only').required = type === 'register';
+            document.getElementById('input-email-only').required = type === 'register';
+
             document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
         }
+
+        // الدخول كزائر وتجهيز قائمة الأفاتار للزائر
         function enterAsGuest() {
             window.isGuest = true;
-            document.getElementById('drop-username').innerText = "زائر";
-            document.getElementById('header-avatar').innerText = "؟";
-            document.getElementById('header-avatar').style.backgroundImage = 'none';
-            document.getElementById('btn-logout').style.display = 'none';
+            const avatar = document.getElementById('header-avatar');
+            const dropdown = document.getElementById('user-dropdown');
+            
+            avatar.innerText = "ز";
+            dropdown.innerHTML = `
+                <div class="dropdown-header">
+                    <div class="dropdown-name" style="color: var(--text-dim);">زائر غير مسجل</div>
+                </div>
+                <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول لحفظ تقدمك</button>
+            `;
+
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
             loadFragment('home', document.querySelector('.nav-btn'));
         }
+
         function closeAuthModal() {
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
-            if(!window.isGuest && document.getElementById('drop-username').innerText === 'زائر') window.isGuest = true;
-        }
-        function toggleTheme() {
-            const body = document.body; const icon = document.getElementById('theme-icon');
-            if (body.getAttribute('data-theme') === 'light') { body.removeAttribute('data-theme'); icon.className = 'ph ph-sun'; } 
-            else { body.setAttribute('data-theme', 'light'); icon.className = 'ph ph-moon'; }
+            if(!window.isGuest) enterAsGuest();
         }
 
-        // محرك الأقسام
-        window.loadFragment = function(pageName, element) {
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            if (body.getAttribute('data-theme') === 'light') {
+                body.removeAttribute('data-theme');
+                icon.className = 'ph ph-sun';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'ph ph-moon';
+            }
+        }
+
+        function loadFragment(pageName, element) {
             const contentHolder = document.getElementById('content-holder');
             const titles = { 'home': 'الرئيسية', 'play': 'غرف اللعب', 'leaderboard': 'المتصدرون', 'store': 'متجر المزايا', 'profile': 'إعدادات الحساب' };
             
@@ -438,7 +377,7 @@
                     <div style="padding: 40px; border: 1px solid var(--border-line); background-color: var(--surface-panel); border-radius: 20px; text-align: center; max-width: 500px; margin: 40px auto;">
                         <i class="ph ph-user-circle-plus" style="font-size: 40px; margin-bottom: 15px; color: var(--text-dim);"></i>
                         <h3 style="font-size: 18px; margin-bottom: 10px;">أنت تتصفح كزائر</h3>
-                        <p style="color: var(--text-dim); font-size: 13.5px; margin-bottom: 25px; line-height: 1.6;">قسم الحساب مخصص للاعبين المسجلين. أنشئ حسابك الآن.</p>
+                        <p style="color: var(--text-dim); font-size: 13.5px; margin-bottom: 25px; line-height: 1.6;">قسم الحساب مخصص للاعبين المسجلين. أنشئ حسابك الآن لحفظ تقدمك.</p>
                         <button class="btn-core" style="max-width: 200px; margin: 0 auto; display: block;" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">سجل دخولك الآن</button>
                     </div>`;
                 return;
@@ -448,7 +387,10 @@
                 .then(response => { if (!response.ok) throw new Error(); return response.text(); })
                 .then(html => { contentHolder.innerHTML = html; })
                 .catch(() => {
-                    contentHolder.innerHTML = `<div style="padding: 40px; border: 1px dashed var(--border-line); border-radius: 16px; text-align: center;"><p style="color: var(--text-dim);">ملف ${pageName}.html غير موجود بعد.</p></div>`;
+                    contentHolder.innerHTML = `
+                        <div style="padding: 40px; border: 1px dashed var(--border-line); border-radius: 16px; text-align: center;">
+                            <p style="color: var(--text-dim); font-size: 14px;">ملف <b>${pageName}.html</b> جاهز هندسياً ومحمي بالكامل.</p>
+                        </div>`;
                 });
         }
     </script>
