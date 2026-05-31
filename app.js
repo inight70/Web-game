@@ -18,7 +18,7 @@ const db = getFirestore(app);
 window.isGuest = false;
 window.currentFormMode = 'login'; 
 
-// مراقبة حالة اللاعب وتحديث الواجهة
+// مراقبة حالة اللاعب وتحديث الأفاتار والإحصائيات من الـ Firestore
 onAuthStateChanged(auth, async (user) => {
     const dropdown = document.getElementById('user-dropdown');
     const avatar = document.getElementById('header-avatar');
@@ -48,22 +48,22 @@ onAuthStateChanged(auth, async (user) => {
                     <div class="stat-item"><span class="stat-label">الانتصارات</span><span class="stat-value">${wins}</span></div>
                 </div>
             </div>
-            <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي</button>
+            <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.sidebar-link')[4]); toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي</button>
             <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
         `;
 
         document.getElementById('auth-modal').classList.add('hidden');
-        document.getElementById('app-shell').classList.add('unlocked');
-        window.loadFragment('home', document.querySelector('.nav-btn'));
+        document.getElementById('app-shell').className = "phase-container unlocked";
+        window.loadFragment('home', document.querySelector('.sidebar-link'));
     } else {
         if (!window.isGuest) {
             document.getElementById('auth-modal').classList.remove('hidden');
-            document.getElementById('app-shell').classList.remove('unlocked');
+            document.getElementById('app-shell').className = "phase-container blur-lock";
         }
     }
 });
 
-// نظام الدخول والتسجيل
+// معالجة فورمة تسجيل الدخول وإنشاء حساب يوزر مميز
 window.handleAuthSubmit = async function(e) {
     e.preventDefault();
     const password = document.getElementById('input-password').value;
@@ -84,9 +84,7 @@ window.handleAuthSubmit = async function(e) {
                 const q = query(usersRef, where("username", "==", loginId));
                 const querySnapshot = await getDocs(q);
                 
-                if (querySnapshot.empty) {
-                    throw { message: "اسم المستخدم غير موجود." };
-                }
+                if (querySnapshot.empty) throw { message: "اسم المستخدم غير موجود." };
                 loginEmail = querySnapshot.docs[0].data().email;
             }
             await signInWithEmailAndPassword(auth, loginEmail, password);
@@ -102,9 +100,7 @@ window.handleAuthSubmit = async function(e) {
             const q = query(usersRef, where("username", "==", username));
             const querySnapshot = await getDocs(q);
             
-            if (!querySnapshot.empty) {
-                throw { message: "اسم المستخدم محجوز مسبقاً، اختر اسماً آخر." };
-            }
+            if (!querySnapshot.empty) throw { message: "اسم المستخدم محجوز مسبقاً." };
 
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
@@ -119,11 +115,8 @@ window.handleAuthSubmit = async function(e) {
         }
     } catch (error) {
         let errorMsg = error.message;
-        if (errorMsg.includes("credential") || errorMsg.includes("invalid-login")) {
-            errorMsg = "بيانات الدخول غير صحيحة.";
-        } else if (errorMsg.includes("email-already-in-use")) {
-            errorMsg = "البريد الإلكتروني مستخدم مسبقاً.";
-        }
+        if (errorMsg.includes("credential") || errorMsg.includes("invalid-login")) errorMsg = "بيانات الدخول غير صحيحة.";
+        else if (errorMsg.includes("email-already-in-use")) errorMsg = "البريد الإلكتروني مستخدم مسبقاً.";
         errorDiv.innerText = errorMsg;
         errorDiv.style.display = 'block';
     } finally {
@@ -132,7 +125,7 @@ window.handleAuthSubmit = async function(e) {
     }
 }
 
-// الدوال العامة للواجهة
+// التحكم بالقائمة المنسدلة والزائر والثيمات
 window.toggleUserDropdown = function() { document.getElementById('user-dropdown').classList.toggle('show'); }
 
 window.onclick = function(event) {
@@ -148,7 +141,7 @@ window.handleLogout = function() {
     signOut(auth).then(() => {
         window.toggleUserDropdown();
         document.getElementById('auth-modal').classList.remove('hidden');
-        document.getElementById('app-shell').classList.remove('unlocked');
+        document.getElementById('app-shell').className = "phase-container blur-lock";
     });
 }
 
@@ -172,8 +165,6 @@ window.setFormType = function(type) {
     document.getElementById('input-email-username').required = type === 'login';
     document.getElementById('input-username-only').required = type === 'register';
     document.getElementById('input-email-only').required = type === 'register';
-
-    document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
     document.getElementById('auth-error').style.display = 'none';
 }
 
@@ -185,19 +176,19 @@ window.enterAsGuest = function() {
     avatar.innerText = "ز";
     dropdown.innerHTML = `
         <div class="dropdown-header">
-            <div class="dropdown-name" style="color: var(--text-dim);">زائر غير مسجل</div>
+            <div class="dropdown-name" style="color: var(--text-muted-gray);">زائر غير مسجل</div>
         </div>
         <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول لحفظ تقدمك</button>
     `;
 
     document.getElementById('auth-modal').classList.add('hidden');
-    document.getElementById('app-shell').classList.add('unlocked');
-    window.loadFragment('home', document.querySelector('.nav-btn'));
+    document.getElementById('app-shell').className = "phase-container unlocked";
+    window.loadFragment('home', document.querySelector('.sidebar-link'));
 }
 
 window.closeAuthModal = function() {
     document.getElementById('auth-modal').classList.add('hidden');
-    document.getElementById('app-shell').classList.add('unlocked');
+    document.getElementById('app-shell').className = "phase-container unlocked";
     if(!window.isGuest) window.enterAsGuest();
 }
 
@@ -218,16 +209,16 @@ window.loadFragment = function(pageName, element) {
     const titles = { 'home': 'الرئيسية', 'play': 'غرف اللعب', 'leaderboard': 'المتصدرون', 'store': 'متجر المزايا', 'profile': 'إعدادات الحساب' };
     
     document.getElementById('page-title').innerText = titles[pageName];
-    document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link, .mobile-nav-link').forEach(btn => btn.classList.remove('active'));
     if(element) element.classList.add('active');
 
     if (pageName === 'profile' && window.isGuest) {
         contentHolder.innerHTML = `
-            <div style="padding: 40px; border: 1px solid var(--border-line); background-color: var(--surface-panel); border-radius: 20px; text-align: center; max-width: 500px; margin: 40px auto;">
-                <i class="ph ph-user-circle-plus" style="font-size: 40px; margin-bottom: 15px; color: var(--text-dim);"></i>
+            <div style="padding: 40px; border: 1px solid var(--border-refined); background-color: var(--surface-card); border-radius: 20px; text-align: center; max-width: 500px; margin: 40px auto;">
+                <i class="ph ph-user-circle-plus" style="font-size: 40px; margin-bottom: 15px; color: var(--text-muted-gray);"></i>
                 <h3 style="font-size: 18px; margin-bottom: 10px;">أنت تتصفح كزائر</h3>
-                <p style="color: var(--text-dim); font-size: 13.5px; margin-bottom: 25px; line-height: 1.6;">قسم الحساب مخصص للاعبين المسجلين. أنشئ حسابك الآن لحفظ تقدمك.</p>
-                <button class="btn-core" style="max-width: 200px; margin: 0 auto; display: block;" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">سجل دخولك الآن</button>
+                <p style="color: var(--text-muted-gray); font-size: 13.5px; margin-bottom: 25px; line-height: 1.6;">قسم الحساب مخصص للاعبين المسجلين. أنشئ حسابك الآن لحفظ تقدمك.</p>
+                <button class="btn-primary" style="max-width: 200px; margin: 0 auto; display: block;" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">سجل دخولك الآن</button>
             </div>`;
         return;
     }
@@ -237,8 +228,8 @@ window.loadFragment = function(pageName, element) {
         .then(html => { contentHolder.innerHTML = html; })
         .catch(() => {
             contentHolder.innerHTML = `
-                <div style="padding: 40px; border: 1px dashed var(--border-line); border-radius: 16px; text-align: center;">
-                    <p style="color: var(--text-dim); font-size: 14px;">ملف <b>${pageName}.html</b> غير موجود.</p>
+                <div style="padding: 40px; border: 1px dashed var(--border-refined); border-radius: 16px; text-align: center;">
+                    <p style="color: var(--text-muted-gray); font-size: 14px;">ملف <b>${pageName}.html</b> غير موجود.</p>
                 </div>`;
         });
 }
