@@ -29,10 +29,17 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-stack); -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; overflow: hidden; transition: 0.3s; }
+        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; overflow: hidden; transition: background-color 0.4s, color 0.4s; }
 
+        /* شاشة التحميل لمنع الوميض */
+        #global-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-base); z-index: 999999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease, visibility 0.5s ease; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--border-line); border-top-color: var(--text-main); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* بوابة الدخول الزجاجية */
         .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--glass-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); display: flex; justify-content: center; align-items: center; z-index: 100000; transition: 0.4s; }
-        .auth-overlay.hidden { opacity: 0; visibility: hidden; }
+        .auth-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        
         .auth-card { background-color: var(--surface-panel); border: 1px solid var(--border-line); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.6); position: relative; }
         .close-modal-btn { position: absolute; top: 20px; left: 20px; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; }
         .close-modal-btn:hover { color: var(--text-main); }
@@ -65,8 +72,8 @@
         .header-title { font-size: 18px; font-weight: 600; }
         
         .header-actions { display: flex; align-items: center; gap: 20px; position: relative; }
-        .theme-btn { background: none; border: none; color: var(--text-main); font-size: 22px; cursor: pointer; }
-
+        .theme-btn { background: none; border: none; color: var(--text-main); font-size: 22px; cursor: pointer; transition: 0.2s; }
+        
         .avatar-circle { width: 38px; height: 38px; border-radius: 50%; background-color: var(--text-main); color: var(--bg-base); display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 16px; cursor: pointer; user-select: none; border: 2px solid transparent; transition: 0.2s; }
         .avatar-circle:hover { border-color: var(--border-line); opacity: 0.9; }
         
@@ -104,7 +111,11 @@
 </head>
 <body>
 
-    <div id="auth-modal" class="auth-overlay">
+    <div id="global-loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
             
@@ -124,30 +135,38 @@
                 
                 <div id="auth-error" class="auth-error-msg"></div>
 
-                <form id="firebase-form" onsubmit="handleAuthSubmit(event)">
-                    <div class="input-wrapper" id="wrapper-login-id">
-                        <label id="label-login-id">البريد الإلكتروني أو اسم المستخدم</label>
-                        <input type="text" id="input-email-username" class="premium-input" placeholder="أدخل البيانات" required>
-                    </div>
-
-                    <div class="input-wrapper" id="wrapper-username-only" style="display: none;">
-                        <label>اسم المستخدم (مميز ولا يتكرر)</label>
-                        <input type="text" id="input-username-only" class="premium-input" placeholder="مثال: DarkKnight">
-                    </div>
+                <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
                     
-                    <div class="input-wrapper" id="wrapper-email-only" style="display: none;">
-                        <label>البريد الإلكتروني</label>
-                        <input type="email" id="input-email-only" class="premium-input" placeholder="name@example.com">
+                    <!-- حقول تسجيل الدخول معزولة -->
+                    <div id="login-fields">
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني أو اسم المستخدم</label>
+                            <input type="text" id="login-id" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="login-password" class="premium-input" placeholder="••••••••" autocomplete="new-password" required>
+                        </div>
                     </div>
 
-                    <div class="input-wrapper">
-                        <label>كلمة المرور</label>
-                        <input type="password" id="input-password" class="premium-input" placeholder="••••••••" required>
-                    </div>
-
-                    <div class="input-wrapper" id="wrapper-confirm" style="display: none;">
-                        <label>تأكيد كلمة المرور</label>
-                        <input type="password" id="input-confirm" class="premium-input" placeholder="••••••••">
+                    <!-- حقول الحساب الجديد معزولة -->
+                    <div id="register-fields" style="display: none;">
+                        <div class="input-wrapper">
+                            <label>اسم المستخدم (مميز ولا يتكرر)</label>
+                            <input type="text" id="reg-username" class="premium-input" placeholder="مثال: DarkKnight" autocomplete="off">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="reg-email" class="premium-input" placeholder="name@example.com" autocomplete="off">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="reg-password" class="premium-input" placeholder="••••••••" autocomplete="new-password">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>تأكيد كلمة المرور</label>
+                            <input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••" autocomplete="new-password">
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
@@ -156,6 +175,7 @@
         </div>
     </div>
 
+    <!-- واجهة اللعبة الأساسية -->
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
             <div class="sidebar-brand">DECEPTION.SYS</div>
@@ -192,7 +212,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
@@ -208,9 +228,31 @@
         const db = getFirestore(app);
         
         window.authInstance = auth; 
+        window.dbInstance = db;
+        window.updateDocFunc = updateDoc;
+        window.docFunc = doc;
         window.signOutFunc = signOut;
         window.isGuest = false;
         window.currentFormMode = 'login'; 
+
+        // دالة التفريغ الذكية التي تستدعى فقط عند الإغلاق أو تسجيل الخروج
+        window.clearAuthInputs = function() {
+            document.getElementById('login-id').value = "";
+            document.getElementById('login-password').value = "";
+            document.getElementById('reg-username').value = "";
+            document.getElementById('reg-email').value = "";
+            document.getElementById('reg-password').value = "";
+            document.getElementById('reg-confirm').value = "";
+            if(document.getElementById('auth-error')) document.getElementById('auth-error').style.display = 'none';
+        };
+
+        const hideLoader = () => {
+            const loader = document.getElementById('global-loader');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 500);
+            }
+        };
 
         onAuthStateChanged(auth, async (user) => {
             const dropdown = document.getElementById('user-dropdown');
@@ -218,12 +260,10 @@
 
             if (user) {
                 window.isGuest = false;
-                
                 let displayName = user.email.split('@')[0];
                 let matches = 0;
                 let wins = 0;
 
-                // تحديث لحل مشكلة التجميد عند قراءة الإحصائيات
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
@@ -231,13 +271,27 @@
                         displayName = data.username || displayName;
                         matches = data.matches || 0;
                         wins = data.wins || 0;
+                        
+                        // سحب الإعدادات المستقبلية بأكملها من مستودع 'settings'
+                        let userTheme = 'dark'; // الثيم الافتراضي
+                        if (data.settings && data.settings.theme) {
+                            userTheme = data.settings.theme;
+                        } else if (data.theme) {
+                            // التوافقية مع الأكواد القديمة
+                            userTheme = data.theme; 
+                        }
+
+                        if(userTheme === 'light') {
+                            document.body.setAttribute('data-theme', 'light');
+                            document.getElementById('theme-icon').className = 'ph ph-moon';
+                        } else {
+                            document.body.removeAttribute('data-theme');
+                            document.getElementById('theme-icon').className = 'ph ph-sun';
+                        }
                     }
-                } catch (err) {
-                    console.warn("تأخير في جلب البيانات من القاعدة، سيتم إدخالك على أي حال.", err);
-                }
+                } catch (err) { console.warn("مشكلة في جلب إعدادات اللاعب من السيرفر", err); }
 
                 avatar.innerText = displayName.charAt(0).toUpperCase();
-                
                 dropdown.innerHTML = `
                     <div class="dropdown-header">
                         <div class="dropdown-name">${displayName}</div>
@@ -250,20 +304,23 @@
                     <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
                 `;
 
+                window.clearAuthInputs(); // تفريغ حقول الدخول كإجراء احترازي بعد النجاح
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
                 window.loadFragment('home', document.querySelector('.nav-btn'));
+                hideLoader();
             } else {
                 if (!window.isGuest) {
+                    window.clearAuthInputs();
                     document.getElementById('auth-modal').classList.remove('hidden');
                     document.getElementById('app-shell').classList.remove('unlocked');
                 }
+                hideLoader();
             }
         });
 
         window.handleAuthSubmit = async function(e) {
             e.preventDefault();
-            const password = document.getElementById('input-password').value;
             const errorDiv = document.getElementById('auth-error');
             const submitBtn = document.getElementById('modal-submit-btn');
             
@@ -273,49 +330,61 @@
 
             try {
                 if (window.currentFormMode === 'login') {
-                    let loginId = document.getElementById('input-email-username').value.trim();
+                    let loginId = document.getElementById('login-id').value.trim();
+                    let password = document.getElementById('login-password').value;
                     let loginEmail = loginId;
 
+                    // التحقق إذا لم يكن بريد إلكتروني، فيتم البحث عنه كاسم مستخدم
                     if (!loginId.includes('@')) {
+                        // تحويل الاسم المدخل لـ حروف صغيرة للمطابقة الحساسة
+                        const loginIdLower = loginId.toLowerCase();
                         const usersRef = collection(db, "users");
-                        const q = query(usersRef, where("username", "==", loginId));
+                        
+                        const q = query(usersRef, where("username_lower", "==", loginIdLower));
                         const querySnapshot = await getDocs(q);
                         
-                        if (querySnapshot.empty) {
-                            throw { message: "اسم المستخدم غير موجود." };
-                        }
+                        if (querySnapshot.empty) throw { message: "اسم المستخدم غير موجود." };
                         loginEmail = querySnapshot.docs[0].data().email;
+                    } else {
+                        loginEmail = loginId.toLowerCase();
                     }
+                    
                     await signInWithEmailAndPassword(auth, loginEmail, password);
 
                 } else {
-                    const username = document.getElementById('input-username-only').value.trim();
-                    const email = document.getElementById('input-email-only').value.trim();
-                    const confirmPass = document.getElementById('input-confirm').value;
+                    const username = document.getElementById('reg-username').value.trim();
+                    const email = document.getElementById('reg-email').value.trim();
+                    const password = document.getElementById('reg-password').value;
+                    const confirmPass = document.getElementById('reg-confirm').value;
                     
                     if (password !== confirmPass) throw { message: "كلمات المرور غير متطابقة." };
                     
+                    // تحويل الاسم المدخل لحروف صغيرة للتحقق من التكرار
+                    const usernameLower = username.toLowerCase();
                     const usersRef = collection(db, "users");
-                    const q = query(usersRef, where("username", "==", username));
+                    
+                    const q = query(usersRef, where("username_lower", "==", usernameLower));
                     const querySnapshot = await getDocs(q);
                     
-                    if (!querySnapshot.empty) {
-                        throw { message: "اسم المستخدم محجوز مسبقاً، اختر اسماً آخر." };
-                    }
+                    if (!querySnapshot.empty) throw { message: "اسم المستخدم محجوز مسبقاً، اختر اسماً آخر." };
 
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const userCredential = await createUserWithEmailAndPassword(auth, email.toLowerCase(), password);
                     const user = userCredential.user;
 
+                    // حفظ بيانات اللاعب مع ملف 'settings' للميزات المستقبلية
                     await setDoc(doc(db, "users", user.uid), {
-                        username: username,
-                        email: email,
+                        username: username, // للاستعراض بالشكل الجمالي الذي اختاره
+                        username_lower: usernameLower, // للبحث في الكواليس
+                        email: email.toLowerCase(),
                         matches: 0,
                         wins: 0,
+                        settings: {
+                            theme: 'dark' // أول ميزة محفوظة مستقبلاً
+                        },
                         createdAt: new Date().toISOString()
                     });
                 }
             } catch (error) {
-                // تحديث لحل مشكلة رسائل الأخطاء
                 let errorMsg = error.message || "";
                 if (errorMsg.includes("credential") || errorMsg.includes("invalid-login") || errorMsg.includes("wrong-password") || errorMsg.includes("user-not-found")) {
                     errorMsg = "بيانات الدخول غير صحيحة.";
@@ -324,7 +393,6 @@
                 } else if (errorMsg.includes("network-request-failed")) {
                     errorMsg = "تأكد من اتصالك بالإنترنت.";
                 }
-                
                 errorDiv.innerText = errorMsg;
                 errorDiv.style.display = 'block';
             } finally {
@@ -347,6 +415,13 @@
         }
 
         function handleLogout() {
+            // تفريغ إجباري عند الخروج
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+            
+            // إعادة الواجهة للثيم الافتراضي عند الخروج
+            document.body.removeAttribute('data-theme');
+            document.getElementById('theme-icon').className = 'ph ph-sun';
+
             window.signOutFunc(window.authInstance).then(() => {
                 toggleUserDropdown();
                 document.getElementById('auth-modal').classList.remove('hidden');
@@ -363,20 +438,23 @@
 
         function setFormType(type) {
             window.currentFormMode = type;
+            
+            // التبديل بين التبويبات بدون مسح الحقول للحفاظ على جهد اللاعب
             document.getElementById('tab-login').classList.toggle('active', type === 'login');
             document.getElementById('tab-register').classList.toggle('active', type === 'register');
             
-            document.getElementById('wrapper-login-id').style.display = type === 'login' ? 'block' : 'none';
-            document.getElementById('wrapper-username-only').style.display = type === 'register' ? 'block' : 'none';
-            document.getElementById('wrapper-email-only').style.display = type === 'register' ? 'block' : 'none';
-            document.getElementById('wrapper-confirm').style.display = type === 'register' ? 'block' : 'none';
+            // إظهار القسم المناسب
+            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
+            document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
             
-            document.getElementById('input-email-username').required = type === 'login';
-            document.getElementById('input-username-only').required = type === 'register';
-            document.getElementById('input-email-only').required = type === 'register';
+            // تفعيل حقول القسم المعروض فقط
+            document.getElementById('login-id').required = type === 'login';
+            document.getElementById('login-password').required = type === 'login';
+            document.getElementById('reg-username').required = type === 'register';
+            document.getElementById('reg-email').required = type === 'register';
+            document.getElementById('reg-password').required = type === 'register';
 
             document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
-            document.getElementById('auth-error').style.display = 'none';
         }
 
         function enterAsGuest() {
@@ -384,6 +462,8 @@
             const avatar = document.getElementById('header-avatar');
             const dropdown = document.getElementById('user-dropdown');
             
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+
             avatar.innerText = "ز";
             dropdown.innerHTML = `
                 <div class="dropdown-header">
@@ -398,20 +478,37 @@
         }
 
         function closeAuthModal() {
+            // تفريغ إجباري عند الإغلاق بـ X
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
             if(!window.isGuest) enterAsGuest();
         }
 
-        function toggleTheme() {
+        async function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('theme-icon');
+            let newTheme = 'dark';
+
             if (body.getAttribute('data-theme') === 'light') {
                 body.removeAttribute('data-theme');
                 icon.className = 'ph ph-sun';
+                newTheme = 'dark';
             } else {
                 body.setAttribute('data-theme', 'light');
                 icon.className = 'ph ph-moon';
+                newTheme = 'light';
+            }
+
+            // تحديث الإعدادات في حساب اللاعب بالسيرفر
+            if (window.authInstance && window.authInstance.currentUser && !window.isGuest) {
+                try {
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
+                        "settings.theme": newTheme
+                    });
+                } catch (e) {
+                    console.warn("تعذر حفظ الثيم سحابياً", e);
+                }
             }
         }
 
