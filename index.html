@@ -219,16 +219,21 @@
             if (user) {
                 window.isGuest = false;
                 
-                const userDoc = await getDoc(doc(db, "users", user.uid));
                 let displayName = user.email.split('@')[0];
                 let matches = 0;
                 let wins = 0;
 
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    displayName = data.username || displayName;
-                    matches = data.matches || 0;
-                    wins = data.wins || 0;
+                // تحديث لحل مشكلة التجميد عند قراءة الإحصائيات
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        displayName = data.username || displayName;
+                        matches = data.matches || 0;
+                        wins = data.wins || 0;
+                    }
+                } catch (err) {
+                    console.warn("تأخير في جلب البيانات من القاعدة، سيتم إدخالك على أي حال.", err);
                 }
 
                 avatar.innerText = displayName.charAt(0).toUpperCase();
@@ -310,12 +315,16 @@
                     });
                 }
             } catch (error) {
-                let errorMsg = error.message;
-                if (errorMsg.includes("credential") || errorMsg.includes("invalid-login")) {
+                // تحديث لحل مشكلة رسائل الأخطاء
+                let errorMsg = error.message || "";
+                if (errorMsg.includes("credential") || errorMsg.includes("invalid-login") || errorMsg.includes("wrong-password") || errorMsg.includes("user-not-found")) {
                     errorMsg = "بيانات الدخول غير صحيحة.";
                 } else if (errorMsg.includes("email-already-in-use")) {
                     errorMsg = "البريد الإلكتروني مستخدم مسبقاً.";
+                } else if (errorMsg.includes("network-request-failed")) {
+                    errorMsg = "تأكد من اتصالك بالإنترنت.";
                 }
+                
                 errorDiv.innerText = errorMsg;
                 errorDiv.style.display = 'block';
             } finally {
