@@ -1,12 +1,26 @@
-/* إعدادات الأساس - لغة بصرية أحادية اللون (Monochrome Premium) */
+/* =========================================
+   متغيرات الألوان (الوضع الليلي الافتراضي)
+   ========================================= */
 :root {
     --bg-pure-black: #000000;
     --surface-card: #0d0d0d;
     --border-refined: #1f1f1f;
     --text-pure-white: #ffffff;
     --text-muted-gray: #8c8c8c;
-    --button-active: #ffffff;
+    --glass-overlay: rgba(0, 0, 0, 0.6);
     --font-global: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* =========================================
+   متغيرات الألوان (الوضع النهاري - Light Mode)
+   ========================================= */
+[data-theme="light"] {
+    --bg-pure-black: #f5f5f7; /* رمادي آبل الفاتح */
+    --surface-card: #ffffff;
+    --border-refined: #e5e5ea;
+    --text-pure-white: #1d1d1f; /* أسود للنصوص */
+    --text-muted-gray: #86868b;
+    --glass-overlay: rgba(255, 255, 255, 0.4);
 }
 
 * {
@@ -23,17 +37,82 @@ body {
     min-height: 100vh;
     display: flex;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* هيكل التطبيق الفاخر */
+/* =========================================
+   نافذة تسجيل الدخول الزجاجية (Auth Modal)
+   ========================================= */
+.auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--glass-overlay);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100000; /* أعلى طبقة دائماً */
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.auth-modal-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.glass-modal-content {
+    background: var(--surface-card);
+    border: 1px solid var(--border-refined);
+    border-radius: 24px;
+    padding: 40px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    transform: translateY(0);
+    transition: transform 0.4s ease;
+}
+
+.auth-modal-overlay.hidden .glass-modal-content {
+    transform: translateY(50px);
+}
+
+.glass-modal-content h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.glass-modal-content p {
+    color: var(--text-muted-gray);
+    font-size: 14px;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   هيكل التطبيق الفاخر
+   ========================================= */
 .app-container {
     display: flex;
     width: 100%;
     height: 100vh;
     position: relative;
+    /* فلتر ضبابي للخلفية يختفي عند تسجيل الدخول */
+    filter: blur(8px);
+    pointer-events: none;
+    transition: filter 0.4s ease;
 }
 
-/* --- القائمة الجانبية المستقلة (لشاشات اللابتوب والكمبيوتر) --- */
+.app-container.unlocked {
+    filter: blur(0);
+    pointer-events: auto;
+}
+
 .desktop-sidebar {
     width: 260px;
     background-color: var(--bg-pure-black);
@@ -42,6 +121,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar-logo {
@@ -50,7 +130,6 @@ body {
     letter-spacing: 2px;
     margin-bottom: 40px;
     padding-right: 12px;
-    text-transform: uppercase;
 }
 
 .sidebar-link {
@@ -66,16 +145,14 @@ body {
     transition: background 0.2s, color 0.2s;
 }
 
-.sidebar-link i {
-    font-size: 22px;
-}
+.sidebar-link i { font-size: 22px; }
 
 .sidebar-link:hover, .sidebar-link.active {
     background-color: var(--surface-card);
     color: var(--text-pure-white);
 }
 
-/* --- منطقة المحتوى الديناميكي (Main viewport) --- */
+/* --- منطقة المحتوى --- */
 .main-viewport {
     flex-grow: 1;
     display: flex;
@@ -91,16 +168,33 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 40px;
+    transition: border-color 0.3s ease;
 }
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* زر تغيير الثيم */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-pure-white);
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.theme-toggle-btn:hover { transform: scale(1.1); }
 
 .view-title {
     font-size: 20px;
     font-weight: 600;
 }
 
-/* نظام الحاويات الذكي لـ SPA (إخفاء وإظهار الأقسام فورياً) */
 .view-section {
-    display: none; /* مخفي افتراضياً */
+    display: none;
     padding: 40px;
     width: 100%;
     max-width: 1000px;
@@ -108,37 +202,28 @@ body {
 }
 
 .view-section.active-view {
-    display: block; /* يظهر فقط القسم النشط */
+    display: block;
+    animation: fadeIn 0.3s ease;
 }
 
-/* --- المربعات الفاخرة (Premium Cards) --- */
-.grid-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
+
+.grid-layout { display: flex; flex-direction: column; gap: 20px; }
 
 .premium-card {
     background-color: var(--surface-card);
     border: 1px solid var(--border-refined);
     border-radius: 16px;
     padding: 30px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.card-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
+.card-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+.card-content { color: var(--text-muted-gray); font-size: 14px; line-height: 1.7; margin-bottom: 24px; }
 
-.card-content {
-    color: var(--text-muted-gray);
-    font-size: 14px;
-    line-height: 1.7;
-    margin-bottom: 24px;
-}
-
-/* الأزرار أحادية اللون عالية التباين */
 .btn-primary {
     background-color: var(--text-pure-white);
     color: var(--bg-pure-black);
@@ -149,58 +234,40 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: opacity 0.2s;
+    width: 100%;
 }
+.btn-primary:hover { opacity: 0.85; }
 
-.btn-primary:hover {
-    opacity: 0.9;
-}
+.mobile-floating-nav { display: none; }
 
-/* --- كبسولة التصفح السفلية العائمة (للجوال فقط) --- */
-.mobile-floating-nav {
-    display: none;
-}
-
-/* ==========================================================
-   تجاوب الشاشات الاحترافي (Responsive Core)
-   ========================================================== */
+/* =========================================
+   التجاوب مع الجوال (Responsive)
+   ========================================= */
 @media (max-width: 900px) {
-    .desktop-sidebar {
-        display: none; /* إلغاء البار الجانبي تماماً على الجوال */
-    }
-
-    .top-navbar {
-        padding: 0 24px;
-    }
-
-    .view-section {
-        padding: 24px;
-        padding-bottom: 130px; /* مساحة حرة تحت المحتوى حتى لا تغطيه الكبسولة العائمة */
-    }
-
-    .premium-card {
-        padding: 24px;
-    }
-
-    /* تشغيل الكبسولة العائمة الفخمة في الأسفل (Twitter iOS Style) */
+    .desktop-sidebar { display: none; }
+    .top-navbar { padding: 0 24px; }
+    .view-section { padding: 24px; padding-bottom: 130px; }
+    .premium-card { padding: 24px; }
+    
     .mobile-floating-nav {
         display: flex;
         position: fixed;
-        bottom: 30px; /* مرتفعة عن الحافة لتبدو عائمة */
+        bottom: 30px;
         left: 50%;
         transform: translateX(-50%);
         width: calc(100% - 48px);
         max-width: 420px;
         height: 70px;
-        background: rgba(13, 13, 13, 0.85);
+        background: var(--glass-overlay);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
         border: 1px solid var(--border-refined);
-        border-radius: 35px; /* شكل الكبسولة الكاملة */
+        border-radius: 35px;
         justify-content: space-around;
         align-items: center;
-        padding: 0 16px;
+        padding: 0 10px;
         z-index: 9999;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     }
 
     .mobile-nav-link {
@@ -212,20 +279,9 @@ body {
         text-decoration: none;
         height: 100%;
         flex: 1;
-        transition: color 0.2s;
     }
 
-    .mobile-nav-link i {
-        font-size: 24px;
-    }
-
-    .mobile-nav-link span {
-        font-size: 10px;
-        font-weight: 500;
-        margin-top: 4px;
-    }
-
-    .mobile-nav-link.active {
-        color: var(--text-pure-white); /* إضاءة بيضاء نقية فقط للعنصر النشط */
-    }
+    .mobile-nav-link i { font-size: 24px; }
+    .mobile-nav-link span { font-size: 9px; font-weight: 500; margin-top: 4px; }
+    .mobile-nav-link.active { color: var(--text-pure-white); }
 }
