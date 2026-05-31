@@ -124,30 +124,30 @@
                 
                 <div id="auth-error" class="auth-error-msg"></div>
 
-                <form id="firebase-form" onsubmit="handleAuthSubmit(event)">
+                <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
                     <div class="input-wrapper" id="wrapper-login-id">
                         <label id="label-login-id">البريد الإلكتروني أو اسم المستخدم</label>
-                        <input type="text" id="input-email-username" class="premium-input" placeholder="أدخل البيانات" required>
+                        <input type="text" id="input-email-username" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
                     </div>
 
                     <div class="input-wrapper" id="wrapper-username-only" style="display: none;">
                         <label>اسم المستخدم (مميز ولا يتكرر)</label>
-                        <input type="text" id="input-username-only" class="premium-input" placeholder="مثال: DarkKnight">
+                        <input type="text" id="input-username-only" class="premium-input" placeholder="مثال: DarkKnight" autocomplete="off">
                     </div>
                     
                     <div class="input-wrapper" id="wrapper-email-only" style="display: none;">
                         <label>البريد الإلكتروني</label>
-                        <input type="email" id="input-email-only" class="premium-input" placeholder="name@example.com">
+                        <input type="email" id="input-email-only" class="premium-input" placeholder="name@example.com" autocomplete="off">
                     </div>
 
                     <div class="input-wrapper">
                         <label>كلمة المرور</label>
-                        <input type="password" id="input-password" class="premium-input" placeholder="••••••••" required>
+                        <input type="password" id="input-password" class="premium-input" placeholder="••••••••" autocomplete="new-password" required>
                     </div>
 
                     <div class="input-wrapper" id="wrapper-confirm" style="display: none;">
                         <label>تأكيد كلمة المرور</label>
-                        <input type="password" id="input-confirm" class="premium-input" placeholder="••••••••">
+                        <input type="password" id="input-confirm" class="premium-input" placeholder="••••••••" autocomplete="new-password">
                     </div>
 
                     <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
@@ -212,18 +212,28 @@
         window.isGuest = false;
         window.currentFormMode = 'login'; 
 
+        // دالة مضافة لتفريغ جميع الحقول برمجياً ومنع كاش المتصفح المزعج
+        window.clearAuthInputs = function() {
+            document.getElementById('input-email-username').value = "";
+            document.getElementById('input-username-only').value = "";
+            document.getElementById('input-email-only').value = "";
+            document.getElementById('input-password').value = "";
+            document.getElementById('input-confirm').value = "";
+            if(document.getElementById('auth-error')) {
+                document.getElementById('auth-error').style.display = 'none';
+            }
+        };
+
         onAuthStateChanged(auth, async (user) => {
             const dropdown = document.getElementById('user-dropdown');
             const avatar = document.getElementById('header-avatar');
 
             if (user) {
                 window.isGuest = false;
-                
                 let displayName = user.email.split('@')[0];
                 let matches = 0;
                 let wins = 0;
 
-                // تحديث لحل مشكلة التجميد عند قراءة الإحصائيات
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
@@ -233,7 +243,7 @@
                         wins = data.wins || 0;
                     }
                 } catch (err) {
-                    console.warn("تأخير في جلب البيانات من القاعدة، سيتم إدخالك على أي حال.", err);
+                    console.warn("تأخير سحابي مؤقت في جلب البيانات.", err);
                 }
 
                 avatar.innerText = displayName.charAt(0).toUpperCase();
@@ -250,11 +260,15 @@
                     <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
                 `;
 
+                // تفريغ الحقول فور نجاح الدخول لتكون نظيفة عند الخروج لاحقاً
+                window.clearAuthInputs();
+
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
                 window.loadFragment('home', document.querySelector('.nav-btn'));
             } else {
                 if (!window.isGuest) {
+                    window.clearAuthInputs();
                     document.getElementById('auth-modal').classList.remove('hidden');
                     document.getElementById('app-shell').classList.remove('unlocked');
                 }
@@ -315,16 +329,14 @@
                     });
                 }
             } catch (error) {
-                // تحديث لحل مشكلة رسائل الأخطاء
                 let errorMsg = error.message || "";
                 if (errorMsg.includes("credential") || errorMsg.includes("invalid-login") || errorMsg.includes("wrong-password") || errorMsg.includes("user-not-found")) {
                     errorMsg = "بيانات الدخول غير صحيحة.";
                 } else if (errorMsg.includes("email-already-in-use")) {
                     errorMsg = "البريد الإلكتروني مستخدم مسبقاً.";
                 } else if (errorMsg.includes("network-request-failed")) {
-                    errorMsg = "تأكد من اتصالك بالإنترنت.";
+                    errorMsg = "تأكيد من اتصالك بالإنترنت.";
                 }
-                
                 errorDiv.innerText = errorMsg;
                 errorDiv.style.display = 'block';
             } finally {
@@ -347,6 +359,10 @@
         }
 
         function handleLogout() {
+            // تفريغ الحقول فوراً عند الضغط على خروج لمنع بقاء أي نصوص مكشوفة
+            if (typeof window.clearAuthInputs === 'function') {
+                window.clearAuthInputs();
+            }
             window.signOutFunc(window.authInstance).then(() => {
                 toggleUserDropdown();
                 document.getElementById('auth-modal').classList.remove('hidden');
@@ -363,6 +379,12 @@
 
         function setFormType(type) {
             window.currentFormMode = type;
+            
+            // تفريغ الحقول عند التبديل بين الأقسام حتى لا ينتقل الباسوورد من قسم لآخر
+            if (typeof window.clearAuthInputs === 'function') {
+                window.clearAuthInputs();
+            }
+
             document.getElementById('tab-login').classList.toggle('active', type === 'login');
             document.getElementById('tab-register').classList.toggle('active', type === 'register');
             
@@ -376,7 +398,6 @@
             document.getElementById('input-email-only').required = type === 'register';
 
             document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
-            document.getElementById('auth-error').style.display = 'none';
         }
 
         function enterAsGuest() {
@@ -384,6 +405,10 @@
             const avatar = document.getElementById('header-avatar');
             const dropdown = document.getElementById('user-dropdown');
             
+            if (typeof window.clearAuthInputs === 'function') {
+                window.clearAuthInputs();
+            }
+
             avatar.innerText = "ز";
             dropdown.innerHTML = `
                 <div class="dropdown-header">
