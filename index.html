@@ -3,199 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مستودع الخداع</title>
-    <link rel="stylesheet" href="style.css">
+    <title>مستودع الخداع - اللوبي</title>
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* =========================================
+           نظام التصميم المرئي - أسود نقي وفخم (Premium Dark)
+           ========================================= */
+        :root {
+            --bg-black: #000000;
+            --surface-gray: #09090b; /* أسود دافئ خفيف للمواجهات */
+            --border-subtle: #1e1e20; /* حدود نحيفة جداً لتقسيم احترافي */
+            --text-white: #ffffff;
+            --text-muted: #71717a;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-stack);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* الإطار الرئيسي للتطبيق */
+        .lobby-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* =========================================
+           تصميم الكمبيوتر واللابتوب (Desktop Layout)
+           ========================================= */
+        
+        /* القائمة الجانبية الفخمة والمثبتة بدقة */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-black);
+            border-left: 1px solid var(--border-subtle);
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-white);
+            margin-bottom: 40px;
+            padding-right: 12px;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: right;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button i { font-size: 20px; }
+
+        .nav-button:hover, .nav-button.active {
+            background-color: var(--surface-gray);
+            color: var(--text-white);
+        }
+
+        /* منطقة عرض المحتوى (تتوسط الشاشة على الكمبيوتر لمنع التمدد المشوه) */
+        .content-viewport {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: var(--bg-black);
+        }
+
+        .top-header {
+            height: 75px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* الحاوية التي ستستقبل الملفات المنفصلة */
+        .dynamic-content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+            width: 100%;
+            max-width: 1100px; /* يمنع الكروت من التمدد العريض والمشوه على الشاشات الكبيرة */
+            margin: 0 auto;   /* يوسط المحتوى بالمنتصف تماماً */
+        }
+
+        /* البار السفلي للجوال (يختفي تلقائياً على الكمبيوتر) */
+        .bottom-bar { display: none; }
+
+        /* =========================================
+           تصميم الجوال الذكي (Mobile Responsive)
+           ========================================= */
+        @media (max-width: 900px) {
+            .sidebar { display: none; } /* إخفاء القائمة الجانبية */
+            
+            .top-header { padding: 0 24px; }
+            
+            .dynamic-content-area {
+                padding: 24px 20px 130px 20px; /* مساحة بالأسفل عشان الكبسولة العائمة */
+            }
+
+            /* تفعيل الكبسولة العائمة الفخمة أسفل شاشة الجوال */
+            .bottom-bar {
+                display: flex;
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 40px);
+                max-width: 400px;
+                height: 66px;
+                background: rgba(9, 9, 11, 0.85);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid var(--border-subtle);
+                border-radius: 33px;
+                justify-content: space-around;
+                align-items: center;
+                padding: 0 10px;
+                z-index: 9999;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            }
+
+            .bottom-tab {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: var(--text-muted);
+                background: none;
+                border: none;
+                height: 100%;
+                flex: 1;
+                cursor: pointer;
+            }
+
+            .bottom-tab i { font-size: 22px; }
+            .bottom-tab span { font-size: 9px; font-weight: 500; margin-top: 3px; }
+            .bottom-tab.active { color: var(--text-white); }
+        }
+    </style>
 </head>
 <body>
 
-    <div id="auth-modal" class="auth-modal-overlay">
-        <div class="glass-modal-content">
-            <i class="ph ph-lock-keyhole" style="font-size: 40px; margin-bottom: 15px; display: block;"></i>
-            <h2 style="font-size: 22px; margin-bottom: 10px;">تزامن الهوية المشفرة</h2>
-            <p style="color: #7a7a7a; font-size: 14px; margin-bottom: 30px; line-height: 1.6;">يتطلب دخول النظام تسجيل هويتك لمزامنة الغرف والبيانات اللحظية.</p>
-            <button class="btn-primary" onclick="unlockApp()">تسجيل الدخول</button>
-        </div>
-    </div>
-
-    <div id="loading-screen" class="loading-screen hidden">
-        <div class="spinner"></div>
-        <p style="font-size: 14px; letter-spacing: 1px; color: #7a7a7a;">جاري توليد السيرفر اللحظي والانتقال للملعب...</p>
-    </div>
-
-
-    <div id="lobby-phase" class="phase-container blur-lock">
+    <div class="lobby-wrapper">
         
-        <aside class="desktop-sidebar">
-            <div class="sidebar-logo">DECEPTION.LOBBY</div>
-            <a href="#" class="sidebar-link active" onclick="showLobbySection('home-view')"><i class="ph ph-house"></i> الرئيسية</a>
-            <a href="#" class="sidebar-link" onclick="showLobbySection('play-view')"><i class="ph ph-game-controller"></i> اللعب</a>
-            <a href="#" class="sidebar-link" onclick="showLobbySection('history-view')"><i class="ph ph-clock-counter-clockwise"></i> السجل</a>
-            <a href="#" class="sidebar-link" onclick="showLobbySection('store-view')"><i class="ph ph-storefront"></i> المتجر</a>
-            <a href="#" class="sidebar-link" onclick="showLobbySection('profile-view')"><i class="ph ph-user-gear"></i> الحساب</a>
+        <aside class="sidebar">
+            <div class="sidebar-brand">DECEPTION SYSTEM</div>
+            <button class="nav-button active" onclick="loadPage('home', this)"><i class="ph ph-house"></i> الرئيسية</button>
+            <button class="nav-button" onclick="loadPage('play', this)"><i class="ph ph-game-controller"></i> اللعب</button>
+            <button class="nav-button" onclick="loadPage('store', this)"><i class="ph ph-storefront"></i> المتجر</button>
+            <button class="nav-button" onclick="loadPage('profile', this)"><i class="ph ph-user"></i> الحساب</button>
         </aside>
 
-        <main class="main-viewport">
-            <header class="top-navbar">
-                <div class="view-title" id="lobby-navbar-title">الرئيسية</div>
-                <div style="font-size: 13px; color: #7a7a7a;">لاعب_01</div>
+        <main class="content-viewport">
+            <header class="top-header">
+                <div class="header-title" id="page-main-title">الرئيسية</div>
             </header>
 
-            <section id="home-view" class="view-section active-view">
-                <div class="premium-card">
-                    <div class="card-title">مستودع الخداع</div>
-                    <div class="card-content">مرحباً بك في البوابة الرئيسية. توجه إلى قسم "اللعب" لإنشاء غرفتك الخاصة ومشاركة الكود مع أصدقائك لبدء التحقيق.</div>
-                    <button class="btn-primary" onclick="showLobbySection('play-view')">الانتقال لقسم الغرف</button>
-                </div>
-            </section>
-
-            <section id="play-view" class="view-section">
-                <div class="premium-card">
-                    <div class="card-title">إنشاء غرفة جديدة</div>
-                    <div class="card-content">اضغط على الزر أدناه لتوليد كود الغرفة الخاص بك حتى يتمكن بقية اللاعبين من الانضمام لك.</div>
-                    <div class="room-code-display">X 9 R 2 B</div>
-                    <button class="btn-primary" onclick="triggerGameStart()">ابدأ اللعبة فوراً (محاكاة)</button>
-                </div>
-            </section>
-
-            <section id="history-view" class="view-section"><div class="premium-card"><div class="card-title">السجل</div><div class="card-content">ملف الجولات السابقة فارغ حالياً.</div></div></section>
-            <section id="store-view" class="view-section"><div class="premium-card"><div class="card-title">المتجر</div><div class="card-content">عناصر التخصيص ستتوفر قريباً.</div></div></section>
-            <section id="profile-view" class="view-section"><div class="premium-card"><div class="card-title">الحساب</div><div class="card-content">إعدادات الهوية المشفرة.</div></div></section>
+            <div class="dynamic-content-area" id="master-content-holder">
+                <p style="color: var(--text-muted); font-size: 14px;">جاري تحميل الواجهة...</p>
+            </div>
         </main>
 
-        <nav class="mobile-floating-nav">
-            <a href="#" class="mobile-nav-link active" onclick="showLobbySection('home-view')"><i class="ph ph-house"></i><span>الرئيسية</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showLobbySection('play-view')"><i class="ph ph-game-controller"></i><span>اللعب</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showLobbySection('history-view')"><i class="ph ph-clock-counter-clockwise"></i><span>السجل</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showLobbySection('store-view')"><i class="ph ph-storefront"></i><span>المتجر</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showLobbySection('profile-view')"><i class="ph ph-user-gear"></i><span>الحساب</span></a>
+        <nav class="bottom-bar">
+            <button class="bottom-tab active" onclick="loadPage('home', this)"><i class="ph ph-house"></i><span>الرئيسية</span></button>
+            <button class="bottom-tab" onclick="loadPage('play', this)"><i class="ph ph-game-controller"></i><span>اللعب</span></button>
+            <button class="bottom-tab" onclick="loadPage('store', this)"><i class="ph ph-storefront"></i><span>المتجر</span></button>
+            <button class="bottom-tab" onclick="loadPage('profile', this)"><i class="ph ph-user"></i><span>الحساب</span></button>
         </nav>
+
     </div>
-
-
-    <div id="game-phase" class="phase-container" style="display: none;">
-        
-        <aside class="desktop-sidebar">
-            <div class="sidebar-logo">SYS.ACTIVE</div>
-            <a href="#" class="sidebar-link active" onclick="showGameSection('evidence-view')"><i class="ph ph-magnifying-glass"></i> الدليل</a>
-            <a href="#" class="sidebar-link" onclick="showGameSection('platform-view')"><i class="ph ph-chats"></i> المنصة</a>
-            <a href="#" class="sidebar-link" onclick="showGameSection('tools-view')"><i class="ph ph-wrench"></i> الأدوات</a>
-            <a href="#" class="sidebar-link" style="margin-top: auto; color: #ff4b4b;" onclick="returnToLobby()"><i class="ph ph-arrow-left"></i> إنهاء الجيم</a>
-        </aside>
-
-        <main class="main-viewport">
-            <header class="top-navbar">
-                <div class="view-title" id="game-navbar-title">الدليل</div>
-                <div style="font-size: 13px; color: #ff4b4b; font-weight: 700;">راوند 1 • ليل بدائي</div>
-            </header>
-
-            <section id="evidence-view" class="view-section active-view">
-                <div class="premium-card">
-                    <div class="card-title">ملف الأدلة المكتشفة من التلكوميتر</div>
-                    <div class="card-content">الدليل الأول ضائع وغير واضح حالياً. مع تقدم الراوندات واشتداد قوة الليل، ستنكشف التفاصيل والآثار هنا برمجياً.</div>
-                </div>
-            </section>
-
-            <section id="platform-view" class="view-section">
-                <div class="premium-card">
-                    <div class="card-title">منصة النقاش والتصويت الحاسم</div>
-                    <div class="card-content">هنا يجري التصويت الرسمي. تذكر أنك تملك حق التصويت لمرة واحدة فقط في الجيم كامل. الخطأ يعني خسارتك المباشرة للتحقيق.</div>
-                    <button class="btn-secondary">فتح لوحة الإدلاء بالصوت (قاتل/أداة/أثر)</button>
-                </div>
-            </section>
-
-            <section id="tools-view" class="view-section">
-                <div class="premium-card">
-                    <div class="card-title">قائمة الأدوات المتاحة</div>
-                    <div class="card-content">حقيبة الأدوات والخيارات المتاحة لدورك الحالي في الجولة.</div>
-                </div>
-            </section>
-        </main>
-
-        <nav class="mobile-floating-nav">
-            <a href="#" class="mobile-nav-link active" onclick="showGameSection('evidence-view')"><i class="ph ph-magnifying-glass"></i><span>الدليل</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showGameSection('platform-view')"><i class="ph ph-chats"></i><span>المنصة</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showGameSection('tools-view')"><i class="ph ph-wrench"></i><span>الأدوات</span></a>
-        </nav>
-    </div>
-
 
     <script>
-        // فك القفل عند تسجيل الدخول
-        function unlockApp() {
-            document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('lobby-phase').classList.remove('blur-lock');
-            document.getElementById('lobby-phase').classList.add('unlocked');
-        }
-
-        // التصفح داخل واجهة اللوبي (الـ 5 قوائم)
-        function showLobbySection(viewId) {
-            document.querySelectorAll('#lobby-phase .view-section').forEach(sec => sec.classList.remove('active-view'));
-            document.getElementById(viewId).classList.add('active-view');
-
-            const titles = {
-                'home-view': 'الرئيسية',
-                'play-view': 'اللعب',
-                'history-view': 'السجل',
-                'store-view': 'المتجر',
-                'profile-view': 'الحساب'
-            };
-            document.getElementById('lobby-navbar-title').innerText = titles[viewId];
-
-            document.querySelectorAll('#lobby-phase .sidebar-link').forEach(link => {
-                link.classList.remove('active');
-                if(link.innerText.trim().includes(titles[viewId])) link.classList.add('active');
-            });
-
-            document.querySelectorAll('#lobby-phase .mobile-nav-link').forEach(link => {
-                link.classList.remove('active');
-                if(link.querySelector('span').innerText === titles[viewId]) link.classList.add('active');
-            });
-        }
-
-        // التصفح داخل واجهة اللعب الفعلي (الـ 3 قوائم الجديدة)
-        function showGameSection(viewId) {
-            document.querySelectorAll('#game-phase .view-section').forEach(sec => sec.classList.remove('active-view'));
-            document.getElementById(viewId).classList.add('active-view');
-
-            const titles = {
-                'evidence-view': 'الدليل',
-                'platform-view': 'المنصة',
-                'tools-view': 'الأدوات'
-            };
-            document.getElementById('game-navbar-title').innerText = titles[viewId];
-
-            document.querySelectorAll('#game-phase .sidebar-link').forEach(link => {
-                link.classList.remove('active');
-                if(link.innerText.trim().includes(titles[viewId])) link.classList.add('active');
-            });
-
-            document.querySelectorAll('#game-phase .mobile-nav-link').forEach(link => {
-                link.classList.remove('active');
-                if(link.querySelector('span').innerText === titles[viewId]) link.classList.add('active');
-            });
-        }
-
-        // محاكاة الانتقال الفخم: إخفاء اللوبي -> شاشة تحميل -> فتح واجهة اللعب
-        function triggerGameStart() {
-            // 1. إظهار شاشة التحميل
-            document.getElementById('loading-screen').classList.remove('hidden');
+        // دالة لجلب كود أي صفحة منفصلة وعرضها بالمنتصف
+        function loadPage(pageName, element) {
+            const contentHolder = document.getElementById('master-content-holder');
             
-            // 2. بعد ثانيتين ونصف يتم التبديل خلف الكواليس
-            setTimeout(() => {
-                document.getElementById('lobby-phase').style.display = 'none';
-                document.getElementById('game-phase').style.display = 'flex';
-                document.getElementById('loading-screen').classList.add('hidden');
-                showGameSection('evidence-view'); // فتح أول خانة تلقائياً
-            }, 2500);
+            // العناوين العلوية لكل صفحة
+            const titles = { 'home': 'الرئيسية', 'play': 'غرف اللعب', 'store': 'متجر المزايا', 'profile': 'الملف الشخصي' };
+            document.getElementById('page-main-title').innerText = titles[pageName];
+
+            // تحديث الأزرار النشطة في الكمبيوتر والجوال
+            document.querySelectorAll('.nav-button, .bottom-tab').forEach(btn => btn.classList.remove('active'));
+            
+            // تمييز الزر المفتوح حالياً
+            if(element) element.classList.add('active');
+
+            // السحر هنا: نقرأ كود الملف المنفصل (مثال: store.html) ونضعه داخل الـ div
+            fetch(pageName + '.html')
+                .then(response => {
+                    if (!response.ok) throw new Error('الملف غير موجود بعد');
+                    return response.text();
+                })
+                .then(html => {
+                    contentHolder.innerHTML = html;
+                })
+                .catch(error => {
+                    contentHolder.innerHTML = `
+                        <div style="padding: 30px; border: 1px dashed #1e1e20; border-radius: 12px; text-align: center;">
+                            <p style="color: #71717a; font-size: 14px;">ملف <b>${pageName}.html</b> جاهز برمجياً، يرجى إنشاؤه في GitHub ليظهر محتواه هنا.</p>
+                        </div>`;
+                });
         }
 
-        // العودة للوبي عند إنهاء الجيم تجريبياً
-        function returnToLobby() {
-            document.getElementById('game-phase').style.display = 'none';
-            document.getElementById('lobby-phase').style.display = 'flex';
-            showLobbySection('play-view');
-        }
+        // تشغيل الصفحة الرئيسية تلقائياً عند فتح الموقع
+        window.onload = () => { loadPage('home', document.querySelector('.nav-button')); };
     </script>
 </body>
 </html>
