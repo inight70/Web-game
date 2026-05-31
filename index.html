@@ -125,29 +125,35 @@
                 <div id="auth-error" class="auth-error-msg"></div>
 
                 <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
-                    <div class="input-wrapper" id="wrapper-login-id">
-                        <label id="label-login-id">البريد الإلكتروني أو اسم المستخدم</label>
-                        <input type="text" id="input-email-username" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
-                    </div>
-
-                    <div class="input-wrapper" id="wrapper-username-only" style="display: none;">
-                        <label>اسم المستخدم (مميز ولا يتكرر)</label>
-                        <input type="text" id="input-username-only" class="premium-input" placeholder="مثال: DarkKnight" autocomplete="off">
-                    </div>
                     
-                    <div class="input-wrapper" id="wrapper-email-only" style="display: none;">
-                        <label>البريد الإلكتروني</label>
-                        <input type="email" id="input-email-only" class="premium-input" placeholder="name@example.com" autocomplete="off">
+                    <div id="login-fields">
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني أو اسم المستخدم</label>
+                            <input type="text" id="login-id" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="login-password" class="premium-input" placeholder="••••••••" autocomplete="new-password" required>
+                        </div>
                     </div>
 
-                    <div class="input-wrapper">
-                        <label>كلمة المرور</label>
-                        <input type="password" id="input-password" class="premium-input" placeholder="••••••••" autocomplete="new-password" required>
-                    </div>
-
-                    <div class="input-wrapper" id="wrapper-confirm" style="display: none;">
-                        <label>تأكيد كلمة المرور</label>
-                        <input type="password" id="input-confirm" class="premium-input" placeholder="••••••••" autocomplete="new-password">
+                    <div id="register-fields" style="display: none;">
+                        <div class="input-wrapper">
+                            <label>اسم المستخدم (مميز ولا يتكرر)</label>
+                            <input type="text" id="reg-username" class="premium-input" placeholder="مثال: DarkKnight" autocomplete="off">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="reg-email" class="premium-input" placeholder="name@example.com" autocomplete="off">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="reg-password" class="premium-input" placeholder="••••••••" autocomplete="new-password">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>تأكيد كلمة المرور</label>
+                            <input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••" autocomplete="new-password">
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
@@ -212,13 +218,14 @@
         window.isGuest = false;
         window.currentFormMode = 'login'; 
 
-        // دالة مضافة لتفريغ جميع الحقول برمجياً ومنع كاش المتصفح المزعج
+        // دالة التفريغ التي تمسح كل الخانات المنفصلة (يتم استدعاؤها عند الإغلاق والخروج فقط)
         window.clearAuthInputs = function() {
-            document.getElementById('input-email-username').value = "";
-            document.getElementById('input-username-only').value = "";
-            document.getElementById('input-email-only').value = "";
-            document.getElementById('input-password').value = "";
-            document.getElementById('input-confirm').value = "";
+            document.getElementById('login-id').value = "";
+            document.getElementById('login-password').value = "";
+            document.getElementById('reg-username').value = "";
+            document.getElementById('reg-email').value = "";
+            document.getElementById('reg-password').value = "";
+            document.getElementById('reg-confirm').value = "";
             if(document.getElementById('auth-error')) {
                 document.getElementById('auth-error').style.display = 'none';
             }
@@ -260,8 +267,7 @@
                     <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
                 `;
 
-                // تفريغ الحقول فور نجاح الدخول لتكون نظيفة عند الخروج لاحقاً
-                window.clearAuthInputs();
+                window.clearAuthInputs(); // تفريغ فور نجاح الدخول
 
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
@@ -277,7 +283,6 @@
 
         window.handleAuthSubmit = async function(e) {
             e.preventDefault();
-            const password = document.getElementById('input-password').value;
             const errorDiv = document.getElementById('auth-error');
             const submitBtn = document.getElementById('modal-submit-btn');
             
@@ -287,7 +292,8 @@
 
             try {
                 if (window.currentFormMode === 'login') {
-                    let loginId = document.getElementById('input-email-username').value.trim();
+                    let loginId = document.getElementById('login-id').value.trim();
+                    let password = document.getElementById('login-password').value;
                     let loginEmail = loginId;
 
                     if (!loginId.includes('@')) {
@@ -303,9 +309,10 @@
                     await signInWithEmailAndPassword(auth, loginEmail, password);
 
                 } else {
-                    const username = document.getElementById('input-username-only').value.trim();
-                    const email = document.getElementById('input-email-only').value.trim();
-                    const confirmPass = document.getElementById('input-confirm').value;
+                    const username = document.getElementById('reg-username').value.trim();
+                    const email = document.getElementById('reg-email').value.trim();
+                    const password = document.getElementById('reg-password').value;
+                    const confirmPass = document.getElementById('reg-confirm').value;
                     
                     if (password !== confirmPass) throw { message: "كلمات المرور غير متطابقة." };
                     
@@ -335,7 +342,7 @@
                 } else if (errorMsg.includes("email-already-in-use")) {
                     errorMsg = "البريد الإلكتروني مستخدم مسبقاً.";
                 } else if (errorMsg.includes("network-request-failed")) {
-                    errorMsg = "تأكيد من اتصالك بالإنترنت.";
+                    errorMsg = "تأكد من اتصالك بالإنترنت.";
                 }
                 errorDiv.innerText = errorMsg;
                 errorDiv.style.display = 'block';
@@ -359,10 +366,7 @@
         }
 
         function handleLogout() {
-            // تفريغ الحقول فوراً عند الضغط على خروج لمنع بقاء أي نصوص مكشوفة
-            if (typeof window.clearAuthInputs === 'function') {
-                window.clearAuthInputs();
-            }
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
             window.signOutFunc(window.authInstance).then(() => {
                 toggleUserDropdown();
                 document.getElementById('auth-modal').classList.remove('hidden');
@@ -380,22 +384,22 @@
         function setFormType(type) {
             window.currentFormMode = type;
             
-            // تفريغ الحقول عند التبديل بين الأقسام حتى لا ينتقل الباسوورد من قسم لآخر
-            if (typeof window.clearAuthInputs === 'function') {
-                window.clearAuthInputs();
-            }
-
+            // قمنا بإزالة كود المسح من هنا، لكي نحافظ على بياناتك مكتوبة عند التبديل
+            
             document.getElementById('tab-login').classList.toggle('active', type === 'login');
             document.getElementById('tab-register').classList.toggle('active', type === 'register');
             
-            document.getElementById('wrapper-login-id').style.display = type === 'login' ? 'block' : 'none';
-            document.getElementById('wrapper-username-only').style.display = type === 'register' ? 'block' : 'none';
-            document.getElementById('wrapper-email-only').style.display = type === 'register' ? 'block' : 'none';
-            document.getElementById('wrapper-confirm').style.display = type === 'register' ? 'block' : 'none';
+            // إظهار وإخفاء الأقسام المعزولة
+            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
+            document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
             
-            document.getElementById('input-email-username').required = type === 'login';
-            document.getElementById('input-username-only').required = type === 'register';
-            document.getElementById('input-email-only').required = type === 'register';
+            // تفعيل حقول القسم المعروض فقط برمجياً
+            document.getElementById('login-id').required = type === 'login';
+            document.getElementById('login-password').required = type === 'login';
+            
+            document.getElementById('reg-username').required = type === 'register';
+            document.getElementById('reg-email').required = type === 'register';
+            document.getElementById('reg-password').required = type === 'register';
 
             document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
         }
@@ -405,9 +409,7 @@
             const avatar = document.getElementById('header-avatar');
             const dropdown = document.getElementById('user-dropdown');
             
-            if (typeof window.clearAuthInputs === 'function') {
-                window.clearAuthInputs();
-            }
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
 
             avatar.innerText = "ز";
             dropdown.innerHTML = `
@@ -423,6 +425,9 @@
         }
 
         function closeAuthModal() {
+            // يمسح كل شيء بمجرد إغلاق النافذة أثناء الكتابة
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+            
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
             if(!window.isGuest) enterAsGuest();
