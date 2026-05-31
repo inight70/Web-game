@@ -4,35 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>مستودع الخداع</title>
-    
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
 
-    <div class="app-container">
+    <div id="auth-modal" class="auth-modal-overlay">
+        <div class="glass-modal-content">
+            <h2>مرحباً بك مجدداً</h2>
+            <p>يرجى تسجيل الدخول للوصول إلى قاعدة البيانات وتزامن إحصائياتك اللحظية.</p>
+            <button class="btn-primary" onclick="unlockApp()">تسجيل الدخول تجريبياً</button>
+        </div>
+    </div>
+
+    <div id="main-app" class="app-container">
         
         <aside class="desktop-sidebar">
             <div class="sidebar-logo">M_KHADAA</div>
             <a href="#" class="sidebar-link active" onclick="showSection('home-view')"><i class="ph ph-house"></i> الرئيسية</a>
             <a href="#" class="sidebar-link" onclick="showSection('play-view')"><i class="ph ph-game-controller"></i> العب</a>
             <a href="#" class="sidebar-link" onclick="showSection('history-view')"><i class="ph ph-clock-counter-clockwise"></i> السجل</a>
+            <a href="#" class="sidebar-link" onclick="showSection('store-view')"><i class="ph ph-storefront"></i> المتجر</a>
             <a href="#" class="sidebar-link" onclick="showSection('profile-view')"><i class="ph ph-user"></i> الحساب</a>
         </aside>
 
         <main class="main-viewport">
-            
             <header class="top-navbar">
                 <div class="view-title" id="navbar-title">الرئيسية</div>
-                <div style="font-size: 13px; color: #8c8c8c;">لاعب_01</div>
+                <div class="header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleTheme()">
+                        <i id="theme-icon" class="ph ph-sun"></i>
+                    </button>
+                    <div style="font-size: 13px; color: var(--text-muted-gray);">لاعب_01</div>
+                </div>
             </header>
 
             <section id="home-view" class="view-section active-view">
                 <div class="grid-layout">
                     <div class="premium-card">
                         <div class="card-title">غرفة الانتظار الرئيسية</div>
-                        <div class="card-content">مرحباً بك في مستودع الخداع. نظام المباريات جاهز الآن، يمكنك بدء البحث عن تحدي جديد أو الانضمام لفريقك الحالي.</div>
+                        <div class="card-content">مرحباً بك في مستودع الخداع. يمكنك بدء البحث عن تحدي جديد.</div>
                         <button class="btn-primary" onclick="showSection('play-view')">دخول اللوبي</button>
                     </div>
                 </div>
@@ -42,7 +53,7 @@
                 <div class="grid-layout">
                     <div class="premium-card">
                         <div class="card-title">البحث عن مباراة</div>
-                        <div class="card-content">جاري تجهيز السيرفرات اللحظية. اختر نوع الجولة لبدء توزيع الفرق (فريق أ / فريق ب).</div>
+                        <div class="card-content">اختر نوع الجولة لبدء توزيع الفرق (فريق أ / فريق ب).</div>
                         <button class="btn-primary">البدء فوراً</button>
                     </div>
                 </div>
@@ -51,8 +62,18 @@
             <section id="history-view" class="view-section">
                 <div class="grid-layout">
                     <div class="premium-card">
-                        <div class="card-title">سجل الجولات السابقة</div>
-                        <div class="card-content">لم تلعب أي مباريات في الجولة الحالية بعد. سجل انتصاراتك ونقاطك سيظهر بالتفصيل هنا.</div>
+                        <div class="card-title">سجل الجولات</div>
+                        <div class="card-content">سجل انتصاراتك ونقاطك سيظهر بالتفصيل هنا.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="store-view" class="view-section">
+                <div class="grid-layout">
+                    <div class="premium-card">
+                        <div class="card-title">متجر الخداع</div>
+                        <div class="card-content">استبدل نقاطك التي كسبتها ببطاقات تلميحات ومزايا إضافية تفيدك في الجولات القادمة.</div>
+                        <button class="btn-primary">استعراض العناصر</button>
                     </div>
                 </div>
             </section>
@@ -61,55 +82,65 @@
                 <div class="grid-layout">
                     <div class="premium-card">
                         <div class="card-title">إعدادات ملف اللاعب</div>
-                        <div class="card-content">تعديل الاسم المستعار، الحساب المربوط بـ Firebase، وإحصائيات مستوى الخداع الإجمالي الخاص بك.</div>
+                        <div class="card-content">تعديل الاسم المستعار، الحساب المربوط، وإحصائيات مستوى الخداع.</div>
                     </div>
                 </div>
             </section>
-
         </main>
 
         <nav class="mobile-floating-nav">
             <a href="#" class="mobile-nav-link active" onclick="showSection('home-view')"><i class="ph ph-house"></i><span>الرئيسية</span></a>
             <a href="#" class="mobile-nav-link" onclick="showSection('play-view')"><i class="ph ph-game-controller"></i><span>العب</span></a>
             <a href="#" class="mobile-nav-link" onclick="showSection('history-view')"><i class="ph ph-clock-counter-clockwise"></i><span>السجل</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showSection('store-view')"><i class="ph ph-storefront"></i><span>المتجر</span></a>
             <a href="#" class="mobile-nav-link" onclick="showSection('profile-view')"><i class="ph ph-user"></i><span>الحساب</span></a>
         </nav>
-
     </div>
 
     <script>
+        // 1. وظيفة فك القفل (إخفاء نافذة تسجيل الدخول)
+        function unlockApp() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('main-app').classList.add('unlocked');
+        }
+
+        // 2. وظيفة تبديل الأقسام
         function showSection(sectionId) {
-            // إخفاء كل الحاويات
-            document.querySelectorAll('.view-section').forEach(sec => {
-                sec.classList.remove('active-view');
-            });
-            // إظهار الحاوية المطلوبة فقط
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
 
-            // تحديث عنوان الهيدر العلوي
             const titles = {
                 'home-view': 'الرئيسية',
                 'play-view': 'الملعب',
                 'history-view': 'السجل',
+                'store-view': 'المتجر',
                 'profile-view': 'الحساب'
             };
             document.getElementById('navbar-title').innerText = titles[sectionId];
 
-            // تحديث حالة الأزرار في القائمة الجانبية (Desktop)
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.classList.remove('active');
-                if(link.innerText.includes(titles[sectionId])) {
-                    link.classList.add('active');
-                }
+                if(link.innerText.includes(titles[sectionId])) link.classList.add('active');
             });
 
-            // تحديث حالة الأزرار في الكبسولة العائمة (Mobile)
             document.querySelectorAll('.mobile-nav-link').forEach(link => {
                 link.classList.remove('active');
-                if(link.querySelector('span').innerText === titles[sectionId]) {
-                    link.classList.add('active');
-                }
+                if(link.querySelector('span').innerText === titles[sectionId]) link.classList.add('active');
             });
+        }
+
+        // 3. وظيفة تبديل الوضع (ليلي / نهاري)
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (body.getAttribute('data-theme') === 'light') {
+                body.removeAttribute('data-theme');
+                themeIcon.classList.replace('ph-moon', 'ph-sun');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.classList.replace('ph-sun', 'ph-moon');
+            }
         }
     </script>
 </body>
