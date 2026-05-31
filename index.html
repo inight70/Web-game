@@ -11,136 +11,190 @@
 
     <div id="auth-modal" class="auth-modal-overlay">
         <div class="glass-modal-content">
-            <h2>مرحباً بك مجدداً</h2>
-            <p>يرجى تسجيل الدخول للوصول إلى قاعدة البيانات وتزامن إحصائياتك اللحظية.</p>
-            <button class="btn-primary" onclick="unlockApp()">تسجيل الدخول تجريبياً</button>
+            <i class="ph ph-lock-keyhole" style="font-size: 40px; margin-bottom: 15px; display: block;"></i>
+            <h2 style="font-size: 22px; margin-bottom: 10px;">تزامن الهوية المشفرة</h2>
+            <p style="color: #7a7a7a; font-size: 14px; margin-bottom: 30px; line-height: 1.6;">يتطلب دخول النظام تسجيل هويتك لمزامنة الغرف والبيانات اللحظية.</p>
+            <button class="btn-primary" onclick="unlockApp()">تسجيل الدخول</button>
         </div>
     </div>
 
-    <div id="main-app" class="app-container">
+    <div id="loading-screen" class="loading-screen hidden">
+        <div class="spinner"></div>
+        <p style="font-size: 14px; letter-spacing: 1px; color: #7a7a7a;">جاري توليد السيرفر اللحظي والانتقال للملعب...</p>
+    </div>
+
+
+    <div id="lobby-phase" class="phase-container blur-lock">
         
         <aside class="desktop-sidebar">
-            <div class="sidebar-logo">M_KHADAA</div>
-            <a href="#" class="sidebar-link active" onclick="showSection('home-view')"><i class="ph ph-house"></i> الرئيسية</a>
-            <a href="#" class="sidebar-link" onclick="showSection('play-view')"><i class="ph ph-game-controller"></i> العب</a>
-            <a href="#" class="sidebar-link" onclick="showSection('history-view')"><i class="ph ph-clock-counter-clockwise"></i> السجل</a>
-            <a href="#" class="sidebar-link" onclick="showSection('store-view')"><i class="ph ph-storefront"></i> المتجر</a>
-            <a href="#" class="sidebar-link" onclick="showSection('profile-view')"><i class="ph ph-user"></i> الحساب</a>
+            <div class="sidebar-logo">DECEPTION.LOBBY</div>
+            <a href="#" class="sidebar-link active" onclick="showLobbySection('home-view')"><i class="ph ph-house"></i> الرئيسية</a>
+            <a href="#" class="sidebar-link" onclick="showLobbySection('play-view')"><i class="ph ph-game-controller"></i> اللعب</a>
+            <a href="#" class="sidebar-link" onclick="showLobbySection('history-view')"><i class="ph ph-clock-counter-clockwise"></i> السجل</a>
+            <a href="#" class="sidebar-link" onclick="showLobbySection('store-view')"><i class="ph ph-storefront"></i> المتجر</a>
+            <a href="#" class="sidebar-link" onclick="showLobbySection('profile-view')"><i class="ph ph-user-gear"></i> الحساب</a>
         </aside>
 
         <main class="main-viewport">
             <header class="top-navbar">
-                <div class="view-title" id="navbar-title">الرئيسية</div>
-                <div class="header-actions">
-                    <button class="theme-toggle-btn" onclick="toggleTheme()">
-                        <i id="theme-icon" class="ph ph-sun"></i>
-                    </button>
-                    <div style="font-size: 13px; color: var(--text-muted-gray);">لاعب_01</div>
-                </div>
+                <div class="view-title" id="lobby-navbar-title">الرئيسية</div>
+                <div style="font-size: 13px; color: #7a7a7a;">لاعب_01</div>
             </header>
 
             <section id="home-view" class="view-section active-view">
-                <div class="grid-layout">
-                    <div class="premium-card">
-                        <div class="card-title">غرفة الانتظار الرئيسية</div>
-                        <div class="card-content">مرحباً بك في مستودع الخداع. يمكنك بدء البحث عن تحدي جديد.</div>
-                        <button class="btn-primary" onclick="showSection('play-view')">دخول اللوبي</button>
-                    </div>
+                <div class="premium-card">
+                    <div class="card-title">مستودع الخداع</div>
+                    <div class="card-content">مرحباً بك في البوابة الرئيسية. توجه إلى قسم "اللعب" لإنشاء غرفتك الخاصة ومشاركة الكود مع أصدقائك لبدء التحقيق.</div>
+                    <button class="btn-primary" onclick="showLobbySection('play-view')">الانتقال لقسم الغرف</button>
                 </div>
             </section>
 
             <section id="play-view" class="view-section">
-                <div class="grid-layout">
-                    <div class="premium-card">
-                        <div class="card-title">البحث عن مباراة</div>
-                        <div class="card-content">اختر نوع الجولة لبدء توزيع الفرق (فريق أ / فريق ب).</div>
-                        <button class="btn-primary">البدء فوراً</button>
-                    </div>
+                <div class="premium-card">
+                    <div class="card-title">إنشاء غرفة جديدة</div>
+                    <div class="card-content">اضغط على الزر أدناه لتوليد كود الغرفة الخاص بك حتى يتمكن بقية اللاعبين من الانضمام لك.</div>
+                    <div class="room-code-display">X 9 R 2 B</div>
+                    <button class="btn-primary" onclick="triggerGameStart()">ابدأ اللعبة فوراً (محاكاة)</button>
                 </div>
             </section>
 
-            <section id="history-view" class="view-section">
-                <div class="grid-layout">
-                    <div class="premium-card">
-                        <div class="card-title">سجل الجولات</div>
-                        <div class="card-content">سجل انتصاراتك ونقاطك سيظهر بالتفصيل هنا.</div>
-                    </div>
+            <section id="history-view" class="view-section"><div class="premium-card"><div class="card-title">السجل</div><div class="card-content">ملف الجولات السابقة فارغ حالياً.</div></div></section>
+            <section id="store-view" class="view-section"><div class="premium-card"><div class="card-title">المتجر</div><div class="card-content">عناصر التخصيص ستتوفر قريباً.</div></div></section>
+            <section id="profile-view" class="view-section"><div class="premium-card"><div class="card-title">الحساب</div><div class="card-content">إعدادات الهوية المشفرة.</div></div></section>
+        </main>
+
+        <nav class="mobile-floating-nav">
+            <a href="#" class="mobile-nav-link active" onclick="showLobbySection('home-view')"><i class="ph ph-house"></i><span>الرئيسية</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showLobbySection('play-view')"><i class="ph ph-game-controller"></i><span>اللعب</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showLobbySection('history-view')"><i class="ph ph-clock-counter-clockwise"></i><span>السجل</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showLobbySection('store-view')"><i class="ph ph-storefront"></i><span>المتجر</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showLobbySection('profile-view')"><i class="ph ph-user-gear"></i><span>الحساب</span></a>
+        </nav>
+    </div>
+
+
+    <div id="game-phase" class="phase-container" style="display: none;">
+        
+        <aside class="desktop-sidebar">
+            <div class="sidebar-logo">SYS.ACTIVE</div>
+            <a href="#" class="sidebar-link active" onclick="showGameSection('evidence-view')"><i class="ph ph-magnifying-glass"></i> الدليل</a>
+            <a href="#" class="sidebar-link" onclick="showGameSection('platform-view')"><i class="ph ph-chats"></i> المنصة</a>
+            <a href="#" class="sidebar-link" onclick="showGameSection('tools-view')"><i class="ph ph-wrench"></i> الأدوات</a>
+            <a href="#" class="sidebar-link" style="margin-top: auto; color: #ff4b4b;" onclick="returnToLobby()"><i class="ph ph-arrow-left"></i> إنهاء الجيم</a>
+        </aside>
+
+        <main class="main-viewport">
+            <header class="top-navbar">
+                <div class="view-title" id="game-navbar-title">الدليل</div>
+                <div style="font-size: 13px; color: #ff4b4b; font-weight: 700;">راوند 1 • ليل بدائي</div>
+            </header>
+
+            <section id="evidence-view" class="view-section active-view">
+                <div class="premium-card">
+                    <div class="card-title">ملف الأدلة المكتشفة من التلكوميتر</div>
+                    <div class="card-content">الدليل الأول ضائع وغير واضح حالياً. مع تقدم الراوندات واشتداد قوة الليل، ستنكشف التفاصيل والآثار هنا برمجياً.</div>
                 </div>
             </section>
 
-            <section id="store-view" class="view-section">
-                <div class="grid-layout">
-                    <div class="premium-card">
-                        <div class="card-title">متجر الخداع</div>
-                        <div class="card-content">استبدل نقاطك التي كسبتها ببطاقات تلميحات ومزايا إضافية تفيدك في الجولات القادمة.</div>
-                        <button class="btn-primary">استعراض العناصر</button>
-                    </div>
+            <section id="platform-view" class="view-section">
+                <div class="premium-card">
+                    <div class="card-title">منصة النقاش والتصويت الحاسم</div>
+                    <div class="card-content">هنا يجري التصويت الرسمي. تذكر أنك تملك حق التصويت لمرة واحدة فقط في الجيم كامل. الخطأ يعني خسارتك المباشرة للتحقيق.</div>
+                    <button class="btn-secondary">فتح لوحة الإدلاء بالصوت (قاتل/أداة/أثر)</button>
                 </div>
             </section>
 
-            <section id="profile-view" class="view-section">
-                <div class="grid-layout">
-                    <div class="premium-card">
-                        <div class="card-title">إعدادات ملف اللاعب</div>
-                        <div class="card-content">تعديل الاسم المستعار، الحساب المربوط، وإحصائيات مستوى الخداع.</div>
-                    </div>
+            <section id="tools-view" class="view-section">
+                <div class="premium-card">
+                    <div class="card-title">قائمة الأدوات المتاحة</div>
+                    <div class="card-content">حقيبة الأدوات والخيارات المتاحة لدورك الحالي في الجولة.</div>
                 </div>
             </section>
         </main>
 
         <nav class="mobile-floating-nav">
-            <a href="#" class="mobile-nav-link active" onclick="showSection('home-view')"><i class="ph ph-house"></i><span>الرئيسية</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showSection('play-view')"><i class="ph ph-game-controller"></i><span>العب</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showSection('history-view')"><i class="ph ph-clock-counter-clockwise"></i><span>السجل</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showSection('store-view')"><i class="ph ph-storefront"></i><span>المتجر</span></a>
-            <a href="#" class="mobile-nav-link" onclick="showSection('profile-view')"><i class="ph ph-user"></i><span>الحساب</span></a>
+            <a href="#" class="mobile-nav-link active" onclick="showGameSection('evidence-view')"><i class="ph ph-magnifying-glass"></i><span>الدليل</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showGameSection('platform-view')"><i class="ph ph-chats"></i><span>المنصة</span></a>
+            <a href="#" class="mobile-nav-link" onclick="showGameSection('tools-view')"><i class="ph ph-wrench"></i><span>الأدوات</span></a>
         </nav>
     </div>
 
+
     <script>
-        // 1. وظيفة فك القفل (إخفاء نافذة تسجيل الدخول)
+        // فك القفل عند تسجيل الدخول
         function unlockApp() {
             document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('main-app').classList.add('unlocked');
+            document.getElementById('lobby-phase').classList.remove('blur-lock');
+            document.getElementById('lobby-phase').classList.add('unlocked');
         }
 
-        // 2. وظيفة تبديل الأقسام
-        function showSection(sectionId) {
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
-            document.getElementById(sectionId).classList.add('active-view');
+        // التصفح داخل واجهة اللوبي (الـ 5 قوائم)
+        function showLobbySection(viewId) {
+            document.querySelectorAll('#lobby-phase .view-section').forEach(sec => sec.classList.remove('active-view'));
+            document.getElementById(viewId).classList.add('active-view');
 
             const titles = {
                 'home-view': 'الرئيسية',
-                'play-view': 'الملعب',
+                'play-view': 'اللعب',
                 'history-view': 'السجل',
                 'store-view': 'المتجر',
                 'profile-view': 'الحساب'
             };
-            document.getElementById('navbar-title').innerText = titles[sectionId];
+            document.getElementById('lobby-navbar-title').innerText = titles[viewId];
 
-            document.querySelectorAll('.sidebar-link').forEach(link => {
+            document.querySelectorAll('#lobby-phase .sidebar-link').forEach(link => {
                 link.classList.remove('active');
-                if(link.innerText.includes(titles[sectionId])) link.classList.add('active');
+                if(link.innerText.trim().includes(titles[viewId])) link.classList.add('active');
             });
 
-            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            document.querySelectorAll('#lobby-phase .mobile-nav-link').forEach(link => {
                 link.classList.remove('active');
-                if(link.querySelector('span').innerText === titles[sectionId]) link.classList.add('active');
+                if(link.querySelector('span').innerText === titles[viewId]) link.classList.add('active');
             });
         }
 
-        // 3. وظيفة تبديل الوضع (ليلي / نهاري)
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('theme-icon');
+        // التصفح داخل واجهة اللعب الفعلي (الـ 3 قوائم الجديدة)
+        function showGameSection(viewId) {
+            document.querySelectorAll('#game-phase .view-section').forEach(sec => sec.classList.remove('active-view'));
+            document.getElementById(viewId).classList.add('active-view');
+
+            const titles = {
+                'evidence-view': 'الدليل',
+                'platform-view': 'المنصة',
+                'tools-view': 'الأدوات'
+            };
+            document.getElementById('game-navbar-title').innerText = titles[viewId];
+
+            document.querySelectorAll('#game-phase .sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.innerText.trim().includes(titles[viewId])) link.classList.add('active');
+            });
+
+            document.querySelectorAll('#game-phase .mobile-nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.querySelector('span').innerText === titles[viewId]) link.classList.add('active');
+            });
+        }
+
+        // محاكاة الانتقال الفخم: إخفاء اللوبي -> شاشة تحميل -> فتح واجهة اللعب
+        function triggerGameStart() {
+            // 1. إظهار شاشة التحميل
+            document.getElementById('loading-screen').classList.remove('hidden');
             
-            if (body.getAttribute('data-theme') === 'light') {
-                body.removeAttribute('data-theme');
-                themeIcon.classList.replace('ph-moon', 'ph-sun');
-            } else {
-                body.setAttribute('data-theme', 'light');
-                themeIcon.classList.replace('ph-sun', 'ph-moon');
-            }
+            // 2. بعد ثانيتين ونصف يتم التبديل خلف الكواليس
+            setTimeout(() => {
+                document.getElementById('lobby-phase').style.display = 'none';
+                document.getElementById('game-phase').style.display = 'flex';
+                document.getElementById('loading-screen').classList.add('hidden');
+                showGameSection('evidence-view'); // فتح أول خانة تلقائياً
+            }, 2500);
+        }
+
+        // العودة للوبي عند إنهاء الجيم تجريبياً
+        function returnToLobby() {
+            document.getElementById('game-phase').style.display = 'none';
+            document.getElementById('lobby-phase').style.display = 'flex';
+            showLobbySection('play-view');
         }
     </script>
 </body>
