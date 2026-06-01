@@ -7,16 +7,18 @@
     
     <!-- استدعاء الأيقونات -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- ربط ملف التصميم الخارجي الموحد -->
+
+    <!-- استدعاء ملف التصميم الخارجي الموحد -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- شاشة التحميل لمنع الوميض -->
     <div id="global-loader">
         <div class="spinner"></div>
     </div>
 
+    <!-- بوابة الدخول الزجاجية -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
@@ -77,7 +79,7 @@
         </div>
     </div>
 
-    <!-- واجهة اللعبة الأساسية -->
+    <!-- واجهة اللعبة الأساسية (اللوبي) -->
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
             <div class="sidebar-brand">DECEPTION.SYS</div>
@@ -111,7 +113,7 @@
         </nav>
     </div>
 
-    <!-- أكواد المنطق البرمجي (Firebase & JavaScript) -->
+    <!-- أكواد جافاسكريبت والربط بقاعدة البيانات -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -174,7 +176,7 @@
                         matches = data.matches || 0;
                         wins = data.wins || 0;
                         
-                        let userTheme = 'dark'; 
+                        let userTheme = 'dark';
                         if (data.settings && data.settings.theme) {
                             userTheme = data.settings.theme;
                         } else if (data.theme) {
@@ -237,7 +239,6 @@
                     if (!loginId.includes('@')) {
                         const loginIdLower = loginId.toLowerCase();
                         const usersRef = collection(db, "users");
-                        
                         const q = query(usersRef, where("username_lower", "==", loginIdLower));
                         const querySnapshot = await getDocs(q);
                         
