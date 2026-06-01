@@ -4,25 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>مستودع الخداع — DECEPTION.SYS</title>
-  <link rel="stylesheet" href="style-v2.css">
+  <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
 
-<!-- ─── LOADER ───────────────────────────── -->
 <div id="global-loader">
   <div class="loader-wordmark">DECEPTION.SYS</div>
   <div class="loader-track"></div>
 </div>
 
-<!-- ─── AUTH OVERLAY ─────────────────────── -->
 <div id="auth-modal" class="auth-overlay hidden">
   <div class="auth-card">
     <button class="close-modal-btn" onclick="closeAuthModal()">
       <i class="ph ph-x"></i>
     </button>
 
-    <!-- Welcome View -->
     <div id="modal-welcome-view">
       <div class="auth-logo">DECEPTION.SYS</div>
       <i class="ph ph-fingerprint auth-icon"></i>
@@ -36,7 +33,6 @@
       </div>
     </div>
 
-    <!-- Form View -->
     <div id="modal-form-view" style="display:none;">
       <div class="auth-logo">DECEPTION.SYS</div>
       <div class="modal-tabs">
@@ -48,7 +44,6 @@
 
       <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
 
-        <!-- Login Fields -->
         <div id="login-fields">
           <div class="input-group" style="margin-bottom:14px;">
             <label class="input-label">البريد الإلكتروني أو اسم المستخدم</label>
@@ -60,7 +55,6 @@
           </div>
         </div>
 
-        <!-- Register Fields -->
         <div id="register-fields" style="display:none;">
           <div class="input-group" style="margin-bottom:13px;">
             <label class="input-label">اسم المستخدم — مميز ولا يتكرر</label>
@@ -86,10 +80,8 @@
   </div>
 </div>
 
-<!-- ─── APP SHELL ─────────────────────────── -->
 <div id="app-shell" class="app-shell">
 
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-brand">
       <span class="sidebar-brand-dot"></span>
@@ -117,29 +109,23 @@
       <i class="ph ph-user"></i> حسابي
     </button>
 
-    <!-- Spacer -->
     <div style="flex:1;"></div>
 
-    <!-- Version tag -->
     <div style="padding: 0 10px;">
       <span class="badge badge-default" style="font-size:9px;">v0.1 ALPHA</span>
     </div>
   </aside>
 
-  <!-- Main -->
   <main class="main-viewport">
 
-    <!-- Header -->
     <header class="top-header">
       <div class="header-title" id="page-title">الرئيسية</div>
       <div class="header-actions">
 
-        <!-- Theme Toggle -->
         <button class="btn-icon" onclick="toggleTheme()" title="تبديل المظهر">
           <i id="theme-icon" class="ph ph-sun"></i>
         </button>
 
-        <!-- Avatar + Dropdown -->
         <div style="position:relative;">
           <div class="avatar avatar-md" id="header-avatar" onclick="toggleUserDropdown()">ز</div>
           <div class="user-dropdown" id="user-dropdown"></div>
@@ -148,12 +134,10 @@
       </div>
     </header>
 
-    <!-- Dynamic Content -->
     <div class="dynamic-content" id="content-holder"></div>
 
   </main>
 
-  <!-- Bottom Nav (Mobile) -->
   <nav class="bottom-bar">
     <button class="bottom-tab active"  onclick="loadFragment('home', this)">
       <i class="ph ph-house-simple"></i><span>الرئيسية</span>
@@ -172,12 +156,7 @@
     </button>
   </nav>
 
-</div><!-- /app-shell -->
-
-<!-- ═══════════════════════════════════════
-     FIREBASE MODULE
-════════════════════════════════════════ -->
-<script type="module">
+</div><script type="module">
   import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword,
            createUserWithEmailAndPassword,
@@ -359,9 +338,6 @@
   };
 </script>
 
-<!-- ═══════════════════════════════════════
-     UI LOGIC  (non-module)
-════════════════════════════════════════ -->
 <script>
   /* ─── Theme ─────────────────────────────── */
   function applyTheme(t){
