@@ -6,7 +6,8 @@
     <title>مستودع الخداع - اللوبي</title>
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
+
+    <!-- هنا يتم استدعاء ملف التصميم الخارجي الخاص بكلاود -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -73,6 +74,7 @@
         </div>
     </div>
 
+    <!-- واجهة اللعبة الأساسية -->
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
             <div class="sidebar-brand">DECEPTION.SYS</div>
@@ -132,7 +134,6 @@
         window.isGuest = false;
         window.currentFormMode = 'login'; 
 
-        // دالة التفريغ الذكية التي تستدعى فقط عند الإغلاق أو تسجيل الخروج
         window.clearAuthInputs = function() {
             document.getElementById('login-id').value = "";
             document.getElementById('login-password').value = "";
@@ -169,12 +170,10 @@
                         matches = data.matches || 0;
                         wins = data.wins || 0;
                         
-                        // سحب الإعدادات المستقبلية بأكملها من مستودع 'settings'
-                        let userTheme = 'dark'; // الثيم الافتراضي
+                        let userTheme = 'dark'; 
                         if (data.settings && data.settings.theme) {
                             userTheme = data.settings.theme;
                         } else if (data.theme) {
-                            // التوافقية مع الأكواد القديمة
                             userTheme = data.theme; 
                         }
 
@@ -201,7 +200,7 @@
                     <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
                 `;
 
-                window.clearAuthInputs(); // تفريغ حقول الدخول كإجراء احترازي بعد النجاح
+                window.clearAuthInputs();
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
                 window.loadFragment('home', document.querySelector('.nav-btn'));
@@ -231,9 +230,7 @@
                     let password = document.getElementById('login-password').value;
                     let loginEmail = loginId;
 
-                    // التحقق إذا لم يكن بريد إلكتروني، فيتم البحث عنه كاسم مستخدم
                     if (!loginId.includes('@')) {
-                        // تحويل الاسم المدخل لـ حروف صغيرة للمطابقة الحساسة
                         const loginIdLower = loginId.toLowerCase();
                         const usersRef = collection(db, "users");
                         
@@ -256,7 +253,6 @@
                     
                     if (password !== confirmPass) throw { message: "كلمات المرور غير متطابقة." };
                     
-                    // تحويل الاسم المدخل لحروف صغيرة للتحقق من التكرار
                     const usernameLower = username.toLowerCase();
                     const usersRef = collection(db, "users");
                     
@@ -268,15 +264,14 @@
                     const userCredential = await createUserWithEmailAndPassword(auth, email.toLowerCase(), password);
                     const user = userCredential.user;
 
-                    // حفظ بيانات اللاعب مع ملف 'settings' للميزات المستقبلية
                     await setDoc(doc(db, "users", user.uid), {
-                        username: username, // للاستعراض بالشكل الجمالي الذي اختاره
-                        username_lower: usernameLower, // للبحث في الكواليس
+                        username: username, 
+                        username_lower: usernameLower, 
                         email: email.toLowerCase(),
                         matches: 0,
                         wins: 0,
                         settings: {
-                            theme: 'dark' // أول ميزة محفوظة مستقبلاً
+                            theme: 'dark' 
                         },
                         createdAt: new Date().toISOString()
                     });
@@ -312,10 +307,8 @@
         }
 
         function handleLogout() {
-            // تفريغ إجباري عند الخروج
             if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
             
-            // إعادة الواجهة للثيم الافتراضي عند الخروج
             document.body.removeAttribute('data-theme');
             document.getElementById('theme-icon').className = 'ph ph-sun';
 
@@ -336,15 +329,12 @@
         function setFormType(type) {
             window.currentFormMode = type;
             
-            // التبديل بين التبويبات بدون مسح الحقول للحفاظ على جهد اللاعب
             document.getElementById('tab-login').classList.toggle('active', type === 'login');
             document.getElementById('tab-register').classList.toggle('active', type === 'register');
             
-            // إظهار القسم المناسب
             document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
             document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
             
-            // تفعيل حقول القسم المعروض فقط
             document.getElementById('login-id').required = type === 'login';
             document.getElementById('login-password').required = type === 'login';
             document.getElementById('reg-username').required = type === 'register';
@@ -375,7 +365,6 @@
         }
 
         function closeAuthModal() {
-            // تفريغ إجباري عند الإغلاق بـ X
             if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
@@ -397,7 +386,6 @@
                 newTheme = 'light';
             }
 
-            // تحديث الإعدادات في حساب اللاعب بالسيرفر
             if (window.authInstance && window.authInstance.currentUser && !window.isGuest) {
                 try {
                     await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
