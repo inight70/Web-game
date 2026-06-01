@@ -1,1576 +1,531 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مستودع الخداع - اللوبي</title>
-    
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <style>
-/* ═══════════════════════════════════════════════════════════════
-   DECEPTION.SYS — MASTER DESIGN SYSTEM
-   نظام التصميم الرئيسي — مرجع كل ملف في المشروع
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ── Google Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
-
-/* ══════════════════════════════════════════
-   1. DESIGN TOKENS — متغيرات التصميم
-══════════════════════════════════════════ */
-:root {
-
-  /* — الخلفيات — */
-  --bg-void:        #000000;          /* الأسود المطلق — الأعمق */
-  --bg-base:        #080808;          /* خلفية الصفحة الأساسية */
-  --bg-raised:      #0f0f0f;          /* البطاقات والسطوح المرفوعة */
-  --bg-overlay:     #141414;          /* العناصر فوق البطاقات */
-  --bg-interactive: #1a1a1a;          /* hover states للعناصر */
-
-  /* — الحدود — */
-  --border-subtle:  rgba(255,255,255,0.04);   /* أخفى حد */
-  --border-default: rgba(255,255,255,0.08);   /* الحد الافتراضي */
-  --border-strong:  rgba(255,255,255,0.14);   /* حد بارز */
-  --border-focus:   rgba(255,255,255,0.35);   /* حالة التركيز */
-
-  /* — النصوص — */
-  --text-primary:   #ffffff;
-  --text-secondary: rgba(255,255,255,0.55);
-  --text-tertiary:  rgba(255,255,255,0.28);
-  --text-disabled:  rgba(255,255,255,0.16);
-
-  /* — الـ Accent الرئيسي: Crimson السلطة — */
-  --accent:         #c0152a;          /* اللون الرئيسي */
-  --accent-bright:  #e8172f;          /* hover / active */
-  --accent-dim:     #7a0d1b;          /* حالات disabled */
-  --accent-glow:    rgba(192,21,42,0.25);    /* التوهج */
-  --accent-surface: rgba(192,21,42,0.08);    /* خلفية خفيفة */
-  --accent-border:  rgba(192,21,42,0.20);    /* حدود accent */
-
-  /* — التأثيرات — */
-  --glass-bg:       rgba(8,8,8,0.88);
-  --glass-border:   rgba(255,255,255,0.06);
-  --shadow-sm:      0 1px 3px rgba(0,0,0,0.5);
-  --shadow-md:      0 4px 16px rgba(0,0,0,0.6);
-  --shadow-lg:      0 12px 40px rgba(0,0,0,0.7);
-  --shadow-accent:  0 0 32px rgba(192,21,42,0.18);
-
-  /* — الخطوط — */
-  --font-display:   'Syne', sans-serif;        /* العناوين والعلامات */
-  --font-body:      'DM Sans', sans-serif;     /* النصوص والواجهة */
-
-  /* — الأبعاد — */
-  --radius-sm:      8px;
-  --radius-md:      12px;
-  --radius-lg:      18px;
-  --radius-xl:      24px;
-  --radius-full:    9999px;
-
-  /* — الحركة — */
-  --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out:    cubic-bezier(0.45, 0, 0.55, 1);
-  --duration-fast:  150ms;
-  --duration-base:  250ms;
-  --duration-slow:  400ms;
-
-  /* — الـ Sidebar — */
-  --sidebar-width:  240px;
-}
-
-/* Light Theme Override */
-[data-theme="light"] {
-  --bg-void:        #f0f0f0;
-  --bg-base:        #f5f5f5;
-  --bg-raised:      #ffffff;
-  --bg-overlay:     #fafafa;
-  --bg-interactive: #efefef;
-  --border-subtle:  rgba(0,0,0,0.04);
-  --border-default: rgba(0,0,0,0.08);
-  --border-strong:  rgba(0,0,0,0.14);
-  --border-focus:   rgba(0,0,0,0.35);
-  --text-primary:   #0a0a0a;
-  --text-secondary: rgba(0,0,0,0.52);
-  --text-tertiary:  rgba(0,0,0,0.30);
-  --text-disabled:  rgba(0,0,0,0.18);
-  --glass-bg:       rgba(245,245,245,0.90);
-  --glass-border:   rgba(0,0,0,0.06);
-  --shadow-sm:      0 1px 3px rgba(0,0,0,0.10);
-  --shadow-md:      0 4px 16px rgba(0,0,0,0.12);
-  --shadow-lg:      0 12px 40px rgba(0,0,0,0.16);
-}
-
-/* ══════════════════════════════════════════
-   2. RESET & BASE
-══════════════════════════════════════════ */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
-
-body {
-  font-family: var(--font-body);
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  min-height: 100vh;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--duration-slow) var(--ease-out),
-              color var(--duration-slow) var(--ease-out);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--radius-full); }
-::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
-
-/* Selection */
-::selection { background: var(--accent); color: #fff; }
-
-/* ══════════════════════════════════════════
-   3. TYPOGRAPHY SCALE
-══════════════════════════════════════════ */
-
-/* Display — للعناوين الكبيرة */
-.t-display {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 5vw, 56px);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1.05;
-}
-
-/* Heading — عناوين الأقسام */
-.t-heading {
-  font-family: var(--font-display);
-  font-size: clamp(20px, 2.5vw, 28px);
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  line-height: 1.2;
-}
-
-/* Title — عناوين البطاقات */
-.t-title {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-}
-
-/* Label — التسميات والقوائم */
-.t-label {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0;
-}
-
-/* Caption — الملاحظات والتفاصيل الصغيرة */
-.t-caption {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
-/* Overline — التسميات العلوية */
-.t-overline {
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-
-/* Brand — اسم اللعبة */
-.t-brand {
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-}
-
-/* ══════════════════════════════════════════
-   4. LAYOUT — هيكل الصفحة
-══════════════════════════════════════════ */
-
-/* شاشة التحميل */
-#global-loader {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-void);
-  z-index: 999999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 20px;
-  transition: opacity var(--duration-slow) var(--ease-out),
-              visibility var(--duration-slow) var(--ease-out);
-}
-
-#global-loader .loader-brand {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-  animation: loaderPulse 1.8s ease-in-out infinite;
-}
-
-.loader-bar {
-  width: 120px;
-  height: 1px;
-  background: var(--border-default);
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-full);
-}
-
-.loader-bar::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  transform: translateX(-100%);
-  animation: loaderSlide 1.5s var(--ease-out) infinite;
-}
-
-@keyframes loaderPulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
-}
-
-@keyframes loaderSlide {
-  0% { transform: translateX(-100%); }
-  60% { transform: translateX(0%); }
-  100% { transform: translateX(100%); }
-}
-
-/* Shell */
-.app-shell {
-  display: flex;
-  width: 100%;
-  height: 100vh;
-  filter: blur(20px);
-  pointer-events: none;
-  transition: filter var(--duration-slow) var(--ease-out);
-}
-
-.app-shell.unlocked {
-  filter: blur(0);
-  pointer-events: auto;
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  width: var(--sidebar-width);
-  background: var(--bg-void);
-  border-left: 1px solid var(--border-subtle);
-  padding: 32px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 10;
-}
-
-.sidebar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--accent-border) 30%,
-    var(--accent-border) 70%,
-    transparent
-  );
-  opacity: 0;
-  transition: opacity var(--duration-base);
-}
-
-.sidebar:hover::after { opacity: 1; }
-
-.sidebar-brand {
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 3.5px;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  padding: 0 12px;
-  margin-bottom: 36px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.sidebar-brand::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
-  flex-shrink: 0;
-  animation: brandPulse 2.5s ease-in-out infinite;
-}
-
-@keyframes brandPulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--accent); }
-  50% { opacity: 0.5; box-shadow: 0 0 4px var(--accent); }
-}
-
-.nav-section-label {
-  font-family: var(--font-display);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-disabled);
-  padding: 16px 12px 6px;
-}
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  color: var(--text-tertiary);
-  background: none;
-  border: none;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: right;
-  width: 100%;
-  position: relative;
-  transition: color var(--duration-fast) var(--ease-out),
-              background var(--duration-fast) var(--ease-out);
-}
-
-.nav-btn i {
-  font-size: 18px;
-  flex-shrink: 0;
-  transition: color var(--duration-fast);
-}
-
-.nav-btn:hover {
-  color: var(--text-secondary);
-  background: var(--bg-interactive);
-}
-
-.nav-btn.active {
-  color: var(--text-primary);
-  background: var(--bg-raised);
-}
-
-.nav-btn.active i {
-  color: var(--accent-bright);
-}
-
-.nav-btn.active::before {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2px;
-  height: 60%;
-  background: var(--accent);
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 8px var(--accent-glow);
-}
-
-/* ── Main Viewport ── */
-.main-viewport {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* ── Top Header ── */
-.top-header {
-  height: 64px;
-  border-bottom: 1px solid var(--border-subtle);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 32px;
-  flex-shrink: 0;
-  background: var(--bg-base);
-  position: relative;
-  z-index: 5;
-}
-
-.header-title {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--text-secondary);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-}
-
-/* ── Content Area ── */
-.dynamic-content {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 32px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* ── Bottom Nav (Mobile) ── */
-.bottom-bar { display: none; }
-
-/* ══════════════════════════════════════════
-   5. BUTTONS — الأزرار
-══════════════════════════════════════════ */
-
-/* زر أساسي */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  border-radius: var(--radius-md);
-  transition: all var(--duration-fast) var(--ease-out);
-  position: relative;
-  white-space: nowrap;
-  user-select: none;
-}
-
-.btn:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Primary — أبيض على أسود */
-.btn-primary {
-  background: var(--text-primary);
-  color: var(--bg-void);
-  padding: 12px 22px;
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover {
-  background: rgba(255,255,255,0.88);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-primary:active { transform: translateY(0); }
-
-/* Danger / Accent */
-.btn-accent {
-  background: var(--accent);
-  color: #fff;
-  padding: 12px 22px;
-  box-shadow: 0 4px 20px var(--accent-glow);
-}
-
-.btn-accent:hover {
-  background: var(--accent-bright);
-  box-shadow: 0 6px 28px rgba(192,21,42,0.4);
-  transform: translateY(-1px);
-}
-
-/* Ghost */
-.btn-ghost {
-  background: transparent;
-  color: var(--text-secondary);
-  padding: 12px 22px;
-  border: 1px solid var(--border-default);
-}
-
-.btn-ghost:hover {
-  background: var(--bg-interactive);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-}
-
-/* Icon Button */
-.btn-icon, .theme-btn {
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  font-size: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--duration-fast);
-}
-
-.btn-icon:hover, .theme-btn:hover {
-  background: var(--bg-interactive);
-  color: var(--text-primary);
-  border-color: var(--border-default);
-}
-
-/* Full Width */
-.btn-full { width: 100%; }
-
-/* Sizes */
-.btn-sm { padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); }
-.btn-lg { padding: 15px 28px; font-size: 15px; border-radius: var(--radius-lg); }
-
-/* Mapping old btn-core to btn-primary style for auth */
-.btn-core {
-  background: var(--text-primary);
-  color: var(--bg-void);
-  padding: 15px;
-  width: 100%;
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: var(--duration-fast);
-}
-.btn-core:hover { opacity: 0.9; }
-
-/* ══════════════════════════════════════════
-   6. CARDS — البطاقات
-══════════════════════════════════════════ */
-
-.card {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  transition: border-color var(--duration-base) var(--ease-out),
-              box-shadow var(--duration-base) var(--ease-out),
-              transform var(--duration-base) var(--ease-out);
-}
-
-.card:hover {
-  border-color: var(--border-default);
-  box-shadow: var(--shadow-md);
-}
-
-.card-interactive:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-strong);
-}
-
-.card-p { padding: 24px; }
-.card-p-lg { padding: 32px; }
-
-/* Card con accent border al hover */
-.card-accent:hover {
-  border-color: var(--accent-border);
-  box-shadow: var(--shadow-accent);
-}
-
-/* ══════════════════════════════════════════
-   7. AVATAR
-══════════════════════════════════════════ */
-
-.avatar-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--bg-overlay);
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  flex-shrink: 0;
-  border: 1px solid var(--border-default);
-  position: relative;
-  cursor: pointer;
-  transition: border-color var(--duration-fast);
-}
-
-.avatar-circle:hover { border-color: var(--border-strong); }
-
-.avatar-sm  { width: 32px; height: 32px; font-size: 13px; }
-.avatar-md  { width: 40px; height: 40px; font-size: 16px; }
-.avatar-lg  { width: 56px; height: 56px; font-size: 22px; }
-.avatar-xl  { width: 72px; height: 72px; font-size: 28px; }
-
-.avatar-online::after {
-  content: '';
-  position: absolute;
-  bottom: 1px;
-  left: 1px;
-  width: 10px;
-  height: 10px;
-  background: #22c55e;
-  border-radius: 50%;
-  border: 2px solid var(--bg-raised);
-}
-
-/* ══════════════════════════════════════════
-   8. FORM INPUTS
-══════════════════════════════════════════ */
-
-.input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-  text-align: right;
-}
-
-.input-wrapper label {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  letter-spacing: 0.3px;
-  display: block;
-}
-
-.premium-input {
-  width: 100%;
-  padding: 13px 16px;
-  background: var(--bg-void);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 14px;
-  outline: none;
-  transition: border-color var(--duration-fast),
-              box-shadow var(--duration-fast);
-}
-
-.premium-input::placeholder { color: var(--text-disabled); }
-
-.premium-input:focus {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
-}
-
-.premium-input:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-}
-
-.input-error { border-color: var(--accent) !important; }
-
-/* ══════════════════════════════════════════
-   9. BADGE & STATUS
-══════════════════════════════════════════ */
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
-
-.badge-default {
-  background: var(--bg-overlay);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-default);
-}
-
-.badge-accent {
-  background: var(--accent-surface);
-  color: var(--accent-bright);
-  border: 1px solid var(--accent-border);
-}
-
-.badge-green {
-  background: rgba(34,197,94,0.08);
-  color: #4ade80;
-  border: 1px solid rgba(34,197,94,0.2);
-}
-
-.badge-amber {
-  background: rgba(245,158,11,0.08);
-  color: #fbbf24;
-  border: 1px solid rgba(245,158,11,0.2);
-}
-
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-/* ══════════════════════════════════════════
-   10. DIVIDER
-══════════════════════════════════════════ */
-
-.divider {
-  height: 1px;
-  background: var(--border-subtle);
-  border: none;
-  margin: 0;
-}
-
-.divider-text {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-disabled);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.divider-text::before,
-.divider-text::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border-subtle);
-}
-
-/* ══════════════════════════════════════════
-   11. DROPDOWN / POPOVER
-══════════════════════════════════════════ */
-
-.user-dropdown {
-  position: absolute;
-  top: 55px;
-  left: 0;
-  background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 200;
-  width: 240px;
-  animation: dropdownReveal var(--duration-base) var(--ease-out);
-}
-
-.user-dropdown.show { display: flex; }
-
-@keyframes dropdownReveal {
-  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.dropdown-header {
-  padding: 18px 16px;
-  border-bottom: 1px solid var(--border-subtle);
-  text-align: right;
-  background: linear-gradient(180deg, var(--bg-raised) 0%, rgba(20,20,20,0.4) 100%);
-}
-
-.dropdown-name {
-  font-weight: 700;
-  font-size: 16px;
-  margin-bottom: 12px;
-  letter-spacing: 0.5px;
-  color: var(--text-primary);
-}
-
-.dropdown-stats { display: flex; gap: 20px; }
-.stat-item { display: flex; flex-direction: column; }
-.stat-label { font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 4px; }
-.stat-value { font-size: 15px; font-weight: 600; color: var(--text-primary); }
-
-
-.dropdown-item {
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: right;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
-  text-decoration: none;
-}
-
-.dropdown-item:hover {
-  background: var(--bg-interactive);
-  color: var(--text-primary);
-}
-
-.dropdown-item i { font-size: 17px; opacity: 0.7; }
-
-.dropdown-item.logout {
-  color: var(--accent-bright);
-  border-top: 1px solid var(--border-subtle);
-}
-
-.dropdown-item.logout:hover {
-  background: var(--accent-surface);
-}
-
-/* ══════════════════════════════════════════
-   12. AUTH MODAL
-══════════════════════════════════════════ */
-
-.auth-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100000;
-  transition: opacity var(--duration-slow) var(--ease-out),
-              visibility var(--duration-slow) var(--ease-out);
-}
-
-.auth-overlay.hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.auth-card {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  padding: 40px 32px;
-  width: 90%;
-  max-width: 400px;
-  position: relative;
-  box-shadow: var(--shadow-lg), 0 0 80px rgba(0,0,0,0.5);
-  animation: authReveal var(--duration-slow) var(--ease-out);
-  text-align: center;
-}
-
-@keyframes authReveal {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.auth-card h2 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.auth-card p {
-  font-size: 13.5px;
-  color: var(--text-secondary);
-  text-align: center;
-  line-height: 1.65;
-  margin-bottom: 28px;
-}
-
-.modal-tabs {
-  display: flex;
-  background: var(--bg-void);
-  border-radius: var(--radius-md);
-  padding: 3px;
-  margin-bottom: 24px;
-  gap: 2px;
-}
-
-.modal-tab-btn {
-  flex: 1;
-  padding: 9px;
-  background: none;
-  border: none;
-  color: var(--text-tertiary);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  border-radius: calc(var(--radius-md) - 2px);
-  transition: all var(--duration-fast);
-}
-
-.modal-tab-btn.active {
-  background: var(--bg-raised);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-sm);
-}
-
-.auth-error-msg {
-  display: none;
-  background: var(--accent-surface);
-  border: 1px solid var(--accent-border);
-  color: var(--accent-bright);
-  font-size: 13px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  margin-bottom: 16px;
-  text-align: center;
-  animation: shakeError 0.3s ease;
-}
-
-@keyframes shakeError {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  75% { transform: translateX(6px); }
-}
-
-.close-modal-btn {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  background: none;
-  border: none;
-  color: var(--text-tertiary);
-  font-size: 18px;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  transition: color var(--duration-fast), background var(--duration-fast);
-}
-
-.close-modal-btn:hover {
-  color: var(--text-primary);
-  background: var(--bg-interactive);
-}
-
-.link-guest {
-  display: inline-block;
-  color: var(--text-tertiary);
-  font-size: 13px;
-  font-weight: 500;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color var(--duration-fast);
-  padding: 4px;
-  margin-top: 18px;
-}
-
-.link-guest:hover { color: var(--text-primary); }
-
-/* ══════════════════════════════════════════
-   13. STATS / NUMBERS
-══════════════════════════════════════════ */
-
-.stat-card {
-  background: var(--bg-void);
-  border-radius: var(--radius-lg);
-  padding: 18px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-/* ══════════════════════════════════════════
-   14. PAGE TRANSITIONS
-══════════════════════════════════════════ */
-
-.page-section {
-  animation: pageReveal var(--duration-slow) var(--ease-out);
-}
-
-@keyframes pageReveal {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Stagger للعناصر الداخلية */
-.page-section > * { animation: pageReveal var(--duration-slow) var(--ease-out) both; }
-.page-section > *:nth-child(1) { animation-delay: 0ms; }
-.page-section > *:nth-child(2) { animation-delay: 60ms; }
-.page-section > *:nth-child(3) { animation-delay: 120ms; }
-.page-section > *:nth-child(4) { animation-delay: 180ms; }
-.page-section > *:nth-child(5) { animation-delay: 240ms; }
-
-/* ══════════════════════════════════════════
-   15. UTILITY CLASSES
-══════════════════════════════════════════ */
-
-/* Text colors */
-.text-primary   { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-tertiary  { color: var(--text-tertiary); }
-.text-accent    { color: var(--accent-bright); }
-
-/* Backgrounds */
-.bg-base     { background: var(--bg-base); }
-.bg-raised   { background: var(--bg-raised); }
-.bg-overlay  { background: var(--bg-overlay); }
-.bg-accent   { background: var(--accent-surface); }
-
-/* Borders */
-.border         { border: 1px solid var(--border-subtle); }
-.border-default { border: 1px solid var(--border-default); }
-.border-strong  { border: 1px solid var(--border-strong); }
-
-/* Radius */
-.r-sm { border-radius: var(--radius-sm); }
-.r-md { border-radius: var(--radius-md); }
-.r-lg { border-radius: var(--radius-lg); }
-.r-xl { border-radius: var(--radius-xl); }
-.r-full { border-radius: var(--radius-full); }
-
-/* Flex */
-.flex { display: flex; }
-.flex-col { display: flex; flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-1 { gap: 4px; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 12px; }
-.gap-4 { gap: 16px; }
-.gap-5 { gap: 20px; }
-.gap-6 { gap: 24px; }
-
-/* ══════════════════════════════════════════
-   16. RESPONSIVE — الموبايل
-══════════════════════════════════════════ */
-
-@media (max-width: 900px) {
-  .sidebar { display: none; }
-
-  .top-header {
-    padding: 0 20px;
-    height: 58px;
-  }
-
-  .dynamic-content {
-    padding: 20px 16px 120px 16px;
-  }
-
-  .bottom-bar {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 32px);
-    max-width: 420px;
-    height: 62px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-full);
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 8px;
-    z-index: 9999;
-    box-shadow: var(--shadow-lg);
-  }
-
-  .bottom-tab {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-disabled);
-    background: none;
-    border: none;
-    height: 100%;
-    flex: 1;
-    cursor: pointer;
-    border-radius: var(--radius-lg);
-    transition: color var(--duration-fast);
-    gap: 3px;
-  }
-
-  .bottom-tab i { font-size: 20px; }
-  .bottom-tab span { font-size: 9px; font-weight: 600; letter-spacing: 0.3px; }
-  .bottom-tab.active { color: var(--text-primary); }
-  .bottom-tab.active i { color: var(--accent-bright); }
-}
-
-/* ══════════════════════════════════════════
-   17. NOISE TEXTURE OVERLAY (اختياري)
-══════════════════════════════════════════ */
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99998;
-  opacity: 0.018;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 128px;
-}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>مستودع الخداع — DECEPTION.SYS</title>
+  <link rel="stylesheet" href="style-v2.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
 
-    <div id="global-loader">
-        <div class="loader-brand">DECEPTION.SYS</div>
-        <div class="loader-bar"></div>
+<!-- ─── LOADER ───────────────────────────── -->
+<div id="global-loader">
+  <div class="loader-wordmark">DECEPTION.SYS</div>
+  <div class="loader-track"></div>
+</div>
+
+<!-- ─── AUTH OVERLAY ─────────────────────── -->
+<div id="auth-modal" class="auth-overlay hidden">
+  <div class="auth-card">
+    <button class="close-modal-btn" onclick="closeAuthModal()">
+      <i class="ph ph-x"></i>
+    </button>
+
+    <!-- Welcome View -->
+    <div id="modal-welcome-view">
+      <div class="auth-logo">DECEPTION.SYS</div>
+      <i class="ph ph-fingerprint auth-icon"></i>
+      <h2 class="auth-title">ادخل اللوبي</h2>
+      <p class="auth-sub">سجل دخولك لتلعب وتحفظ تقدمك وإحصائياتك بأمان سحابي.</p>
+      <button class="btn btn-primary btn-full btn-lg" onclick="switchModalMode('forms')">
+        تسجيل الدخول
+      </button>
+      <div style="text-align:center; margin-top:14px;">
+        <button class="link-muted" onclick="enterAsGuest()">المتابعة كزائر</button>
+      </div>
     </div>
 
-    <div id="auth-modal" class="auth-overlay hidden">
-        <div class="auth-card">
-            <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
-            
-            <div id="modal-welcome-view">
-                <i class="ph ph-fingerprint" style="font-size: 38px; margin-bottom: 15px; display: inline-block; color: var(--accent-bright);"></i>
-                <h2>سجل دخولك</h2>
-                <p>سجل دخولك الآن لتلعب، وتحفظ تقدمك، إحصائياتك، وإعداداتك السحابية بشكل آمن.</p>
-                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول</button>
-                <button class="link-guest" onclick="enterAsGuest()">المتابعة كزائر</button>
-            </div>
+    <!-- Form View -->
+    <div id="modal-form-view" style="display:none;">
+      <div class="auth-logo">DECEPTION.SYS</div>
+      <div class="modal-tabs">
+        <button id="tab-login"    class="modal-tab-btn active" onclick="setFormType('login')">دخول</button>
+        <button id="tab-register" class="modal-tab-btn"        onclick="setFormType('register')">حساب جديد</button>
+      </div>
 
-            <div id="modal-form-view" style="display: none;">
-                <div class="modal-tabs">
-                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')">تسجيل الدخول</button>
-                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')">حساب جديد</button>
-                </div>
-                
-                <div id="auth-error" class="auth-error-msg"></div>
+      <div id="auth-error" class="auth-error"></div>
 
-                <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
-                    
-                    <div id="login-fields">
-                        <div class="input-wrapper">
-                            <label>البريد الإلكتروني أو اسم المستخدم</label>
-                            <input type="text" id="login-id" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
-                        </div>
-                        <div class="input-wrapper">
-                            <label>كلمة المرور</label>
-                            <input type="password" id="login-password" class="premium-input" placeholder="••••••••" autocomplete="new-password" required>
-                        </div>
-                    </div>
+      <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
 
-                    <div id="register-fields" style="display: none;">
-                        <div class="input-wrapper">
-                            <label>اسم المستخدم (مميز ولا يتكرر)</label>
-                            <input type="text" id="reg-username" class="premium-input" placeholder="مثال: DarkKnight" autocomplete="off">
-                        </div>
-                        <div class="input-wrapper">
-                            <label>البريد الإلكتروني</label>
-                            <input type="email" id="reg-email" class="premium-input" placeholder="name@example.com" autocomplete="off">
-                        </div>
-                        <div class="input-wrapper">
-                            <label>كلمة المرور</label>
-                            <input type="password" id="reg-password" class="premium-input" placeholder="••••••••" autocomplete="new-password">
-                        </div>
-                        <div class="input-wrapper">
-                            <label>تأكيد كلمة المرور</label>
-                            <input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••" autocomplete="new-password">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
-                </form>
-            </div>
+        <!-- Login Fields -->
+        <div id="login-fields">
+          <div class="input-group" style="margin-bottom:14px;">
+            <label class="input-label">البريد الإلكتروني أو اسم المستخدم</label>
+            <input id="login-id" class="input" type="text" placeholder="DarkKnight أو you@email.com" autocomplete="off" required>
+          </div>
+          <div class="input-group" style="margin-bottom:20px;">
+            <label class="input-label">كلمة المرور</label>
+            <input id="login-password" class="input" type="password" placeholder="••••••••" autocomplete="new-password" required>
+          </div>
         </div>
+
+        <!-- Register Fields -->
+        <div id="register-fields" style="display:none;">
+          <div class="input-group" style="margin-bottom:13px;">
+            <label class="input-label">اسم المستخدم — مميز ولا يتكرر</label>
+            <input id="reg-username" class="input" type="text" placeholder="DarkKnight" autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom:13px;">
+            <label class="input-label">البريد الإلكتروني</label>
+            <input id="reg-email" class="input" type="email" placeholder="you@email.com" autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom:13px;">
+            <label class="input-label">كلمة المرور</label>
+            <input id="reg-password" class="input" type="password" placeholder="••••••••" autocomplete="new-password">
+          </div>
+          <div class="input-group" style="margin-bottom:20px;">
+            <label class="input-label">تأكيد كلمة المرور</label>
+            <input id="reg-confirm" class="input" type="password" placeholder="••••••••" autocomplete="new-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="modal-submit-btn">دخول</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ─── APP SHELL ─────────────────────────── -->
+<div id="app-shell" class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="sidebar-brand-dot"></span>
+      DECEPTION.SYS
     </div>
 
-    <!-- واجهة اللعبة الأساسية -->
-    <div id="app-shell" class="app-shell">
-        <aside class="sidebar">
-            <div class="sidebar-brand">DECEPTION.SYS</div>
-            <div class="nav-section-label">القائمة الرئيسية</div>
-            <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph ph-house"></i> الرئيسية</button>
-            <button class="nav-btn" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i> اللعب</button>
-            <button class="nav-btn" onclick="loadFragment('leaderboard', this)"><i class="ph ph-trophy"></i> المتصدرون</button>
-            <button class="nav-btn" onclick="loadFragment('store', this)"><i class="ph ph-storefront"></i> المتجر</button>
-            <button class="nav-btn" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i> الحساب</button>
-        </aside>
+    <div class="nav-group-label">الرئيسية</div>
+    <button class="nav-btn active" onclick="loadFragment('home', this)">
+      <i class="ph ph-house-simple"></i> الرئيسية
+    </button>
+    <button class="nav-btn" onclick="loadFragment('play', this)">
+      <i class="ph ph-game-controller"></i> اللعب
+    </button>
 
-        <main class="main-viewport">
-            <header class="top-header">
-                <div class="header-title" id="page-title">الرئيسية</div>
-                <div class="header-actions">
-                    <button class="theme-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-sun"></i></button>
-                    <div style="position: relative;">
-                        <div class="avatar-circle" id="header-avatar" onclick="toggleUserDropdown()">ز</div>
-                        <div class="user-dropdown" id="user-dropdown"></div>
-                    </div>
-                </div>
-            </header>
-            <div class="dynamic-content" id="content-holder"></div>
-        </main>
+    <div class="nav-group-label">المجتمع</div>
+    <button class="nav-btn" onclick="loadFragment('leaderboard', this)">
+      <i class="ph ph-trophy"></i> المتصدرون
+    </button>
+    <button class="nav-btn" onclick="loadFragment('store', this)">
+      <i class="ph ph-storefront"></i> المتجر
+    </button>
 
-        <nav class="bottom-bar">
-            <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph ph-house"></i><span>الرئيسية</span></button>
-            <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i><span>اللعب</span></button>
-            <button class="bottom-tab" onclick="loadFragment('leaderboard', this)"><i class="ph ph-trophy"></i><span>المتصدرون</span></button>
-            <button class="bottom-tab" onclick="loadFragment('store', this)"><i class="ph ph-storefront"></i><span>المتجر</span></button>
-            <button class="bottom-tab" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i><span>الحساب</span></button>
-        </nav>
+    <div class="nav-group-label">الحساب</div>
+    <button class="nav-btn" onclick="loadFragment('profile', this)">
+      <i class="ph ph-user"></i> حسابي
+    </button>
+
+    <!-- Spacer -->
+    <div style="flex:1;"></div>
+
+    <!-- Version tag -->
+    <div style="padding: 0 10px;">
+      <span class="badge badge-default" style="font-size:9px;">v0.1 ALPHA</span>
     </div>
+  </aside>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  <!-- Main -->
+  <main class="main-viewport">
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
-            authDomain: "web-game-260b5.firebaseapp.com",
-            projectId: "web-game-260b5",
-            storageBucket: "web-game-260b5.firebasestorage.app",
-            messagingSenderId: "682229509792",
-            appId: "1:682229509792:web:11b4a404459630fcd6a3c5"
-        };
+    <!-- Header -->
+    <header class="top-header">
+      <div class="header-title" id="page-title">الرئيسية</div>
+      <div class="header-actions">
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        window.authInstance = auth; 
-        window.dbInstance = db;
-        window.updateDocFunc = updateDoc;
-        window.docFunc = doc;
-        window.signOutFunc = signOut;
-        window.isGuest = false;
-        window.currentFormMode = 'login'; 
+        <!-- Theme Toggle -->
+        <button class="btn-icon" onclick="toggleTheme()" title="تبديل المظهر">
+          <i id="theme-icon" class="ph ph-sun"></i>
+        </button>
 
-        window.clearAuthInputs = function() {
-            document.getElementById('login-id').value = "";
-            document.getElementById('login-password').value = "";
-            document.getElementById('reg-username').value = "";
-            document.getElementById('reg-email').value = "";
-            document.getElementById('reg-password').value = "";
-            document.getElementById('reg-confirm').value = "";
-            if(document.getElementById('auth-error')) document.getElementById('auth-error').style.display = 'none';
-        };
+        <!-- Avatar + Dropdown -->
+        <div style="position:relative;">
+          <div class="avatar avatar-md" id="header-avatar" onclick="toggleUserDropdown()">ز</div>
+          <div class="user-dropdown" id="user-dropdown"></div>
+        </div>
 
-        const hideLoader = () => {
-            const loader = document.getElementById('global-loader');
-            if(loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.visibility = 'hidden', 500);
-            }
-        };
+      </div>
+    </header>
 
-        onAuthStateChanged(auth, async (user) => {
-            const dropdown = document.getElementById('user-dropdown');
-            const avatar = document.getElementById('header-avatar');
+    <!-- Dynamic Content -->
+    <div class="dynamic-content" id="content-holder"></div>
 
-            if (user) {
-                window.isGuest = false;
-                let displayName = user.email.split('@')[0];
-                let matches = 0;
-                let wins = 0;
+  </main>
 
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) {
-                        const data = userDoc.data();
-                        displayName = data.username || displayName;
-                        matches = data.matches || 0;
-                        wins = data.wins || 0;
-                        
-                        let userTheme = 'dark';
-                        if (data.settings && data.settings.theme) {
-                            userTheme = data.settings.theme;
-                        } else if (data.theme) {
-                            userTheme = data.theme; 
-                        }
+  <!-- Bottom Nav (Mobile) -->
+  <nav class="bottom-bar">
+    <button class="bottom-tab active"  onclick="loadFragment('home', this)">
+      <i class="ph ph-house-simple"></i><span>الرئيسية</span>
+    </button>
+    <button class="bottom-tab" onclick="loadFragment('play', this)">
+      <i class="ph ph-game-controller"></i><span>اللعب</span>
+    </button>
+    <button class="bottom-tab" onclick="loadFragment('leaderboard', this)">
+      <i class="ph ph-trophy"></i><span>المتصدرون</span>
+    </button>
+    <button class="bottom-tab" onclick="loadFragment('store', this)">
+      <i class="ph ph-storefront"></i><span>المتجر</span>
+    </button>
+    <button class="bottom-tab" onclick="loadFragment('profile', this)">
+      <i class="ph ph-user"></i><span>حسابي</span>
+    </button>
+  </nav>
 
-                        if(userTheme === 'light') {
-                            document.body.setAttribute('data-theme', 'light');
-                            document.getElementById('theme-icon').className = 'ph ph-moon';
-                        } else {
-                            document.body.removeAttribute('data-theme');
-                            document.getElementById('theme-icon').className = 'ph ph-sun';
-                        }
-                    }
-                } catch (err) { console.warn("مشكلة في جلب إعدادات اللاعب من السيرفر", err); }
+</div><!-- /app-shell -->
 
-                avatar.innerText = displayName.charAt(0).toUpperCase();
-                dropdown.innerHTML = `
-                    <div class="dropdown-header">
-                        <div class="dropdown-name">${displayName}</div>
-                        <div class="dropdown-stats">
-                            <div class="stat-item"><span class="stat-label">المباريات</span><span class="stat-value">${matches}</span></div>
-                            <div class="stat-item"><span class="stat-label">الانتصارات</span><span class="stat-value">${wins}</span></div>
-                        </div>
-                    </div>
-                    <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي</button>
-                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
-                `;
+<!-- ═══════════════════════════════════════
+     FIREBASE MODULE
+════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword,
+           createUserWithEmailAndPassword,
+           onAuthStateChanged, signOut }            from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc,
+           collection, query, where,
+           getDocs, updateDoc }                     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-                window.clearAuthInputs(); 
-                document.getElementById('auth-modal').classList.add('hidden');
-                document.getElementById('app-shell').classList.add('unlocked');
-                window.loadFragment('home', document.querySelector('.nav-btn'));
-                hideLoader();
-            } else {
-                if (!window.isGuest) {
-                    window.clearAuthInputs();
-                    document.getElementById('auth-modal').classList.remove('hidden');
-                    document.getElementById('app-shell').classList.remove('unlocked');
-                }
-                hideLoader();
-            }
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
+    authDomain:        "web-game-260b5.firebaseapp.com",
+    projectId:         "web-game-260b5",
+    storageBucket:     "web-game-260b5.firebasestorage.app",
+    messagingSenderId: "682229509792",
+    appId:             "1:682229509792:web:11b4a404459630fcd6a3c5"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ── Globals exposed to non-module scripts ──
+  window.authInstance    = auth;
+  window.dbInstance      = db;
+  window.updateDocFunc   = updateDoc;
+  window.docFunc         = doc;
+  window.signOutFunc     = signOut;
+  window.isGuest         = false;
+  window.currentFormMode = 'login';
+  window.currentUserData = null;
+
+  // ── Clear inputs helper ──
+  window.clearAuthInputs = () => {
+    ['login-id','login-password','reg-username','reg-email','reg-password','reg-confirm']
+      .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const err = document.getElementById('auth-error');
+    if(err) err.style.display = 'none';
+  };
+
+  // ── Hide loader ──
+  const hideLoader = () => {
+    const l = document.getElementById('global-loader');
+    if(l){ l.style.opacity='0'; setTimeout(()=> l.style.visibility='hidden', 450); }
+  };
+
+  // ── Auth state ──
+  onAuthStateChanged(auth, async user => {
+    const avatar   = document.getElementById('header-avatar');
+    const dropdown = document.getElementById('user-dropdown');
+
+    if(user){
+      window.isGuest = false;
+      let name = user.email.split('@')[0], matches=0, wins=0;
+
+      try {
+        const snap = await getDoc(doc(db,'users',user.uid));
+        if(snap.exists()){
+          const d = snap.data();
+          name    = d.username || name;
+          matches = d.matches  || 0;
+          wins    = d.wins     || 0;
+          window.currentUserData = d;
+
+          // Theme restore
+          const theme = d.settings?.theme || d.theme || 'dark';
+          applyTheme(theme);
+        }
+      } catch(e){ console.warn('profile fetch error', e); }
+
+      // Avatar
+      avatar.innerText = name.charAt(0).toUpperCase();
+      avatar.classList.add('avatar-active');
+
+      // Dropdown
+      dropdown.innerHTML = `
+        <div class="dropdown-header">
+          <div class="dropdown-name">${name}</div>
+          <div class="dropdown-stats">
+            <div>
+              <div class="dropdown-stat-label">المباريات</div>
+              <div class="dropdown-stat-value">${matches}</div>
+            </div>
+            <div>
+              <div class="dropdown-stat-label">الانتصارات</div>
+              <div class="dropdown-stat-value">${wins}</div>
+            </div>
+            <div>
+              <div class="dropdown-stat-label">نسبة الفوز</div>
+              <div class="dropdown-stat-value">${matches>0?Math.round(wins/matches*100):0}%</div>
+            </div>
+          </div>
+        </div>
+        <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown()">
+          <i class="ph ph-user-circle"></i> الملف الشخصي
+        </button>
+        <button class="dropdown-item danger" onclick="handleLogout()">
+          <i class="ph ph-sign-out"></i> تسجيل الخروج
+        </button>`;
+
+      window.clearAuthInputs();
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('app-shell').classList.add('unlocked');
+      window.loadFragment('home', document.querySelector('.nav-btn'));
+      hideLoader();
+
+    } else {
+      if(!window.isGuest){
+        window.clearAuthInputs();
+        document.getElementById('auth-modal').classList.remove('hidden');
+        document.getElementById('app-shell').classList.remove('unlocked');
+      }
+      hideLoader();
+    }
+  });
+
+  // ── Auth Submit ──
+  window.handleAuthSubmit = async e => {
+    e.preventDefault();
+    const errDiv = document.getElementById('auth-error');
+    const btn    = document.getElementById('modal-submit-btn');
+    errDiv.style.display = 'none';
+    btn.disabled   = true;
+    btn.dataset.loading = '';
+    btn.innerText  = '';
+
+    try {
+      if(window.currentFormMode === 'login'){
+        let id  = document.getElementById('login-id').value.trim();
+        let pwd = document.getElementById('login-password').value;
+        let email = id;
+
+        if(!id.includes('@')){
+          const q  = query(collection(db,'users'), where('username_lower','==',id.toLowerCase()));
+          const sn = await getDocs(q);
+          if(sn.empty) throw { message:'اسم المستخدم غير موجود.' };
+          email = sn.docs[0].data().email;
+        } else { email = id.toLowerCase(); }
+
+        await signInWithEmailAndPassword(auth, email, pwd);
+
+      } else {
+        const uname   = document.getElementById('reg-username').value.trim();
+        const email   = document.getElementById('reg-email').value.trim();
+        const pwd     = document.getElementById('reg-password').value;
+        const confirm = document.getElementById('reg-confirm').value;
+
+        if(pwd !== confirm)         throw { message:'كلمات المرور غير متطابقة.' };
+        if(pwd.length < 6)          throw { message:'كلمة المرور 6 أحرف على الأقل.' };
+        if(uname.length < 3)        throw { message:'اسم المستخدم 3 أحرف على الأقل.' };
+
+        const uLower = uname.toLowerCase();
+        const q      = query(collection(db,'users'), where('username_lower','==', uLower));
+        const sn     = await getDocs(q);
+        if(!sn.empty) throw { message:'هذا الاسم محجوز، اختر اسماً آخر.' };
+
+        const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pwd);
+        await setDoc(doc(db,'users',cred.user.uid), {
+          username:       uname,
+          username_lower: uLower,
+          email:          email.toLowerCase(),
+          matches: 0, wins: 0,
+          settings: { theme:'dark' },
+          createdAt: new Date().toISOString()
         });
+      }
+    } catch(err){
+      let msg = err.message || '';
+      if(msg.includes('credential')||msg.includes('invalid-login')||msg.includes('wrong-password')||msg.includes('user-not-found'))
+        msg = 'بيانات الدخول غير صحيحة.';
+      else if(msg.includes('email-already-in-use')) msg = 'البريد مستخدم مسبقاً.';
+      else if(msg.includes('network'))              msg = 'تأكد من اتصالك بالإنترنت.';
+      errDiv.innerText      = msg;
+      errDiv.style.display  = 'block';
+    } finally {
+      delete btn.dataset.loading;
+      btn.disabled  = false;
+      btn.innerText = window.currentFormMode === 'register' ? 'إنشاء الحساب' : 'دخول';
+    }
+  };
+</script>
 
-        window.handleAuthSubmit = async function(e) {
-            e.preventDefault();
-            const errorDiv = document.getElementById('auth-error');
-            const submitBtn = document.getElementById('modal-submit-btn');
-            
-            errorDiv.style.display = 'none';
-            submitBtn.disabled = true;
-            submitBtn.innerText = "جاري التحقق...";
+<!-- ═══════════════════════════════════════
+     UI LOGIC  (non-module)
+════════════════════════════════════════ -->
+<script>
+  /* ─── Theme ─────────────────────────────── */
+  function applyTheme(t){
+    const icon = document.getElementById('theme-icon');
+    if(t === 'light'){
+      document.body.setAttribute('data-theme','light');
+      if(icon) icon.className = 'ph ph-moon';
+    } else {
+      document.body.removeAttribute('data-theme');
+      if(icon) icon.className = 'ph ph-sun';
+    }
+  }
 
-            try {
-                if (window.currentFormMode === 'login') {
-                    let loginId = document.getElementById('login-id').value.trim();
-                    let password = document.getElementById('login-password').value;
-                    let loginEmail = loginId;
+  async function toggleTheme(){
+    const isLight = document.body.getAttribute('data-theme') === 'light';
+    applyTheme(isLight ? 'dark' : 'light');
+    if(window.authInstance?.currentUser && !window.isGuest){
+      try {
+        await window.updateDocFunc(
+          window.docFunc(window.dbInstance,'users', window.authInstance.currentUser.uid),
+          { 'settings.theme': isLight ? 'dark' : 'light' }
+        );
+      } catch(e){ console.warn('theme save failed', e); }
+    }
+  }
 
-                    if (!loginId.includes('@')) {
-                        const loginIdLower = loginId.toLowerCase();
-                        const usersRef = collection(db, "users");
-                        
-                        const q = query(usersRef, where("username_lower", "==", loginIdLower));
-                        const querySnapshot = await getDocs(q);
-                        
-                        if (querySnapshot.empty) throw { message: "اسم المستخدم غير موجود." };
-                        loginEmail = querySnapshot.docs[0].data().email;
-                    } else {
-                        loginEmail = loginId.toLowerCase();
-                    }
-                    
-                    await signInWithEmailAndPassword(auth, loginEmail, password);
+  /* ─── Dropdown ───────────────────────────── */
+  function toggleUserDropdown(){
+    document.getElementById('user-dropdown').classList.toggle('show');
+  }
+  window.addEventListener('click', e => {
+    if(!e.target.closest('#header-avatar') && !e.target.closest('.user-dropdown'))
+      document.querySelectorAll('.user-dropdown.show').forEach(d => d.classList.remove('show'));
+  });
 
-                } else {
-                    const username = document.getElementById('reg-username').value.trim();
-                    const email = document.getElementById('reg-email').value.trim();
-                    const password = document.getElementById('reg-password').value;
-                    const confirmPass = document.getElementById('reg-confirm').value;
-                    
-                    if (password !== confirmPass) throw { message: "كلمات المرور غير متطابقة." };
-                    
-                    const usernameLower = username.toLowerCase();
-                    const usersRef = collection(db, "users");
-                    
-                    const q = query(usersRef, where("username_lower", "==", usernameLower));
-                    const querySnapshot = await getDocs(q);
-                    
-                    if (!querySnapshot.empty) throw { message: "اسم المستخدم محجوز مسبقاً، اختر اسماً آخر." };
+  /* ─── Logout ─────────────────────────────── */
+  function handleLogout(){
+    if(window.clearAuthInputs) window.clearAuthInputs();
+    applyTheme('dark');
+    window.currentUserData = null;
+    const avatar = document.getElementById('header-avatar');
+    if(avatar) avatar.classList.remove('avatar-active');
+    window.signOutFunc(window.authInstance).then(() => {
+      document.getElementById('user-dropdown').classList.remove('show');
+      document.getElementById('auth-modal').classList.remove('hidden');
+      document.getElementById('app-shell').classList.remove('unlocked');
+    });
+  }
 
-                    const userCredential = await createUserWithEmailAndPassword(auth, email.toLowerCase(), password);
-                    const user = userCredential.user;
+  /* ─── Modal helpers ──────────────────────── */
+  function switchModalMode(mode){
+    if(mode === 'forms'){
+      document.getElementById('modal-welcome-view').style.display = 'none';
+      document.getElementById('modal-form-view').style.display    = 'block';
+    }
+  }
 
-                    await setDoc(doc(db, "users", user.uid), {
-                        username: username, 
-                        username_lower: usernameLower, 
-                        email: email.toLowerCase(),
-                        matches: 0,
-                        wins: 0,
-                        settings: {
-                            theme: 'dark' 
-                        },
-                        createdAt: new Date().toISOString()
-                    });
-                }
-            } catch (error) {
-                let errorMsg = error.message || "";
-                if (errorMsg.includes("credential") || errorMsg.includes("invalid-login") || errorMsg.includes("wrong-password") || errorMsg.includes("user-not-found")) {
-                    errorMsg = "بيانات الدخول غير صحيحة.";
-                } else if (errorMsg.includes("email-already-in-use")) {
-                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً.";
-                } else if (errorMsg.includes("network-request-failed")) {
-                    errorMsg = "تأكد من اتصالك بالإنترنت.";
-                }
-                errorDiv.innerText = errorMsg;
-                errorDiv.style.display = 'block';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = window.currentFormMode === 'register' ? 'إنشاء الحساب' : 'دخول';
-            }
-        }
-    </script>
+  function setFormType(type){
+    window.currentFormMode = type;
+    document.getElementById('tab-login').classList.toggle('active',    type === 'login');
+    document.getElementById('tab-register').classList.toggle('active', type === 'register');
+    document.getElementById('login-fields').style.display    = type === 'login'    ? 'block' : 'none';
+    document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
 
-    <script>
-        function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('show'); }
+    // Toggle required
+    document.getElementById('login-id').required       = type === 'login';
+    document.getElementById('login-password').required = type === 'login';
+    document.getElementById('reg-username').required   = type === 'register';
+    document.getElementById('reg-email').required      = type === 'register';
+    document.getElementById('reg-password').required   = type === 'register';
 
-        window.onclick = function(event) {
-            if (!event.target.matches('.avatar-circle') && !event.target.closest('.user-dropdown')) {
-                const dropdowns = document.getElementsByClassName("user-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
-                }
-            }
-        }
+    document.getElementById('modal-submit-btn').innerText =
+      type === 'register' ? 'إنشاء الحساب' : 'دخول';
+  }
 
-        function handleLogout() {
-            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
-            
-            document.body.removeAttribute('data-theme');
-            document.getElementById('theme-icon').className = 'ph ph-sun';
+  function enterAsGuest(){
+    window.isGuest = true;
+    if(window.clearAuthInputs) window.clearAuthInputs();
 
-            window.signOutFunc(window.authInstance).then(() => {
-                toggleUserDropdown();
-                document.getElementById('auth-modal').classList.remove('hidden');
-                document.getElementById('app-shell').classList.remove('unlocked');
-            });
-        }
+    const avatar   = document.getElementById('header-avatar');
+    const dropdown = document.getElementById('user-dropdown');
+    avatar.innerText = 'ز';
+    avatar.classList.remove('avatar-active');
 
-        function switchModalMode(mode) {
-            if(mode === 'forms') {
-                document.getElementById('modal-welcome-view').style.display = 'none';
-                document.getElementById('modal-form-view').style.display = 'block';
-            }
-        }
+    dropdown.innerHTML = `
+      <div class="dropdown-header">
+        <div class="dropdown-name tx-3">زائر غير مسجل</div>
+      </div>
+      <button class="dropdown-item" onclick="
+        document.getElementById('auth-modal').classList.remove('hidden');
+        toggleUserDropdown(); switchModalMode('forms'); setFormType('login');">
+        <i class="ph ph-sign-in"></i> سجل دخولك لحفظ تقدمك
+      </button>`;
 
-        function setFormType(type) {
-            window.currentFormMode = type;
-            
-            document.getElementById('tab-login').classList.toggle('active', type === 'login');
-            document.getElementById('tab-register').classList.toggle('active', type === 'register');
-            
-            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
-            document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
-            
-            document.getElementById('login-id').required = type === 'login';
-            document.getElementById('login-password').required = type === 'login';
-            document.getElementById('reg-username').required = type === 'register';
-            document.getElementById('reg-email').required = type === 'register';
-            document.getElementById('reg-password').required = type === 'register';
+    document.getElementById('auth-modal').classList.add('hidden');
+    document.getElementById('app-shell').classList.add('unlocked');
+    loadFragment('home', document.querySelector('.nav-btn'));
+  }
 
-            document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
-        }
+  function closeAuthModal(){
+    if(window.clearAuthInputs) window.clearAuthInputs();
+    document.getElementById('auth-modal').classList.add('hidden');
+    document.getElementById('app-shell').classList.add('unlocked');
+    if(!window.isGuest) enterAsGuest();
+  }
 
-        function enterAsGuest() {
-            window.isGuest = true;
-            const avatar = document.getElementById('header-avatar');
-            const dropdown = document.getElementById('user-dropdown');
-            
-            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+  /* ─── Fragment Router ────────────────────── */
+  const PAGE_TITLES = {
+    home:        'الرئيسية',
+    play:        'غرف اللعب',
+    leaderboard: 'المتصدرون',
+    store:       'متجر المزايا',
+    profile:     'إعدادات الحساب'
+  };
 
-            avatar.innerText = "ز";
-            dropdown.innerHTML = `
-                <div class="dropdown-header">
-                    <div class="dropdown-name" style="color: var(--text-tertiary);">زائر غير مسجل</div>
-                </div>
-                <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول لحفظ تقدمك</button>
-            `;
+  window.loadFragment = function(page, el){
+    const holder = document.getElementById('content-holder');
 
-            document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('unlocked');
-            loadFragment('home', document.querySelector('.nav-btn'));
-        }
+    document.getElementById('page-title').innerText = PAGE_TITLES[page] || page;
+    document.querySelectorAll('.nav-btn, .bottom-tab').forEach(b => b.classList.remove('active'));
+    if(el) el.classList.add('active');
 
-        function closeAuthModal() {
-            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
-            document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('unlocked');
-            if(!window.isGuest) enterAsGuest();
-        }
+    // Guest guard for profile
+    if(page === 'profile' && window.isGuest){
+      holder.innerHTML = `
+        <div class="page-section">
+          <div class="card card-glass card-p-lg" style="max-width:480px; margin:40px auto; text-align:center;">
+            <i class="ph ph-user-circle-plus" style="font-size:38px; color:var(--tx-3); display:block; margin-bottom:14px;"></i>
+            <div class="ff-display fw-700" style="font-size:17px; margin-bottom:8px;">أنت تتصفح كزائر</div>
+            <p class="tx-2" style="font-size:13px; line-height:1.65; margin-bottom:22px;">
+              أنشئ حسابك الآن لحفظ تقدمك وإحصائياتك وإعداداتك.
+            </p>
+            <button class="btn btn-primary" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">
+              سجل دخولك الآن
+            </button>
+          </div>
+        </div>`;
+      return;
+    }
 
-        async function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('theme-icon');
-            let newTheme = 'dark';
+    // Fetch fragment
+    fetch('pages/' + page + '.html')
+      .then(r => { if(!r.ok) throw new Error(); return r.text(); })
+      .then(html => {
+        holder.innerHTML = `<div class="page-section">${html}</div>`;
+        // Execute injected scripts
+        holder.querySelectorAll('script').forEach(old => {
+          const s = document.createElement('script');
+          s.textContent = old.textContent;
+          document.body.appendChild(s);
+          old.remove();
+        });
+      })
+      .catch(() => {
+        holder.innerHTML = `
+          <div class="page-section">
+            <div class="card card-glass card-p" style="text-align:center; border-style:dashed;">
+              <i class="ph ph-file-dashed" style="font-size:32px; color:var(--tx-3); display:block; margin-bottom:10px;"></i>
+              <p class="tx-3" style="font-size:13px;">ملف <code>pages/${page}.html</code> غير موجود بعد.</p>
+            </div>
+          </div>`;
+      });
+  };
+</script>
 
-            if (body.getAttribute('data-theme') === 'light') {
-                body.removeAttribute('data-theme');
-                icon.className = 'ph ph-sun';
-                newTheme = 'dark';
-            } else {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'ph ph-moon';
-                newTheme = 'light';
-            }
-
-            if (window.authInstance && window.authInstance.currentUser && !window.isGuest) {
-                try {
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
-                        "settings.theme": newTheme
-                    });
-                } catch (e) {
-                    console.warn("تعذر حفظ الثيم سحابياً", e);
-                }
-            }
-        }
-
-        function loadFragment(pageName, element) {
-            const contentHolder = document.getElementById('content-holder');
-            const titles = { 'home': 'الرئيسية', 'play': 'غرف اللعب', 'leaderboard': 'المتصدرون', 'store': 'متجر المزايا', 'profile': 'إعدادات الحساب' };
-            
-            document.getElementById('page-title').innerText = titles[pageName];
-            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => btn.classList.remove('active'));
-            if(element) element.classList.add('active');
-
-            if (pageName === 'profile' && window.isGuest) {
-                contentHolder.innerHTML = `
-                    <div style="padding: 40px; border: 1px solid var(--border-default); background-color: var(--bg-raised); border-radius: var(--radius-xl); text-align: center; max-width: 500px; margin: 40px auto;">
-                        <i class="ph ph-user-circle-plus" style="font-size: 40px; margin-bottom: 15px; color: var(--text-disabled);"></i>
-                        <h3 class="t-title" style="margin-bottom: 10px;">أنت تتصفح كزائر</h3>
-                        <p class="t-caption" style="margin-bottom: 25px; line-height: 1.6;">قسم الحساب مخصص للاعبين المسجلين. أنشئ حسابك الآن لحفظ تقدمك.</p>
-                        <button class="btn btn-primary" style="max-width: 200px; margin: 0 auto; display: block;" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">سجل دخولك الآن</button>
-                    </div>`;
-                return;
-            }
-
-            fetch(pageName + '.html')
-                .then(response => { if (!response.ok) throw new Error(); return response.text(); })
-                .then(html => { contentHolder.innerHTML = html; })
-                .catch(() => {
-                    contentHolder.innerHTML = `
-                        <div style="padding: 40px; border: 1px dashed var(--border-strong); border-radius: var(--radius-lg); text-align: center;">
-                            <p class="t-label" style="color: var(--text-tertiary);">ملف <b>${pageName}.html</b> غير موجود.</p>
-                        </div>`;
-                });
-        }
-    </script>
 </body>
 </html>
