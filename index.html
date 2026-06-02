@@ -1,527 +1,593 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <title>DECEPTION.SYS — اللوبي</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DECEPTION.SYS - المنصة</title>
+    
+    <!-- أيقونات الفوسفور الفاخرة -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- استدعاء ستايل الجديد (نظام تصميم Matte) -->
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
-<!-- Film grain -->
-<div id="noise-layer"></div>
-
-<!-- ─── LOADER ─── -->
-<div id="global-loader">
-  <div class="loader-logo">DECEPTION.SYS</div>
-  <div class="loader-track"></div>
-</div>
-
-<!-- ════════════════════════════════════════
-     AUTH MODAL
-════════════════════════════════════════ -->
-<div id="auth-modal" class="auth-overlay hidden">
-  <div class="auth-card">
-    <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
-
-    <!-- Welcome view -->
-    <div id="modal-welcome-view">
-      <div class="auth-card-brand">DECEPTION.SYS</div>
-      <div class="auth-icon-w"><i class="ph ph-fingerprint"></i></div>
-      <h2 class="auth-title">ادخل الساحة</h2>
-      <p class="auth-sub">سجل دخولك لتحفظ تقدمك وإحصائياتك وإعداداتك السحابية.</p>
-      <button class="btn btn-primary btn-full btn-lg" onclick="switchModalMode('forms')">
-        <i class="ph ph-sign-in"></i> تسجيل الدخول
-      </button>
-      <div style="text-align:center;margin-top:14px;">
-        <button class="link-subtle" onclick="enterAsGuest()">المتابعة كزائر</button>
-      </div>
+    <!-- شاشة التحميل -->
+    <div id="global-loader">
+        <div class="spinner"></div>
     </div>
 
-    <!-- Form view -->
-    <div id="modal-form-view" style="display:none">
-      <div class="auth-card-brand">DECEPTION.SYS</div>
-      <div class="modal-tabs">
-        <button id="tab-login"    class="modal-tab-btn active" onclick="setFormType('login')">تسجيل الدخول</button>
-        <button id="tab-register" class="modal-tab-btn"        onclick="setFormType('register')">حساب جديد</button>
-      </div>
-      <div id="auth-error" class="auth-error"></div>
-      <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
-
-        <div id="login-fields">
-          <div class="input-group" style="margin-bottom:13px">
-            <label class="input-label">البريد الإلكتروني أو اسم المستخدم</label>
-            <input id="login-id" class="input" type="text" placeholder="DarkKnight أو you@mail.com" autocomplete="off" required>
-          </div>
-          <div class="input-group" style="margin-bottom:20px">
-            <label class="input-label">كلمة المرور</label>
-            <input id="login-password" class="input" type="password" placeholder="••••••••" autocomplete="new-password" required>
-          </div>
-        </div>
-
-        <div id="register-fields" style="display:none">
-          <div class="input-group" style="margin-bottom:12px">
-            <label class="input-label">اسم المستخدم</label>
-            <input id="reg-username" class="input" type="text" placeholder="DarkKnight" autocomplete="off">
-          </div>
-          <div class="input-group" style="margin-bottom:12px">
-            <label class="input-label">البريد الإلكتروني</label>
-            <input id="reg-email" class="input" type="email" placeholder="you@mail.com" autocomplete="off">
-          </div>
-          <div class="input-group" style="margin-bottom:12px">
-            <label class="input-label">كلمة المرور</label>
-            <input id="reg-password" class="input" type="password" placeholder="••••••••" autocomplete="new-password">
-          </div>
-          <div class="input-group" style="margin-bottom:20px">
-            <label class="input-label">تأكيد كلمة المرور</label>
-            <input id="reg-confirm" class="input" type="password" placeholder="••••••••" autocomplete="new-password">
-          </div>
-        </div>
-
-        <button type="submit" id="modal-submit-btn" class="btn btn-primary btn-full">دخول</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     APP SHELL
-════════════════════════════════════════ -->
-<div id="app-shell" class="app-shell">
-
-  <!-- ── Icon Sidebar (Desktop) ── -->
-  <aside class="sidebar">
-    <!-- Logo mark -->
-    <div class="sidebar-logo">D</div>
-
-    <!-- Main nav -->
-    <button class="nav-icon-btn active" title="الرئيسية" onclick="loadFragment('home',this)">
-      <i class="ph ph-house-simple"></i>
-    </button>
-    <button class="nav-icon-btn" title="اللعب" onclick="loadFragment('play',this)">
-      <i class="ph ph-game-controller"></i>
-    </button>
-    <button class="nav-icon-btn" title="المتصدرون" onclick="loadFragment('leaderboard',this)">
-      <i class="ph ph-trophy"></i>
-    </button>
-
-    <div class="sidebar-sep"></div>
-
-    <button class="nav-icon-btn" title="المتجر" onclick="loadFragment('store',this)">
-      <i class="ph ph-storefront"></i>
-    </button>
-    <button class="nav-icon-btn" title="حسابي" onclick="loadFragment('profile',this)">
-      <i class="ph ph-user"></i>
-    </button>
-
-    <!-- Bottom -->
-    <div class="sidebar-bottom">
-      <button class="nav-icon-btn" title="الإعدادات" onclick="">
-        <i class="ph ph-gear"></i>
-      </button>
-      <button class="nav-icon-btn" id="theme-btn-sidebar" title="المظهر" onclick="toggleTheme()">
-        <i id="theme-icon" class="ph ph-sun"></i>
-      </button>
-    </div>
-  </aside>
-
-  <!-- ── Main Viewport ── -->
-  <main class="main-viewport">
-
-    <!-- Header -->
-    <header class="top-header">
-      <!-- Mobile: show brand name -->
-      <div class="header-brand" style="display:none" id="mobile-brand">
-        DECEPTION<span>.</span>SYS
-      </div>
-
-      <!-- Search -->
-      <div class="search-box">
-        <i class="ph ph-magnifying-glass"></i>
-        <input type="text" placeholder="البحث...">
-      </div>
-
-      <!-- CTA — Start Game -->
-      <button class="header-cta" onclick="loadFragment('play', document.querySelectorAll('.nav-icon-btn')[1])">
-        <i class="ph ph-game-controller"></i>
-        ابدأ اللعبة
-      </button>
-
-      <div class="header-spacer"></div>
-
-      <!-- Page title (hidden on mobile, shown desktop) -->
-      <div class="header-title" id="page-title">الرئيسية</div>
-
-      <!-- Actions -->
-      <div class="header-actions">
-        <!-- Desktop theme toggle -->
-        <button class="btn-icon" id="theme-btn-header" onclick="toggleTheme()" style="display:none">
-          <i class="ph ph-sun"></i>
-        </button>
-        <button class="btn-icon">
-          <i class="ph ph-bell"></i>
-        </button>
-        <div style="position:relative">
-          <div class="avatar avatar-md" id="header-avatar" onclick="toggleDropdown()">ز</div>
-          <div class="user-dropdown" id="user-dropdown"></div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Content + Right panel -->
-    <div class="content-wrapper">
-      <div class="dynamic-content" id="content-holder"></div>
-
-      <!-- Right panel (Desktop only) — like image right column -->
-      <aside class="right-panel" id="right-panel">
-        <div style="font-family:var(--wide);font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:14px">
-          أونلاين الآن
-        </div>
-        <!-- Placeholder online players — populated by pages -->
-        <div id="right-panel-content">
-          <div style="text-align:center;padding:32px 0;color:var(--tx4);font-size:13px">
-            جارٍ التحميل...
-          </div>
-        </div>
-      </aside>
-    </div>
-
-  </main>
-
-  <!-- ── Bottom Nav (Mobile) ── -->
-  <nav class="bottom-bar">
-    <button class="bottom-tab active" onclick="loadFragment('home',this)">
-      <i class="ph ph-house-simple"></i><span>الرئيسية</span>
-    </button>
-    <button class="bottom-tab" onclick="loadFragment('play',this)">
-      <i class="ph ph-game-controller"></i><span>اللعب</span>
-    </button>
-    <button class="bottom-tab" onclick="loadFragment('leaderboard',this)">
-      <i class="ph ph-trophy"></i><span>المتصدرون</span>
-    </button>
-    <button class="bottom-tab" onclick="loadFragment('store',this)">
-      <i class="ph ph-storefront"></i><span>المتجر</span>
-    </button>
-    <button class="bottom-tab" onclick="loadFragment('profile',this)">
-      <i class="ph ph-user"></i><span>حسابي</span>
-    </button>
-  </nav>
-
-</div><!-- /app-shell -->
-
-<!-- ════════════════════════════════════════
-     FIREBASE
-════════════════════════════════════════ -->
-<script type="module">
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import {
-    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-    onAuthStateChanged, signOut
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import {
-    getFirestore, doc, setDoc, getDoc,
-    collection, query, where, getDocs, updateDoc
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  const app  = initializeApp({
-    apiKey:            "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
-    authDomain:        "web-game-260b5.firebaseapp.com",
-    projectId:         "web-game-260b5",
-    storageBucket:     "web-game-260b5.firebasestorage.app",
-    messagingSenderId: "682229509792",
-    appId:             "1:682229509792:web:11b4a404459630fcd6a3c5"
-  });
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-
-  Object.assign(window, {
-    authInstance: auth, dbInstance: db,
-    updateDocFunc: updateDoc, docFunc: doc, signOutFunc: signOut,
-    isGuest: false, currentFormMode: 'login', currentUserData: null
-  });
-
-  window.clearAuthInputs = () => {
-    ['login-id','login-password','reg-username','reg-email','reg-password','reg-confirm']
-      .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-    const err = document.getElementById('auth-error');
-    if(err) err.style.display = 'none';
-  };
-
-  const hideLoader = () => {
-    const l = document.getElementById('global-loader');
-    if(!l) return;
-    l.style.opacity = '0';
-    setTimeout(() => l.style.visibility = 'hidden', 500);
-  };
-
-  const buildDropdown = (name, matches, wins) => {
-    const wr = matches > 0 ? Math.round(wins/matches*100) : 0;
-    return `
-      <div class="dropdown-header">
-        <div class="dropdown-name">${name}</div>
-        <div class="dropdown-stats">
-          <div><div class="ds-lbl">المباريات</div><div class="ds-val">${matches}</div></div>
-          <div><div class="ds-lbl">الانتصارات</div><div class="ds-val">${wins}</div></div>
-          <div><div class="ds-lbl">نسبة الفوز</div><div class="ds-val">${wr}%</div></div>
-        </div>
-      </div>
-      <button class="dropdown-item" onclick="loadFragment('profile',document.querySelectorAll('.nav-icon-btn')[4]);toggleDropdown()">
-        <i class="ph ph-user-circle"></i> الملف الشخصي
-      </button>
-      <button class="dropdown-item danger" onclick="handleLogout()">
-        <i class="ph ph-sign-out"></i> تسجيل الخروج
-      </button>`;
-  };
-
-  onAuthStateChanged(auth, async user => {
-    const avatar   = document.getElementById('header-avatar');
-    const dropdown = document.getElementById('user-dropdown');
-    if(user) {
-      window.isGuest = false;
-      let name = user.email.split('@')[0], matches = 0, wins = 0;
-      try {
-        const snap = await getDoc(doc(db,'users',user.uid));
-        if(snap.exists()) {
-          const d = snap.data();
-          name = d.username || name; matches = d.matches||0; wins = d.wins||0;
-          window.currentUserData = d;
-          applyTheme(d.settings?.theme || d.theme || 'dark');
-        }
-      } catch(e) { console.warn(e); }
-      avatar.innerText = name.charAt(0).toUpperCase();
-      dropdown.innerHTML = buildDropdown(name, matches, wins);
-      window.clearAuthInputs();
-      document.getElementById('auth-modal').classList.add('hidden');
-      document.getElementById('app-shell').classList.add('unlocked');
-      window.loadFragment('home', document.querySelector('.nav-icon-btn'));
-      hideLoader();
-    } else {
-      if(!window.isGuest) {
-        window.clearAuthInputs();
-        document.getElementById('auth-modal').classList.remove('hidden');
-        document.getElementById('app-shell').classList.remove('unlocked');
-      }
-      hideLoader();
-    }
-  });
-
-  window.handleAuthSubmit = async e => {
-    e.preventDefault();
-    const errDiv = document.getElementById('auth-error');
-    const btn    = document.getElementById('modal-submit-btn');
-    errDiv.style.display = 'none';
-    btn.disabled = true; btn.innerText = '...';
-    try {
-      if(window.currentFormMode === 'login') {
-        let id = document.getElementById('login-id').value.trim();
-        const pw = document.getElementById('login-password').value;
-        let email = id;
-        if(!id.includes('@')) {
-          const q = query(collection(db,'users'), where('username_lower','==',id.toLowerCase()));
-          const r = await getDocs(q);
-          if(r.empty) throw {message:'اسم المستخدم غير موجود.'};
-          email = r.docs[0].data().email;
-        } else email = id.toLowerCase();
-        await signInWithEmailAndPassword(auth, email, pw);
-      } else {
-        const uname = document.getElementById('reg-username').value.trim();
-        const email = document.getElementById('reg-email').value.trim();
-        const pw    = document.getElementById('reg-password').value;
-        const conf  = document.getElementById('reg-confirm').value;
-        if(pw !== conf)   throw {message:'كلمات المرور غير متطابقة.'};
-        if(pw.length < 6) throw {message:'كلمة المرور 6 أحرف على الأقل.'};
-        if(uname.length < 3) throw {message:'الاسم 3 أحرف على الأقل.'};
-        const uL = uname.toLowerCase();
-        const r  = await getDocs(query(collection(db,'users'), where('username_lower','==',uL)));
-        if(!r.empty) throw {message:'هذا الاسم محجوز.'};
-        const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pw);
-        await setDoc(doc(db,'users',cred.user.uid), {
-          username:uname, username_lower:uL, email:email.toLowerCase(),
-          matches:0, wins:0, settings:{theme:'dark'},
-          createdAt:new Date().toISOString()
-        });
-      }
-    } catch(err) {
-      let m = err.message||'';
-      if(m.includes('credential')||m.includes('invalid-login')||m.includes('wrong-password')) m='بيانات الدخول غير صحيحة.';
-      else if(m.includes('email-already-in-use')) m='البريد مستخدم مسبقاً.';
-      else if(m.includes('network')) m='تأكد من اتصالك بالإنترنت.';
-      errDiv.innerText = m; errDiv.style.display = 'block';
-    } finally {
-      btn.disabled = false;
-      btn.innerText = window.currentFormMode === 'register' ? 'إنشاء الحساب' : 'دخول';
-    }
-  };
-
-  function applyTheme(t) {
-    const icons = document.querySelectorAll('#theme-icon');
-    if(t === 'light') {
-      document.body.setAttribute('data-theme','light');
-      icons.forEach(i => i.className = 'ph ph-moon');
-    } else {
-      document.body.removeAttribute('data-theme');
-      icons.forEach(i => i.className = 'ph ph-sun');
-    }
-  }
-
-  window.toggleTheme = async () => {
-    const isLight = document.body.getAttribute('data-theme') === 'light';
-    applyTheme(isLight ? 'dark' : 'light');
-    if(window.authInstance?.currentUser && !window.isGuest) {
-      try {
-        await window.updateDocFunc(
-          window.docFunc(window.dbInstance,'users',window.authInstance.currentUser.uid),
-          {'settings.theme': isLight ? 'dark' : 'light'}
-        );
-      } catch(e) {}
-    }
-  };
-</script>
-
-<!-- ════════════════════════════════════════
-     UI LOGIC
-════════════════════════════════════════ -->
-<script>
-  /* Responsive header tweak */
-  (function(){
-    const mq = window.matchMedia('(max-width:900px)');
-    const apply = (m) => {
-      const mb = document.getElementById('mobile-brand');
-      const th = document.getElementById('theme-btn-header');
-      if(mb) mb.style.display = m.matches ? 'block' : 'none';
-      if(th) th.style.display = m.matches ? 'none'  : 'flex';
-    };
-    mq.addEventListener('change', apply);
-    apply(mq);
-  })();
-
-  function toggleDropdown() {
-    document.getElementById('user-dropdown').classList.toggle('show');
-  }
-  document.addEventListener('click', e => {
-    if(!e.target.closest('#header-avatar') && !e.target.closest('#user-dropdown'))
-      document.getElementById('user-dropdown')?.classList.remove('show');
-  });
-
-  function handleLogout() {
-    if(typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
-    document.body.removeAttribute('data-theme');
-    document.querySelectorAll('#theme-icon').forEach(i => i.className = 'ph ph-sun');
-    window.currentUserData = null;
-    window.signOutFunc(window.authInstance).then(() => {
-      document.getElementById('user-dropdown').classList.remove('show');
-      document.getElementById('auth-modal').classList.remove('hidden');
-      document.getElementById('app-shell').classList.remove('unlocked');
-    });
-  }
-
-  function switchModalMode(mode) {
-    if(mode === 'forms') {
-      document.getElementById('modal-welcome-view').style.display = 'none';
-      document.getElementById('modal-form-view').style.display    = 'block';
-    }
-  }
-
-  function setFormType(t) {
-    window.currentFormMode = t;
-    document.getElementById('tab-login').classList.toggle('active',    t === 'login');
-    document.getElementById('tab-register').classList.toggle('active', t === 'register');
-    document.getElementById('login-fields').style.display    = t === 'login'    ? 'block' : 'none';
-    document.getElementById('register-fields').style.display = t === 'register' ? 'block' : 'none';
-    document.getElementById('login-id').required             = t === 'login';
-    document.getElementById('login-password').required       = t === 'login';
-    document.getElementById('reg-username').required         = t === 'register';
-    document.getElementById('reg-email').required            = t === 'register';
-    document.getElementById('reg-password').required         = t === 'register';
-    document.getElementById('modal-submit-btn').innerText    = t === 'register' ? 'إنشاء الحساب' : 'دخول';
-  }
-
-  function enterAsGuest() {
-    window.isGuest = true;
-    if(typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
-    const av = document.getElementById('header-avatar');
-    const dd = document.getElementById('user-dropdown');
-    av.innerText = 'ز';
-    dd.innerHTML = `
-      <div class="dropdown-header">
-        <div class="dropdown-name tx3">زائر</div>
-      </div>
-      <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden');toggleDropdown();switchModalMode('forms');setFormType('login')">
-        <i class="ph ph-sign-in"></i> سجل دخولك
-      </button>`;
-    document.getElementById('auth-modal').classList.add('hidden');
-    document.getElementById('app-shell').classList.add('unlocked');
-    loadFragment('home', document.querySelector('.nav-icon-btn'));
-  }
-
-  function closeAuthModal() {
-    if(typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
-    if(!window.isGuest) enterAsGuest();
-    else {
-      document.getElementById('auth-modal').classList.add('hidden');
-      document.getElementById('app-shell').classList.add('unlocked');
-    }
-  }
-
-  /* ════ FRAGMENT ROUTER ════ */
-  const TITLES = {
-    home:'الرئيسية', play:'غرف اللعب',
-    leaderboard:'المتصدرون', store:'المتجر', profile:'الحساب'
-  };
-
-  window.loadFragment = function(page, el) {
-    const holder = document.getElementById('content-holder');
-
-    document.getElementById('page-title').innerText = TITLES[page] || page;
-
-    /* Sync both nav systems */
-    document.querySelectorAll('.nav-icon-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.bottom-tab').forEach(b => b.classList.remove('active'));
-    if(el) el.classList.add('active');
-
-    /* Guest guard */
-    if(page === 'profile' && window.isGuest) {
-      holder.innerHTML = `
-        <div class="page-section" style="display:flex;justify-content:center;padding-top:60px">
-          <div class="card p-lg" style="text-align:center;max-width:420px;width:100%">
-            <i class="ph ph-lock-key" style="font-size:36px;color:var(--tx4);display:block;margin-bottom:14px"></i>
-            <div style="font-size:17px;font-weight:700;margin-bottom:7px">للاعبين المسجلين فقط</div>
-            <p style="font-size:13px;color:var(--tx3);line-height:1.6;margin-bottom:22px">
-              أنشئ حسابك لتحفظ تقدمك وإحصائياتك وإعداداتك.
-            </p>
-            <button class="btn btn-primary btn-full" onclick="document.getElementById('auth-modal').classList.remove('hidden');switchModalMode('forms')">
-              <i class="ph ph-user-plus"></i> سجل دخولك
-            </button>
-          </div>
-        </div>`;
-      return;
-    }
-
-    fetch('pages/' + page + '.html')
-      .then(r => { if(!r.ok) throw 0; return r.text(); })
-      .then(html => {
-        holder.innerHTML = `<div class="page-section">${html}</div>`;
-        holder.querySelectorAll('script').forEach(old => {
-          const s = document.createElement('script');
-          s.textContent = old.textContent;
-          document.body.appendChild(s);
-          old.remove();
-        });
-      })
-      .catch(() => {
-        holder.innerHTML = `
-          <div class="page-section" style="display:flex;justify-content:center;padding-top:60px">
-            <div class="card p-md" style="text-align:center;border-style:dashed;max-width:360px;width:100%">
-              <i class="ph ph-file-dashed" style="font-size:30px;color:var(--tx4);display:block;margin-bottom:10px"></i>
-              <p style="color:var(--tx4);font-size:13px">
-                <code style="color:var(--red)">pages/${page}.html</code> غير موجود بعد.
-              </p>
+    <!-- نافذة تسجيل الدخول الزجاجية الفاخرة -->
+    <div id="auth-modal" class="auth-overlay hidden">
+        <div class="auth-card">
+            <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
+            
+            <div id="modal-welcome-view">
+                <i class="ph ph-fingerprint" style="font-size: 42px; margin-bottom: 16px; color: var(--text-pure); display: inline-block;"></i>
+                <h2>سجل دخولك</h2>
+                <p>سجل دخولك الآن للوصول إلى المنصة الفاخرة، وحفظ تقدمك السحابي.</p>
+                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول</button>
+                <button class="link-guest" onclick="enterAsGuest()">المتابعة كزائر</button>
             </div>
-          </div>`;
-      });
-  };
-</script>
+
+            <div id="modal-form-view" style="display: none;">
+                <div class="modal-tabs">
+                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')">دخول</button>
+                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')">حساب جديد</button>
+                </div>
+                
+                <div id="auth-error" class="auth-error-msg"></div>
+
+                <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
+                    <div id="login-fields">
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني أو اسم المستخدم</label>
+                            <input type="text" id="login-id" class="premium-input" placeholder="أدخل البيانات" required>
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="login-password" class="premium-input" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div id="register-fields" style="display: none;">
+                        <div class="input-wrapper">
+                            <label>اسم المستخدم (فريد)</label>
+                            <input type="text" id="reg-username" class="premium-input" placeholder="DarkKnight">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="reg-email" class="premium-input" placeholder="name@example.com">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="reg-password" class="premium-input" placeholder="••••••••">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>تأكيد كلمة المرور</label>
+                            <input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 15px;">دخول</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- الهيكل الثلاثي الجديد (App Shell) -->
+    <div id="app-shell" class="app-shell">
+        
+        <!-- الشريط الجانبي الأيسر (أيقونات فقط كما طلبت) -->
+        <aside class="sidebar-left">
+            <div class="logo-container">
+                <div class="logo-text-1">Gege</div>
+                <div class="logo-text-2">Gemink</div>
+            </div>
+            
+            <div class="nav-group">
+                <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
+                <button class="nav-btn" onclick="loadFragment('play', this)"><i class="ph-fill ph-video-camera"></i></button>
+                <button class="nav-btn" onclick="loadFragment('store', this)"><i class="ph-fill ph-users"></i></button>
+                <button class="nav-btn" onclick="loadFragment('leaderboard', this)"><i class="ph-fill ph-star"></i></button>
+            </div>
+            
+            <div class="nav-divider"></div>
+            
+            <div class="nav-group">
+                <button class="nav-btn"><i class="ph ph-chart-line-up"></i></button>
+                <button class="nav-btn"><i class="ph ph-chat-circle-dots"></i></button>
+                <button class="nav-btn"><i class="ph ph-link"></i></button>
+            </div>
+            
+            <div class="theme-toggle-wrapper">
+                <button class="theme-btn-mini active"><i class="ph-fill ph-sun"></i></button>
+                <button class="theme-btn-mini" onclick="toggleTheme()"><i class="ph-fill ph-moon"></i></button>
+            </div>
+        </aside>
+
+        <!-- منطقة المحتوى الرئيسية -->
+        <main class="main-area">
+            <!-- الهيدر العلوي الفاخر -->
+            <header class="top-header">
+                <div class="search-wrapper">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" class="search-input" placeholder="Search...">
+                    <button class="search-btn">Search</button>
+                </div>
+                
+                <div class="header-tools">
+                    <button class="btn-stream"><i class="ph-fill ph-video-camera"></i> Start Stream</button>
+                    <button class="icon-action"><i class="ph ph-gear"></i></button>
+                    <button class="icon-action"><i class="ph ph-bell"></i></button>
+                    
+                    <div style="position: relative;">
+                        <div class="user-profile-chip" onclick="toggleUserDropdown()">
+                            <div class="avatar-header" id="header-avatar">ز</div>
+                            <div class="user-info">
+                                <span class="user-name" id="display-name">زائر</span>
+                                <span class="user-status">Online</span>
+                            </div>
+                            <i class="ph ph-caret-down" style="color: var(--text-dim);"></i>
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <!-- القائمة المنسدلة تملأ برمجياً -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- المحتوى الديناميكي (وضعت لك تصميم الرئيسية كافتراضي لترى الفخامة فوراً) -->
+            <div class="dynamic-content" id="content-holder">
+                <!-- هذا المحتوى مطابق لصورة Dribbble التي أرسلتها -->
+                <div class="home-hero-grid">
+                    <div class="hero-banner">
+                        <div class="hero-tag">#TRENDING</div>
+                        <h1 class="hero-title">Watch streaming games anywhere anytime</h1>
+                        <p class="hero-subtitle">Watch your hero compete by watching on Gege Gemink.</p>
+                        <button class="hero-btn">Watch now</button>
+                        <div class="hero-illustration"></div>
+                    </div>
+                    
+                    <div class="top-streamers-panel">
+                        <h2 class="panel-title">Top Streamer</h2>
+                        <div class="streamer-list">
+                            <div class="streamer-item">
+                                <div class="streamer-info-left">
+                                    <span class="streamer-rank">01</span>
+                                    <img src="https://i.pravatar.cc/100?img=11" class="avatar-mini" style="width: 40px; height: 40px;">
+                                    <div class="streamer-text">
+                                        <h4>Ethos <i class="ph-fill ph-check-circle"></i></h4>
+                                        <p>1M Followers</p>
+                                    </div>
+                                </div>
+                                <span class="streamer-tag">Valorant</span>
+                            </div>
+                            <div class="streamer-item">
+                                <div class="streamer-info-left">
+                                    <span class="streamer-rank">02</span>
+                                    <img src="https://i.pravatar.cc/100?img=12" class="avatar-mini" style="width: 40px; height: 40px;">
+                                    <div class="streamer-text">
+                                        <h4>Tarik <i class="ph-fill ph-check-circle"></i></h4>
+                                        <p>500K Followers</p>
+                                    </div>
+                                </div>
+                                <span class="streamer-tag">Valorant</span>
+                            </div>
+                            <div class="streamer-item">
+                                <div class="streamer-info-left">
+                                    <span class="streamer-rank">03</span>
+                                    <img src="https://i.pravatar.cc/100?img=13" class="avatar-mini" style="width: 40px; height: 40px;">
+                                    <div class="streamer-text">
+                                        <h4>Dream <i class="ph-fill ph-check-circle"></i></h4>
+                                        <p>482K Followers</p>
+                                    </div>
+                                </div>
+                                <span class="streamer-tag green">Minecraft</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trending-section">
+                    <div class="trending-header">
+                        <h3>Trending</h3>
+                        <h2>#Play With Valorant</h2>
+                        <div class="trending-tabs">
+                            <div class="tabs-left">
+                                <span class="tab-link active">Top Stream</span>
+                                <span class="tab-link">Currently Online</span>
+                                <span class="tab-link">Verifed</span>
+                            </div>
+                            <button class="filter-btn"><i class="ph ph-faders"></i> Filter</button>
+                        </div>
+                    </div>
+                    
+                    <div class="video-grid">
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <span class="badge-live">Live</span>
+                                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80">
+                            </div>
+                            <div class="video-info">
+                                <img src="https://i.pravatar.cc/100?img=11" class="avatar-mini">
+                                <div class="video-meta">
+                                    <h4 class="video-title">What Aggressive YORU 2.0 plays...</h4>
+                                    <p class="video-stats">195,565 Watching • Mar 2, 2026</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <span class="badge-live">Live</span>
+                                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80">
+                            </div>
+                            <div class="video-info">
+                                <img src="https://i.pravatar.cc/100?img=12" class="avatar-mini">
+                                <div class="video-meta">
+                                    <h4 class="video-title">SPEEDRUNNING VALORANT RANKED!</h4>
+                                    <p class="video-stats">33,462 Watching • Mar 4, 2026</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <span class="badge-live">Live</span>
+                                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80">
+                            </div>
+                            <div class="video-info">
+                                <img src="https://i.pravatar.cc/100?img=14" class="avatar-mini">
+                                <div class="video-meta">
+                                    <h4 class="video-title">Valorant Indonesia - Skin Banting</h4>
+                                    <p class="video-stats">5,887,037 Watching • Aug 15, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- الشريط الجانبي الأيمن (Social Sidebar) -->
+        <aside class="sidebar-right">
+            <div class="avatar-mini" style="margin-bottom: 20px;">
+                <img src="https://i.pravatar.cc/100?img=33" style="width:100%; border-radius:50%;">
+            </div>
+            <div class="avatar-mini">
+                <img src="https://i.pravatar.cc/100?img=34" style="width:100%; border-radius:50%;">
+                <div class="online-dot"></div>
+            </div>
+            <div class="avatar-mini">
+                <img src="https://i.pravatar.cc/100?img=35" style="width:100%; border-radius:50%;">
+                <div class="online-dot"></div>
+            </div>
+            <div class="avatar-mini">
+                <img src="https://i.pravatar.cc/100?img=36" style="width:100%; border-radius:50%;">
+                <div class="online-dot"></div>
+            </div>
+            <button class="btn-add"><i class="ph ph-plus"></i></button>
+        </aside>
+    </div>
+
+    <!-- شريط التنقل السفلي الخاص بالجوال (مخفي في اللابتوب ويظهر كبسولة طافية في الجوال) -->
+    <nav class="bottom-bar">
+        <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
+        <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph-fill ph-video-camera"></i></button>
+        <button class="bottom-tab" onclick="loadFragment('store', this)"><i class="ph-fill ph-users"></i></button>
+        <button class="bottom-tab" onclick="loadFragment('leaderboard', this)"><i class="ph-fill ph-star"></i></button>
+        <button class="bottom-tab" onclick="loadFragment('profile', this)"><i class="ph-fill ph-user"></i></button>
+    </nav>
+
+    <!-- أكواد جافاسكريبت والربط بفايربيس (كما هي مستقرة 100%) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
+            authDomain: "web-game-260b5.firebaseapp.com",
+            projectId: "web-game-260b5",
+            storageBucket: "web-game-260b5.firebasestorage.app",
+            messagingSenderId: "682229509792",
+            appId: "1:682229509792:web:11b4a404459630fcd6a3c5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        window.authInstance = auth; 
+        window.dbInstance = db;
+        window.updateDocFunc = updateDoc;
+        window.docFunc = doc;
+        window.signOutFunc = signOut;
+        window.isGuest = false;
+        window.currentFormMode = 'login'; 
+
+        window.clearAuthInputs = function() {
+            document.getElementById('login-id').value = "";
+            document.getElementById('login-password').value = "";
+            document.getElementById('reg-username').value = "";
+            document.getElementById('reg-email').value = "";
+            document.getElementById('reg-password').value = "";
+            document.getElementById('reg-confirm').value = "";
+            if(document.getElementById('auth-error')) document.getElementById('auth-error').style.display = 'none';
+        };
+
+        const hideLoader = () => {
+            const loader = document.getElementById('global-loader');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 500);
+            }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            const dropdown = document.getElementById('user-dropdown');
+            const avatar = document.getElementById('header-avatar');
+            const nameDisplay = document.getElementById('display-name');
+
+            if (user) {
+                window.isGuest = false;
+                let displayName = user.email.split('@')[0];
+                let matches = 0;
+                let wins = 0;
+
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        displayName = data.username || displayName;
+                        matches = data.matches || 0;
+                        wins = data.wins || 0;
+                        
+                        let userTheme = 'dark';
+                        if (data.settings && data.settings.theme) {
+                            userTheme = data.settings.theme;
+                        } else if (data.theme) {
+                            userTheme = data.theme; 
+                        }
+
+                        if(userTheme === 'light') {
+                            document.body.setAttribute('data-theme', 'light');
+                        } else {
+                            document.body.removeAttribute('data-theme');
+                        }
+                    }
+                } catch (err) { console.warn("مشكلة في جلب إعدادات اللاعب من السيرفر", err); }
+
+                avatar.innerText = displayName.charAt(0).toUpperCase();
+                if(nameDisplay) nameDisplay.innerText = displayName;
+                
+                dropdown.innerHTML = `
+                    <div class="dropdown-header">
+                        <div class="dropdown-name">${displayName}</div>
+                        <div class="dropdown-stats">
+                            <div class="stat-item"><span class="stat-label">المباريات</span><span class="stat-value">${matches}</span></div>
+                            <div class="stat-item"><span class="stat-label">الانتصارات</span><span class="stat-value">${wins}</span></div>
+                        </div>
+                    </div>
+                    <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي</button>
+                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph-fill ph-sign-out"></i> تسجيل الخروج</button>
+                `;
+
+                window.clearAuthInputs(); 
+                document.getElementById('auth-modal').classList.add('hidden');
+                document.getElementById('app-shell').classList.add('unlocked');
+                hideLoader();
+            } else {
+                if (!window.isGuest) {
+                    window.clearAuthInputs();
+                    document.getElementById('auth-modal').classList.remove('hidden');
+                    document.getElementById('app-shell').classList.remove('unlocked');
+                }
+                hideLoader();
+            }
+        });
+
+        window.handleAuthSubmit = async function(e) {
+            e.preventDefault();
+            const errorDiv = document.getElementById('auth-error');
+            const submitBtn = document.getElementById('modal-submit-btn');
+            
+            errorDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerText = "جاري التحقق...";
+
+            try {
+                if (window.currentFormMode === 'login') {
+                    let loginId = document.getElementById('login-id').value.trim();
+                    let password = document.getElementById('login-password').value;
+                    let loginEmail = loginId;
+
+                    if (!loginId.includes('@')) {
+                        const loginIdLower = loginId.toLowerCase();
+                        const usersRef = collection(db, "users");
+                        const q = query(usersRef, where("username_lower", "==", loginIdLower));
+                        const querySnapshot = await getDocs(q);
+                        
+                        if (querySnapshot.empty) throw { message: "اسم المستخدم غير موجود." };
+                        loginEmail = querySnapshot.docs[0].data().email;
+                    } else {
+                        loginEmail = loginId.toLowerCase();
+                    }
+                    
+                    await signInWithEmailAndPassword(auth, loginEmail, password);
+
+                } else {
+                    const username = document.getElementById('reg-username').value.trim();
+                    const email = document.getElementById('reg-email').value.trim();
+                    const password = document.getElementById('reg-password').value;
+                    const confirmPass = document.getElementById('reg-confirm').value;
+                    
+                    if (password !== confirmPass) throw { message: "كلمات المرور غير متطابقة." };
+                    
+                    const usernameLower = username.toLowerCase();
+                    const usersRef = collection(db, "users");
+                    
+                    const q = query(usersRef, where("username_lower", "==", usernameLower));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) throw { message: "اسم المستخدم محجوز مسبقاً، اختر اسماً آخر." };
+
+                    const userCredential = await createUserWithEmailAndPassword(auth, email.toLowerCase(), password);
+                    const user = userCredential.user;
+
+                    await setDoc(doc(db, "users", user.uid), {
+                        username: username, 
+                        username_lower: usernameLower, 
+                        email: email.toLowerCase(),
+                        matches: 0,
+                        wins: 0,
+                        settings: {
+                            theme: 'dark' 
+                        },
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                let errorMsg = error.message || "";
+                if (errorMsg.includes("credential") || errorMsg.includes("invalid-login") || errorMsg.includes("wrong-password") || errorMsg.includes("user-not-found")) {
+                    errorMsg = "بيانات الدخول غير صحيحة.";
+                } else if (errorMsg.includes("email-already-in-use")) {
+                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً.";
+                } else if (errorMsg.includes("network-request-failed")) {
+                    errorMsg = "تأكد من اتصالك بالإنترنت.";
+                }
+                errorDiv.innerText = errorMsg;
+                errorDiv.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = window.currentFormMode === 'register' ? 'إنشاء الحساب' : 'دخول';
+            }
+        }
+    </script>
+
+    <script>
+        function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('show'); }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-profile-chip') && !event.target.closest('.user-profile-chip') && !event.target.closest('.user-dropdown')) {
+                const dropdowns = document.getElementsByClassName("user-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
+                }
+            }
+        }
+
+        function handleLogout() {
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+            document.body.removeAttribute('data-theme');
+            window.signOutFunc(window.authInstance).then(() => {
+                toggleUserDropdown();
+                document.getElementById('auth-modal').classList.remove('hidden');
+                document.getElementById('app-shell').classList.remove('unlocked');
+            });
+        }
+
+        function switchModalMode(mode) {
+            if(mode === 'forms') {
+                document.getElementById('modal-welcome-view').style.display = 'none';
+                document.getElementById('modal-form-view').style.display = 'block';
+            }
+        }
+
+        function setFormType(type) {
+            window.currentFormMode = type;
+            document.getElementById('tab-login').classList.toggle('active', type === 'login');
+            document.getElementById('tab-register').classList.toggle('active', type === 'register');
+            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
+            document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
+            document.getElementById('login-id').required = type === 'login';
+            document.getElementById('login-password').required = type === 'login';
+            document.getElementById('reg-username').required = type === 'register';
+            document.getElementById('reg-email').required = type === 'register';
+            document.getElementById('reg-password').required = type === 'register';
+            document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
+        }
+
+        function enterAsGuest() {
+            window.isGuest = true;
+            const avatar = document.getElementById('header-avatar');
+            const dropdown = document.getElementById('user-dropdown');
+            const nameDisplay = document.getElementById('display-name');
+            
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+            avatar.innerText = "ز";
+            if(nameDisplay) nameDisplay.innerText = "زائر";
+            
+            dropdown.innerHTML = `
+                <div class="dropdown-header">
+                    <div class="dropdown-name" style="color: var(--text-dim);">زائر غير مسجل</div>
+                </div>
+                <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول لحفظ تقدمك</button>
+            `;
+
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('app-shell').classList.add('unlocked');
+        }
+
+        function closeAuthModal() {
+            if (typeof window.clearAuthInputs === 'function') window.clearAuthInputs();
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('app-shell').classList.add('unlocked');
+            if(!window.isGuest) enterAsGuest();
+        }
+
+        async function toggleTheme() {
+            const body = document.body;
+            let newTheme = 'dark';
+            if (body.getAttribute('data-theme') === 'light') {
+                body.removeAttribute('data-theme');
+                newTheme = 'dark';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                newTheme = 'light';
+            }
+
+            if (window.authInstance && window.authInstance.currentUser && !window.isGuest) {
+                try {
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
+                        "settings.theme": newTheme
+                    });
+                } catch (e) { console.warn("تعذر حفظ الثيم", e); }
+            }
+        }
+
+        function loadFragment(pageName, element) {
+            // مؤقتاً، لأننا وضعنا تصميم الرئيسية داخل الإندكس، سنتجاهل الحقن إذا ضغطنا الرئيسية
+            if(pageName === 'home') {
+                document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => btn.classList.remove('active'));
+                if(element) element.classList.add('active');
+                return;
+            }
+            
+            const contentHolder = document.getElementById('content-holder');
+            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => btn.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            if (pageName === 'profile' && window.isGuest) {
+                contentHolder.innerHTML = `
+                    <div style="padding: 40px; border: 1px solid var(--border-dim); background-color: var(--panel-bg); border-radius: 20px; text-align: center; max-width: 500px; margin: 40px auto;">
+                        <i class="ph ph-user-circle-plus" style="font-size: 40px; margin-bottom: 15px; color: var(--text-dim);"></i>
+                        <h3 style="font-size: 18px; margin-bottom: 10px;">أنت تتصفح كزائر</h3>
+                        <button class="btn-core" style="max-width: 200px; margin: 0 auto; display: block;" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">سجل دخولك الآن</button>
+                    </div>`;
+                return;
+            }
+
+            fetch(pageName + '.html')
+                .then(response => { if (!response.ok) throw new Error(); return response.text(); })
+                .then(html => { contentHolder.innerHTML = html; })
+                .catch(() => {
+                    contentHolder.innerHTML = `
+                        <div style="padding: 40px; border: 1px dashed var(--border-dim); border-radius: 16px; text-align: center;">
+                            <p style="color: var(--text-dim); font-size: 14px;">ملف <b>${pageName}.html</b> قيد الإنشاء.</p>
+                        </div>`;
+                });
+        }
+    </script>
 </body>
 </html>
