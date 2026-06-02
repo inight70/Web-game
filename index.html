@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مستودع الخداع - اللوبي</title>
+    <title>DECEPTION.SYS</title>
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="style.css?v=3.0">
 </head>
 <body>
 
     <div id="global-loader"><div class="spinner"></div></div>
 
-    <!-- نافذة المصادقة الزجاجية -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <i class="ph ph-fingerprint" style="font-size: 38px; color: var(--accent-red); margin-bottom: 15px; display: inline-block;"></i>
+                <i class="ph ph-fingerprint" style="font-size: 38px; margin-bottom: 15px; color: var(--accent-primary);"></i>
                 <h2>سجل دخولك</h2>
-                <p>سجل دخولك الآن لتلعب، وتحفظ تقدمك، إحصائياتك السحابية.</p>
-                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول</button>
+                <p>سجل دخولك الآن لتلعب، وتحفظ تقدمك، إحصائياتك، وإعداداتك بشكل آمن.</p>
+                <button class="btn-core btn-primary" onclick="switchModalMode('forms')">تسجيل الدخول</button>
                 <button class="link-guest" onclick="enterAsGuest()">المتابعة كزائر</button>
             </div>
-
             <div id="modal-form-view" style="display: none;">
                 <div class="modal-tabs">
                     <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')">تسجيل الدخول</button>
@@ -32,7 +31,7 @@
                 <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
                     <div id="login-fields">
                         <div class="input-wrapper">
-                            <label>البريد أو اسم المستخدم</label>
+                            <label>البريد الإلكتروني أو اسم المستخدم</label>
                             <input type="text" id="login-id" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
                         </div>
                         <div class="input-wrapper">
@@ -58,88 +57,76 @@
                             <input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••">
                         </div>
                     </div>
-                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
+                    <button type="submit" class="btn-core btn-primary" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- الهيكل الثلاثي الأبعاد (يمين: قائمة، وسط: محتوى، يسار: أصدقاء) -->
     <div id="app-shell" class="app-shell">
         
-        <!-- 1. الشريط الجانبي الأساسي (أيقونات فقط) -->
-        <aside class="sidebar-left">
-            <div class="brand-logo">DECEP<br>TION</div>
-            <div class="nav-menu">
-                <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-house"></i></button>
-                <button class="nav-btn" onclick="loadFragment('play', this)"><i class="ph-fill ph-game-controller"></i></button>
-                <button class="nav-btn" onclick="loadFragment('leaderboard', this)"><i class="ph-fill ph-trophy"></i></button>
-                <button class="nav-btn" onclick="loadFragment('store', this)"><i class="ph-fill ph-storefront"></i></button>
-                <button class="nav-btn" onclick="loadFragment('profile', this)"><i class="ph-fill ph-user"></i></button>
+        <!-- 1. الشريط الجانبي الأيسر (Navigation) -->
+        <aside class="left-sidebar">
+            <div class="brand-logo">
+                <span>Gege</span>
+                <span>Gemink</span>
             </div>
-            <div class="theme-wrapper">
-                <button id="theme-light-btn" class="theme-btn-mini" onclick="setTheme('light')"><i class="ph-fill ph-sun"></i></button>
-                <button id="theme-dark-btn" class="theme-btn-mini active" onclick="setTheme('dark')"><i class="ph-fill ph-moon"></i></button>
+            <div class="nav-icons">
+                <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i><span>الرئيسية</span></button>
+                <button class="nav-btn" onclick="loadFragment('play', this)"><i class="ph ph-video-camera"></i><span>اللعب</span></button>
+                <button class="nav-btn" onclick="loadFragment('leaderboard', this)"><i class="ph ph-users"></i><span>المتصدرون</span></button>
+                <button class="nav-btn" onclick="loadFragment('store', this)"><i class="ph ph-star"></i><span>المتجر</span></button>
+                <button class="nav-btn" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i><span>الحساب</span></button>
+            </div>
+            <div class="theme-pill">
+                <button class="theme-icon-btn" onclick="setTheme('light')" id="btn-theme-light"><i class="ph ph-sun"></i></button>
+                <button class="theme-icon-btn active" onclick="setTheme('dark')" id="btn-theme-dark"><i class="ph ph-moon"></i></button>
             </div>
         </aside>
 
-        <!-- 2. منطقة المحتوى الأوسط -->
+        <!-- 2. منطقة المحتوى الوسطى (Main Content) -->
         <main class="main-viewport">
             <header class="top-header">
-                <!-- أزرار أو تفاصيل خاصة باللعبة بدلاً من البحث -->
                 <div class="header-actions-left">
-                    <div class="action-chip"><i class="ph-fill ph-coin"></i> <span>1,200</span></div>
-                    <div class="action-chip"><i class="ph-fill ph-star"></i> <span>مستوى 5</span></div>
+                    <button class="btn-quick-match"><i class="ph ph-play-circle"></i> Quick Match</button>
                 </div>
-
-                <!-- ملف المستخدم الشخصي (مثل الصورة) -->
-                <div style="position: relative;">
-                    <div class="header-profile" onclick="toggleUserDropdown()">
-                        <div class="profile-info">
-                            <span class="profile-name" id="display-name">زائر</span>
-                            <span class="profile-status" id="display-status"><span class="status-dot"></span> متصل</span>
-                        </div>
-                        <div class="profile-avatar" id="header-avatar">ز</div>
-                        <i class="ph ph-caret-down" style="color: var(--text-secondary); margin-right: 8px;"></i>
-                    </div>
+                <div class="header-actions-right">
+                    <button class="header-icon"><i class="ph ph-gear"></i></button>
+                    <button class="header-icon"><i class="ph ph-bell"></i></button>
                     
-                    <div class="user-dropdown" id="user-dropdown">
-                        <div class="dropdown-header">
-                            <div class="dropdown-name" id="drop-name">زائر غير مسجل</div>
-                            <div class="dropdown-stats">
-                                <div class="stat-item"><span class="stat-label">المباريات</span><span class="stat-value" id="stat-matches">0</span></div>
-                                <div class="stat-item"><span class="stat-label">الانتصارات</span><span class="stat-value" id="stat-wins">0</span></div>
+                    <div style="position: relative;">
+                        <button class="user-profile-btn" onclick="toggleUserDropdown()">
+                            <div class="user-info-text">
+                                <span class="name" id="header-user-name">Guest User</span>
+                                <span class="status" id="header-user-status">Offline</span>
                             </div>
-                        </div>
-                        <div id="dropdown-actions">
-                            <!-- سيتم تعبئتها بالجافاسكريبت -->
-                        </div>
+                            <div class="avatar-circle" id="header-avatar">G</div>
+                            <i class="ph ph-caret-down" style="color: var(--text-secondary); margin-right: 5px;"></i>
+                        </button>
+                        <div class="user-dropdown" id="user-dropdown"></div>
                     </div>
                 </div>
             </header>
             <div class="dynamic-content" id="content-holder"></div>
         </main>
 
-        <!-- 3. قائمة الأصدقاء (الشريط الأيسر) مطابقة للصورة -->
-        <aside class="sidebar-right">
-            <div class="friends-header"><i class="ph-fill ph-users"></i></div>
-            
-            <div id="friends-container" class="friends-list">
-                <!-- سيتم تعبئتها عبر الجافاسكريبت بناءً على حالة تسجيل الدخول -->
+        <!-- 3. الشريط الجانبي الأيمن (Friends Sidebar) -->
+        <aside class="right-sidebar">
+            <div class="friends-container" id="friends-container-content">
+                <!-- سيتم حقن المحتوى هنا برمجياً بناءً على حالة تسجيل الدخول -->
             </div>
         </aside>
 
-        <!-- شريط الجوال (يظهر فقط في الشاشات الصغيرة) -->
+        <!-- شريط التصفح للجوال (Mobile Bottom Nav) -->
         <nav class="bottom-bar">
-            <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph-fill ph-house"></i></button>
-            <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph-fill ph-game-controller"></i></button>
-            <button class="bottom-tab" onclick="loadFragment('leaderboard', this)"><i class="ph-fill ph-trophy"></i></button>
-            <button class="bottom-tab" onclick="loadFragment('store', this)"><i class="ph-fill ph-storefront"></i></button>
-            <button class="bottom-tab" onclick="loadFragment('profile', this)"><i class="ph-fill ph-user"></i></button>
+            <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i><span>الرئيسية</span></button>
+            <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph ph-video-camera"></i><span>اللعب</span></button>
+            <button class="bottom-tab" onclick="loadFragment('leaderboard', this)"><i class="ph ph-users"></i><span>المتصدرون</span></button>
+            <button class="bottom-tab" onclick="loadFragment('store', this)"><i class="ph ph-star"></i><span>المتجر</span></button>
+            <button class="bottom-tab" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i><span>الحساب</span></button>
         </nav>
     </div>
 
-    <!-- Firebase Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -158,144 +145,170 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        window.authInstance = auth; 
-        window.dbInstance = db;
-        window.updateDocFunc = updateDoc;
-        window.docFunc = doc;
-        window.signOutFunc = signOut;
-        window.isGuest = false;
-        window.currentFormMode = 'login'; 
+        window.authInstance = auth; window.dbInstance = db;
+        window.updateDocFunc = updateDoc; window.docFunc = doc; window.signOutFunc = signOut;
+        window.isGuest = false; window.currentFormMode = 'login'; 
+
+        window.clearAuthInputs = function() {
+            document.getElementById('login-id').value = ""; document.getElementById('login-password').value = "";
+            document.getElementById('reg-username').value = ""; document.getElementById('reg-email').value = "";
+            document.getElementById('reg-password').value = ""; document.getElementById('reg-confirm').value = "";
+            if(document.getElementById('auth-error')) document.getElementById('auth-error').style.display = 'none';
+        };
 
         const hideLoader = () => {
             const loader = document.getElementById('global-loader');
             if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 500); }
         };
 
-        // دالة تحديث واجهة الأصدقاء بناءً على الصورة
-        function updateFriendsUI(isLoggedIn, hasFriends = false) {
-            const container = document.getElementById('friends-container');
+        // دالة لتحديث شريط الأصدقاء الأيمن بناءً على حالة اللاعب
+        const updateFriendsSidebar = (isLoggedIn) => {
+            const container = document.getElementById('friends-container-content');
             if (!isLoggedIn) {
+                // حالة الزائر
                 container.innerHTML = `
-                    <div class="friends-guest-state">
-                        <i class="ph-fill ph-lock-key"></i>
-                        <p>سجل دخولك<br>لترى الأصدقاء</p>
-                    </div>`;
+                    <div class="guest-friends-msg" onclick="document.getElementById('auth-modal').classList.remove('hidden');" style="cursor:pointer;">
+                        <i class="ph ph-users"></i>
+                        <span>سجل دخولك لترى الأصدقاء</span>
+                    </div>
+                `;
             } else {
-                if (hasFriends) {
-                    // هيكل مطابق للصورة (أيقونات دوائر متصلين) + زر إضافة بالنهاية
-                    container.innerHTML = `
-                        <div class="friend-avatar-wrapper">
-                            <div class="friend-avatar online">A</div>
-                            <div class="friend-status-badge"></div>
-                        </div>
-                        <div class="friend-avatar-wrapper">
-                            <div class="friend-avatar">K</div>
-                        </div>
-                        <button class="btn-add-friend" title="إضافة صديق"><i class="ph ph-plus"></i></button>
-                    `;
-                } else {
-                    // إذا لم يكن لديه أصدقاء، نعرض دائرة الإضافة فقط
-                    container.innerHTML = `
-                        <button class="btn-add-friend" title="إضافة صديق"><i class="ph ph-plus"></i></button>
-                    `;
-                }
+                // حالة المسجل دخول (بناءً على طلبك: دائرة الإضافة فقط كبداية)
+                container.innerHTML = `
+                    <div class="friends-title">Friends</div>
+                    <button class="add-friend-btn"><i class="ph ph-plus"></i></button>
+                    <!-- مستقبلاً يتم حقن دوائر الأصدقاء هنا -->
+                `;
             }
-        }
+        };
 
         onAuthStateChanged(auth, async (user) => {
+            const dropdown = document.getElementById('user-dropdown');
             const avatar = document.getElementById('header-avatar');
-            const dName = document.getElementById('display-name');
-            const dropName = document.getElementById('drop-name');
-            const actions = document.getElementById('dropdown-actions');
+            const nameEl = document.getElementById('header-user-name');
+            const statusEl = document.getElementById('header-user-status');
 
             if (user) {
                 window.isGuest = false;
                 let displayName = user.email.split('@')[0];
-                
+                let matches = 0; let wins = 0;
+
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) {
                         const data = userDoc.data();
                         displayName = data.username || displayName;
-                        document.getElementById('stat-matches').innerText = data.matches || 0;
-                        document.getElementById('stat-wins').innerText = data.wins || 0;
+                        matches = data.matches || 0; wins = data.wins || 0;
                         
-                        let userTheme = 'dark';
-                        if (data.settings && data.settings.theme) userTheme = data.settings.theme;
-                        window.setTheme(userTheme, false);
+                        let userTheme = data.settings?.theme || data.theme || 'dark';
+                        if(userTheme === 'light') window.setTheme('light', false);
+                        else window.setTheme('dark', false);
                     }
-                } catch (err) { console.warn("Error fetching profile", err); }
+                } catch (err) { console.warn(err); }
 
-                dName.innerText = displayName;
-                dropName.innerText = displayName;
+                nameEl.innerText = displayName;
+                statusEl.innerText = "Online";
+                statusEl.style.color = "#4ADE80";
                 avatar.innerText = displayName.charAt(0).toUpperCase();
                 
-                actions.innerHTML = `
-                    <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي</button>
-                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
+                dropdown.innerHTML = `
+                    <div class="dropdown-header">
+                        <div class="dropdown-stats">
+                            <div class="stat-item"><span class="stat-label">Matches</span><span class="stat-value">${matches}</span></div>
+                            <div class="stat-item"><span class="stat-label">Wins</span><span class="stat-value">${wins}</span></div>
+                        </div>
+                    </div>
+                    <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-btn')[4]); toggleUserDropdown();"><i class="ph ph-user"></i> Profile</button>
+                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> Logout</button>
                 `;
 
-                // بناء واجهة الأصدقاء للمسجل (نفترض حالياً أن لديه أصدقاء للعرض التجريبي)
-                updateFriendsUI(true, true);
+                updateFriendsSidebar(true); // تحديث شريط الأصدقاء
 
+                window.clearAuthInputs(); 
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
                 window.loadFragment('home', document.querySelector('.nav-btn'));
                 hideLoader();
             } else {
                 if (!window.isGuest) {
+                    window.clearAuthInputs();
                     document.getElementById('auth-modal').classList.remove('hidden');
                     document.getElementById('app-shell').classList.remove('unlocked');
                 }
+                updateFriendsSidebar(false);
                 hideLoader();
             }
         });
 
-        // دوال المصادقة (اختصارها للحفاظ على المنطق كما هو)
         window.handleAuthSubmit = async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('modal-submit-btn');
-            btn.innerText = "جاري التحقق..."; btn.disabled = true;
+            const errorDiv = document.getElementById('auth-error');
+            const submitBtn = document.getElementById('modal-submit-btn');
+            errorDiv.style.display = 'none'; submitBtn.disabled = true; submitBtn.innerText = "جاري التحقق...";
+
             try {
                 if (window.currentFormMode === 'login') {
-                    let id = document.getElementById('login-id').value.trim().toLowerCase();
-                    let pass = document.getElementById('login-password').value;
-                    let email = id;
-                    if (!id.includes('@')) {
-                        const q = query(collection(db, "users"), where("username_lower", "==", id));
+                    let loginId = document.getElementById('login-id').value.trim();
+                    let password = document.getElementById('login-password').value;
+                    let loginEmail = loginId;
+
+                    if (!loginId.includes('@')) {
+                        const q = query(collection(db, "users"), where("username_lower", "==", loginId.toLowerCase()));
                         const snap = await getDocs(q);
-                        if (snap.empty) throw {message: "User not found"};
-                        email = snap.docs[0].data().email;
-                    }
-                    await signInWithEmailAndPassword(auth, email, pass);
+                        if (snap.empty) throw { message: "اسم المستخدم غير موجود." };
+                        loginEmail = snap.docs[0].data().email;
+                    } else { loginEmail = loginId.toLowerCase(); }
+                    await signInWithEmailAndPassword(auth, loginEmail, password);
+
                 } else {
-                    // Logic Register
-                    let userText = document.getElementById('reg-username').value.trim();
-                    let emailText = document.getElementById('reg-email').value.trim().toLowerCase();
-                    let passText = document.getElementById('reg-password').value;
-                    if(passText !== document.getElementById('reg-confirm').value) throw {message: "كلمات المرور غير متطابقة"};
-                    const q = query(collection(db, "users"), where("username_lower", "==", userText.toLowerCase()));
-                    const snap = await getDocs(q);
-                    if (!snap.empty) throw {message: "الاسم محجوز"};
-                    const cred = await createUserWithEmailAndPassword(auth, emailText, passText);
-                    await setDoc(doc(db, "users", cred.user.uid), { username: userText, username_lower: userText.toLowerCase(), email: emailText, matches: 0, wins: 0, settings: {theme: 'dark'}, createdAt: new Date().toISOString() });
+                    const username = document.getElementById('reg-username').value.trim();
+                    const email = document.getElementById('reg-email').value.trim();
+                    const password = document.getElementById('reg-password').value;
+                    if (password !== document.getElementById('reg-confirm').value) throw { message: "كلمات المرور غير متطابقة." };
+                    
+                    const q = query(collection(db, "users"), where("username_lower", "==", username.toLowerCase()));
+                    if (!(await getDocs(q)).empty) throw { message: "اسم المستخدم محجوز مسبقاً." };
+
+                    const userCred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), password);
+                    await setDoc(doc(db, "users", userCred.user.uid), {
+                        username: username, username_lower: username.toLowerCase(), email: email.toLowerCase(),
+                        matches: 0, wins: 0, settings: { theme: 'dark' }, createdAt: new Date().toISOString()
+                    });
                 }
-            } catch (err) {
-                const errDiv = document.getElementById('auth-error');
-                errDiv.innerText = "حدث خطأ في البيانات"; errDiv.style.display = 'block';
+            } catch (error) {
+                let msg = error.message || "حدث خطأ";
+                if(msg.includes("credential") || msg.includes("invalid-login")) msg = "بيانات الدخول غير صحيحة.";
+                if(msg.includes("email-already-in-use")) msg = "البريد مستخدم مسبقاً.";
+                errorDiv.innerText = msg; errorDiv.style.display = 'block';
             } finally {
-                btn.disabled = false; btn.innerText = "دخول";
+                submitBtn.disabled = false; submitBtn.innerText = window.currentFormMode === 'register' ? 'إنشاء الحساب' : 'دخول';
             }
         }
     </script>
 
     <script>
         function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('show'); }
-        window.onclick = e => { if (!e.target.closest('.header-profile') && !e.target.closest('.user-dropdown')) { document.getElementById('user-dropdown').classList.remove('show'); } }
+        window.onclick = function(e) {
+            if (!e.target.closest('.user-profile-btn') && !e.target.closest('.user-dropdown')) {
+                document.querySelectorAll('.user-dropdown.show').forEach(d => d.classList.remove('show'));
+            }
+        }
+
+        function handleLogout() {
+            if (window.clearAuthInputs) window.clearAuthInputs();
+            window.setTheme('dark', false); // عودة للأسود الافتراضي
+            window.signOutFunc(window.authInstance).then(() => {
+                toggleUserDropdown();
+                document.getElementById('auth-modal').classList.remove('hidden');
+                document.getElementById('app-shell').classList.remove('unlocked');
+            });
+        }
 
         function switchModalMode(mode) {
-            document.getElementById('modal-welcome-view').style.display = 'none';
-            document.getElementById('modal-form-view').style.display = 'block';
+            if(mode === 'forms') {
+                document.getElementById('modal-welcome-view').style.display = 'none';
+                document.getElementById('modal-form-view').style.display = 'block';
+            }
         }
 
         function setFormType(type) {
@@ -304,64 +317,83 @@
             document.getElementById('tab-register').classList.toggle('active', type === 'register');
             document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
             document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
+            document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'إنشاء الحساب' : 'دخول';
         }
 
         function enterAsGuest() {
             window.isGuest = true;
-            document.getElementById('display-name').innerText = "زائر";
-            document.getElementById('drop-name').innerText = "زائر غير مسجل";
-            document.getElementById('header-avatar').innerText = "ز";
-            document.getElementById('dropdown-actions').innerHTML = `<button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown();"><i class="ph ph-sign-in"></i> تسجيل الدخول</button>`;
-            
-            // تحديث واجهة الأصدقاء للزائر
-            updateFriendsUI(false);
-
+            if (window.clearAuthInputs) window.clearAuthInputs();
+            document.getElementById('header-user-name').innerText = "Guest User";
+            document.getElementById('header-user-status').innerText = "Offline";
+            document.getElementById('header-user-status').style.color = "var(--text-secondary)";
+            document.getElementById('header-avatar').innerText = "G";
+            document.getElementById('user-dropdown').innerHTML = `
+                <div class="dropdown-header"><div class="dropdown-name" style="color:var(--text-secondary);">زائر غير مسجل</div></div>
+                <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول</button>
+            `;
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
+            
+            // تحديث شريط الأصدقاء برمجياً
+            const container = document.getElementById('friends-container-content');
+            if(container) {
+                container.innerHTML = `
+                    <div class="guest-friends-msg" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms'); setFormType('login');" style="cursor:pointer;">
+                        <i class="ph ph-users"></i><span>سجل دخولك لترى الأصدقاء</span>
+                    </div>`;
+            }
             loadFragment('home', document.querySelector('.nav-btn'));
         }
 
         function closeAuthModal() {
+            if (window.clearAuthInputs) window.clearAuthInputs();
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('app-shell').classList.add('unlocked');
             if(!window.isGuest) enterAsGuest();
         }
 
-        function handleLogout() {
-            setTheme('dark', false); // العودة للثيم الافتراضي
-            window.signOutFunc(window.authInstance).then(() => {
-                document.getElementById('auth-modal').classList.remove('hidden');
-                document.getElementById('app-shell').classList.remove('unlocked');
-                document.getElementById('user-dropdown').classList.remove('show');
-            });
-        }
+        // دالة تبديل الثيم المحدثة لتناسب أزرار الشمس والقمر
+        window.setTheme = async function(theme, saveToDb = true) {
+            document.getElementById('btn-theme-light').classList.toggle('active', theme === 'light');
+            document.getElementById('btn-theme-dark').classList.toggle('active', theme === 'dark');
+            
+            if (theme === 'light') document.body.setAttribute('data-theme', 'light');
+            else document.body.removeAttribute('data-theme');
 
-        // دالة الثيم المتوافقة مع أزرار الشريط الجانبي
-        async function setTheme(mode, updateServer = true) {
-            const body = document.body;
-            document.getElementById('theme-light-btn').classList.toggle('active', mode === 'light');
-            document.getElementById('theme-dark-btn').classList.toggle('active', mode === 'dark');
-
-            if (mode === 'light') { body.setAttribute('data-theme', 'light'); } 
-            else { body.removeAttribute('data-theme'); }
-
-            if (updateServer && window.authInstance && window.authInstance.currentUser && !window.isGuest) {
-                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.theme": mode }); } catch (e) {}
+            if (saveToDb && window.authInstance?.currentUser && !window.isGuest) {
+                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.theme": theme }); } catch(e) {}
             }
         }
 
         function loadFragment(pageName, element) {
             const contentHolder = document.getElementById('content-holder');
-            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => btn.classList.remove('active'));
-            if(element) element.classList.add('active');
+            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => {
+                btn.classList.remove('active');
+                let icon = btn.querySelector('i');
+                if(icon && icon.className.includes('ph-fill')) icon.className = icon.className.replace('ph-fill', 'ph');
+            });
+            
+            if(element) {
+                element.classList.add('active');
+                let icon = element.querySelector('i');
+                if(icon && icon.className.includes('ph ')) icon.className = icon.className.replace('ph ', 'ph-fill ');
+            }
 
             if (pageName === 'profile' && window.isGuest) {
-                contentHolder.innerHTML = `<div class="card-glass" style="text-align:center; padding: 40px;"><i class="ph-fill ph-lock-key" style="font-size: 40px; color: var(--text-secondary);"></i><h3 style="margin-top: 15px;">أنت زائر</h3><p style="color: var(--text-secondary); margin-top: 10px;">سجل دخولك لحفظ وتعديل بياناتك.</p></div>`; return;
+                contentHolder.innerHTML = `
+                    <div style="padding: 40px; border: 1px solid var(--border-highlight); background: var(--bg-surface); border-radius: 20px; text-align: center; max-width: 500px; margin: 40px auto;">
+                        <i class="ph ph-user-circle-plus" style="font-size: 40px; margin-bottom: 15px; color: var(--text-secondary);"></i>
+                        <h3 style="font-size: 18px; margin-bottom: 10px;">أنت تتصفح كزائر</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 25px;">أنشئ حسابك الآن لحفظ تقدمك.</p>
+                        <button class="btn-core btn-primary" style="max-width: 200px; margin: 0 auto;" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms');">سجل دخولك الآن</button>
+                    </div>`;
+                return;
             }
+
             fetch(pageName + '.html')
-                .then(r => { if (!r.ok) throw new Error(); return r.text(); })
-                .then(html => { contentHolder.innerHTML = html; })
-                .catch(() => { contentHolder.innerHTML = `<div class="card-glass"><p style="color: var(--text-secondary);">ملف ${pageName}.html غير موجود.</p></div>`; });
+                .then(r => { if(!r.ok) throw new Error(); return r.text(); })
+                .then(html => contentHolder.innerHTML = html)
+                .catch(() => contentHolder.innerHTML = `<div style="padding: 40px; border: 1px dashed var(--border-subtle); border-radius: 16px; text-align: center; color: var(--text-secondary);">ملف ${pageName}.html غير موجود.</div>`);
         }
     </script>
 </body>
