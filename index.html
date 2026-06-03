@@ -5,15 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DECEPTION.SYS</title>
     
-    <!-- مكتبة الأيقونات Phosphor مطابقة للصورة -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=4.0">
+    <link rel="stylesheet" href="style.css?v=5.0">
 </head>
 <body>
 
     <div id="global-loader"><div class="spinner"></div></div>
 
-    <!-- بوابة الدخول الزجاجية -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
@@ -55,16 +53,13 @@
         </div>
     </div>
 
-    <!-- الهيكل الأساسي المطابق لـ Gege Gemink (بدون فواصل) -->
     <div id="app-shell" class="app-shell">
         
-        <!-- الشريط الأيسر النحيف -->
         <aside class="sidebar">
             <div class="sidebar-logo">
                 Gege<br><span>Gemink</span>
             </div>
             <nav class="nav-menu">
-                <!-- أيقونات مطابقة للصورة بالضبط -->
                 <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
                 <button class="nav-btn" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
                 <button class="nav-btn" onclick="loadFragment('leaderboard', this)"><i class="ph ph-trophy"></i></button>
@@ -72,21 +67,18 @@
                 <button class="nav-btn" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i></button>
             </nav>
             <div class="theme-wrapper">
-                <button class="theme-btn active-theme"><i class="ph-fill ph-sun"></i></button>
-                <button class="theme-btn"><i class="ph-fill ph-moon"></i></button>
+                <button class="theme-btn active-theme" id="btn-theme-dark" onclick="toggleTheme('dark')"><i class="ph-fill ph-moon"></i></button>
+                <button class="theme-btn" id="btn-theme-light" onclick="toggleTheme('light')"><i class="ph-fill ph-sun"></i></button>
             </div>
         </aside>
 
-        <!-- الوسط -->
         <main class="main-viewport">
             <header class="top-header">
-                <!-- استبدال البحث بمعلومات الصفحة المطلوبة -->
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title">الرئيسية</h1>
                     <div class="server-status"><div class="status-dot"></div> System Online</div>
                 </div>
 
-                <!-- الأزرار والملف الشخصي -->
                 <div class="header-actions">
                     <button class="header-icon-btn"><i class="ph ph-gear"></i></button>
                     <button class="header-icon-btn"><i class="ph ph-bell"></i><span class="notification-dot"></span></button>
@@ -105,16 +97,13 @@
                 </div>
             </header>
             
-            <!-- حاوية المحتوى -->
             <div class="dynamic-content" id="content-holder"></div>
         </main>
 
-        <!-- شريط الأصدقاء الأيمن (برمجة ديناميكية كما طلبت) -->
         <aside class="right-sidebar">
             <div id="friends-container"></div>
         </aside>
 
-        <!-- شريط الجوال السفلي -->
         <nav class="bottom-bar">
             <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
             <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
@@ -124,11 +113,10 @@
         </nav>
     </div>
 
-    <!-- أكواد Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
@@ -141,25 +129,26 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app); const db = getFirestore(app);
-        window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.isGuest = false; window.currentFormMode = 'login'; 
+        
+        window.authInstance = auth; window.dbInstance = db; 
+        window.updateDocFunc = updateDoc; window.docFunc = doc; 
+        window.signOutFunc = signOut; window.isGuest = false; window.currentFormMode = 'login'; 
 
         const hideLoader = () => { const l = document.getElementById('global-loader'); if(l){ l.style.opacity = '0'; setTimeout(()=>l.style.visibility='hidden',400); } };
 
-        // دالة تحديث شريط الأصدقاء بناءً على تسجيل الدخول
+        // تحديث واجهة الأصدقاء باحترافية
         window.updateFriendsUI = function(isLoggedIn, hasFriends = false) {
             const container = document.getElementById('friends-container');
             if (!isLoggedIn) {
                 container.innerHTML = `
                     <div class="guest-friends-msg">
-                        <i class="ph-duotone ph-user-circle-plus"></i>
+                        <i class="ph-duotone ph-users"></i>
                         <span>سجل دخولك لترى الأصدقاء</span>
                     </div>`;
             } else {
                 if (!hasFriends) {
-                    // عضو مسجل وليس لديه أصدقاء: تظهر دائرة + فقط كما في الصورة
                     container.innerHTML = `<button class="add-friend-btn"><i class="ph-bold ph-plus"></i></button>`;
                 } else {
-                    // عضو لديه أصدقاء
                     container.innerHTML = `
                         <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=11"><div class="online-dot"></div></div>
                         <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=12"><div class="online-dot"></div></div>
@@ -178,10 +167,20 @@
             if (user) {
                 window.isGuest = false;
                 let displayName = user.email.split('@')[0]; let matches = 0, wins = 0;
+                
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) { const d = userDoc.data(); displayName = d.username || displayName; matches = d.matches || 0; wins = d.wins || 0; }
-                } catch (err) {}
+                    if (userDoc.exists()) { 
+                        const d = userDoc.data(); 
+                        displayName = d.username || displayName; 
+                        matches = d.matches || 0; wins = d.wins || 0; 
+                        
+                        // جلب وتفعيل الثيم المحفوظ
+                        let userTheme = 'dark';
+                        if (d.settings && d.settings.theme) userTheme = d.settings.theme;
+                        window.applyTheme(userTheme);
+                    }
+                } catch (err) { console.warn("Error fetching data", err); }
 
                 fallbackAvatar.innerText = displayName.charAt(0).toUpperCase();
                 nameEl.innerText = displayName;
@@ -199,7 +198,6 @@
                     <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل خروج</button>
                 `;
 
-                // تحديث الأصدقاء للعضو المسجل (الآن نرسل false لتظهر الأيقونة + فقط)
                 window.updateFriendsUI(true, false);
 
                 document.getElementById('auth-modal').classList.add('hidden');
@@ -237,7 +235,14 @@
                     const snap = await getDocs(q);
                     if (!snap.empty) throw { message: "اسم المستخدم محجوز" };
                     const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pass);
-                    await setDoc(doc(db, "users", cred.user.uid), { username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), matches: 0, wins: 0, createdAt: new Date().toISOString() });
+                    
+                    // حفظ الإعدادات الافتراضية
+                    await setDoc(doc(db, "users", cred.user.uid), { 
+                        username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), 
+                        matches: 0, wins: 0, 
+                        settings: { theme: 'dark' },
+                        createdAt: new Date().toISOString() 
+                    });
                 }
             } catch (err) {
                 errorDiv.innerText = err.message || "حدث خطأ"; errorDiv.style.display = 'block';
@@ -246,25 +251,86 @@
     </script>
 
     <script>
+        // نظام الثيم
+        window.applyTheme = function(theme) {
+            const btnDark = document.getElementById('btn-theme-dark');
+            const btnLight = document.getElementById('btn-theme-light');
+            
+            if (theme === 'light') {
+                document.body.setAttribute('data-theme', 'light');
+                btnDark.classList.remove('active-theme');
+                btnLight.classList.add('active-theme');
+            } else {
+                document.body.removeAttribute('data-theme');
+                btnLight.classList.remove('active-theme');
+                btnDark.classList.add('active-theme');
+            }
+        };
+
+        window.toggleTheme = async function(theme) {
+            window.applyTheme(theme);
+            
+            // تحديث السيرفر إذا كان اللاعب مسجلاً
+            if (window.authInstance && window.authInstance.currentUser && !window.isGuest) {
+                try {
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
+                        "settings.theme": theme
+                    });
+                } catch (e) { console.warn("لم يتم حفظ الثيم سحابياً", e); }
+            }
+        };
+
         function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('show'); }
-        window.onclick = function(e) { if (!e.target.closest('.profile-trigger') && !e.target.closest('.user-dropdown')) { document.querySelectorAll('.user-dropdown').forEach(d => d.classList.remove('show')); } }
-        function handleLogout() { window.signOutFunc(window.authInstance).then(() => { toggleUserDropdown(); document.getElementById('auth-modal').classList.remove('hidden'); document.getElementById('app-shell').classList.remove('unlocked'); }); }
-        function switchModalMode(mode) { if(mode==='forms'){ document.getElementById('modal-welcome-view').style.display='none'; document.getElementById('modal-form-view').style.display='block'; } }
-        function setFormType(type) { window.currentFormMode = type; document.getElementById('tab-login').classList.toggle('active', type==='login'); document.getElementById('tab-register').classList.toggle('active', type==='register'); document.getElementById('login-fields').style.display = type==='login'?'block':'none'; document.getElementById('register-fields').style.display = type==='register'?'block':'none'; }
+        
+        window.onclick = function(e) { 
+            if (!e.target.closest('.profile-trigger') && !e.target.closest('.user-dropdown')) { 
+                document.querySelectorAll('.user-dropdown').forEach(d => d.classList.remove('show')); 
+            } 
+        }
+        
+        function handleLogout() { 
+            window.signOutFunc(window.authInstance).then(() => { 
+                toggleUserDropdown(); 
+                document.body.removeAttribute('data-theme'); // رجوع للدارك مود عند الخروج
+                window.applyTheme('dark');
+                document.getElementById('auth-modal').classList.remove('hidden'); 
+                document.getElementById('app-shell').classList.remove('unlocked'); 
+            }); 
+        }
+        
+        function switchModalMode(mode) { 
+            if(mode==='forms'){ 
+                document.getElementById('modal-welcome-view').style.display='none'; 
+                document.getElementById('modal-form-view').style.display='block'; 
+            } 
+        }
+        
+        function setFormType(type) { 
+            window.currentFormMode = type; 
+            document.getElementById('tab-login').classList.toggle('active', type==='login'); 
+            document.getElementById('tab-register').classList.toggle('active', type==='register'); 
+            document.getElementById('login-fields').style.display = type==='login'?'block':'none'; 
+            document.getElementById('register-fields').style.display = type==='register'?'block':'none'; 
+        }
         
         function enterAsGuest() {
             window.isGuest = true;
             document.getElementById('header-name').innerText = "زائر";
             document.getElementById('header-status').innerText = "غير مسجل";
+            document.getElementById('header-status').style.color = "var(--text-dim)";
             document.getElementById('header-avatar-fallback').innerText = "ز";
             
-            // تحديث الأصدقاء للزائر
             window.updateFriendsUI(false);
 
             document.getElementById('user-dropdown').innerHTML = `<div class="dropdown-header"><div class="dropdown-name-ar" style="color:var(--text-dim);">زائر غير مسجل</div></div><button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول</button>`;
             document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('app-shell').classList.add('unlocked'); loadFragment('home', document.querySelector('.nav-btn.active'));
         }
-        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('app-shell').classList.add('unlocked'); if(!window.isGuest) enterAsGuest(); }
+        
+        function closeAuthModal() { 
+            document.getElementById('auth-modal').classList.add('hidden'); 
+            document.getElementById('app-shell').classList.add('unlocked'); 
+            if(!window.isGuest) enterAsGuest(); 
+        }
         
         function loadFragment(pageName, element) {
             const contentHolder = document.getElementById('content-holder');
