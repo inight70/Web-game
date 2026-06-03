@@ -3,96 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DECEPTION.SYS - Gege Gemink UI</title>
+    <title>DECEPTION.SYS - Premium UI</title>
     
-    <!-- استدعاء الأيقونات -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <!-- استدعاء ملف التصميم الخارجي الموحد -->
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="style.css?v=3.0">
 </head>
 <body>
 
-    <!-- شاشة التحميل لمنع الوميض -->
-    <div id="global-loader">
-        <div class="spinner"></div>
-    </div>
+    <div id="global-loader"><div class="spinner"></div></div>
 
-    <!-- بوابة الدخول الزجاجية (التي تعمل لديك مسبقاً) -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
-            
             <div id="modal-welcome-view">
-                <i class="ph-fill ph-fingerprint" style="font-size: 48px; color: var(--accent-red); margin-bottom: 15px; display: inline-block;"></i>
+                <i class="ph-duotone ph-fingerprint" style="font-size: 56px; color: var(--accent-red); margin-bottom: 20px; display: inline-block; filter: drop-shadow(0 10px 15px rgba(255,82,112,0.3));"></i>
                 <h2>سجل دخولك</h2>
-                <p>سجل دخولك الآن لتلعب، وتحفظ تقدمك، إحصائياتك، وإعداداتك السحابية بشكل آمن.</p>
+                <p>ادخل لتأمين تقدمك، إحصائياتك، وقائمة أصدقائك السحابية.</p>
                 <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول</button>
-                <button class="link-guest" onclick="enterAsGuest()">المتابعة كزائر</button>
+                <button class="link-guest" onclick="enterAsGuest()">المتابعة كزائر فقط</button>
             </div>
-
             <div id="modal-form-view" style="display: none;">
                 <div class="modal-tabs">
                     <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')">تسجيل الدخول</button>
                     <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')">حساب جديد</button>
                 </div>
-                
                 <div id="auth-error" class="auth-error-msg"></div>
-
                 <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
-                    <!-- حقول تسجيل الدخول -->
                     <div id="login-fields">
-                        <div class="input-wrapper">
-                            <label>البريد الإلكتروني أو اسم المستخدم</label>
-                            <input type="text" id="login-id" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
-                        </div>
-                        <div class="input-wrapper">
-                            <label>كلمة المرور</label>
-                            <input type="password" id="login-password" class="premium-input" placeholder="••••••••" autocomplete="new-password" required>
-                        </div>
+                        <div class="input-wrapper"><label>البريد الإلكتروني أو المستخدم</label><input type="text" id="login-id" class="premium-input" required></div>
+                        <div class="input-wrapper"><label>كلمة المرور</label><input type="password" id="login-password" class="premium-input" required></div>
                     </div>
-
-                    <!-- حقول الحساب الجديد -->
                     <div id="register-fields" style="display: none;">
-                        <div class="input-wrapper">
-                            <label>اسم المستخدم (مميز)</label>
-                            <input type="text" id="reg-username" class="premium-input" placeholder="مثال: DarkKnight">
-                        </div>
-                        <div class="input-wrapper">
-                            <label>البريد الإلكتروني</label>
-                            <input type="email" id="reg-email" class="premium-input" placeholder="name@example.com">
-                        </div>
-                        <div class="input-wrapper">
-                            <label>كلمة المرور</label>
-                            <input type="password" id="reg-password" class="premium-input" placeholder="••••••••">
-                        </div>
-                        <div class="input-wrapper">
-                            <label>تأكيد كلمة المرور</label>
-                            <input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••">
-                        </div>
+                        <div class="input-wrapper"><label>اسم المستخدم</label><input type="text" id="reg-username" class="premium-input"></div>
+                        <div class="input-wrapper"><label>البريد الإلكتروني</label><input type="email" id="reg-email" class="premium-input"></div>
+                        <div class="input-wrapper"><label>كلمة المرور</label><input type="password" id="reg-password" class="premium-input"></div>
+                        <div class="input-wrapper"><label>تأكيد كلمة المرور</label><input type="password" id="reg-confirm" class="premium-input"></div>
                     </div>
-
-                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
+                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 15px;">دخول آمن</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- الهيكل الجديد مطابق لصورة Gege Gemink -->
-    <div id="app-shell" class="app-shell unlocked">
+    <div id="app-shell" class="app-shell locked">
         
-        <!-- الشريط الأيسر النحيف -->
         <aside class="sidebar">
-            <div class="sidebar-logo">
-                Gege<span>Gemink</span>
-            </div>
+            <div class="sidebar-logo">DS</div>
             <nav class="nav-menu">
                 <button class="nav-btn active"><i class="ph-fill ph-squares-four"></i></button>
-                <button class="nav-btn"><i class="ph ph-video-camera"></i></button>
+                <button class="nav-btn"><i class="ph ph-sword"></i></button>
                 <button class="nav-btn"><i class="ph ph-users"></i></button>
-                <button class="nav-btn"><i class="ph ph-chat-circle-dots"></i></button>
-                <button class="nav-btn"><i class="ph ph-star"></i></button>
-                <button class="nav-btn"><i class="ph ph-chart-bar"></i></button>
+                <button class="nav-btn"><i class="ph ph-chat-centered-text"></i></button>
+                <button class="nav-btn"><i class="ph ph-medal"></i></button>
                 <button class="nav-btn"><i class="ph ph-user"></i></button>
             </nav>
             <div class="theme-wrapper">
@@ -101,28 +63,21 @@
             </div>
         </aside>
 
-        <!-- الوسط -->
         <main class="main-viewport">
             <header class="top-header">
-                <!-- شريط البحث -->
-                <div class="search-container">
-                    <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" class="search-input" placeholder="Search">
-                    <span class="search-shortcut">Search</span>
+                <div class="server-status">
+                    <span class="ping-dot"></span>
+                    <span class="server-ping">Middle East (24ms)</span>
                 </div>
 
-                <!-- الأزرار والملف الشخصي -->
                 <div class="header-actions">
-                    <button class="start-stream-btn"><i class="ph-fill ph-video-camera"></i> <span>Start Stream</span></button>
+                    <button class="quick-match-btn"><i class="ph-bold ph-lightning"></i> <span>Quick Match</span></button>
                     <button class="header-icon-btn"><i class="ph ph-gear"></i></button>
-                    <button class="header-icon-btn">
-                        <i class="ph ph-bell"></i>
-                        <span class="notification-dot"></span>
-                    </button>
+                    <button class="header-icon-btn"><i class="ph ph-bell"></i><span class="notification-dot"></span></button>
                     
-                    <div style="position: relative; margin-right: 15px;">
+                    <div style="position: relative; margin-right: 20px;">
                         <div class="profile-trigger" onclick="toggleUserDropdown()">
-                            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="profile-avatar" id="header-avatar-img">
+                            <img src="https://i.pravatar.cc/150?img=11" class="profile-avatar" id="header-avatar-img">
                             <div class="profile-info">
                                 <span class="profile-name" id="header-name">Ahmad Fauzi</span>
                                 <span class="profile-status">Online</span>
@@ -134,152 +89,141 @@
                 </div>
             </header>
             
-            <!-- حاوية المحتوى الديناميكي (هنا نضع تصميم الرئيسية) -->
             <div class="dynamic-content" id="content-holder">
-                <!-- تم وضع محتوى home.html هنا مباشرة لتراه فوراً -->
                 <div class="home-layout">
-                    <!-- القسم العلوي -->
                     <div class="hero-grid">
                         <div class="hero-banner">
-                            <span class="hero-tag">#TRENDING</span>
-                            <h1 class="hero-title">Watch streaming games anywhere anytime</h1>
-                            <p class="hero-desc">Watch your hero compete by watching on Gege Gemink</p>
-                            <button class="hero-btn">Watch now</button>
-                            <!-- استخدمت صورة شفافة تجريدية للتوضيح -->
-                            <img src="https://cdn3d.iconscout.com/3d/premium/thumb/gamer-5364121-4491743.png" class="hero-characters" alt="Characters">
+                            <span class="hero-tag">#DECEPTION_SYS</span>
+                            <h1 class="hero-title">Master the art of deception online</h1>
+                            <p class="hero-desc">Enter the arena, outsmart your opponents, and climb the global ranks.</p>
+                            <button class="hero-btn">Play Now</button>
+                            <img src="https://cdn3d.iconscout.com/3d/premium/thumb/vr-gaming-5364117-4491739.png" class="hero-characters" alt="Game Art">
                             <div class="hero-pagination">
                                 <div class="dot active"></div>
-                                <div class="dot inactive"></div>
                                 <div class="dot inactive"></div>
                                 <div class="dot inactive"></div>
                             </div>
                         </div>
 
                         <div class="top-streamers-card">
-                            <h3 class="card-header">Top Streamer</h3>
+                            <h3 class="card-header">Top Players</h3>
                             <div class="streamer-list">
                                 <div class="streamer-item">
-                                    <div class="streamer-rank"><i class="ph-fill ph-medal"></i></div>
+                                    <div class="streamer-rank"><i class="ph-fill ph-crown"></i></div>
                                     <img src="https://i.pravatar.cc/150?img=12" class="streamer-avatar">
                                     <div class="streamer-info">
-                                        <span class="streamer-name">Ethos <i class="ph-fill ph-check-circle"></i></span>
-                                        <span class="streamer-followers">1M Followers</span>
+                                        <span class="streamer-name">DarkKnight <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">Win Rate: 94%</span>
                                     </div>
-                                    <span class="game-tag tag-valorant"><img src="https://cdn-icons-png.flaticon.com/128/3589/3589885.png" width="12"> Valorant</span>
+                                    <span class="game-tag tag-valorant"><i class="ph-fill ph-fire"></i> Grandmaster</span>
                                 </div>
                                 <div class="streamer-item">
                                     <div class="streamer-rank">02</div>
                                     <img src="https://i.pravatar.cc/150?img=33" class="streamer-avatar">
                                     <div class="streamer-info">
-                                        <span class="streamer-name">Tarik <i class="ph-fill ph-check-circle"></i></span>
-                                        <span class="streamer-followers">500K Followers</span>
+                                        <span class="streamer-name">GhostRider <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">Win Rate: 88%</span>
                                     </div>
-                                    <span class="game-tag tag-valorant"><img src="https://cdn-icons-png.flaticon.com/128/3589/3589885.png" width="12"> Valorant</span>
+                                    <span class="game-tag tag-minecraft"><i class="ph-fill ph-shield-check"></i> Master</span>
                                 </div>
                                 <div class="streamer-item">
                                     <div class="streamer-rank">03</div>
                                     <img src="https://i.pravatar.cc/150?img=59" class="streamer-avatar">
                                     <div class="streamer-info">
-                                        <span class="streamer-name">Dream <i class="ph-fill ph-check-circle"></i></span>
-                                        <span class="streamer-followers">482K Followers</span>
+                                        <span class="streamer-name">SilentKiller <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">Win Rate: 82%</span>
                                     </div>
-                                    <span class="game-tag tag-minecraft"><i class="ph-fill ph-cube"></i> Minecraft</span>
+                                    <span class="game-tag tag-minecraft"><i class="ph-fill ph-shield-check"></i> Master</span>
                                 </div>
                                 <div class="streamer-item">
                                     <div class="streamer-rank">04</div>
                                     <div class="streamer-avatar" style="background:#333; display:flex; justify-content:center; align-items:center;"><i class="ph-bold ph-lightning" style="color:white;"></i></div>
                                     <div class="streamer-info">
-                                        <span class="streamer-name">Jay3 <i class="ph-fill ph-check-circle"></i></span>
-                                        <span class="streamer-followers">100K Followers</span>
+                                        <span class="streamer-name">Shadow <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">Win Rate: 75%</span>
                                     </div>
-                                    <span class="game-tag tag-overwatch"><i class="ph-bold ph-target"></i> Overwatch</span>
+                                    <span class="game-tag tag-overwatch"><i class="ph-bold ph-star"></i> Diamond</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- قسم الفيديوهات -->
                     <div class="trending-section">
                         <div class="trending-header">
                             <div class="trending-title-area">
-                                <h4>TRENDING</h4>
-                                <h2>#Play With Valorant</h2>
+                                <h4>LOBBY</h4>
+                                <h2>#Active Rooms</h2>
                                 <div class="trending-tabs">
-                                    <span class="trend-tab active">Top Stream</span>
-                                    <span class="trend-tab">Currently Online</span>
-                                    <span class="trend-tab">Verified</span>
+                                    <span class="trend-tab active">High Stakes</span>
+                                    <span class="trend-tab">Casual</span>
+                                    <span class="trend-tab">Tournaments</span>
                                 </div>
                             </div>
                             <div class="trending-actions">
                                 <a href="#" class="view-all">View All</a>
-                                <button class="filter-btn"><i class="ph-bold ph-funnel"></i> Filter</button>
+                                <button class="filter-btn"><i class="ph-bold ph-sliders-horizontal"></i> Filter</button>
                             </div>
                         </div>
 
                         <div class="video-grid">
-                            <!-- فيديو 1 -->
                             <div class="video-card">
                                 <div class="video-thumb">
-                                    <span class="live-badge">Live</span>
-                                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" alt="Thumbnail">
+                                    <span class="live-badge">In Game</span>
+                                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80">
                                     <div class="video-meta">
-                                        <span class="viewer-count"><i class="ph-fill ph-user"></i> 195,565</span>
-                                        <span class="viewer-count">1:24:05</span>
+                                        <span class="viewer-count"><i class="ph-fill ph-users"></i> 8/10</span>
+                                        <span class="viewer-count"><i class="ph-fill ph-eye"></i> 140 Spectators</span>
                                     </div>
                                 </div>
                                 <div class="video-info-row">
                                     <img src="https://i.pravatar.cc/150?img=12" class="video-avatar">
                                     <div class="video-details">
                                         <div style="display: flex; gap: 8px;">
-                                            <span class="video-creator">Ethos <i class="ph-fill ph-check-circle"></i></span>
-                                            <span class="game-tag tag-valorant" style="padding: 2px 8px; font-size: 9px;">Valorant</span>
+                                            <span class="video-creator">Room: Alpha <i class="ph-fill ph-lock-key-open"></i></span>
+                                            <span class="game-tag tag-valorant" style="padding: 2px 8px; font-size: 9px;">Ranked</span>
                                         </div>
-                                        <h3 class="video-title">What Aggressive YORU 2.0 plays look like...</h3>
-                                        <span class="video-stats">195,565 Watching • Mar 2, 2022</span>
+                                        <h3 class="video-title">High Elo Deception Match - Master Tier Only</h3>
+                                        <span class="video-stats">Started 15 mins ago</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- فيديو 2 -->
                             <div class="video-card">
                                 <div class="video-thumb">
-                                    <span class="live-badge">Live</span>
-                                    <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80" alt="Thumbnail">
+                                    <span class="live-badge" style="background:var(--accent-green);">Waiting</span>
+                                    <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80">
                                     <div class="video-meta">
-                                        <span class="viewer-count"><i class="ph-fill ph-user"></i> 33,462</span>
+                                        <span class="viewer-count"><i class="ph-fill ph-users"></i> 2/10</span>
                                     </div>
                                 </div>
                                 <div class="video-info-row">
                                     <img src="https://i.pravatar.cc/150?img=33" class="video-avatar">
                                     <div class="video-details">
                                         <div style="display: flex; gap: 8px;">
-                                            <span class="video-creator">Tarik <i class="ph-fill ph-check-circle"></i></span>
-                                            <span class="game-tag tag-valorant" style="padding: 2px 8px; font-size: 9px;">Valorant</span>
+                                            <span class="video-creator">Room: Beta <i class="ph-fill ph-lock-key-open"></i></span>
+                                            <span class="game-tag tag-minecraft" style="padding: 2px 8px; font-size: 9px; color:white;">Casual</span>
                                         </div>
-                                        <h3 class="video-title">SPEEDRUNNING VALORANT RANKED WITH 100T ASUNA!</h3>
-                                        <span class="video-stats">33,462 Watching • Mar 4, 2022</span>
+                                        <h3 class="video-title">Chill games, everyone welcome to join!</h3>
+                                        <span class="video-stats">Waiting for players...</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- فيديو 3 -->
                             <div class="video-card">
                                 <div class="video-thumb">
-                                    <span class="live-badge">Live</span>
-                                    <img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80" alt="Thumbnail">
+                                    <span class="live-badge">In Game</span>
+                                    <img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80">
                                     <div class="video-meta">
-                                        <span class="viewer-count"><i class="ph-fill ph-user"></i> 5.8M</span>
+                                        <span class="viewer-count"><i class="ph-fill ph-users"></i> 10/10</span>
+                                        <span class="viewer-count"><i class="ph-fill ph-eye"></i> 1.2K Spectators</span>
                                     </div>
                                 </div>
                                 <div class="video-info-row">
                                     <img src="https://i.pravatar.cc/150?img=47" class="video-avatar">
                                     <div class="video-details">
                                         <div style="display: flex; gap: 8px;">
-                                            <span class="video-creator">MILYHYA <i class="ph-fill ph-check-circle"></i></span>
-                                            <span class="game-tag tag-valorant" style="padding: 2px 8px; font-size: 9px;">Valorant</span>
+                                            <span class="video-creator">Tournament Finals <i class="ph-fill ph-trophy" style="color:var(--accent-yellow)"></i></span>
                                         </div>
-                                        <h3 class="video-title">Valorant Indonesia - Skin, Banting Rumah, Baiter #2</h3>
-                                        <span class="video-stats">5,887,037 Watching • Aug 15, 2021</span>
+                                        <h3 class="video-title">Weekly Cup Finals: Team A vs Team B</h3>
+                                        <span class="video-stats">Started 45 mins ago</span>
                                     </div>
                                 </div>
                             </div>
@@ -289,32 +233,17 @@
             </div>
         </main>
 
-        <!-- الشريط الأيمن (الأصدقاء والألعاب) -->
-        <aside class="right-sidebar">
-            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=1"><div class="online-dot"></div></div>
-            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=2"><div class="online-dot"></div></div>
-            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=3"><div class="online-dot"></div></div>
-            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=4"><div class="online-dot"></div></div>
-            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=5"><div class="online-dot"></div></div>
-            
-            <button class="add-friend-btn"><i class="ph-bold ph-plus"></i></button>
+        <aside class="right-sidebar" id="friends-sidebar-wrapper">
+            </aside>
 
-            <div class="game-icons-wrapper">
-                <img src="https://cdn-icons-png.flaticon.com/128/5968/5968971.png" class="game-icon">
-                <img src="https://cdn-icons-png.flaticon.com/128/871/871364.png" class="game-icon">
-            </div>
-        </aside>
-
-        <!-- شريط الجوال السفلي -->
         <nav class="bottom-bar">
             <button class="bottom-tab active"><i class="ph-fill ph-squares-four"></i></button>
-            <button class="bottom-tab"><i class="ph ph-video-camera"></i></button>
+            <button class="bottom-tab"><i class="ph ph-sword"></i></button>
             <button class="bottom-tab"><i class="ph ph-users"></i></button>
             <button class="bottom-tab"><i class="ph ph-user"></i></button>
         </nav>
     </div>
 
-    <!-- أكواد جافاسكريبت والربط بقاعدة البيانات (نفسها بدون مساس) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -333,19 +262,47 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        window.authInstance = auth; 
-        window.dbInstance = db;
-        window.updateDocFunc = updateDoc;
-        window.docFunc = doc;
-        window.signOutFunc = signOut;
-        window.isGuest = false;
-        window.currentFormMode = 'login'; 
+        window.authInstance = auth; window.dbInstance = db;
+        window.signOutFunc = signOut; window.isGuest = false; window.currentFormMode = 'login'; 
 
         const hideLoader = () => {
             const loader = document.getElementById('global-loader');
-            if(loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.visibility = 'hidden', 500);
+            if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 500); }
+        };
+
+        // دالة تحديث شريط الأصدقاء الديناميكي
+        const updateFriendsSidebar = (user, isGuest) => {
+            const sidebar = document.getElementById('friends-sidebar-wrapper');
+            const bottomIcons = `
+                <div class="game-icons-wrapper">
+                    <img src="https://cdn-icons-png.flaticon.com/128/5968/5968971.png" class="game-icon">
+                    <img src="https://cdn-icons-png.flaticon.com/128/871/871364.png" class="game-icon">
+                </div>
+            `;
+
+            if (isGuest || !user) {
+                // حالة الزائر
+                sidebar.innerHTML = `
+                    <div class="guest-friends-msg">
+                        <i class="ph-duotone ph-users-three"></i>
+                        <p>سجل دخولك لترى الأصدقاء المتصلين</p>
+                        <button class="guest-login-btn" onclick="document.getElementById('auth-modal').classList.remove('hidden')">تسجيل الدخول</button>
+                    </div>
+                    ${bottomIcons}
+                `;
+            } else {
+                // حالة المسجل دخول (نفرض أنه حساب جديد ليس لديه أصدقاء بعد لإظهار الدائرة الوحيدة أو لو كان لديه نظهرهم)
+                // هنا أضفت بعض الوهميين لتوضيح التطابق مع الصورة، بالإضافة لزر الإضافة (+)
+                sidebar.innerHTML = `
+                    <div class="sidebar-title-small">Friends</div>
+                    <div class="friends-list-container">
+                        <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=1"><div class="online-dot"></div></div>
+                        <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=2"><div class="online-dot"></div></div>
+                        <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=3"><div class="online-dot"></div></div>
+                        <button class="add-friend-btn"><i class="ph-bold ph-plus"></i></button>
+                    </div>
+                    ${bottomIcons}
+                `;
             }
         };
 
@@ -381,24 +338,23 @@
                     <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
                 `;
 
+                updateFriendsSidebar(user, false);
                 document.getElementById('auth-modal').classList.add('hidden');
-                document.getElementById('app-shell').classList.add('unlocked');
+                document.getElementById('app-shell').classList.remove('locked');
                 hideLoader();
             } else {
                 if (!window.isGuest) {
                     document.getElementById('auth-modal').classList.remove('hidden');
-                    document.getElementById('app-shell').classList.remove('unlocked');
+                    document.getElementById('app-shell').classList.add('locked');
                 }
+                updateFriendsSidebar(null, true);
                 hideLoader();
             }
         });
     </script>
 
     <script>
-        function toggleUserDropdown() { 
-            document.getElementById('user-dropdown').classList.toggle('show'); 
-        }
-
+        function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('show'); }
         window.onclick = function(event) {
             if (!event.target.closest('.profile-trigger') && !event.target.closest('.user-dropdown')) {
                 const dropdowns = document.getElementsByClassName("user-dropdown");
@@ -407,22 +363,16 @@
                 }
             }
         }
-
         function handleLogout() {
             window.signOutFunc(window.authInstance).then(() => {
                 toggleUserDropdown();
                 document.getElementById('auth-modal').classList.remove('hidden');
-                document.getElementById('app-shell').classList.remove('unlocked');
+                document.getElementById('app-shell').classList.add('locked');
             });
         }
-
         function switchModalMode(mode) {
-            if(mode === 'forms') {
-                document.getElementById('modal-welcome-view').style.display = 'none';
-                document.getElementById('modal-form-view').style.display = 'block';
-            }
+            if(mode === 'forms') { document.getElementById('modal-welcome-view').style.display = 'none'; document.getElementById('modal-form-view').style.display = 'block'; }
         }
-
         function setFormType(type) {
             window.currentFormMode = type;
             document.getElementById('tab-login').classList.toggle('active', type === 'login');
@@ -430,18 +380,33 @@
             document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
             document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
         }
-
         function enterAsGuest() {
             window.isGuest = true;
-            document.getElementById('header-name').innerText = "زائر";
+            document.getElementById('header-name').innerText = "زائر (Guest)";
             document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('unlocked');
+            document.getElementById('app-shell').classList.remove('locked');
+            
+            // تحديث شريط الأصدقاء يدوياً للزائر
+            const sidebar = document.getElementById('friends-sidebar-wrapper');
+            sidebar.innerHTML = `
+                <div class="guest-friends-msg">
+                    <i class="ph-duotone ph-users-three"></i>
+                    <p>سجل دخولك لترى الأصدقاء المتصلين</p>
+                    <button class="guest-login-btn" onclick="document.getElementById('auth-modal').classList.remove('hidden')">تسجيل الدخول</button>
+                </div>
+                <div class="game-icons-wrapper">
+                    <img src="https://cdn-icons-png.flaticon.com/128/5968/5968971.png" class="game-icon">
+                    <img src="https://cdn-icons-png.flaticon.com/128/871/871364.png" class="game-icon">
+                </div>
+            `;
         }
-
         function closeAuthModal() {
             document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('unlocked');
-            if(!window.isGuest) enterAsGuest();
+            if(!window.isGuest && !window.authInstance.currentUser) {
+                 enterAsGuest();
+            } else {
+                 document.getElementById('app-shell').classList.remove('locked');
+            }
         }
     </script>
 </body>
