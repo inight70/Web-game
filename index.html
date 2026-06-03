@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DECEPTION.SYS</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=5.0">
+    <link rel="stylesheet" href="style.css?v=6.0">
 </head>
 <body>
 
@@ -71,14 +71,19 @@
 
         <main class="main-viewport">
             <header class="top-header">
+                
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title">الرئيسية</h1>
-                    <div class="server-status"><div class="status-dot"></div> System Online</div>
+                    
+                    <div class="mobile-brand-title">
+                        <span class="brand-name">DECEPTION.SYS</span>
+                        <div class="brand-search"><i class="ph ph-magnifying-glass"></i> بحث</div>
+                    </div>
                 </div>
 
                 <div class="header-actions">
                     <button class="header-icon-btn"><i class="ph ph-gear"></i></button>
-                    <button class="header-icon-btn"><i class="ph ph-bell"></i><span class="notification-dot"></span></button>
+                    <button class="header-icon-btn"><i class="ph ph-bell"></i></button>
                     
                     <div style="position: relative;">
                         <div class="profile-trigger" id="profile-trigger" onclick="toggleUserDropdown()">
@@ -125,37 +130,21 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app); 
-        const db = getFirestore(app);
-        
-        // ربط مكتبات Firebase بنافذة المتصفح لتتمكن أزرار HTML من الوصول إليها
-        window.authInstance = auth; 
-        window.dbInstance = db; 
-        window.signOutFunc = signOut; 
-        window.updateDocFunc = updateDoc;
-        window.docFunc = doc;
-        window.isGuest = false; 
-        window.currentFormMode = 'login'; 
+        const auth = getAuth(app); const db = getFirestore(app);
+        window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc;
+        window.isGuest = false; window.currentFormMode = 'login'; 
 
         const hideLoader = () => { const l = document.getElementById('global-loader'); if(l){ l.style.opacity = '0'; setTimeout(()=>l.style.visibility='hidden',400); } };
 
         window.updateFriendsUI = function(isLoggedIn, hasFriends = false) {
             const container = document.getElementById('friends-container');
             if (!isLoggedIn) {
-                container.innerHTML = `
-                    <div class="guest-friends-msg">
-                        <i class="ph-duotone ph-user-circle-plus"></i>
-                        <span>سجل دخولك لترى الأصدقاء</span>
-                    </div>`;
+                container.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-user-circle-plus"></i><span>سجل دخولك لترى الأصدقاء</span></div>`;
             } else {
                 if (!hasFriends) {
                     container.innerHTML = `<button class="add-friend-btn"><i class="ph-bold ph-plus"></i></button>`;
                 } else {
-                    container.innerHTML = `
-                        <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=11"><div class="online-dot"></div></div>
-                        <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=12"><div class="online-dot"></div></div>
-                        <button class="add-friend-btn"><i class="ph-bold ph-plus"></i></button>
-                    `;
+                    container.innerHTML = `<div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=11"><div class="online-dot"></div></div><button class="add-friend-btn"><i class="ph-bold ph-plus"></i></button>`;
                 }
             }
         };
@@ -168,22 +157,15 @@
 
             if (user) {
                 window.isGuest = false;
-                let displayName = user.email.split('@')[0]; 
-                let matches = 0, wins = 0;
-                let userTheme = 'dark';
-
+                let displayName = user.email.split('@')[0]; let matches = 0, wins = 0; let userTheme = 'dark';
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists()) { 
-                        const d = userDoc.data(); 
-                        displayName = d.username || displayName; 
-                        matches = d.matches || 0; 
-                        wins = d.wins || 0; 
+                        const d = userDoc.data(); displayName = d.username || displayName; matches = d.matches || 0; wins = d.wins || 0; 
                         if (d.settings && d.settings.theme) userTheme = d.settings.theme;
                     }
-                } catch (err) { console.warn("Error fetching data"); }
+                } catch (err) {}
 
-                // تفعيل الثيم المحفوظ
                 if(window.toggleTheme) window.toggleTheme(userTheme, true);
 
                 fallbackAvatar.innerText = displayName.charAt(0).toUpperCase();
@@ -203,12 +185,14 @@
                 `;
 
                 window.updateFriendsUI(true, false);
+                if(window.clearAuthInputs) window.clearAuthInputs(); // تفريغ الحقول عند نجاح الدخول
                 document.getElementById('auth-modal').classList.add('hidden');
                 document.getElementById('app-shell').classList.add('unlocked');
                 loadFragment('home', document.querySelector('.nav-btn.active'));
                 hideLoader();
             } else {
                 if (!window.isGuest) {
+                    if(window.clearAuthInputs) window.clearAuthInputs(); // تفريغ الحقول عند عدم وجود مستخدم
                     document.getElementById('auth-modal').classList.remove('hidden');
                     document.getElementById('app-shell').classList.remove('unlocked');
                 }
@@ -227,7 +211,6 @@
                     let id = document.getElementById('login-id').value.trim(); 
                     let pass = document.getElementById('login-password').value;
                     let email = id;
-                    
                     if (!id.includes('@')) {
                         const q = query(collection(db, "users"), where("username_lower", "==", id.toLowerCase()));
                         const snap = await getDocs(q);
@@ -240,135 +223,83 @@
                     const email = document.getElementById('reg-email').value.trim();
                     const pass = document.getElementById('reg-password').value; 
                     const conf = document.getElementById('reg-confirm').value;
-                    
                     if (pass !== conf) throw { message: "كلمات المرور غير متطابقة" };
                     if (pass.length < 6) throw { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" };
-                    if (user.length < 3) throw { message: "اسم المستخدم قصير جداً" };
-
                     const q = query(collection(db, "users"), where("username_lower", "==", user.toLowerCase()));
                     const snap = await getDocs(q);
                     if (!snap.empty) throw { message: "اسم المستخدم محجوز" };
-                    
                     const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pass);
-                    await setDoc(doc(db, "users", cred.user.uid), { 
-                        username: user, 
-                        username_lower: user.toLowerCase(), 
-                        email: email.toLowerCase(), 
-                        matches: 0, 
-                        wins: 0, 
-                        settings: { theme: 'dark' },
-                        createdAt: new Date().toISOString() 
-                    });
+                    await setDoc(doc(db, "users", cred.user.uid), { username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), matches: 0, wins: 0, settings: { theme: 'dark' }, createdAt: new Date().toISOString() });
                 }
             } catch (err) {
                 let msg = err.message || "حدث خطأ غير معروف";
                 if(msg.includes("invalid-credential")) msg = "البيانات غير صحيحة";
                 if(msg.includes("email-already-in-use")) msg = "البريد الإلكتروني مستخدم مسبقاً";
-                errorDiv.innerText = msg; 
-                errorDiv.style.display = 'block';
-            } finally { 
-                btn.disabled = false; 
-                btn.innerText = window.currentFormMode === 'register' ? 'حساب جديد' : 'تسجيل الدخول'; 
-            }
+                errorDiv.innerText = msg; errorDiv.style.display = 'block';
+            } finally { btn.disabled = false; btn.innerText = window.currentFormMode === 'register' ? 'حساب جديد' : 'تسجيل الدخول'; }
         }
     </script>
 
     <script>
-        // دالة تبديل الثيمات (تمت إعادتها بالكامل لتعمل بكفاءة وتحفظ بالداتابيس)
+        // دالة تفريغ الحقول بالكامل (يتم استدعاؤها في الخروج، الإغلاق، والدخول كزائر)
+        window.clearAuthInputs = function() {
+            const form = document.getElementById('firebase-form');
+            if(form) form.reset();
+            const errorDiv = document.getElementById('auth-error');
+            if(errorDiv) errorDiv.style.display = 'none';
+        };
+
         window.toggleTheme = async function(mode, skipSave = false) {
-            const body = document.body;
-            const darkBtn = document.getElementById('btn-theme-dark');
-            const lightBtn = document.getElementById('btn-theme-light');
-
-            if (mode === 'light') {
-                body.setAttribute('data-theme', 'light');
-                lightBtn.classList.add('active-theme');
-                darkBtn.classList.remove('active-theme');
-            } else {
-                body.removeAttribute('data-theme');
-                darkBtn.classList.add('active-theme');
-                lightBtn.classList.remove('active-theme');
-            }
-
-            // حفظ الثيم في السيرفر إذا كان اللاعب مسجلاً
+            const body = document.body; const darkBtn = document.getElementById('btn-theme-dark'); const lightBtn = document.getElementById('btn-theme-light');
+            if (mode === 'light') { body.setAttribute('data-theme', 'light'); lightBtn.classList.add('active-theme'); darkBtn.classList.remove('active-theme'); } 
+            else { body.removeAttribute('data-theme'); darkBtn.classList.add('active-theme'); lightBtn.classList.remove('active-theme'); }
             if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) {
-                try {
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
-                        "settings.theme": mode
-                    });
-                } catch (e) {
-                    console.warn("تعذر حفظ الثيم سحابياً", e);
-                }
+                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.theme": mode }); } catch (e) {}
             }
         };
 
-        // دالة تغيير الفورم بين التسجيل والدخول (تم التأكد من صحة الأسماء)
         function setFormType(type) { 
             window.currentFormMode = type; 
             document.getElementById('tab-login').classList.toggle('active', type === 'login'); 
             document.getElementById('tab-register').classList.toggle('active', type === 'register'); 
-            
             document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none'; 
             document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none'; 
-
-            document.getElementById('login-id').required = type === 'login';
-            document.getElementById('login-password').required = type === 'login';
-            document.getElementById('reg-username').required = type === 'register';
-            document.getElementById('reg-email').required = type === 'register';
-            document.getElementById('reg-password').required = type === 'register';
-            
+            document.getElementById('login-id').required = type === 'login'; document.getElementById('login-password').required = type === 'login';
+            document.getElementById('reg-username').required = type === 'register'; document.getElementById('reg-email').required = type === 'register'; document.getElementById('reg-password').required = type === 'register';
             document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'حساب جديد' : 'تسجيل الدخول';
         }
 
-        // باقي دوال القوائم والزائر
-        function toggleUserDropdown() { 
-            document.getElementById('profile-trigger').classList.toggle('active');
-            document.getElementById('user-dropdown').classList.toggle('show'); 
-        }
-
-        window.onclick = function(e) { 
-            if (!e.target.closest('.profile-trigger') && !e.target.closest('.user-dropdown')) { 
-                document.getElementById('profile-trigger').classList.remove('active');
-                document.querySelectorAll('.user-dropdown').forEach(d => d.classList.remove('show')); 
-            } 
-        }
-
+        function toggleUserDropdown() { document.getElementById('profile-trigger').classList.toggle('active'); document.getElementById('user-dropdown').classList.toggle('show'); }
+        window.onclick = function(e) { if (!e.target.closest('.profile-trigger') && !e.target.closest('.user-dropdown')) { document.getElementById('profile-trigger').classList.remove('active'); document.querySelectorAll('.user-dropdown').forEach(d => d.classList.remove('show')); } }
+        
         function handleLogout() { 
             window.signOutFunc(window.authInstance).then(() => { 
                 toggleUserDropdown(); 
-                document.body.removeAttribute('data-theme'); // إعادة الثيم للوضع الافتراضي عند الخروج
+                document.body.removeAttribute('data-theme');
+                window.clearAuthInputs(); // تفريغ الحقول هنا
                 document.getElementById('auth-modal').classList.remove('hidden'); 
                 document.getElementById('app-shell').classList.remove('unlocked'); 
             }); 
         }
 
-        function switchModalMode(mode) { 
-            if(mode === 'forms'){ 
-                document.getElementById('modal-welcome-view').style.display = 'none'; 
-                document.getElementById('modal-form-view').style.display = 'block'; 
-            } 
-        }
+        function switchModalMode(mode) { if(mode === 'forms'){ document.getElementById('modal-welcome-view').style.display = 'none'; document.getElementById('modal-form-view').style.display = 'block'; } }
         
         function enterAsGuest() {
             window.isGuest = true;
             document.getElementById('header-name').innerText = "زائر";
             document.getElementById('header-status').innerText = "غير مسجل";
             document.getElementById('header-avatar-fallback').innerText = "ز";
+            window.updateFriendsUI(false); 
+            document.getElementById('user-dropdown').innerHTML = `<div class="dropdown-header"><div class="dropdown-name-ar" style="color:var(--text-dim);">زائر غير مسجل</div></div><button class="dropdown-item" onclick="window.clearAuthInputs(); document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول</button>`;
             
-            window.updateFriendsUI(false); // سيظهر نص أنيق متوسط
-
-            document.getElementById('user-dropdown').innerHTML = `
-                <div class="dropdown-header">
-                    <div class="dropdown-name-ar" style="color:var(--text-dim);">زائر غير مسجل</div>
-                </div>
-                <button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); toggleUserDropdown(); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول</button>
-            `;
+            window.clearAuthInputs(); // تفريغ الحقول هنا أيضاً
             document.getElementById('auth-modal').classList.add('hidden'); 
             document.getElementById('app-shell').classList.add('unlocked'); 
             loadFragment('home', document.querySelector('.nav-btn.active'));
         }
 
         function closeAuthModal() { 
+            window.clearAuthInputs(); // وتفريغها عند الإغلاق بالـ X
             document.getElementById('auth-modal').classList.add('hidden'); 
             document.getElementById('app-shell').classList.add('unlocked'); 
             if(!window.isGuest) enterAsGuest(); 
@@ -381,16 +312,12 @@
             
             document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => {
                 btn.classList.remove('active');
-                const icon = btn.querySelector('i');
-                if(icon) icon.className = icon.className.replace('ph-fill', 'ph');
+                const icon = btn.querySelector('i'); if(icon) icon.className = icon.className.replace('ph-fill', 'ph');
             });
 
             if(element) {
                 element.classList.add('active');
-                const icon = element.querySelector('i');
-                if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
-                
-                // مزامنة أزرار الجوال والكمبيوتر
+                const icon = element.querySelector('i'); if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
                 const index = Array.from(element.parentElement.children).indexOf(element);
                 const mobileTab = document.querySelectorAll('.bottom-tab')[index];
                 if(mobileTab && element.classList.contains('nav-btn')) {
