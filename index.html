@@ -3,138 +3,446 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DECEPTION.SYS - Dashboard</title>
+    <title>DECEPTION.SYS - Gege Gemink UI</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <!-- استدعاء الأيقونات -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
+    <!-- استدعاء ملف التصميم الخارجي الموحد -->
     <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
-    <div id="global-loader"><div class="spinner"></div></div>
+    <!-- شاشة التحميل لمنع الوميض -->
+    <div id="global-loader">
+        <div class="spinner"></div>
+    </div>
 
+    <!-- بوابة الدخول الزجاجية (التي تعمل لديك مسبقاً) -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
-            <button class="close-modal-btn" onclick="closeAuthModal()" style="position:absolute; top:20px; left:20px; background:none; border:none; color:#8e929d; font-size:24px; cursor:pointer;"><i class="ph ph-x"></i></button>
-            <div id="modal-welcome-view">
-                <i class="ph ph-shield-check" style="font-size: 48px; color: var(--accent-primary); margin-bottom: 15px; display: inline-block;"></i>
-                <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 10px;">نظام الخداع</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 30px; line-height: 1.6;">قم بتسجيل الدخول للوصول إلى غرفة العمليات وحفظ تقدمك السحابي.</p>
-                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول / حساب جديد</button>
-                <button onclick="enterAsGuest()" style="display:block; width:100%; margin-top:20px; background:none; border:none; color:var(--text-dim); cursor:pointer; font-weight:600;">المتابعة كزائر</button>
-            </div>
+            <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
             
+            <div id="modal-welcome-view">
+                <i class="ph-fill ph-fingerprint" style="font-size: 48px; color: var(--accent-red); margin-bottom: 15px; display: inline-block;"></i>
+                <h2>سجل دخولك</h2>
+                <p>سجل دخولك الآن لتلعب، وتحفظ تقدمك، إحصائياتك، وإعداداتك السحابية بشكل آمن.</p>
+                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول</button>
+                <button class="link-guest" onclick="enterAsGuest()">المتابعة كزائر</button>
+            </div>
+
             <div id="modal-form-view" style="display: none;">
-                <div style="display:flex; border-bottom:1px solid var(--border-line); margin-bottom:20px;">
-                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')" style="flex:1; background:none; border:none; color:var(--text-main); padding:10px; border-bottom:2px solid var(--accent-primary); cursor:pointer; font-weight:700;">دخول</button>
-                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')" style="flex:1; background:none; border:none; color:var(--text-dim); padding:10px; cursor:pointer; font-weight:700;">حساب جديد</button>
+                <div class="modal-tabs">
+                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')">تسجيل الدخول</button>
+                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')">حساب جديد</button>
                 </div>
+                
                 <div id="auth-error" class="auth-error-msg"></div>
+
                 <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
+                    <!-- حقول تسجيل الدخول -->
                     <div id="login-fields">
-                        <div class="input-wrapper"><label>المعرف</label><input type="text" id="login-id" class="premium-input" placeholder="البريد أو اسم المستخدم" required></div>
-                        <div class="input-wrapper"><label>الرمز السري</label><input type="password" id="login-password" class="premium-input" placeholder="••••••••" required></div>
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني أو اسم المستخدم</label>
+                            <input type="text" id="login-id" class="premium-input" placeholder="أدخل البيانات" autocomplete="off" required>
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="login-password" class="premium-input" placeholder="••••••••" autocomplete="new-password" required>
+                        </div>
                     </div>
+
+                    <!-- حقول الحساب الجديد -->
                     <div id="register-fields" style="display: none;">
-                        <div class="input-wrapper"><label>اسم المستخدم</label><input type="text" id="reg-username" class="premium-input" placeholder="DarkKnight"></div>
-                        <div class="input-wrapper"><label>البريد</label><input type="email" id="reg-email" class="premium-input" placeholder="name@example.com"></div>
-                        <div class="input-wrapper"><label>الرمز السري</label><input type="password" id="reg-password" class="premium-input" placeholder="••••••••"></div>
-                        <div class="input-wrapper"><label>تأكيد الرمز</label><input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••"></div>
+                        <div class="input-wrapper">
+                            <label>اسم المستخدم (مميز)</label>
+                            <input type="text" id="reg-username" class="premium-input" placeholder="مثال: DarkKnight">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="reg-email" class="premium-input" placeholder="name@example.com">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="reg-password" class="premium-input" placeholder="••••••••">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>تأكيد كلمة المرور</label>
+                            <input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••">
+                        </div>
                     </div>
-                    <button type="submit" class="btn-core" id="modal-submit-btn">تأكيد</button>
+
+                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="app-shell" class="app-shell">
+    <!-- الهيكل الجديد مطابق لصورة Gege Gemink -->
+    <div id="app-shell" class="app-shell unlocked">
         
-        <aside class="sidebar-main">
-            <div class="brand-logo">G<span>GEMINK</span></div>
-            
+        <!-- الشريط الأيسر النحيف -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                Gege<span>Gemink</span>
+            </div>
             <nav class="nav-menu">
-                <button class="nav-btn accent-btn" title="القائمة السريعة"><i class="ph-fill ph-squares-four"></i></button>
-                <button class="nav-btn active" onclick="loadFragment('home', this)" title="الرئيسية"><i class="ph-fill ph-house"></i></button>
-                <button class="nav-btn" onclick="loadFragment('play', this)" title="اللعب"><i class="ph ph-video-camera"></i></button>
-                <button class="nav-btn" onclick="loadFragment('leaderboard', this)" title="المتصدرون"><i class="ph ph-users-three"></i></button>
-                <button class="nav-btn" onclick="loadFragment('store', this)" title="المتجر"><i class="ph ph-storefront"></i></button>
-                <button class="nav-btn" onclick="loadFragment('profile', this)" title="الحساب"><i class="ph ph-chart-bar"></i></button>
+                <button class="nav-btn active"><i class="ph-fill ph-squares-four"></i></button>
+                <button class="nav-btn"><i class="ph ph-video-camera"></i></button>
+                <button class="nav-btn"><i class="ph ph-users"></i></button>
+                <button class="nav-btn"><i class="ph ph-chat-circle-dots"></i></button>
+                <button class="nav-btn"><i class="ph ph-star"></i></button>
+                <button class="nav-btn"><i class="ph ph-chart-bar"></i></button>
+                <button class="nav-btn"><i class="ph ph-user"></i></button>
             </nav>
-
-            <div class="theme-toggle-wrapper">
-                <button class="theme-btn active" onclick="toggleTheme()" title="فاتح"><i class="ph ph-sun"></i></button>
-                <button class="theme-btn" onclick="toggleTheme()" title="داكن"><i class="ph ph-moon"></i></button>
+            <div class="theme-wrapper">
+                <button class="theme-btn active-theme"><i class="ph-fill ph-sun"></i></button>
+                <button class="theme-btn"><i class="ph-fill ph-moon"></i></button>
             </div>
         </aside>
 
+        <!-- الوسط -->
         <main class="main-viewport">
             <header class="top-header">
+                <!-- شريط البحث -->
                 <div class="search-container">
                     <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" class="search-input" placeholder="البحث عن غرف، لاعبين، أو أحداث...">
+                    <input type="text" class="search-input" placeholder="Search">
+                    <span class="search-shortcut">Search</span>
                 </div>
-                
+
+                <!-- الأزرار والملف الشخصي -->
                 <div class="header-actions">
-                    <button class="action-btn"><i class="ph ph-broadcast"></i> ابدأ البث</button>
-                    <button class="icon-action"><i class="ph ph-gear"></i></button>
-                    <button class="icon-action"><i class="ph ph-bell"></i><span class="notification-dot"></span></button>
+                    <button class="start-stream-btn"><i class="ph-fill ph-video-camera"></i> <span>Start Stream</span></button>
+                    <button class="header-icon-btn"><i class="ph ph-gear"></i></button>
+                    <button class="header-icon-btn">
+                        <i class="ph ph-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
                     
-                    <div class="user-profile-header" onclick="handleLogout()"> <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="header-avatar" id="header-avatar-img">
-                        <div class="header-user-info">
-                            <span class="header-username" id="header-avatar">اللاعب</span>
-                            <span class="header-status">متصل الآن</span>
+                    <div style="position: relative; margin-right: 15px;">
+                        <div class="profile-trigger" onclick="toggleUserDropdown()">
+                            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="profile-avatar" id="header-avatar-img">
+                            <div class="profile-info">
+                                <span class="profile-name" id="header-name">Ahmad Fauzi</span>
+                                <span class="profile-status">Online</span>
+                            </div>
+                            <i class="ph-bold ph-caret-down"></i>
                         </div>
-                        <i class="ph ph-caret-down" style="color: var(--text-dim); margin-right: 5px;"></i>
+                        <div class="user-dropdown" id="user-dropdown"></div>
                     </div>
                 </div>
             </header>
             
-            <div class="dynamic-content" id="content-holder"></div>
+            <!-- حاوية المحتوى الديناميكي (هنا نضع تصميم الرئيسية) -->
+            <div class="dynamic-content" id="content-holder">
+                <!-- تم وضع محتوى home.html هنا مباشرة لتراه فوراً -->
+                <div class="home-layout">
+                    <!-- القسم العلوي -->
+                    <div class="hero-grid">
+                        <div class="hero-banner">
+                            <span class="hero-tag">#TRENDING</span>
+                            <h1 class="hero-title">Watch streaming games anywhere anytime</h1>
+                            <p class="hero-desc">Watch your hero compete by watching on Gege Gemink</p>
+                            <button class="hero-btn">Watch now</button>
+                            <!-- استخدمت صورة شفافة تجريدية للتوضيح -->
+                            <img src="https://cdn3d.iconscout.com/3d/premium/thumb/gamer-5364121-4491743.png" class="hero-characters" alt="Characters">
+                            <div class="hero-pagination">
+                                <div class="dot active"></div>
+                                <div class="dot inactive"></div>
+                                <div class="dot inactive"></div>
+                                <div class="dot inactive"></div>
+                            </div>
+                        </div>
+
+                        <div class="top-streamers-card">
+                            <h3 class="card-header">Top Streamer</h3>
+                            <div class="streamer-list">
+                                <div class="streamer-item">
+                                    <div class="streamer-rank"><i class="ph-fill ph-medal"></i></div>
+                                    <img src="https://i.pravatar.cc/150?img=12" class="streamer-avatar">
+                                    <div class="streamer-info">
+                                        <span class="streamer-name">Ethos <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">1M Followers</span>
+                                    </div>
+                                    <span class="game-tag tag-valorant"><img src="https://cdn-icons-png.flaticon.com/128/3589/3589885.png" width="12"> Valorant</span>
+                                </div>
+                                <div class="streamer-item">
+                                    <div class="streamer-rank">02</div>
+                                    <img src="https://i.pravatar.cc/150?img=33" class="streamer-avatar">
+                                    <div class="streamer-info">
+                                        <span class="streamer-name">Tarik <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">500K Followers</span>
+                                    </div>
+                                    <span class="game-tag tag-valorant"><img src="https://cdn-icons-png.flaticon.com/128/3589/3589885.png" width="12"> Valorant</span>
+                                </div>
+                                <div class="streamer-item">
+                                    <div class="streamer-rank">03</div>
+                                    <img src="https://i.pravatar.cc/150?img=59" class="streamer-avatar">
+                                    <div class="streamer-info">
+                                        <span class="streamer-name">Dream <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">482K Followers</span>
+                                    </div>
+                                    <span class="game-tag tag-minecraft"><i class="ph-fill ph-cube"></i> Minecraft</span>
+                                </div>
+                                <div class="streamer-item">
+                                    <div class="streamer-rank">04</div>
+                                    <div class="streamer-avatar" style="background:#333; display:flex; justify-content:center; align-items:center;"><i class="ph-bold ph-lightning" style="color:white;"></i></div>
+                                    <div class="streamer-info">
+                                        <span class="streamer-name">Jay3 <i class="ph-fill ph-check-circle"></i></span>
+                                        <span class="streamer-followers">100K Followers</span>
+                                    </div>
+                                    <span class="game-tag tag-overwatch"><i class="ph-bold ph-target"></i> Overwatch</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- قسم الفيديوهات -->
+                    <div class="trending-section">
+                        <div class="trending-header">
+                            <div class="trending-title-area">
+                                <h4>TRENDING</h4>
+                                <h2>#Play With Valorant</h2>
+                                <div class="trending-tabs">
+                                    <span class="trend-tab active">Top Stream</span>
+                                    <span class="trend-tab">Currently Online</span>
+                                    <span class="trend-tab">Verified</span>
+                                </div>
+                            </div>
+                            <div class="trending-actions">
+                                <a href="#" class="view-all">View All</a>
+                                <button class="filter-btn"><i class="ph-bold ph-funnel"></i> Filter</button>
+                            </div>
+                        </div>
+
+                        <div class="video-grid">
+                            <!-- فيديو 1 -->
+                            <div class="video-card">
+                                <div class="video-thumb">
+                                    <span class="live-badge">Live</span>
+                                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" alt="Thumbnail">
+                                    <div class="video-meta">
+                                        <span class="viewer-count"><i class="ph-fill ph-user"></i> 195,565</span>
+                                        <span class="viewer-count">1:24:05</span>
+                                    </div>
+                                </div>
+                                <div class="video-info-row">
+                                    <img src="https://i.pravatar.cc/150?img=12" class="video-avatar">
+                                    <div class="video-details">
+                                        <div style="display: flex; gap: 8px;">
+                                            <span class="video-creator">Ethos <i class="ph-fill ph-check-circle"></i></span>
+                                            <span class="game-tag tag-valorant" style="padding: 2px 8px; font-size: 9px;">Valorant</span>
+                                        </div>
+                                        <h3 class="video-title">What Aggressive YORU 2.0 plays look like...</h3>
+                                        <span class="video-stats">195,565 Watching • Mar 2, 2022</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- فيديو 2 -->
+                            <div class="video-card">
+                                <div class="video-thumb">
+                                    <span class="live-badge">Live</span>
+                                    <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80" alt="Thumbnail">
+                                    <div class="video-meta">
+                                        <span class="viewer-count"><i class="ph-fill ph-user"></i> 33,462</span>
+                                    </div>
+                                </div>
+                                <div class="video-info-row">
+                                    <img src="https://i.pravatar.cc/150?img=33" class="video-avatar">
+                                    <div class="video-details">
+                                        <div style="display: flex; gap: 8px;">
+                                            <span class="video-creator">Tarik <i class="ph-fill ph-check-circle"></i></span>
+                                            <span class="game-tag tag-valorant" style="padding: 2px 8px; font-size: 9px;">Valorant</span>
+                                        </div>
+                                        <h3 class="video-title">SPEEDRUNNING VALORANT RANKED WITH 100T ASUNA!</h3>
+                                        <span class="video-stats">33,462 Watching • Mar 4, 2022</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- فيديو 3 -->
+                            <div class="video-card">
+                                <div class="video-thumb">
+                                    <span class="live-badge">Live</span>
+                                    <img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80" alt="Thumbnail">
+                                    <div class="video-meta">
+                                        <span class="viewer-count"><i class="ph-fill ph-user"></i> 5.8M</span>
+                                    </div>
+                                </div>
+                                <div class="video-info-row">
+                                    <img src="https://i.pravatar.cc/150?img=47" class="video-avatar">
+                                    <div class="video-details">
+                                        <div style="display: flex; gap: 8px;">
+                                            <span class="video-creator">MILYHYA <i class="ph-fill ph-check-circle"></i></span>
+                                            <span class="game-tag tag-valorant" style="padding: 2px 8px; font-size: 9px;">Valorant</span>
+                                        </div>
+                                        <h3 class="video-title">Valorant Indonesia - Skin, Banting Rumah, Baiter #2</h3>
+                                        <span class="video-stats">5,887,037 Watching • Aug 15, 2021</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
 
-        <aside class="sidebar-friends">
-            <div class="friend-avatar-wrapper live">
-                <img src="https://i.pravatar.cc/150?img=12" class="friend-avatar" alt="Friend">
-            </div>
-            <div class="friend-avatar-wrapper">
-                <img src="https://i.pravatar.cc/150?img=32" class="friend-avatar" alt="Friend">
-            </div>
-            <div class="friend-avatar-wrapper">
-                <img src="https://i.pravatar.cc/150?img=47" class="friend-avatar" alt="Friend">
-            </div>
-            <div class="friend-avatar-wrapper">
-                <img src="https://i.pravatar.cc/150?img=68" class="friend-avatar" alt="Friend">
-            </div>
+        <!-- الشريط الأيمن (الأصدقاء والألعاب) -->
+        <aside class="right-sidebar">
+            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=1"><div class="online-dot"></div></div>
+            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=2"><div class="online-dot"></div></div>
+            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=3"><div class="online-dot"></div></div>
+            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=4"><div class="online-dot"></div></div>
+            <div class="friend-avatar"><img src="https://i.pravatar.cc/150?img=5"><div class="online-dot"></div></div>
             
-            <button class="add-friend-btn"><i class="ph ph-plus"></i></button>
+            <button class="add-friend-btn"><i class="ph-bold ph-plus"></i></button>
 
-            <div class="game-icons-bottom">
-                <img src="https://cdn-icons-png.flaticon.com/512/732/732228.png" class="game-icon" alt="Game 1">
-                <img src="https://cdn-icons-png.flaticon.com/512/5969/5969282.png" class="game-icon" alt="Game 2">
+            <div class="game-icons-wrapper">
+                <img src="https://cdn-icons-png.flaticon.com/128/5968/5968971.png" class="game-icon">
+                <img src="https://cdn-icons-png.flaticon.com/128/871/871364.png" class="game-icon">
             </div>
         </aside>
 
-        <nav class="bottom-dock">
-            <button class="dock-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-house"></i></button>
-            <button class="dock-btn" onclick="loadFragment('play', this)"><i class="ph ph-video-camera"></i></button>
-            <div style="position: relative; top: -20px;">
-                <button class="nav-btn accent-btn" style="margin: 0; width: 55px; height: 55px;"><i class="ph ph-plus"></i></button>
-            </div>
-            <button class="dock-btn" onclick="loadFragment('leaderboard', this)"><i class="ph ph-users-three"></i></button>
-            <button class="dock-btn" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i></button>
+        <!-- شريط الجوال السفلي -->
+        <nav class="bottom-bar">
+            <button class="bottom-tab active"><i class="ph-fill ph-squares-four"></i></button>
+            <button class="bottom-tab"><i class="ph ph-video-camera"></i></button>
+            <button class="bottom-tab"><i class="ph ph-users"></i></button>
+            <button class="bottom-tab"><i class="ph ph-user"></i></button>
         </nav>
     </div>
 
+    <!-- أكواد جافاسكريبت والربط بقاعدة البيانات (نفسها بدون مساس) -->
     <script type="module">
-        // [ضع أكواد Firebase الخاصة بك التي أرسلتها لي هنا كاملة]
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI",
+            authDomain: "web-game-260b5.firebaseapp.com",
+            projectId: "web-game-260b5",
+            storageBucket: "web-game-260b5.firebasestorage.app",
+            messagingSenderId: "682229509792",
+            appId: "1:682229509792:web:11b4a404459630fcd6a3c5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        window.authInstance = auth; 
+        window.dbInstance = db;
+        window.updateDocFunc = updateDoc;
+        window.docFunc = doc;
+        window.signOutFunc = signOut;
+        window.isGuest = false;
+        window.currentFormMode = 'login'; 
+
+        const hideLoader = () => {
+            const loader = document.getElementById('global-loader');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 500);
+            }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            const dropdown = document.getElementById('user-dropdown');
+            const nameEl = document.getElementById('header-name');
+
+            if (user) {
+                window.isGuest = false;
+                let displayName = user.email.split('@')[0];
+                let matches = 0, wins = 0;
+
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        displayName = data.username || displayName;
+                        matches = data.matches || 0;
+                        wins = data.wins || 0;
+                    }
+                } catch (err) { console.warn("Error fetching data", err); }
+
+                nameEl.innerText = displayName;
+                dropdown.innerHTML = `
+                    <div class="dropdown-header">
+                        <div class="dropdown-name-ar">${displayName}</div>
+                        <div class="dropdown-stats">
+                            <div class="stat-item"><span class="stat-label">المباريات</span><span class="stat-value">${matches}</span></div>
+                            <div class="stat-item"><span class="stat-label">الانتصارات</span><span class="stat-value">${wins}</span></div>
+                        </div>
+                    </div>
+                    <button class="dropdown-item" onclick="toggleUserDropdown();"><i class="ph ph-user-circle"></i> الملف الشخصي</button>
+                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
+                `;
+
+                document.getElementById('auth-modal').classList.add('hidden');
+                document.getElementById('app-shell').classList.add('unlocked');
+                hideLoader();
+            } else {
+                if (!window.isGuest) {
+                    document.getElementById('auth-modal').classList.remove('hidden');
+                    document.getElementById('app-shell').classList.remove('unlocked');
+                }
+                hideLoader();
+            }
+        });
     </script>
+
     <script>
-        // [ضع أكواد Toggle Modal و loadFragment الخاصة بك هنا]
-        // ملاحظة: تأكد من إبقاء دالة loadFragment الخاصة بك تعمل بشكل صحيح لجلب home.html
+        function toggleUserDropdown() { 
+            document.getElementById('user-dropdown').classList.toggle('show'); 
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.profile-trigger') && !event.target.closest('.user-dropdown')) {
+                const dropdowns = document.getElementsByClassName("user-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
+                }
+            }
+        }
+
+        function handleLogout() {
+            window.signOutFunc(window.authInstance).then(() => {
+                toggleUserDropdown();
+                document.getElementById('auth-modal').classList.remove('hidden');
+                document.getElementById('app-shell').classList.remove('unlocked');
+            });
+        }
+
+        function switchModalMode(mode) {
+            if(mode === 'forms') {
+                document.getElementById('modal-welcome-view').style.display = 'none';
+                document.getElementById('modal-form-view').style.display = 'block';
+            }
+        }
+
+        function setFormType(type) {
+            window.currentFormMode = type;
+            document.getElementById('tab-login').classList.toggle('active', type === 'login');
+            document.getElementById('tab-register').classList.toggle('active', type === 'register');
+            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none';
+            document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none';
+        }
+
+        function enterAsGuest() {
+            window.isGuest = true;
+            document.getElementById('header-name').innerText = "زائر";
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('app-shell').classList.add('unlocked');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('app-shell').classList.add('unlocked');
+            if(!window.isGuest) enterAsGuest();
+        }
     </script>
 </body>
 </html>
