@@ -2,10 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DECEPTION.SYS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DECEPTION.SYS - Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=4.0">
+
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
@@ -13,249 +19,122 @@
 
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
-            <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
+            <button class="close-modal-btn" onclick="closeAuthModal()" style="position:absolute; top:20px; left:20px; background:none; border:none; color:#8e929d; font-size:24px; cursor:pointer;"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <i class="ph-fill ph-fingerprint" style="font-size: 48px; color: var(--text-white); margin-bottom: 20px;"></i>
-                <h2>سجل دخولك</h2>
-                <p>سجل دخولك الآن لتحفظ تقدمك وتستعرض أصدقائك المتصلين.</p>
-                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول</button>
-                <button class="btn-core" style="background: transparent; box-shadow: none; color: var(--text-gray); margin-top: 10px;" onclick="enterAsGuest()">المتابعة كزائر</button>
+                <i class="ph ph-shield-check" style="font-size: 48px; color: var(--accent-primary); margin-bottom: 15px; display: inline-block;"></i>
+                <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 10px;">نظام الخداع</h2>
+                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 30px; line-height: 1.6;">قم بتسجيل الدخول للوصول إلى غرفة العمليات وحفظ تقدمك السحابي.</p>
+                <button class="btn-core" onclick="switchModalMode('forms')">تسجيل الدخول / حساب جديد</button>
+                <button onclick="enterAsGuest()" style="display:block; width:100%; margin-top:20px; background:none; border:none; color:var(--text-dim); cursor:pointer; font-weight:600;">المتابعة كزائر</button>
             </div>
-
+            
             <div id="modal-form-view" style="display: none;">
-                <div class="modal-tabs">
-                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')">تسجيل الدخول</button>
-                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')">حساب جديد</button>
+                <div style="display:flex; border-bottom:1px solid var(--border-line); margin-bottom:20px;">
+                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')" style="flex:1; background:none; border:none; color:var(--text-main); padding:10px; border-bottom:2px solid var(--accent-primary); cursor:pointer; font-weight:700;">دخول</button>
+                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')" style="flex:1; background:none; border:none; color:var(--text-dim); padding:10px; cursor:pointer; font-weight:700;">حساب جديد</button>
                 </div>
                 <div id="auth-error" class="auth-error-msg"></div>
-
-                <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off" dir="rtl">
+                <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
                     <div id="login-fields">
-                        <div class="input-wrapper">
-                            <input type="text" id="login-id" class="premium-input" placeholder="البريد الإلكتروني أو اسم المستخدم" required>
-                        </div>
-                        <div class="input-wrapper">
-                            <input type="password" id="login-password" class="premium-input" placeholder="كلمة المرور" required>
-                        </div>
+                        <div class="input-wrapper"><label>المعرف</label><input type="text" id="login-id" class="premium-input" placeholder="البريد أو اسم المستخدم" required></div>
+                        <div class="input-wrapper"><label>الرمز السري</label><input type="password" id="login-password" class="premium-input" placeholder="••••••••" required></div>
                     </div>
                     <div id="register-fields" style="display: none;">
-                        <div class="input-wrapper"><input type="text" id="reg-username" class="premium-input" placeholder="اسم المستخدم"></div>
-                        <div class="input-wrapper"><input type="email" id="reg-email" class="premium-input" placeholder="البريد الإلكتروني"></div>
-                        <div class="input-wrapper"><input type="password" id="reg-password" class="premium-input" placeholder="كلمة المرور"></div>
-                        <div class="input-wrapper"><input type="password" id="reg-confirm" class="premium-input" placeholder="تأكيد كلمة المرور"></div>
+                        <div class="input-wrapper"><label>اسم المستخدم</label><input type="text" id="reg-username" class="premium-input" placeholder="DarkKnight"></div>
+                        <div class="input-wrapper"><label>البريد</label><input type="email" id="reg-email" class="premium-input" placeholder="name@example.com"></div>
+                        <div class="input-wrapper"><label>الرمز السري</label><input type="password" id="reg-password" class="premium-input" placeholder="••••••••"></div>
+                        <div class="input-wrapper"><label>تأكيد الرمز</label><input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••"></div>
                     </div>
-                    <button type="submit" class="btn-core" id="modal-submit-btn" style="margin-top: 10px;">دخول</button>
+                    <button type="submit" class="btn-core" id="modal-submit-btn">تأكيد</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="app-shell" class="app-wrapper">
+    <div id="app-shell" class="app-shell">
         
-        <aside class="nav-sidebar">
-            <div class="brand-logo">
-                <span>Deception</span>
-                <span>System</span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-item active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
-                <button class="nav-item" onclick="loadFragment('play', this)"><i class="ph-fill ph-game-controller"></i></button>
-                <button class="nav-item" onclick="loadFragment('leaderboard', this)"><i class="ph-fill ph-users-three"></i></button>
-                <button class="nav-item" onclick="loadFragment('store', this)"><i class="ph-fill ph-storefront"></i></button>
-                <button class="nav-item" onclick="loadFragment('profile', this)"><i class="ph-fill ph-user"></i></button>
-            </div>
+        <aside class="sidebar-main">
+            <div class="brand-logo">G<span>GEMINK</span></div>
             
+            <nav class="nav-menu">
+                <button class="nav-btn accent-btn" title="القائمة السريعة"><i class="ph-fill ph-squares-four"></i></button>
+                <button class="nav-btn active" onclick="loadFragment('home', this)" title="الرئيسية"><i class="ph-fill ph-house"></i></button>
+                <button class="nav-btn" onclick="loadFragment('play', this)" title="اللعب"><i class="ph ph-video-camera"></i></button>
+                <button class="nav-btn" onclick="loadFragment('leaderboard', this)" title="المتصدرون"><i class="ph ph-users-three"></i></button>
+                <button class="nav-btn" onclick="loadFragment('store', this)" title="المتجر"><i class="ph ph-storefront"></i></button>
+                <button class="nav-btn" onclick="loadFragment('profile', this)" title="الحساب"><i class="ph ph-chart-bar"></i></button>
+            </nav>
+
             <div class="theme-toggle-wrapper">
-                <button class="theme-btn" id="btn-light" onclick="setTheme('light')"><i class="ph-fill ph-sun"></i></button>
-                <button class="theme-btn active" id="btn-dark" onclick="setTheme('dark')"><i class="ph-fill ph-moon"></i></button>
+                <button class="theme-btn active" onclick="toggleTheme()" title="فاتح"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" onclick="toggleTheme()" title="داكن"><i class="ph ph-moon"></i></button>
             </div>
         </aside>
 
-        <main class="main-area">
+        <main class="main-viewport">
             <header class="top-header">
-                <div class="header-left">
-                    <button class="custom-pill-btn"><i class="ph ph-coins"></i> 1,200 نقطة</button>
-                    <button class="custom-pill-btn btn-purple"><i class="ph-fill ph-play-circle"></i> اللعب السريع</button>
+                <div class="search-container">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" class="search-input" placeholder="البحث عن غرف، لاعبين، أو أحداث...">
                 </div>
                 
-                <div class="header-right">
-                    <button class="header-icon"><i class="ph ph-gear"></i></button>
-                    <button class="header-icon"><i class="ph ph-bell"></i></button>
+                <div class="header-actions">
+                    <button class="action-btn"><i class="ph ph-broadcast"></i> ابدأ البث</button>
+                    <button class="icon-action"><i class="ph ph-gear"></i></button>
+                    <button class="icon-action"><i class="ph ph-bell"></i><span class="notification-dot"></span></button>
                     
-                    <div style="position: relative;">
-                        <button class="user-profile-btn" onclick="toggleUserDropdown()">
-                            <div class="user-avatar" id="avatar-letter">ز</div>
-                            <div class="user-info" id="header-user-info" style="display: none;">
-                                <span class="user-name" id="display-name-text">Guest</span>
-                                <span class="user-status">Online</span>
-                            </div>
-                            <i class="ph ph-caret-down" style="color: var(--text-gray);"></i>
-                        </button>
-                        
-                        <div class="profile-dropdown" id="user-dropdown">
-                            <button class="dropdown-item" onclick="loadFragment('profile', document.querySelectorAll('.nav-item')[4]); toggleUserDropdown();"><i class="ph ph-user"></i> حسابي</button>
-                            <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
+                    <div class="user-profile-header" onclick="handleLogout()"> <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="header-avatar" id="header-avatar-img">
+                        <div class="header-user-info">
+                            <span class="header-username" id="header-avatar">اللاعب</span>
+                            <span class="header-status">متصل الآن</span>
                         </div>
+                        <i class="ph ph-caret-down" style="color: var(--text-dim); margin-right: 5px;"></i>
                     </div>
                 </div>
             </header>
-
-            <div id="content-holder" style="padding-top: 20px;"></div>
+            
+            <div class="dynamic-content" id="content-holder"></div>
         </main>
 
-        <aside class="friends-sidebar" id="friends-sidebar">
-            </aside>
+        <aside class="sidebar-friends">
+            <div class="friend-avatar-wrapper live">
+                <img src="https://i.pravatar.cc/150?img=12" class="friend-avatar" alt="Friend">
+            </div>
+            <div class="friend-avatar-wrapper">
+                <img src="https://i.pravatar.cc/150?img=32" class="friend-avatar" alt="Friend">
+            </div>
+            <div class="friend-avatar-wrapper">
+                <img src="https://i.pravatar.cc/150?img=47" class="friend-avatar" alt="Friend">
+            </div>
+            <div class="friend-avatar-wrapper">
+                <img src="https://i.pravatar.cc/150?img=68" class="friend-avatar" alt="Friend">
+            </div>
+            
+            <button class="add-friend-btn"><i class="ph ph-plus"></i></button>
 
+            <div class="game-icons-bottom">
+                <img src="https://cdn-icons-png.flaticon.com/512/732/732228.png" class="game-icon" alt="Game 1">
+                <img src="https://cdn-icons-png.flaticon.com/512/5969/5969282.png" class="game-icon" alt="Game 2">
+            </div>
+        </aside>
+
+        <nav class="bottom-dock">
+            <button class="dock-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-house"></i></button>
+            <button class="dock-btn" onclick="loadFragment('play', this)"><i class="ph ph-video-camera"></i></button>
+            <div style="position: relative; top: -20px;">
+                <button class="nav-btn accent-btn" style="margin: 0; width: 55px; height: 55px;"><i class="ph ph-plus"></i></button>
+            </div>
+            <button class="dock-btn" onclick="loadFragment('leaderboard', this)"><i class="ph ph-users-three"></i></button>
+            <button class="dock-btn" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i></button>
+        </nav>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = { apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI", authDomain: "web-game-260b5.firebaseapp.com", projectId: "web-game-260b5", storageBucket: "web-game-260b5.firebasestorage.app", messagingSenderId: "682229509792", appId: "1:682229509792:web:11b4a404459630fcd6a3c5" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-        
-        window.authInstance = auth; window.dbInstance = db; window.updateDocFunc = updateDoc; window.docFunc = doc; window.signOutFunc = signOut;
-        window.isGuest = false; window.currentFormMode = 'login'; 
-
-        window.clearAuthInputs = () => { document.querySelectorAll('.premium-input').forEach(i => i.value = ""); document.getElementById('auth-error').style.display = 'none'; };
-
-        const updateFriendsSidebar = (isLogged) => {
-            const sidebar = document.getElementById('friends-sidebar');
-            if(isLogged) {
-                sidebar.innerHTML = `<button class="add-friend-btn" title="إضافة صديق"><i class="ph ph-plus"></i></button>`;
-            } else {
-                sidebar.innerHTML = `
-                    <div class="guest-friends-prompt">
-                        <i class="ph-fill ph-lock-key" style="font-size: 24px; color: var(--text-gray);"></i>
-                        <span class="vertical-text">سجل لتضيف الأصدقاء</span>
-                    </div>`;
-            }
-        };
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                window.isGuest = false;
-                let displayName = user.email.split('@')[0];
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) {
-                        displayName = userDoc.data().username || displayName;
-                        let theme = userDoc.data().settings?.theme || 'dark';
-                        window.setTheme(theme, false);
-                    }
-                } catch(e){}
-                
-                document.getElementById('header-user-info').style.display = 'flex';
-                document.getElementById('display-name-text').innerText = displayName;
-                document.getElementById('avatar-letter').innerText = displayName.charAt(0).toUpperCase();
-                
-                updateFriendsSidebar(true);
-                window.clearAuthInputs();
-                document.getElementById('auth-modal').classList.add('hidden');
-                document.getElementById('app-shell').classList.add('unlocked');
-                window.loadFragment('home', document.querySelector('.nav-item'));
-                document.getElementById('global-loader').style.opacity = '0'; setTimeout(()=> document.getElementById('global-loader').style.display='none', 500);
-            } else {
-                if (!window.isGuest) {
-                    document.getElementById('auth-modal').classList.remove('hidden');
-                    document.getElementById('app-shell').classList.remove('unlocked');
-                }
-                document.getElementById('global-loader').style.opacity = '0'; setTimeout(()=> document.getElementById('global-loader').style.display='none', 500);
-            }
-        });
-
-        window.handleAuthSubmit = async function(e) {
-            e.preventDefault();
-            const err = document.getElementById('auth-error'); const btn = document.getElementById('modal-submit-btn');
-            err.style.display = 'none'; btn.innerText = "..."; btn.disabled = true;
-            try {
-                if (window.currentFormMode === 'login') {
-                    let id = document.getElementById('login-id').value.trim();
-                    let pass = document.getElementById('login-password').value;
-                    let email = id;
-                    if (!id.includes('@')) {
-                        const q = query(collection(db, "users"), where("username_lower", "==", id.toLowerCase()));
-                        const snap = await getDocs(q);
-                        if(snap.empty) throw {message: "المستخدم غير موجود"};
-                        email = snap.docs[0].data().email;
-                    }
-                    await signInWithEmailAndPassword(auth, email.toLowerCase(), pass);
-                } else {
-                    const user = document.getElementById('reg-username').value.trim();
-                    const email = document.getElementById('reg-email').value.trim();
-                    const pass = document.getElementById('reg-password').value;
-                    if(pass !== document.getElementById('reg-confirm').value) throw {message: "كلمات المرور غير متطابقة"};
-                    
-                    const q = query(collection(db, "users"), where("username_lower", "==", user.toLowerCase()));
-                    const snap = await getDocs(q);
-                    if(!snap.empty) throw {message: "الاسم محجوز مسبقاً"};
-                    
-                    const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pass);
-                    await setDoc(doc(db, "users", cred.user.uid), {
-                        username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), matches: 0, wins: 0, settings: { theme: 'dark' }, createdAt: new Date().toISOString()
-                    });
-                }
-            } catch(error) { err.innerText = "بيانات غير صحيحة"; err.style.display = 'block'; } 
-            finally { btn.disabled = false; btn.innerText = window.currentFormMode === 'register' ? 'إنشاء حساب' : 'دخول'; }
-        }
-        window.updateFriendsSidebar = updateFriendsSidebar;
+        // [ضع أكواد Firebase الخاصة بك التي أرسلتها لي هنا كاملة]
     </script>
-
     <script>
-        function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('show'); }
-        window.onclick = function(e) { if(!e.target.closest('.user-profile-btn') && !e.target.closest('.profile-dropdown')) document.getElementById('user-dropdown').classList.remove('show'); }
-
-        function switchModalMode(m) { document.getElementById('modal-welcome-view').style.display='none'; document.getElementById('modal-form-view').style.display='block'; }
-        function setFormType(t) {
-            window.currentFormMode = t;
-            document.getElementById('tab-login').classList.toggle('active', t === 'login');
-            document.getElementById('tab-register').classList.toggle('active', t === 'register');
-            document.getElementById('login-fields').style.display = t === 'login' ? 'block' : 'none';
-            document.getElementById('register-fields').style.display = t === 'register' ? 'block' : 'none';
-            document.getElementById('modal-submit-btn').innerText = t === 'register' ? 'إنشاء حساب' : 'دخول';
-        }
-
-        function enterAsGuest() {
-            window.isGuest = true;
-            document.getElementById('header-user-info').style.display = 'none';
-            document.getElementById('avatar-letter').innerText = "ز";
-            document.getElementById('user-dropdown').innerHTML = `<button class="dropdown-item" onclick="document.getElementById('auth-modal').classList.remove('hidden'); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> تسجيل الدخول</button>`;
-            window.updateFriendsSidebar(false);
-            document.getElementById('auth-modal').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('unlocked');
-            loadFragment('home', document.querySelector('.nav-item'));
-        }
-
-        function closeAuthModal() {
-            window.clearAuthInputs(); document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('app-shell').classList.add('unlocked');
-            if(!window.isGuest) enterAsGuest();
-        }
-
-        function handleLogout() {
-            window.clearAuthInputs(); window.setTheme('dark', false);
-            window.signOutFunc(window.authInstance).then(() => {
-                document.getElementById('auth-modal').classList.remove('hidden');
-                document.getElementById('app-shell').classList.remove('unlocked');
-            });
-        }
-
-        async function setTheme(theme, save = true) {
-            document.getElementById('btn-light').classList.toggle('active', theme === 'light');
-            document.getElementById('btn-dark').classList.toggle('active', theme === 'dark');
-            if(theme === 'light') document.body.setAttribute('data-theme', 'light'); else document.body.removeAttribute('data-theme');
-            if(save && window.authInstance?.currentUser && !window.isGuest) {
-                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {"settings.theme": theme}); } catch(e){}
-            }
-        }
-        window.setTheme = setTheme;
-
-        function loadFragment(page, el) {
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            if(el) el.classList.add('active');
-            // هنا سيتم حقن الصفحات لاحقاً
-        }
+        // [ضع أكواد Toggle Modal و loadFragment الخاصة بك هنا]
+        // ملاحظة: تأكد من إبقاء دالة loadFragment الخاصة بك تعمل بشكل صحيح لجلب home.html
     </script>
 </body>
 </html>
