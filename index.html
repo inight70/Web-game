@@ -11,6 +11,7 @@
 
     <div id="global-loader"><div class="spinner"></div></div>
 
+    <!-- نافذة المصادقة -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
@@ -44,7 +45,7 @@
         </div>
     </div>
 
-    <!-- نوافذ الأصدقاء (بمحاكاة ذكية لمنع أي خطأ) -->
+    <!-- نوافذ الأصدقاء المنبثقة (إضافة وحذف) -->
     <div id="add-friend-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeFriendModal('add-friend-modal')"><i class="ph ph-x"></i></button>
@@ -54,7 +55,7 @@
             <div class="input-wrapper">
                 <input type="text" id="search-friend-input" class="premium-input" placeholder="اسم المستخدم" autocomplete="off">
             </div>
-            <button class="btn-core" onclick="sendFriendRequest()">إرسال الطلب</button>
+            <button class="btn-core" id="btn-send-req" onclick="sendFriendRequest()">إرسال الطلب</button>
         </div>
     </div>
 
@@ -64,17 +65,17 @@
             <h2>حذف صديق</h2>
             <p>هل أنت متأكد أنك تريد حذف <strong id="remove-friend-name"></strong> من قائمة أصدقائك؟</p>
             <button class="btn-secondary" onclick="closeFriendModal('remove-friend-modal')">إلغاء</button>
-            <button class="btn-core" onclick="confirmRemoveFriend()">تأكيد الحذف</button>
+            <button class="btn-core" style="margin-top: 10px;" onclick="confirmRemoveFriend()">تأكيد الحذف</button>
         </div>
     </div>
 
     <div id="app-shell" class="app-shell">
         
-        <!-- الشريط الأيسر (الكمبيوتر) -->
+        <!-- الشريط الأيسر (الكمبيوتر) والشعار الجديد -->
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-white">DECEP</div>
-                <div class="logo-red">TION</div>
+                <span class="logo-part1">decep</span>
+                <span class="logo-part2">tion</span>
             </div>
             <nav class="nav-menu">
                 <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
@@ -93,15 +94,19 @@
             <header class="top-header">
                 
                 <div class="header-page-info">
+                    <!-- الكمبيوتر -->
                     <h1 class="page-title" id="page-title">الرئيسية</h1>
+                    
+                    <!-- الجوال (شعار بكلمة واحدة ملونة ومحاذاة لليمين) -->
                     <div class="mobile-brand-title">
-                        <div class="brand-name"><span class="logo-white">DECEP</span><span class="logo-red">TION</span></div>
+                        <div class="mobile-logo"><span class="m-part1">decep</span><span class="m-part2">tion</span></div>
                         <div class="mobile-section-name" id="mobile-section-name">الرئيسية</div>
                     </div>
                 </div>
 
                 <div class="header-actions">
                     
+                    <!-- الإعدادات (متوسطة، ترتيب الأحجام صحيح، أزرار تفاعلية) -->
                     <div style="position: relative;">
                         <button class="header-icon-btn" id="settings-trigger" onclick="toggleDropdown('settings-dropdown', this)"><i class="ph ph-gear"></i></button>
                         <div class="header-dropdown" id="settings-dropdown">
@@ -109,10 +114,10 @@
                             
                             <div class="settings-group">
                                 <label>حجم الواجهة</label>
-                                <!-- ترتيب الأحجام كما طلبت: صغير - وسط - كبير -->
                                 <div class="segmented-control">
+                                    <!-- الترتيب الصحيح للغة العربية: صغير يمين، افتراضي وسط، كبير يسار -->
                                     <button class="segment-btn" id="font-small" onclick="setFontSize('small')">صغير</button>
-                                    <button class="segment-btn active" id="font-default" onclick="setFontSize('default')">وسط</button>
+                                    <button class="segment-btn active" id="font-default" onclick="setFontSize('default')">افتراضي</button>
                                     <button class="segment-btn" id="font-large" onclick="setFontSize('large')">كبير</button>
                                 </div>
                             </div>
@@ -120,42 +125,36 @@
                             <div class="settings-group">
                                 <label>اللغة</label>
                                 <div class="segmented-control">
-                                    <button class="segment-btn" id="lang-en" onclick="setLanguage('en')">English</button>
                                     <button class="segment-btn active" id="lang-ar" onclick="setLanguage('ar')">العربية</button>
-                                </div>
-                            </div>
-
-                            <div class="settings-group">
-                                <label>المؤثرات الحركية</label>
-                                <div class="segmented-control">
-                                    <button class="segment-btn" id="anim-off" onclick="setAnimation(false)">إيقاف</button>
-                                    <button class="segment-btn active" id="anim-on" onclick="setAnimation(true)">تشغيل</button>
+                                    <button class="segment-btn" id="lang-en" onclick="setLanguage('en')">English</button>
                                 </div>
                             </div>
 
                             <div class="settings-group mobile-only-theme">
                                 <label>المظهر</label>
                                 <div class="segmented-control">
-                                    <button class="segment-btn" id="mini-theme-light" onclick="toggleTheme('light')">فاتح</button>
                                     <button class="segment-btn active" id="mini-theme-dark" onclick="toggleTheme('dark')">داكن</button>
+                                    <button class="segment-btn" id="mini-theme-light" onclick="toggleTheme('light')">فاتح</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- التنبيهات مع النقطة الحمراء الديناميكية -->
                     <div style="position: relative;">
-                        <button class="header-icon-btn" id="noti-trigger" onclick="toggleDropdown('noti-dropdown', this)"><i class="ph ph-bell"></i></button>
+                        <button class="header-icon-btn" id="noti-trigger" onclick="toggleDropdown('noti-dropdown', this)">
+                            <i class="ph ph-bell"></i>
+                            <span class="notification-dot" id="noti-dot"></span>
+                        </button>
                         <div class="header-dropdown" id="noti-dropdown">
                             <div class="dropdown-header">التنبيهات</div>
                             <div id="noti-list">
-                                <div class="empty-state">
-                                    <i class="ph-duotone ph-bell-slash"></i>
-                                    <span>لا يوجد تنبيهات حالياً</span>
-                                </div>
+                                <div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- الملف الشخصي -->
                     <div style="position: relative;">
                         <div class="profile-trigger" id="profile-trigger" onclick="toggleDropdown('user-dropdown', this)">
                             <div class="profile-avatar-fallback" id="header-avatar-fallback">ز</div>
@@ -175,6 +174,7 @@
             <div class="dynamic-content" id="content-holder"></div>
         </main>
 
+        <!-- الشريط الأيمن للكمبيوتر -->
         <aside class="right-sidebar">
             <div id="friends-container-desktop"></div>
         </aside>
@@ -190,17 +190,19 @@
         </nav>
     </div>
 
+    <!-- أكواد Firebase والتزامن اللحظي (onSnapshot) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // استدعاء onSnapshot للحصول على تنبيهات الأصدقاء في نفس اللحظة!
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI", authDomain: "web-game-260b5.firebaseapp.com", projectId: "web-game-260b5", storageBucket: "web-game-260b5.firebasestorage.app", messagingSenderId: "682229509792", appId: "1:682229509792:web:11b4a404459630fcd6a3c5" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app); const db = getFirestore(app);
         
         window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
-        window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null;
+        window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.unsubUser = null;
 
         const hideLoader = () => { const l = document.getElementById('global-loader'); if(l){ l.style.opacity = '0'; setTimeout(()=>l.style.visibility='hidden',400); } };
 
@@ -220,21 +222,27 @@
                 html += `<button class="add-friend-btn" onclick="openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
             } else {
                 friends.forEach(f => {
-                    html += `<div class="friend-avatar" onclick="openRemoveFriendModal('${f}')"><div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px;">${f.charAt(0).toUpperCase()}</div><div class="online-dot"></div></div>`;
+                    html += `<div class="friend-avatar" onclick="openRemoveFriendModal('${f}')" title="حذف ${f}"><div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1.1rem; color:var(--text-main);">${f.charAt(0).toUpperCase()}</div><div class="online-dot"></div></div>`;
                 });
-                html += `<button class="add-friend-btn" onclick="openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
+                html += `<button class="add-friend-btn" title="إضافة صديق" onclick="openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
             }
             container.innerHTML = html;
         };
 
         window.renderNotifications = function() {
             const list = document.getElementById('noti-list');
-            if (window.isGuest || !window.currentUserData || !window.currentUserData.friendRequests || window.currentUserData.friendRequests.length === 0) {
+            const dot = document.getElementById('noti-dot');
+            const reqs = window.currentUserData ? (window.currentUserData.friendRequests || []) : [];
+            
+            if (window.isGuest || !window.currentUserData || reqs.length === 0) {
                 list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
+                if(dot) dot.style.display = 'none';
                 return;
             }
+            
+            if(dot) dot.style.display = 'block'; // تفعيل النقطة الحمراء
             let html = '';
-            window.currentUserData.friendRequests.forEach(req => {
+            reqs.forEach(req => {
                 html += `
                     <div class="noti-item">
                         <span class="noti-text">أرسل لك <strong>${req}</strong> طلب صداقة.</span>
@@ -255,33 +263,34 @@
 
             if (user) {
                 window.isGuest = false;
-                let displayName = user.email.split('@')[0]; 
-
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) { 
-                        window.currentUserData = userDoc.data();
-                        displayName = window.currentUserData.username || displayName; 
+                
+                // الاستماع اللحظي (onSnapshot) للتغيرات في بيانات اللاعب والأصدقاء
+                if(window.unsubUser) window.unsubUser();
+                window.unsubUser = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        window.currentUserData = docSnap.data();
                         
+                        // تحديث الواجهة فوراً
+                        fallbackAvatar.innerText = window.currentUserData.username.charAt(0).toUpperCase();
+                        nameEl.innerText = window.currentUserData.username;
+                        dropdownStatus.innerText = "متصل - " + window.currentUserData.username;
+                        
+                        // تطبيق الإعدادات إذا وجدت
                         if (window.currentUserData.settings) {
                             if(window.toggleTheme) window.toggleTheme(window.currentUserData.settings.theme || 'dark', true);
                             if(window.setFontSize) window.setFontSize(window.currentUserData.settings.fontSize || 'default', true);
-                            if(window.setAnimation) window.setAnimation(window.currentUserData.settings.animations !== false, true);
                         }
-                    }
-                } catch (err) {}
 
-                fallbackAvatar.innerText = displayName.charAt(0).toUpperCase();
-                nameEl.innerText = displayName;
-                dropdownStatus.innerText = "متصل";
+                        window.renderFriendsList('friends-container-desktop');
+                        if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
+                        window.renderNotifications();
+                    }
+                });
 
                 dropdownContent.innerHTML = `
-                    <button class="dropdown-item" onclick="loadFragment('profile', null); toggleDropdown('');"><i class="ph ph-user-circle"></i> الحساب</button>
-                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل خروج</button>
+                    <button class="dropdown-item" onclick="loadFragment('profile', null); toggleDropdown('');"><i class="ph ph-user-circle"></i> إعدادات الحساب</button>
+                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> تسجيل الخروج</button>
                 `;
-
-                window.renderFriendsList('friends-container-desktop');
-                window.renderNotifications();
 
                 if(window.clearAuthInputs) window.clearAuthInputs(); 
                 document.getElementById('auth-modal').classList.add('hidden');
@@ -290,6 +299,7 @@
                 hideLoader();
             } else {
                 if (!window.isGuest) {
+                    if(window.unsubUser) { window.unsubUser(); window.unsubUser = null; }
                     window.currentUserData = null;
                     if(window.clearAuthInputs) window.clearAuthInputs(); 
                     document.getElementById('auth-modal').classList.remove('hidden');
@@ -300,11 +310,8 @@
         });
 
         window.handleAuthSubmit = async function(e) {
-            e.preventDefault(); 
-            const errorDiv = document.getElementById('auth-error'); 
-            const btn = document.getElementById('modal-submit-btn');
+            e.preventDefault(); const errorDiv = document.getElementById('auth-error'); const btn = document.getElementById('modal-submit-btn');
             errorDiv.style.display = 'none'; btn.disabled = true; btn.innerText = "جاري التحقق...";
-            
             try {
                 if (window.currentFormMode === 'login') {
                     let id = document.getElementById('login-id').value.trim(); let pass = document.getElementById('login-password').value;
@@ -317,10 +324,8 @@
                     }
                     await signInWithEmailAndPassword(auth, email, pass);
                 } else {
-                    const user = document.getElementById('reg-username').value.trim(); 
-                    const email = document.getElementById('reg-email').value.trim();
-                    const pass = document.getElementById('reg-password').value; 
-                    const conf = document.getElementById('reg-confirm').value;
+                    const user = document.getElementById('reg-username').value.trim(); const email = document.getElementById('reg-email').value.trim();
+                    const pass = document.getElementById('reg-password').value; const conf = document.getElementById('reg-confirm').value;
                     if (pass !== conf) throw { message: "كلمات المرور غير متطابقة" };
                     if (pass.length < 6) throw { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" };
                     const q = query(collection(db, "users"), where("username_lower", "==", user.toLowerCase()));
@@ -330,7 +335,7 @@
                     await setDoc(doc(db, "users", cred.user.uid), { 
                         username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), 
                         matches: 0, wins: 0, friends: [], friendRequests: [],
-                        settings: { theme: 'dark', fontSize: 'default', animations: true }, 
+                        settings: { theme: 'dark', fontSize: 'default' }, 
                         createdAt: new Date().toISOString() 
                     });
                 }
@@ -344,6 +349,7 @@
     </script>
 
     <script>
+        // دوال الإعدادات والمحاذاة
         window.setFontSize = async function(size, skipSave = false) {
             document.documentElement.classList.remove('font-small', 'font-large');
             if(size !== 'default') document.documentElement.classList.add(`font-${size}`);
@@ -354,26 +360,17 @@
             }
         };
 
-        window.setAnimation = async function(isOn, skipSave = false) {
-            if(isOn) document.body.classList.remove('no-animations');
-            else document.body.classList.add('no-animations');
-            document.getElementById('anim-on').classList.toggle('active', isOn);
-            document.getElementById('anim-off').classList.toggle('active', !isOn);
-            if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) {
-                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.animations": isOn }); } catch(e){}
-            }
-        };
-        
         window.setLanguage = function(lang) {
-            document.getElementById('lang-ar').classList.remove('active');
-            document.getElementById('lang-en').classList.remove('active');
-            document.getElementById('lang-' + lang).classList.add('active');
+            document.querySelectorAll('#lang-ar, #lang-en').forEach(b => b.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+            // المستقبل: إضافة قاموس الترجمة هنا
         };
 
         window.toggleTheme = async function(mode, skipSave = false) {
             const body = document.body; 
             const darkBtns = [document.getElementById('btn-theme-dark'), document.getElementById('mini-theme-dark')];
             const lightBtns = [document.getElementById('btn-theme-light'), document.getElementById('mini-theme-light')];
+            
             if (mode === 'light') { 
                 body.setAttribute('data-theme', 'light'); 
                 lightBtns.forEach(b => { if(b) b.classList.add('active-theme', 'active'); });
@@ -388,7 +385,7 @@
             }
         };
 
-        // نظام الأصدقاء مدعوم بمحاكاة ذكية في حال فشل السيرفر لتجربة خالية من الأخطاء
+        // نظام الأصدقاء المعالج بالكامل
         function openAddFriendModal() { document.getElementById('add-friend-modal').classList.remove('hidden'); document.getElementById('friend-error').style.display='none'; document.getElementById('search-friend-input').value=''; }
         function closeFriendModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openRemoveFriendModal(friendName) { window.friendToRemove = friendName; document.getElementById('remove-friend-name').innerText = friendName; document.getElementById('remove-friend-modal').classList.remove('hidden'); }
@@ -396,58 +393,79 @@
         async function sendFriendRequest() {
             const targetUsername = document.getElementById('search-friend-input').value.trim().toLowerCase();
             const errDiv = document.getElementById('friend-error');
+            const btn = document.getElementById('btn-send-req');
             if(!targetUsername) return;
+            
             if(targetUsername === window.currentUserData.username_lower) { errDiv.innerText="لا يمكنك إضافة نفسك!"; errDiv.style.display='block'; return; }
+            
+            btn.disabled = true; btn.innerText = "جاري الإرسال...";
             try {
                 const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username_lower", "==", targetUsername));
                 const snap = await window.getDocsFunc(q);
-                if(snap.empty) { errDiv.innerText="المستخدم غير موجود."; errDiv.style.display='block'; return; }
+                if(snap.empty) { errDiv.innerText="المستخدم غير موجود."; errDiv.style.display='block'; btn.disabled = false; btn.innerText = "إرسال الطلب"; return; }
+                
                 const targetDocId = snap.docs[0].id;
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", targetDocId), { friendRequests: window.arrayUnion(window.currentUserData.username) });
-                alert("تم إرسال الطلب بنجاح!");
+                const targetData = snap.docs[0].data();
+
+                if (targetData.friendRequests && targetData.friendRequests.includes(window.currentUserData.username)) {
+                    errDiv.innerText="لقد أرسلت طلباً مسبقاً لهذا المستخدم."; errDiv.style.display='block'; btn.disabled = false; btn.innerText = "إرسال الطلب"; return;
+                }
+                if (window.currentUserData.friends && window.currentUserData.friends.includes(targetData.username)) {
+                    errDiv.innerText="هذا المستخدم في قائمة أصدقائك بالفعل."; errDiv.style.display='block'; btn.disabled = false; btn.innerText = "إرسال الطلب"; return;
+                }
+
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", targetDocId), {
+                    friendRequests: window.arrayUnion(window.currentUserData.username)
+                });
+                
+                // لا نحتاج لعمل alert مزعج، الإغلاق مباشرة يكفي للـ UX النظيف
                 closeFriendModal('add-friend-modal');
             } catch(e) { 
-                // محاكاة ذكية للواجهة في حال عدم وجود صلاحيات في Firebase
-                if(!window.currentUserData.friendRequests) window.currentUserData.friendRequests = [];
-                if(!window.currentUserData.friendRequests.includes(targetUsername)) window.currentUserData.friendRequests.push(targetUsername);
-                window.renderNotifications();
-                closeFriendModal('add-friend-modal');
+                errDiv.innerText="تأكد من اتصالك وقواعد الحماية في السيرفر."; errDiv.style.display='block'; 
+            } finally {
+                btn.disabled = false; btn.innerText = "إرسال الطلب";
             }
         }
 
         async function acceptFriendRequest(requesterName) {
             try {
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayUnion(requesterName), friendRequests: window.arrayRemove(requesterName) });
-                window.currentUserData.friends.push(requesterName); window.currentUserData.friendRequests = window.currentUserData.friendRequests.filter(r => r !== requesterName);
-                window.renderFriendsList('friends-container-desktop'); window.renderNotifications(); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
-            } catch(e) { 
-                // محاكاة ذكية
-                window.currentUserData.friends.push(requesterName); window.currentUserData.friendRequests = window.currentUserData.friendRequests.filter(r => r !== requesterName);
-                window.renderFriendsList('friends-container-desktop'); window.renderNotifications(); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
-            }
+                // إضافته لقائمتي وحذف الطلب
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
+                    friends: window.arrayUnion(requesterName),
+                    friendRequests: window.arrayRemove(requesterName)
+                });
+                // إضافتي لقائمته
+                const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username", "==", requesterName));
+                const snap = await window.getDocsFunc(q);
+                if(!snap.empty) {
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { friends: window.arrayUnion(window.currentUserData.username) });
+                }
+            } catch(e) { alert("حدث خطأ في قبول الطلب"); }
         }
 
         async function rejectFriendRequest(requesterName) {
             try {
                 await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friendRequests: window.arrayRemove(requesterName) });
-                window.currentUserData.friendRequests = window.currentUserData.friendRequests.filter(r => r !== requesterName); window.renderNotifications();
-            } catch(e) { 
-                window.currentUserData.friendRequests = window.currentUserData.friendRequests.filter(r => r !== requesterName); window.renderNotifications();
-            }
+            } catch(e) {}
         }
 
         async function confirmRemoveFriend() {
             if(!window.friendToRemove) return;
             try {
                 await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayRemove(window.friendToRemove) });
-                window.currentUserData.friends = window.currentUserData.friends.filter(f => f !== window.friendToRemove);
-                window.renderFriendsList('friends-container-desktop'); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper'); closeFriendModal('remove-friend-modal');
-            } catch(e) { 
-                window.currentUserData.friends = window.currentUserData.friends.filter(f => f !== window.friendToRemove);
-                window.renderFriendsList('friends-container-desktop'); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper'); closeFriendModal('remove-friend-modal');
-            }
+                
+                // حذفي من قائمة الصديق أيضاً
+                const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username", "==", window.friendToRemove));
+                const snap = await window.getDocsFunc(q);
+                if(!snap.empty) {
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { friends: window.arrayRemove(window.currentUserData.username) });
+                }
+                
+                closeFriendModal('remove-friend-modal');
+            } catch(e) { alert("حدث خطأ أثناء الحذف"); }
         }
 
+        // تفريغ وتأمين
         window.clearAuthInputs = function() {
             const form = document.getElementById('firebase-form'); if(form) form.reset();
             const err = document.getElementById('auth-error'); if(err) err.style.display = 'none';
@@ -455,8 +473,10 @@
 
         function setFormType(type) { 
             window.currentFormMode = type; 
-            document.getElementById('tab-login').classList.toggle('active', type === 'login'); document.getElementById('tab-register').classList.toggle('active', type === 'register'); 
-            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none'; document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none'; 
+            document.getElementById('tab-login').classList.toggle('active', type === 'login'); 
+            document.getElementById('tab-register').classList.toggle('active', type === 'register'); 
+            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none'; 
+            document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none'; 
             document.getElementById('login-id').required = type === 'login'; document.getElementById('login-password').required = type === 'login';
             document.getElementById('reg-username').required = type === 'register'; document.getElementById('reg-email').required = type === 'register'; document.getElementById('reg-password').required = type === 'register';
             document.getElementById('modal-submit-btn').innerText = type === 'register' ? 'حساب جديد' : 'تسجيل الدخول';
@@ -479,7 +499,7 @@
         function handleLogout() { 
             window.signOutFunc(window.authInstance).then(() => { 
                 document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show'));
-                document.body.removeAttribute('data-theme'); document.documentElement.className=''; document.body.className='';
+                document.body.removeAttribute('data-theme'); document.documentElement.className='';
                 window.currentUserData = null; window.clearAuthInputs(); 
                 document.getElementById('auth-modal').classList.remove('hidden'); document.getElementById('app-shell').classList.remove('unlocked'); 
             }); 
@@ -515,7 +535,7 @@
                 const targetList = isNav ? document.querySelectorAll('.bottom-tab') : document.querySelectorAll('.nav-btn');
                 const index = Array.from(tabsList).indexOf(element);
                 
-                if(pageName === 'friends' && isNav === false) { }
+                if(pageName === 'friends' && isNav === false) { /* مخصص للجوال */ }
                 else if (pageName === 'store' && isNav === true) {
                     const mobileStore = document.querySelectorAll('.bottom-tab')[4]; 
                     if(mobileStore) { mobileStore.classList.add('active'); mobileStore.querySelector('i').className = mobileStore.querySelector('i').className.replace('ph', 'ph-fill'); }
