@@ -5,77 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>deception</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=10.0">
+    <link rel="stylesheet" href="style.css?v=9.0">
 </head>
 <body>
 
     <div id="global-loader"><div class="spinner"></div></div>
 
-    <!-- نوافذ المصادقة والأصدقاء -->
+    <!-- نافذة المصادقة -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <i class="ph-duotone ph-shield-check" style="font-size: 3.5rem; color: var(--accent-red); margin-bottom: 20px; display: inline-block;"></i>
-                <h2 data-i18n="cloud_system">النظام السحابي</h2>
-                <p data-i18n="login_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
-                <button class="btn-core" onclick="switchModalMode('forms')" data-i18n="login_btn">تسجيل الدخول</button>
-                <button class="link-guest" onclick="enterAsGuest()" data-i18n="guest_btn">المتابعة كزائر</button>
+                <div class="brand-logo-container" style="align-items: center; margin-bottom: 20px; font-size: 1.5rem;">
+                    <span class="logo-top">decep</span>
+                    <span class="logo-bottom">tion</span>
+                </div>
+                <h2 data-i18n="auth-title">النظام السحابي</h2>
+                <p data-i18n="auth-desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
+                <button class="btn-core" onclick="switchModalMode('forms')" data-i18n="login-btn">تسجيل الدخول</button>
+                <button class="link-guest" onclick="enterAsGuest()" data-i18n="guest-btn">المتابعة كزائر</button>
             </div>
             <div id="modal-form-view" style="display: none;">
                 <div class="modal-tabs">
-                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')" data-i18n="login_tab">تسجيل الدخول</button>
-                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')" data-i18n="register_tab">حساب جديد</button>
+                    <button id="tab-login" class="modal-tab-btn active" onclick="setFormType('login')" data-i18n="login-tab">دخول</button>
+                    <button id="tab-register" class="modal-tab-btn" onclick="setFormType('register')" data-i18n="register-tab">حساب جديد</button>
                 </div>
                 <div id="auth-error" class="auth-error-msg"></div>
                 <form id="firebase-form" onsubmit="handleAuthSubmit(event)" autocomplete="off">
                     <div id="login-fields">
-                        <div class="input-wrapper"><label data-i18n="identifier">المعرف (Email/Username)</label><input type="text" id="login-id" class="premium-input" required autocomplete="off"></div>
-                        <div class="input-wrapper"><label data-i18n="password">كلمة المرور</label><input type="password" id="login-password" class="premium-input" required autocomplete="new-password"></div>
+                        <div class="input-wrapper"><label data-i18n="label-id">المعرف (Email/Username)</label><input type="text" id="login-id" class="premium-input" placeholder="user" required autocomplete="off"></div>
+                        <div class="input-wrapper"><label data-i18n="label-pass">كلمة المرور</label><input type="password" id="login-password" class="premium-input" placeholder="••••••••" required autocomplete="new-password"></div>
                     </div>
                     <div id="register-fields" style="display: none;">
-                        <div class="input-wrapper"><label data-i18n="username">اسم المستخدم</label><input type="text" id="reg-username" class="premium-input" autocomplete="off"></div>
-                        <div class="input-wrapper"><label data-i18n="email">البريد الإلكتروني</label><input type="email" id="reg-email" class="premium-input" autocomplete="off"></div>
-                        <div class="input-wrapper"><label data-i18n="password">كلمة المرور</label><input type="password" id="reg-password" class="premium-input" autocomplete="new-password"></div>
-                        <div class="input-wrapper"><label data-i18n="confirm_pass">تأكيد كلمة المرور</label><input type="password" id="reg-confirm" class="premium-input" autocomplete="new-password"></div>
+                        <div class="input-wrapper"><label data-i18n="label-user">اسم المستخدم</label><input type="text" id="reg-username" class="premium-input" placeholder="Player1" autocomplete="off"></div>
+                        <div class="input-wrapper"><label data-i18n="label-email">البريد الإلكتروني</label><input type="email" id="reg-email" class="premium-input" placeholder="name@domain.com" autocomplete="off"></div>
+                        <div class="input-wrapper"><label data-i18n="label-pass">كلمة المرور</label><input type="password" id="reg-password" class="premium-input" placeholder="••••••••" autocomplete="new-password"></div>
+                        <div class="input-wrapper"><label data-i18n="label-conf">تأكيد المرور</label><input type="password" id="reg-confirm" class="premium-input" placeholder="••••••••" autocomplete="new-password"></div>
                     </div>
-                    <button type="submit" class="btn-core" id="modal-submit-btn" data-i18n="confirm_login">تأكيد الدخول</button>
+                    <button type="submit" class="btn-core" id="modal-submit-btn" data-i18n="submit-btn">تأكيد الدخول</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- نافذة إضافة وحذف صديق -->
+    <!-- نوافذ الأصدقاء -->
     <div id="add-friend-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeFriendModal('add-friend-modal')"><i class="ph ph-x"></i></button>
-            <h2 data-i18n="add_friend">إضافة صديق</h2>
-            <p data-i18n="add_friend_desc">أدخل اسم المستخدم الخاص بصديقك لإرسال طلب صداقة.</p>
+            <h2 data-i18n="add-friend-title">إضافة صديق</h2>
+            <p data-i18n="add-friend-desc">أدخل اسم المستخدم الخاص بصديقك لإرسال طلب صداقة.</p>
             <div id="friend-error" class="auth-error-msg"></div>
             <div class="input-wrapper">
-                <input type="text" id="search-friend-input" class="premium-input" autocomplete="off">
+                <input type="text" id="search-friend-input" class="premium-input" placeholder="Username" autocomplete="off">
             </div>
-            <button class="btn-core" onclick="sendFriendRequest()" data-i18n="send_req">إرسال الطلب</button>
+            <button class="btn-core" onclick="sendFriendRequest()" data-i18n="send-req">إرسال الطلب</button>
         </div>
     </div>
 
     <div id="remove-friend-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeFriendModal('remove-friend-modal')"><i class="ph ph-x"></i></button>
-            <h2 data-i18n="remove_friend">حذف صديق</h2>
-            <p><span data-i18n="remove_confirm_1">هل أنت متأكد أنك تريد حذف</span> <strong id="remove-friend-name"></strong> <span data-i18n="remove_confirm_2">من قائمة أصدقائك؟</span></p>
+            <h2 data-i18n="rem-friend-title">حذف صديق</h2>
+            <p><span data-i18n="rem-friend-desc">هل أنت متأكد أنك تريد حذف</span> <strong id="remove-friend-name"></strong>؟</p>
             <button class="btn-secondary" onclick="closeFriendModal('remove-friend-modal')" data-i18n="cancel">إلغاء</button>
-            <button class="btn-core" onclick="confirmRemoveFriend()" data-i18n="confirm_remove">تأكيد الحذف</button>
+            <button class="btn-core" onclick="confirmRemoveFriend()" data-i18n="confirm-rem">تأكيد الحذف</button>
         </div>
     </div>
 
-    <!-- الهيكل الأساسي -->
     <div id="app-shell" class="app-shell">
         
         <aside class="sidebar">
-            <div class="sidebar-logo">
-                <span class="logo-white">decep</span>
-                <span class="logo-red">tion</span>
+            <div class="brand-logo-container">
+                <span class="logo-top">decep</span>
+                <span class="logo-bottom">tion</span>
             </div>
             <nav class="nav-menu">
                 <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
@@ -94,71 +96,66 @@
             <header class="top-header">
                 
                 <div class="header-page-info">
-                    <h1 class="page-title" id="page-title" data-i18n="home">الرئيسية</h1>
                     <div class="mobile-brand-title">
-                        <div class="sidebar-logo-mobile"><span class="logo-white">decep</span><span class="logo-red">tion</span></div>
-                        <div class="mobile-section-name" id="mobile-section-name" data-i18n="home">الرئيسية</div>
+                        <div class="brand-logo-container" style="margin-bottom:0; font-size:1.2rem;">
+                            <span class="logo-top">decep</span>
+                            <span class="logo-bottom">tion</span>
+                        </div>
+                        <div class="mobile-section-name" id="mobile-section-name" data-i18n="nav-home">الرئيسية</div>
                     </div>
+                    <h1 class="page-title" id="page-title" data-i18n="nav-home">الرئيسية</h1>
                 </div>
 
                 <div class="header-actions">
                     
-                    <!-- الإعدادات -->
                     <div style="position: relative;">
                         <button class="header-icon-btn" id="settings-trigger" onclick="toggleDropdown('settings-dropdown', this)"><i class="ph ph-gear"></i></button>
                         <div class="header-dropdown" id="settings-dropdown">
                             <div class="dropdown-header" data-i18n="settings">الإعدادات</div>
                             
-                            <!-- الترتيب: صغير - افتراضي - كبير -->
                             <div class="settings-group">
-                                <label data-i18n="ui_size">حجم الواجهة</label>
+                                <label data-i18n="font-size">حجم الواجهة</label>
                                 <div class="segmented-control">
-                                    <button class="segment-btn" id="font-small" onclick="setFontSize('small')" data-i18n="size_small">صغير</button>
-                                    <button class="segment-btn active" id="font-default" onclick="setFontSize('default')" data-i18n="size_default">افتراضي</button>
-                                    <button class="segment-btn" id="font-large" onclick="setFontSize('large')" data-i18n="size_large">كبير</button>
+                                    <button class="segment-btn" id="font-small" onclick="setFontSize('small')" data-i18n="font-small">صغير</button>
+                                    <button class="segment-btn active" id="font-default" onclick="setFontSize('default')" data-i18n="font-def">افتراضي</button>
+                                    <button class="segment-btn" id="font-large" onclick="setFontSize('large')" data-i18n="font-large">كبير</button>
                                 </div>
                             </div>
 
                             <div class="settings-group">
-                                <label data-i18n="language">اللغة</label>
+                                <label data-i18n="language">اللغة / Language</label>
                                 <div class="segmented-control">
+                                    <button class="segment-btn" id="lang-ar" onclick="setLanguage('ar')">العربية</button>
                                     <button class="segment-btn" id="lang-en" onclick="setLanguage('en')">English</button>
-                                    <button class="segment-btn active" id="lang-ar" onclick="setLanguage('ar')">العربية</button>
                                 </div>
                             </div>
 
                             <div class="settings-group">
                                 <label data-i18n="animations">المؤثرات الحركية</label>
                                 <div class="segmented-control">
-                                    <button class="segment-btn" id="anim-off" onclick="setAnimation(false)" data-i18n="anim_off">إيقاف</button>
-                                    <button class="segment-btn active" id="anim-on" onclick="setAnimation(true)" data-i18n="anim_on">تشغيل</button>
+                                    <button class="segment-btn" id="anim-off" onclick="setAnimation(false)" data-i18n="off">إيقاف</button>
+                                    <button class="segment-btn active" id="anim-on" onclick="setAnimation(true)" data-i18n="on">تشغيل</button>
                                 </div>
                             </div>
 
                             <div class="settings-group mobile-only-theme">
                                 <label data-i18n="theme">المظهر</label>
                                 <div class="segmented-control">
-                                    <button class="segment-btn" id="mini-theme-light" onclick="toggleTheme('light')" data-i18n="theme_light">فاتح</button>
-                                    <button class="segment-btn active" id="mini-theme-dark" onclick="toggleTheme('dark')" data-i18n="theme_dark">داكن</button>
+                                    <button class="segment-btn active" id="mini-theme-dark" onclick="toggleTheme('dark')" data-i18n="dark">داكن</button>
+                                    <button class="segment-btn" id="mini-theme-light" onclick="toggleTheme('light')" data-i18n="light">فاتح</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- التنبيهات مع النقطة الحمراء الديناميكية -->
                     <div style="position: relative;">
                         <button class="header-icon-btn" id="noti-trigger" onclick="toggleDropdown('noti-dropdown', this)">
                             <i class="ph ph-bell"></i>
-                            <span class="notification-dot"></span>
+                            <div class="noti-dot" id="noti-dot"></div>
                         </button>
                         <div class="header-dropdown" id="noti-dropdown">
                             <div class="dropdown-header" data-i18n="noti">التنبيهات</div>
-                            <div id="noti-list">
-                                <div class="empty-state">
-                                    <i class="ph-duotone ph-bell-slash"></i>
-                                    <span data-i18n="no_noti">لا يوجد تنبيهات حالياً</span>
-                                </div>
-                            </div>
+                            <div id="noti-list"></div>
                         </div>
                     </div>
                     
@@ -166,12 +163,12 @@
                         <div class="profile-trigger" id="profile-trigger" onclick="toggleDropdown('user-dropdown', this)">
                             <div class="profile-avatar-fallback" id="header-avatar-fallback">ز</div>
                             <div class="profile-info">
-                                <span class="profile-name" id="header-name" data-i18n="guest_name">زائر</span>
+                                <span class="profile-name" id="header-name" data-i18n="guest">زائر</span>
                             </div>
                             <i class="ph-bold ph-caret-down"></i>
                         </div>
                         <div class="header-dropdown" id="user-dropdown">
-                            <div class="dropdown-header" id="dropdown-status-name" data-i18n="unregistered">غير مسجل</div>
+                            <div class="dropdown-header" id="dropdown-status-name" data-i18n="unreg">غير مسجل</div>
                             <div id="dropdown-content-area"></div>
                         </div>
                     </div>
@@ -185,174 +182,95 @@
             <div id="friends-container-desktop"></div>
         </aside>
 
-        <!-- الجوال: (الرئيسية، اللعب، الأصدقاء، المتجر، الحساب) كما طلبت تماماً -->
+        <!-- الجوال -->
         <nav class="bottom-bar">
             <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
             <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
+            <button class="bottom-tab" onclick="loadFragment('achievements', this)"><i class="ph ph-medal"></i></button>
             <button class="bottom-tab" onclick="loadFragment('friends', this)"><i class="ph ph-users"></i></button>
             <button class="bottom-tab" onclick="loadFragment('store', this)"><i class="ph ph-storefront"></i></button>
             <button class="bottom-tab" onclick="loadFragment('profile', this)"><i class="ph ph-user"></i></button>
         </nav>
     </div>
 
-    <!-- نظام الترجمة (Localization) -->
-    <script>
-        const translations = {
-            ar: {
-                cloud_system: "النظام السحابي", login_desc: "سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.",
-                login_btn: "تسجيل الدخول", guest_btn: "المتابعة كزائر", login_tab: "تسجيل الدخول", register_tab: "حساب جديد",
-                identifier: "المعرف (Email/Username)", password: "كلمة المرور", username: "اسم المستخدم", email: "البريد الإلكتروني",
-                confirm_pass: "تأكيد كلمة المرور", confirm_login: "تأكيد الدخول", add_friend: "إضافة صديق", add_friend_desc: "أدخل اسم المستخدم الخاص بصديقك لإرسال طلب صداقة.",
-                send_req: "إرسال الطلب", remove_friend: "حذف صديق", remove_confirm_1: "هل أنت متأكد أنك تريد حذف", remove_confirm_2: "من قائمة أصدقائك؟",
-                cancel: "إلغاء", confirm_remove: "تأكيد الحذف", home: "الرئيسية", play: "غرف اللعب", achievements: "الإنجازات",
-                store: "المتجر", profile: "الملف الشخصي", settings: "الإعدادات", ui_size: "حجم الواجهة", size_small: "صغير", size_default: "افتراضي",
-                size_large: "كبير", language: "اللغة", animations: "المؤثرات الحركية", anim_off: "إيقاف", anim_on: "تشغيل",
-                theme: "المظهر", theme_light: "فاتح", theme_dark: "داكن", noti: "التنبيهات", no_noti: "لا يوجد تنبيهات حالياً",
-                guest_name: "زائر", unregistered: "غير مسجل", friends: "الأصدقاء", friends_login_msg: "سجل دخولك لترى الأصدقاء",
-                req_sent: "أرسل لك طلب صداقة.", accept: "قبول", reject: "رفض", my_account: "الحساب", logout: "تسجيل خروج"
-            },
-            en: {
-                cloud_system: "Cloud System", login_desc: "Log in now to play, save your progress, and interact with friends.",
-                login_btn: "Log In", guest_btn: "Continue as Guest", login_tab: "Log In", register_tab: "Sign Up",
-                identifier: "Identifier (Email/Username)", password: "Password", username: "Username", email: "Email",
-                confirm_pass: "Confirm Password", confirm_login: "Confirm", add_friend: "Add Friend", add_friend_desc: "Enter your friend's username to send a request.",
-                send_req: "Send Request", remove_friend: "Remove Friend", remove_confirm_1: "Are you sure you want to remove", remove_confirm_2: "from your friends list?",
-                cancel: "Cancel", confirm_remove: "Confirm Removal", home: "Home", play: "Play Rooms", achievements: "Achievements",
-                store: "Store", profile: "Profile", settings: "Settings", ui_size: "UI Size", size_small: "Small", size_default: "Default",
-                size_large: "Large", language: "Language", animations: "Animations", anim_off: "Off", anim_on: "On",
-                theme: "Theme", theme_light: "Light", theme_dark: "Dark", noti: "Notifications", no_noti: "No notifications currently",
-                guest_name: "Guest", unregistered: "Unregistered", friends: "Friends", friends_login_msg: "Log in to see friends",
-                req_sent: "sent you a friend request.", accept: "Accept", reject: "Reject", my_account: "My Account", logout: "Log Out"
-            }
-        };
-
-        window.currentLang = 'ar';
-        
-        window.setLanguage = async function(lang, skipSave = false) {
-            window.currentLang = lang;
-            document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-            
-            document.getElementById('lang-ar').classList.toggle('active', lang === 'ar');
-            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-            
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(translations[lang][key]) el.innerText = translations[lang][key];
-            });
-
-            // تحديث العناوين الديناميكية
-            if(window.currentSection) loadFragment(window.currentSection, null, true);
-            window.renderFriendsList('friends-container-desktop');
-            if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
-            window.renderNotifications();
-
-            if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) {
-                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.lang": lang }); } catch(e){}
-            }
-        };
-    </script>
-
-    <!-- أكواد Firebase والتنبيهات الحية (onSnapshot) -->
+    <!-- أكواد Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // إضافة onSnapshot للتنبيهات الحية
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI", authDomain: "web-game-260b5.firebaseapp.com", projectId: "web-game-260b5", storageBucket: "web-game-260b5.firebasestorage.app", messagingSenderId: "682229509792", appId: "1:682229509792:web:11b4a404459630fcd6a3c5" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app); const db = getFirestore(app);
         
-        window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
-        window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.currentSection = 'home';
-        let unsubUser = null;
+        window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.setDocFunc = setDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
+        window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null;
 
         const hideLoader = () => { const l = document.getElementById('global-loader'); if(l){ l.style.opacity = '0'; setTimeout(()=>l.style.visibility='hidden',400); } };
 
         window.renderFriendsList = function(containerId) {
-            const container = document.getElementById(containerId); if(!container) return;
-            const t = translations[window.currentLang];
+            const container = document.getElementById(containerId);
+            if(!container) return;
             if (window.isGuest || !window.currentUserData) {
-                container.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-users-slash"></i><span>${t.friends_login_msg}</span></div>`;
-                return;
+                container.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-users-slash"></i><span data-i18n="login-friends">سجل دخولك لترى الأصدقاء</span></div>`;
+                window.applyTranslations(); return;
             }
             const friends = window.currentUserData.friends || [];
-            let html = `<div class="friends-header" data-i18n="friends">${t.friends}</div>`;
-            friends.forEach(f => {
-                html += `<div class="friend-avatar" onclick="openRemoveFriendModal('${f}')"><div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px;">${f.charAt(0).toUpperCase()}</div><div class="online-dot"></div></div>`;
-            });
+            let html = `<div class="friends-header" data-i18n="friends-title">الأصدقاء</div>`;
+            friends.forEach(f => { html += `<div class="friend-avatar" onclick="openRemoveFriendModal('${f}')"><div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px;">${f.charAt(0).toUpperCase()}</div><div class="online-dot"></div></div>`; });
             html += `<button class="add-friend-btn" onclick="openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
             container.innerHTML = html;
+            window.applyTranslations();
         };
 
         window.renderNotifications = function() {
             const list = document.getElementById('noti-list');
-            const t = translations[window.currentLang];
+            const dot = document.getElementById('noti-dot');
             if (window.isGuest || !window.currentUserData || !window.currentUserData.friendRequests || window.currentUserData.friendRequests.length === 0) {
-                list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>${t.no_noti}</span></div>`;
-                return;
+                list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span data-i18n="no-noti">لا يوجد تنبيهات حالياً</span></div>`;
+                dot.style.display = 'none';
+                window.applyTranslations(); return;
             }
+            dot.style.display = 'block'; // إظهار النقطة الحمراء
             let html = '';
             window.currentUserData.friendRequests.forEach(req => {
-                html += `
-                    <div class="noti-item">
-                        <span class="noti-text"><strong>${req}</strong> ${t.req_sent}</span>
-                        <div class="noti-actions">
-                            <button class="btn-accept" onclick="acceptFriendRequest('${req}')">${t.accept}</button>
-                            <button class="btn-reject" onclick="rejectFriendRequest('${req}')">${t.reject}</button>
-                        </div>
-                    </div>`;
+                html += `<div class="noti-item"><span class="noti-text" data-i18n="req-from">أرسل لك <strong>${req}</strong> طلب صداقة.</span><div class="noti-actions"><button class="btn-accept" onclick="acceptFriendRequest('${req}')" data-i18n="accept">قبول</button><button class="btn-reject" onclick="rejectFriendRequest('${req}')" data-i18n="reject">رفض</button></div></div>`;
             });
             list.innerHTML = html;
+            window.applyTranslations();
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            const nameEl = document.getElementById('header-name');
-            const fallbackAvatar = document.getElementById('header-avatar-fallback');
-            const dropdownStatus = document.getElementById('dropdown-status-name');
-            const dropdownContent = document.getElementById('dropdown-content-area');
-            const t = translations[window.currentLang];
+        let unsubUser = null;
 
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 window.isGuest = false;
-                
-                // الاستماع الحي (Real-time) للمستخدم لجلب التنبيهات والأصدقاء فورا
-                if(unsubUser) unsubUser();
+                // الاستماع اللحظي (OnSnapshot) لحل مشاكل الأصدقاء والتنبيهات
                 unsubUser = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-                    if(docSnap.exists()) {
+                    if (docSnap.exists()) {
                         window.currentUserData = docSnap.data();
                         
                         // تطبيق الإعدادات المحفوظة
-                        if(window.currentUserData.settings) {
+                        if (window.currentUserData.settings) {
                             if(window.toggleTheme) window.toggleTheme(window.currentUserData.settings.theme || 'dark', true);
                             if(window.setFontSize) window.setFontSize(window.currentUserData.settings.fontSize || 'default', true);
                             if(window.setAnimation) window.setAnimation(window.currentUserData.settings.animations !== false, true);
-                            if(window.currentUserData.settings.lang && window.currentUserData.settings.lang !== window.currentLang) {
-                                window.setLanguage(window.currentUserData.settings.lang, true);
-                            }
+                            if(window.setLanguage && window.currentUserData.settings.language) window.setLanguage(window.currentUserData.settings.language, true);
                         }
 
-                        fallbackAvatar.innerText = (window.currentUserData.username || user.email).charAt(0).toUpperCase();
-                        nameEl.innerText = window.currentUserData.username || user.email;
-                        dropdownStatus.innerText = window.currentUserData.username || user.email;
+                        document.getElementById('header-avatar-fallback').innerText = window.currentUserData.username.charAt(0).toUpperCase();
+                        document.getElementById('header-name').innerText = window.currentUserData.username;
+                        document.getElementById('dropdown-status-name').innerText = window.translations[window.currentLang]['online'];
 
-                        dropdownContent.innerHTML = `
-                            <button class="dropdown-item" onclick="loadFragment('profile', null); toggleDropdown('');"><i class="ph ph-user-circle"></i> <span data-i18n="my_account">${translations[window.currentLang].my_account}</span></button>
-                            <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> <span data-i18n="logout">${translations[window.currentLang].logout}</span></button>
+                        document.getElementById('dropdown-content-area').innerHTML = `
+                            <button class="dropdown-item" onclick="loadFragment('profile', null); toggleDropdown('');"><i class="ph ph-user-circle"></i> <span data-i18n="nav-prof">الحساب</span></button>
+                            <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> <span data-i18n="logout">تسجيل خروج</span></button>
                         `;
-
-                        // تفعيل النقطة الحمراء
-                        const notiTrigger = document.getElementById('noti-trigger');
-                        if(window.currentUserData.friendRequests && window.currentUserData.friendRequests.length > 0) {
-                            notiTrigger.classList.add('has-noti');
-                        } else {
-                            notiTrigger.classList.remove('has-noti');
-                        }
 
                         window.renderFriendsList('friends-container-desktop');
                         if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
                         window.renderNotifications();
+                        window.applyTranslations();
                     }
                 });
 
@@ -362,8 +280,8 @@
                 loadFragment('home', document.querySelector('.nav-btn.active'));
                 hideLoader();
             } else {
+                if(unsubUser) unsubUser();
                 if (!window.isGuest) {
-                    if(unsubUser) unsubUser();
                     window.currentUserData = null;
                     if(window.clearAuthInputs) window.clearAuthInputs(); 
                     document.getElementById('auth-modal').classList.remove('hidden');
@@ -374,50 +292,95 @@
         });
 
         window.handleAuthSubmit = async function(e) {
-            e.preventDefault(); 
-            const errorDiv = document.getElementById('auth-error'); 
-            const btn = document.getElementById('modal-submit-btn');
+            e.preventDefault(); const errorDiv = document.getElementById('auth-error'); const btn = document.getElementById('modal-submit-btn');
             errorDiv.style.display = 'none'; btn.disabled = true;
-            
             try {
                 if (window.currentFormMode === 'login') {
                     let id = document.getElementById('login-id').value.trim(); let pass = document.getElementById('login-password').value;
                     let email = id;
                     if (!id.includes('@')) {
-                        const q = query(collection(db, "users"), where("username_lower", "==", id.toLowerCase()));
-                        const snap = await getDocs(q);
-                        if (snap.empty) throw { message: "invalid-credential" };
+                        const snap = await getDocs(query(collection(db, "users"), where("username_lower", "==", id.toLowerCase())));
+                        if (snap.empty) throw { message: window.translations[window.currentLang]['err-login'] };
                         email = snap.docs[0].data().email;
                     }
                     await signInWithEmailAndPassword(auth, email, pass);
                 } else {
-                    const user = document.getElementById('reg-username').value.trim(); 
-                    const email = document.getElementById('reg-email').value.trim();
-                    const pass = document.getElementById('reg-password').value; 
-                    const conf = document.getElementById('reg-confirm').value;
-                    if (pass !== conf) throw { message: "كلمات المرور غير متطابقة" };
-                    if (pass.length < 6) throw { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" };
-                    const q = query(collection(db, "users"), where("username_lower", "==", user.toLowerCase()));
-                    const snap = await getDocs(q);
-                    if (!snap.empty) throw { message: "اسم المستخدم محجوز" };
+                    const user = document.getElementById('reg-username').value.trim(); const email = document.getElementById('reg-email').value.trim();
+                    const pass = document.getElementById('reg-password').value; const conf = document.getElementById('reg-confirm').value;
+                    if (pass !== conf) throw { message: window.translations[window.currentLang]['err-pass'] };
+                    if (pass.length < 6) throw { message: "Pass < 6" };
+                    const snap = await getDocs(query(collection(db, "users"), where("username_lower", "==", user.toLowerCase())));
+                    if (!snap.empty) throw { message: window.translations[window.currentLang]['err-user'] };
                     const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pass);
+                    // إنشاء الحساب بجميع الحقول لتجنب أخطاء الإضافة لاحقاً
                     await setDoc(doc(db, "users", cred.user.uid), { 
                         username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), 
                         matches: 0, wins: 0, friends: [], friendRequests: [],
-                        settings: { theme: 'dark', fontSize: 'default', animations: true, lang: 'ar' }, 
+                        settings: { theme: 'dark', fontSize: 'default', animations: true, language: 'ar' }, 
                         createdAt: new Date().toISOString() 
                     });
                 }
-            } catch (err) {
-                let msg = err.message || "حدث خطأ غير معروف";
-                if(msg.includes("invalid-credential")) msg = "البيانات غير صحيحة";
-                if(msg.includes("email-already-in-use")) msg = "البريد الإلكتروني مستخدم مسبقاً";
-                errorDiv.innerText = msg; errorDiv.style.display = 'block';
+            } catch (err) { errorDiv.innerText = err.message || "Error"; errorDiv.style.display = 'block';
             } finally { btn.disabled = false; }
         }
     </script>
 
+    <!-- أكواد المنطق والترجمة -->
     <script>
+        // قاموس الترجمة
+        window.translations = {
+            ar: {
+                "auth-title": "النظام السحابي", "auth-desc": "سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.",
+                "login-btn": "تسجيل الدخول", "guest-btn": "المتابعة كزائر", "login-tab": "دخول", "register-tab": "حساب جديد",
+                "label-id": "المعرف (Email/Username)", "label-pass": "كلمة المرور", "label-user": "اسم المستخدم", "label-email": "البريد الإلكتروني", "label-conf": "تأكيد المرور",
+                "submit-btn": "تأكيد", "nav-home": "الرئيسية", "nav-play": "غرف اللعب", "nav-ach": "الإنجازات", "nav-store": "المتجر", "nav-prof": "الحساب",
+                "settings": "الإعدادات", "font-size": "حجم الواجهة", "font-small": "صغير", "font-def": "افتراضي", "font-large": "كبير",
+                "language": "اللغة / Language", "animations": "المؤثرات الحركية", "on": "تشغيل", "off": "إيقاف", "theme": "المظهر", "dark": "داكن", "light": "فاتح",
+                "noti": "التنبيهات", "no-noti": "لا يوجد تنبيهات حالياً", "guest": "زائر", "unreg": "غير مسجل", "online": "متصل", "logout": "تسجيل خروج",
+                "friends-title": "الأصدقاء", "login-friends": "سجل دخولك لترى الأصدقاء", "add-friend-title": "إضافة صديق", "add-friend-desc": "أدخل اسم المستخدم الخاص بصديقك لإرسال طلب صداقة.",
+                "send-req": "إرسال الطلب", "rem-friend-title": "حذف صديق", "rem-friend-desc": "هل أنت متأكد أنك تريد حذف", "cancel": "إلغاء", "confirm-rem": "تأكيد الحذف",
+                "req-from": "أرسل لك طلب صداقة.", "accept": "قبول", "reject": "رفض", "err-login": "البيانات غير صحيحة", "err-pass": "كلمات المرور غير متطابقة", "err-user": "اسم المستخدم محجوز",
+                "err-notfound": "المستخدم غير موجود", "err-self": "لا يمكنك إضافة نفسك", "success-req": "تم إرسال الطلب بنجاح!"
+            },
+            en: {
+                "auth-title": "Cloud System", "auth-desc": "Log in to play, save progress, and interact with friends.",
+                "login-btn": "Login", "guest-btn": "Continue as Guest", "login-tab": "Login", "register-tab": "Register",
+                "label-id": "ID (Email/Username)", "label-pass": "Password", "label-user": "Username", "label-email": "Email Address", "label-conf": "Confirm Password",
+                "submit-btn": "Confirm", "nav-home": "Home", "nav-play": "Play Rooms", "nav-ach": "Achievements", "nav-store": "Store", "nav-prof": "Profile",
+                "settings": "Settings", "font-size": "UI Size", "font-small": "Small", "font-def": "Default", "font-large": "Large",
+                "language": "اللغة / Language", "animations": "Animations", "on": "On", "off": "Off", "theme": "Theme", "dark": "Dark", "light": "Light",
+                "noti": "Notifications", "no-noti": "No notifications currently", "guest": "Guest", "unreg": "Unregistered", "online": "Online", "logout": "Logout",
+                "friends-title": "Friends", "login-friends": "Log in to see friends", "add-friend-title": "Add Friend", "add-friend-desc": "Enter your friend's username to send a request.",
+                "send-req": "Send Request", "rem-friend-title": "Remove Friend", "rem-friend-desc": "Are you sure you want to remove", "cancel": "Cancel", "confirm-rem": "Confirm Removal",
+                "req-from": "sent you a friend request.", "accept": "Accept", "reject": "Reject", "err-login": "Invalid credentials", "err-pass": "Passwords do not match", "err-user": "Username taken",
+                "err-notfound": "User not found", "err-self": "Cannot add yourself", "success-req": "Request sent successfully!"
+            }
+        };
+
+        window.currentLang = 'ar';
+        window.applyTranslations = function() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (window.translations[window.currentLang][key]) {
+                    if (key === 'req-from') { /* خاص بالتنبيه يحوي اسم */ }
+                    else { el.innerText = window.translations[window.currentLang][key]; }
+                }
+            });
+            document.documentElement.lang = window.currentLang;
+        };
+
+        window.setLanguage = async function(lang, skipSave = false) {
+            window.currentLang = lang;
+            document.getElementById('lang-ar').classList.toggle('active', lang === 'ar');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            window.applyTranslations();
+
+            if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) {
+                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.language": lang }); } catch(e){}
+            }
+        };
+
+        // إعدادات الواجهة
         window.setFontSize = async function(size, skipSave = false) {
             document.documentElement.classList.remove('font-small', 'font-large');
             if(size !== 'default') document.documentElement.classList.add(`font-${size}`);
@@ -429,34 +392,23 @@
         };
 
         window.setAnimation = async function(isOn, skipSave = false) {
-            if(isOn) document.body.classList.remove('no-animations');
-            else document.body.classList.add('no-animations');
-            document.getElementById('anim-on').classList.toggle('active', isOn);
-            document.getElementById('anim-off').classList.toggle('active', !isOn);
+            if(isOn) document.body.classList.remove('no-animations'); else document.body.classList.add('no-animations');
+            document.getElementById('anim-on').classList.toggle('active', isOn); document.getElementById('anim-off').classList.toggle('active', !isOn);
             if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) {
                 try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.animations": isOn }); } catch(e){}
             }
         };
 
         window.toggleTheme = async function(mode, skipSave = false) {
-            const body = document.body; 
-            const darkBtns = [document.getElementById('btn-theme-dark'), document.getElementById('mini-theme-dark')];
-            const lightBtns = [document.getElementById('btn-theme-light'), document.getElementById('mini-theme-light')];
-            
-            if (mode === 'light') { 
-                body.setAttribute('data-theme', 'light'); 
-                lightBtns.forEach(b => { if(b) b.classList.add('active-theme', 'active'); });
-                darkBtns.forEach(b => { if(b) b.classList.remove('active-theme', 'active'); });
-            } else { 
-                body.removeAttribute('data-theme'); 
-                darkBtns.forEach(b => { if(b) b.classList.add('active-theme', 'active'); });
-                lightBtns.forEach(b => { if(b) b.classList.remove('active-theme', 'active'); });
-            }
+            const body = document.body; const darkBtns = [document.getElementById('btn-theme-dark'), document.getElementById('mini-theme-dark')]; const lightBtns = [document.getElementById('btn-theme-light'), document.getElementById('mini-theme-light')];
+            if (mode === 'light') { body.setAttribute('data-theme', 'light'); lightBtns.forEach(b=>b.classList.add('active-theme', 'active')); darkBtns.forEach(b=>b.classList.remove('active-theme', 'active')); } 
+            else { body.removeAttribute('data-theme'); darkBtns.forEach(b=>b.classList.add('active-theme', 'active')); lightBtns.forEach(b=>b.classList.remove('active-theme', 'active')); }
             if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) {
-                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.theme": mode }); } catch (e) {}
+                try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.theme": mode }); } catch(e) {}
             }
         };
 
+        // إصلاح نظام الأصدقاء باستخدام SetDoc Merge لتجنب أخطاء المصفوفة
         function openAddFriendModal() { document.getElementById('add-friend-modal').classList.remove('hidden'); document.getElementById('friend-error').style.display='none'; document.getElementById('search-friend-input').value=''; }
         function closeFriendModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openRemoveFriendModal(friendName) { window.friendToRemove = friendName; document.getElementById('remove-friend-name').innerText = friendName; document.getElementById('remove-friend-modal').classList.remove('hidden'); }
@@ -465,147 +417,99 @@
             const targetUsername = document.getElementById('search-friend-input').value.trim().toLowerCase();
             const errDiv = document.getElementById('friend-error');
             if(!targetUsername) return;
-            
-            if(targetUsername === window.currentUserData.username_lower) { errDiv.innerText="لا يمكنك إضافة نفسك!"; errDiv.style.display='block'; return; }
+            if(targetUsername === window.currentUserData.username_lower) { errDiv.innerText = window.translations[window.currentLang]['err-self']; errDiv.style.display='block'; return; }
             
             try {
                 const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username_lower", "==", targetUsername));
                 const snap = await window.getDocsFunc(q);
-                if(snap.empty) { errDiv.innerText="المستخدم غير موجود."; errDiv.style.display='block'; return; }
+                if(snap.empty) { errDiv.innerText = window.translations[window.currentLang]['err-notfound']; errDiv.style.display='block'; return; }
                 
                 const targetDocId = snap.docs[0].id;
-                // إرسال الطلب للطرف الثاني
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", targetDocId), {
+                // استخدام setDoc مع merge لضمان عدم حدوث خطأ إذا لم يكن حقل friendRequests موجوداً
+                await window.setDocFunc(window.docFunc(window.dbInstance, "users", targetDocId), {
                     friendRequests: window.arrayUnion(window.currentUserData.username)
-                });
-                alert("تم إرسال الطلب بنجاح!");
+                }, { merge: true });
+                
+                alert(window.translations[window.currentLang]['success-req']);
                 closeFriendModal('add-friend-modal');
-            } catch(e) { 
-                let msg = "حدث خطأ أثناء الإرسال.";
-                if(e.message && e.message.includes("permission")) msg = "صلاحيات Firebase (Rules) تمنعك من التعديل على حسابات أخرى. الرجاء تعديلها لتعمل الميزة.";
-                errDiv.innerText = msg; errDiv.style.display='block'; 
-            }
+            } catch(e) { errDiv.innerText="Error!"; errDiv.style.display='block'; }
         }
 
         async function acceptFriendRequest(requesterName) {
             try {
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
-                    friends: window.arrayUnion(requesterName),
-                    friendRequests: window.arrayRemove(requesterName)
-                });
-                // إذا أردت اضافة اسمك عند الطرف الثاني يجب ان تسمح Rules بذلك
+                await window.setDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
+                    friends: window.arrayUnion(requesterName), friendRequests: window.arrayRemove(requesterName)
+                }, { merge: true });
+                
                 const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username", "==", requesterName));
                 const snap = await window.getDocsFunc(q);
                 if(!snap.empty) {
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { friends: window.arrayUnion(window.currentUserData.username) });
+                    await window.setDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { friends: window.arrayUnion(window.currentUserData.username) }, { merge: true });
                 }
-            } catch(e) { console.error("Error accepting", e); }
+            } catch(e) { alert("Error"); }
         }
 
         async function rejectFriendRequest(requesterName) {
-            try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friendRequests: window.arrayRemove(requesterName) }); } catch(e) {}
+            try { await window.setDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friendRequests: window.arrayRemove(requesterName) }, { merge: true }); } catch(e) {}
         }
 
         async function confirmRemoveFriend() {
             if(!window.friendToRemove) return;
             try {
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayRemove(window.friendToRemove) });
+                await window.setDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayRemove(window.friendToRemove) }, { merge: true });
                 closeFriendModal('remove-friend-modal');
-            } catch(e) { alert("حدث خطأ أثناء الحذف"); }
+            } catch(e) { alert("Error"); }
         }
 
-        window.clearAuthInputs = function() {
-            const form = document.getElementById('firebase-form'); if(form) form.reset();
-            const err = document.getElementById('auth-error'); if(err) err.style.display = 'none';
-        };
-
-        function setFormType(type) { 
-            window.currentFormMode = type; 
-            document.getElementById('tab-login').classList.toggle('active', type === 'login'); 
-            document.getElementById('tab-register').classList.toggle('active', type === 'register'); 
-            document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none'; 
-            document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none'; 
-            document.getElementById('login-id').required = type === 'login'; document.getElementById('login-password').required = type === 'login';
-            document.getElementById('reg-username').required = type === 'register'; document.getElementById('reg-email').required = type === 'register'; document.getElementById('reg-password').required = type === 'register';
-        }
+        window.clearAuthInputs = function() { const form = document.getElementById('firebase-form'); if(form) form.reset(); const err = document.getElementById('auth-error'); if(err) err.style.display = 'none'; };
+        function setFormType(type) { window.currentFormMode = type; document.getElementById('tab-login').classList.toggle('active', type === 'login'); document.getElementById('tab-register').classList.toggle('active', type === 'register'); document.getElementById('login-fields').style.display = type === 'login' ? 'block' : 'none'; document.getElementById('register-fields').style.display = type === 'register' ? 'block' : 'none'; document.getElementById('login-id').required = type === 'login'; document.getElementById('login-password').required = type === 'login'; document.getElementById('reg-username').required = type === 'register'; document.getElementById('reg-email').required = type === 'register'; document.getElementById('reg-password').required = type === 'register'; }
 
         function toggleDropdown(dropdownId, triggerElement) {
-            if(!dropdownId) {
-                document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show'));
-                document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active'));
-                return;
-            }
             const isCurrentlyOpen = document.getElementById(dropdownId).classList.contains('show');
             document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show'));
             document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active'));
             if (!isCurrentlyOpen) { document.getElementById(dropdownId).classList.add('show'); if(triggerElement) triggerElement.classList.add('active'); }
         }
 
-        window.onclick = function(e) { 
-            if (!e.target.closest('.header-icon-btn') && !e.target.closest('.profile-trigger') && !e.target.closest('.header-dropdown')) { 
-                toggleDropdown('');
-            } 
-        }
+        window.onclick = function(e) { if (!e.target.closest('.header-icon-btn') && !e.target.closest('.profile-trigger') && !e.target.closest('.header-dropdown')) { document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show')); document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active')); } }
         
-        function handleLogout() { 
-            window.signOutFunc(window.authInstance).then(() => { 
-                toggleDropdown(''); document.body.removeAttribute('data-theme'); document.documentElement.className='';
-                window.setLanguage('ar', true); window.clearAuthInputs(); 
-                document.getElementById('auth-modal').classList.remove('hidden'); document.getElementById('app-shell').classList.remove('unlocked'); 
-            }); 
-        }
-
+        function handleLogout() { window.signOutFunc(window.authInstance).then(() => { document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show')); document.body.removeAttribute('data-theme'); window.currentUserData = null; window.clearAuthInputs(); document.getElementById('auth-modal').classList.remove('hidden'); document.getElementById('app-shell').classList.remove('unlocked'); }); }
         function switchModalMode(mode) { if(mode === 'forms'){ document.getElementById('modal-welcome-view').style.display = 'none'; document.getElementById('modal-form-view').style.display = 'block'; } }
         
         function enterAsGuest() {
             window.isGuest = true; window.currentUserData = null;
-            document.getElementById('header-name').innerText = translations[window.currentLang].guest_name;
-            document.getElementById('dropdown-status-name').innerText = translations[window.currentLang].unregistered;
-            document.getElementById('header-avatar-fallback').innerText = "ز";
+            document.getElementById('header-name').innerText = window.translations[window.currentLang]['guest']; document.getElementById('dropdown-status-name').innerText = window.translations[window.currentLang]['unreg']; document.getElementById('header-avatar-fallback').innerText = "ز";
             window.renderFriendsList('friends-container-desktop'); window.renderNotifications();
-            document.getElementById('dropdown-content-area').innerHTML = `<button class="dropdown-item" onclick="window.clearAuthInputs(); document.getElementById('auth-modal').classList.remove('hidden'); toggleDropdown(''); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> <span data-i18n="login_btn">${translations[window.currentLang].login_btn}</span></button>`;
+            document.getElementById('dropdown-content-area').innerHTML = `<button class="dropdown-item" onclick="window.clearAuthInputs(); document.getElementById('auth-modal').classList.remove('hidden'); toggleDropdown(''); switchModalMode('forms'); setFormType('login');"><i class="ph ph-sign-in"></i> ${window.translations[window.currentLang]['login-btn']}</button>`;
             window.clearAuthInputs(); document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('app-shell').classList.add('unlocked'); loadFragment('home', document.querySelector('.nav-btn.active'));
         }
 
         function closeAuthModal() { window.clearAuthInputs(); document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('app-shell').classList.add('unlocked'); if(!window.isGuest) enterAsGuest(); }
         
-        function loadFragment(pageName, element, isLangChange = false) {
-            window.currentSection = pageName;
+        function loadFragment(pageName, element) {
             const contentHolder = document.getElementById('content-holder');
-            const titles = { 'home': 'home', 'play': 'play', 'achievements': 'achievements', 'friends': 'friends', 'store': 'store', 'profile': 'profile' };
-            const translatedTitle = translations[window.currentLang][titles[pageName]];
+            const navKeys = { 'home': 'nav-home', 'play': 'nav-play', 'achievements': 'nav-ach', 'friends': 'friends-title', 'store': 'nav-store', 'profile': 'nav-prof' };
+            const titleText = window.translations[window.currentLang][navKeys[pageName]];
             
-            document.getElementById('page-title').innerText = translatedTitle;
-            document.getElementById('mobile-section-name').innerText = translatedTitle;
+            document.getElementById('page-title').innerText = titleText;
+            document.getElementById('mobile-section-name').innerText = titleText;
+            document.getElementById('page-title').setAttribute('data-i18n', navKeys[pageName]);
+            document.getElementById('mobile-section-name').setAttribute('data-i18n', navKeys[pageName]);
             
-            if(!isLangChange) {
-                document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => {
-                    btn.classList.remove('active'); const icon = btn.querySelector('i'); if(icon) icon.className = icon.className.replace('ph-fill', 'ph');
-                });
-
-                if(element) {
-                    element.classList.add('active'); const icon = element.querySelector('i'); if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
-                    const isNav = element.classList.contains('nav-btn');
-                    
-                    if(pageName === 'friends' && isNav === false) { /* Mobile only */ }
-                    else {
-                        const targetList = isNav ? document.querySelectorAll('.bottom-tab') : document.querySelectorAll('.nav-btn');
-                        let mapIndex = Array.from(element.parentElement.children).indexOf(element);
-                        if(isNav && mapIndex >= 2) mapIndex += 1; // Map desktop (idx 2=store) to mobile (idx 3=store)
-                        else if(!isNav && mapIndex > 2) mapIndex -= 1; // Map mobile (idx 3=store) to desktop (idx 2=store)
-                        
-                        const matchedTab = targetList[mapIndex];
-                        if(matchedTab) { matchedTab.classList.add('active'); matchedTab.querySelector('i').className = matchedTab.querySelector('i').className.replace('ph', 'ph-fill'); }
-                    }
-                }
-                
-                if (pageName === 'friends') {
-                    contentHolder.innerHTML = `<div id="mobile-friends-wrapper" style="max-width:400px; margin: 40px auto; display:flex; flex-direction:column; align-items:center; gap:20px;"></div>`;
-                    window.renderFriendsList('mobile-friends-wrapper');
-                } else {
-                    contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">${translatedTitle} - جاهز للتصميم</div>`;
-                }
+            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { btn.classList.remove('active'); const icon = btn.querySelector('i'); if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); });
+            if(element) {
+                element.classList.add('active'); const icon = element.querySelector('i'); if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+                const isNav = element.classList.contains('nav-btn');
+                const targetList = isNav ? document.querySelectorAll('.bottom-tab') : document.querySelectorAll('.nav-btn');
+                const index = Array.from(isNav ? document.querySelectorAll('.nav-btn') : document.querySelectorAll('.bottom-tab')).indexOf(element);
+                if(pageName === 'friends' && isNav === false) {}
+                else if (pageName === 'store' && isNav === true) { const m = document.querySelectorAll('.bottom-tab')[4]; if(m) { m.classList.add('active'); m.querySelector('i').className = m.querySelector('i').className.replace('ph', 'ph-fill'); } }
+                else if (pageName === 'profile' && isNav === true) { const m = document.querySelectorAll('.bottom-tab')[5]; if(m) { m.classList.add('active'); m.querySelector('i').className = m.querySelector('i').className.replace('ph', 'ph-fill'); } }
+                else { const matched = targetList[index]; if(matched) { matched.classList.add('active'); matched.querySelector('i').className = matched.querySelector('i').className.replace('ph', 'ph-fill'); } }
             }
+
+            if (pageName === 'friends') { contentHolder.innerHTML = `<div id="mobile-friends-wrapper" style="max-width:400px; margin: 40px auto; display:flex; flex-direction:column; align-items:center; gap:20px;"></div>`; window.renderFriendsList('mobile-friends-wrapper'); }
+            else { contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">${titleText} - جاهز</div>`; }
         }
     </script>
 </body>
