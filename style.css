@@ -1,8 +1,9 @@
 /* ==========================================================================
-   DECEPTION - PREMIUM NATIVE APP STYLESHEET (REAL-TIME EDITION)
+   DECEPTION - PREMIUM NATIVE APP STYLESHEET (V9.0)
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+/* استدعاء خطوط فاخرة للشعار والنصوص */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
 
 :root {
     --bg-base: #141419;
@@ -35,32 +36,28 @@
     --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
-/* التحكم بحجم الخط ديناميكياً */
-html { font-size: 16px; }
+/* التحكم الديناميكي بحجم الخط */
+html { font-size: 16px; transition: font-size 0.3s; }
 html.font-small { font-size: 14px; }
 html.font-large { font-size: 18px; }
 
-/* إيقاف الأنيميشن عند الطلب */
 body.no-animations * { transition: none !important; animation: none !important; }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body, html {
     background-color: var(--bg-base); color: var(--text-main); font-family: var(--font-ar);
-    height: 100vh; overflow: hidden; direction: rtl;
+    height: 100vh; overflow: hidden;
     transition: background-color 0.4s ease, color 0.4s ease;
     overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; 
 }
 
-/* دعم اللغة الإنجليزية */
-html[lang="en"] body { font-family: var(--font-en); direction: ltr; }
-html[lang="en"] .profile-trigger { border-left: none; border-right: 1px solid rgba(100,100,100,0.2); padding-left: 0; padding-right: 15px; margin-left: 0; margin-right: 10px; }
-html[lang="en"] .header-dropdown { right: 0; left: auto; direction: ltr; }
-
-input, textarea { -webkit-user-select: auto; user-select: auto; font-family: var(--font-en); }
+/* دعم الاتجاهين للغة */
+[dir="ltr"] body, [dir="ltr"] html { font-family: var(--font-en); }
+input, textarea { -webkit-user-select: auto; user-select: auto; font-family: inherit; }
 
 /* =========================================
-   شاشة التحميل والمصادقة
+   النوافذ المنبثقة (المصادقة / الأصدقاء)
    ========================================= */
 #global-loader { position: fixed; inset: 0; background-color: var(--bg-base); z-index: 999999; display: flex; justify-content: center; align-items: center; transition: 0.5s; }
 .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -69,92 +66,109 @@ input, textarea { -webkit-user-select: auto; user-select: auto; font-family: var
 .auth-overlay, .modal-overlay { position: fixed; inset: 0; background: var(--glass-bg); backdrop-filter: blur(20px); display: flex; justify-content: center; align-items: center; z-index: 100000; transition: var(--trans-smooth); }
 .auth-overlay.hidden, .modal-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .auth-card, .modal-card { background-color: var(--surface-panel); border-radius: 24px; padding: 40px; width: 90%; max-width: 400px; text-align: center; box-shadow: var(--shadow-soft); position: relative; }
-.close-modal-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; transition: var(--trans-smooth); }
-html[lang="en"] .close-modal-btn { right: 20px; left: auto; }
+
+/* زر الإغلاق يتعرف على الاتجاه */
+[dir="rtl"] .close-modal-btn { left: 20px; right: auto; }
+[dir="ltr"] .close-modal-btn { right: 20px; left: auto; }
+.close-modal-btn { position: absolute; top: 20px; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; transition: var(--trans-smooth); }
 .close-modal-btn:hover { color: var(--accent-red); transform: rotate(90deg); }
+
 .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
 .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
-.btn-core { background-color: var(--accent-red); color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-glow); transition: var(--trans-smooth); font-family: inherit; }
+.btn-core { background-color: var(--accent-red); color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-glow); transition: var(--trans-smooth); }
 .btn-core:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255, 76, 106, 0.5); }
-.link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); font-family: inherit; }
+.link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
 .link-guest:hover { color: var(--text-main); }
 .modal-tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid rgba(100,100,100,0.2); }
-.modal-tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-weight: 700; cursor: pointer; position: relative; transition: var(--trans-smooth); font-family: inherit; }
+.modal-tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-weight: 700; cursor: pointer; position: relative; transition: var(--trans-smooth); }
 .modal-tab-btn.active { color: var(--text-main); }
 .modal-tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background-color: var(--accent-red); }
-.input-wrapper { margin-bottom: 18px; text-align: center; }
+.input-wrapper { margin-bottom: 18px; text-align: center; } 
 .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
-.premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); text-align: center; }
+.premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; } 
 .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
 .auth-error-msg { background: rgba(255, 76, 106, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
 /* =========================================
    تخطيط المنصة (الكمبيوتر)
    ========================================= */
-.app-shell { display: grid; grid-template-columns: 120px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
+.app-shell { display: grid; grid-template-columns: 100px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
 .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
 
 .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-/* الشعار الفاخر (مقسم على سطرين، الأبيض أولاً ثم الأحمر بمسافة بادئة) */
-.brand-logo { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 60px; font-family: var(--font-logo); font-size: 1.8rem; font-weight: 900; line-height: 0.85; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; }
-.brand-logo .brand-white { color: var(--text-main); }
-.brand-logo .brand-red { color: var(--accent-red); padding-right: 20px; } /* مسافة بادئة في اليمين للغة العربية */
-html[lang="en"] .brand-logo .brand-red { padding-right: 0; padding-left: 20px; } /* مسافة لليسار في الإنجليزي */
+/* تصميم الشعار المكتبي الفاخر (مقسم على سطرين) */
+.sidebar-logo { 
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin-bottom: 70px; cursor: pointer;
+    font-family: var(--font-logo); font-size: 1.4rem; font-weight: 800; line-height: 1.1; letter-spacing: 1px;
+    width: 100%; padding: 0 10px; text-align: center; text-transform: lowercase;
+}
+.sidebar-logo .logo-white { color: var(--text-main); }
+.sidebar-logo .logo-red { color: var(--accent-red); }
 
 .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
 .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
 .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
 .nav-btn.active { color: #fff; background-color: var(--accent-red); box-shadow: var(--shadow-glow); }
 
-/* الأصدقاء للكمبيوتر */
+.theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.theme-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: var(--trans-smooth); }
+.theme-btn.active-theme { background-color: #ffffff; color: #141419; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+[data-theme="light"] .theme-btn.active-theme { background-color: #141419; color: #ffffff; }
+
+/* الشريط الأيمن (الأصدقاء) */
 .right-sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
-.friends-header { font-size: 0.8rem; color: var(--text-dim); font-weight: 700; margin-bottom: 25px; text-align: center; font-family: inherit; }
-#friends-container { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
+.friends-header { font-size: 0.8rem; color: var(--text-dim); font-weight: 700; margin-bottom: 25px; text-align: center; }
+#friends-container-desktop { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
 .friend-avatar { width: 44px; height: 44px; border-radius: 50%; position: relative; cursor: pointer; transition: var(--trans-smooth); padding: 2px; border: 2px solid transparent; }
 .friend-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 .friend-avatar:hover { border-color: var(--accent-red); transform: scale(1.1); }
-.online-dot { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: var(--accent-green); border: 2px solid var(--bg-base); border-radius: 50%; }
+[dir="rtl"] .online-dot { right: 0; left: auto; }
+[dir="ltr"] .online-dot { left: 0; right: auto; }
+.online-dot { position: absolute; bottom: 0; width: 12px; height: 12px; background-color: var(--accent-green); border: 2px solid var(--bg-base); border-radius: 50%; }
 .add-friend-btn { width: 44px; height: 44px; border-radius: 50%; background-color: var(--surface-panel); border: 1px dashed var(--text-dim); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
 .add-friend-btn:hover { border-color: var(--text-main); color: var(--text-main); background: var(--surface-hover); transform: rotate(90deg); }
+
 .guest-friends-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; opacity: 0.6; padding: 0 10px; }
 .guest-friends-msg i { font-size: 1.8rem; color: var(--text-dim); }
 .guest-friends-msg span { font-size: 0.75rem; color: var(--text-dim); line-height: 1.6; }
 
 /* المنطقة الوسطى والهيدر */
 .main-viewport { display: flex; flex-direction: column; height: 100vh; background-color: transparent; }
-
-/* إضافة مسافة يمين/يسار ممتازة لإبعاد عنوان القسم عن الشعار */
-.top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 50px; position: relative; z-index: 100; }
+.top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
 .header-page-info { display: flex; align-items: center; }
-/* جعل لون عنوان القسم أحمر كما طلبت */
-.page-title { font-size: 1.6rem; font-weight: 800; color: var(--accent-red); letter-spacing: 0.5px; }
+/* مسافة لعنوان الصفحة في الكمبيوتر ولون أحمر */
+[dir="rtl"] .page-title { margin-right: 30px; margin-left: 0; }
+[dir="ltr"] .page-title { margin-left: 30px; margin-right: 0; }
+.page-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-red); }
 .mobile-brand-title { display: none; }
 
-.header-actions { display: flex; align-items: center; gap: 20px; direction: ltr; }
+.header-actions { display: flex; align-items: center; gap: 20px; direction: ltr; } /* الأيقونات دائما LTR للحفاظ على الترتيب */
 .header-icon-btn { background: transparent; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; }
 .header-icon-btn:hover, .header-icon-btn.active { color: var(--text-main); background-color: var(--surface-hover); }
 
-/* النقطة الحمراء الديناميكية للتنبيهات */
-.red-dot { position: absolute; top: 10px; right: 10px; width: 8px; height: 8px; background-color: var(--accent-red); border-radius: 50%; border: 2px solid var(--bg-base); display: none; }
-.red-dot.active { display: block; }
+/* نقطة التنبيهات */
+.notification-dot { display: none; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--accent-red); border-radius: 50%; border: 2px solid var(--bg-base); }
+.header-icon-btn.has-noti .notification-dot { display: block; }
 
-/* القوائم المنسدلة (محاذاة للوسط) */
-.header-dropdown { position: absolute; top: 65px; left: 0; background-color: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); border-radius: 16px; width: 300px; box-shadow: var(--shadow-soft); display: none; flex-direction: column; z-index: 1000; direction: rtl; text-align: center; }
+/* القوائم المنسدلة الاحترافية (محاذاة متوسطة) */
+.header-dropdown { position: absolute; top: 65px; background-color: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); border-radius: 16px; width: 280px; box-shadow: var(--shadow-soft); display: none; flex-direction: column; z-index: 1000; text-align: center; }
+[dir="rtl"] .header-dropdown { left: 0; right: auto; direction: rtl; }
+[dir="ltr"] .header-dropdown { right: 0; left: auto; direction: ltr; }
 .header-dropdown.show { display: flex; }
-.dropdown-header { padding: 16px 20px; border-bottom: 1px solid rgba(100,100,100,0.05); font-weight: 700; font-size: 0.95rem; color: var(--text-main); display: flex; justify-content: center; }
+.dropdown-header { padding: 16px 20px; border-bottom: 1px solid rgba(100,100,100,0.1); font-weight: 700; font-size: 0.9rem; color: var(--text-main); display: flex; justify-content: center; }
 
-/* الإعدادات المدمجة */
+/* تصميم الإعدادات الجديد (أزرار مدمجة) */
 .settings-group { padding: 20px; border-bottom: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .settings-group label { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
 .segmented-control { display: flex; background: var(--bg-base); border-radius: var(--radius-pill); padding: 4px; border: 1px solid rgba(100,100,100,0.1); width: 100%; }
-.segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-family: inherit; font-weight: 700; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
+.segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
 .segment-btn.active { background: var(--surface-panel); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 .mobile-only-theme { display: none; }
 
 /* قائمة التنبيهات */
-#noti-list { max-height: 300px; overflow-y: auto; }
 .empty-state { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--text-dim); }
 .empty-state i { font-size: 2.5rem; opacity: 0.5; }
 .empty-state span { font-size: 0.85rem; font-weight: 500; }
@@ -165,15 +179,18 @@ html[lang="en"] .brand-logo .brand-red { padding-right: 0; padding-left: 20px; }
 .btn-reject { flex: 1; background: var(--surface-hover); color: var(--text-main); border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
 
 /* زر الملف الشخصي */
-.profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.2); margin-left: 10px; }
+.profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding: 0 15px; border-left: 1px solid rgba(100,100,100,0.2); border-right: 1px solid rgba(100,100,100,0.2); }
 .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.1); }
 .profile-info { display: flex; flex-direction: column; text-align: center; font-family: var(--font-en); }
 .profile-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
-.dropdown-item { padding: 16px; color: var(--text-dim); text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 10px; background: transparent; border: none; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: var(--trans-smooth); font-family: inherit; }
+.profile-status { font-size: 0.7rem; color: var(--text-dim); }
+
+.dropdown-item { padding: 16px; color: var(--text-dim); text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 10px; background: transparent; border: none; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: var(--trans-smooth); }
 .dropdown-item:hover { background-color: var(--surface-hover); color: var(--text-main); }
+.dropdown-item i { font-size: 1.2rem; }
 .dropdown-item.logout { color: var(--accent-red); border-top: 1px solid rgba(100,100,100,0.1); }
 
-.dynamic-content { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 0 40px 40px 40px; }
+.dynamic-content { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 0 30px 40px 30px; }
 .dynamic-content::-webkit-scrollbar { display: none; } 
 
 /* =========================================
@@ -184,20 +201,24 @@ html[lang="en"] .brand-logo .brand-red { padding-right: 0; padding-left: 20px; }
 @media (max-width: 900px) {
     .app-shell { display: flex; flex-direction: column; grid-template-columns: none; }
     .sidebar, .right-sidebar { display: none; }
-    .top-header { padding: 0 24px; height: 90px; border-bottom: 1px solid rgba(100,100,100,0.05); }
+    .top-header { padding: 0 24px; height: 85px; border-bottom: 1px solid rgba(100,100,100,0.05); }
     
-    /* هيدر الجوال: الشعار واسم القسم محاذاة لليمين/لليسار حسب اللغة */
+    /* هيدر الجوال */
     .page-title { display: none; }
-    .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
     
-    .brand-logo-mobile { display: flex; flex-direction: column; align-items: flex-start; font-family: var(--font-logo); font-size: 1.4rem; font-weight: 900; line-height: 0.85; letter-spacing: 1px; text-transform: uppercase; }
-    .brand-logo-mobile .brand-white { color: var(--text-main); }
-    .brand-logo-mobile .brand-red { color: var(--accent-red); padding-right: 15px; }
-    html[lang="en"] .brand-logo-mobile .brand-red { padding-right: 0; padding-left: 15px; }
-
-    .mobile-section-name { font-size: 0.8rem; color: var(--accent-red); font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
+    /* الشعار في الجوال بخط واحد والتسمية محاذاة يمين/يسار حسب اللغة */
+    .mobile-brand-title { display: flex; flex-direction: column; gap: 4px; }
+    [dir="rtl"] .mobile-brand-title { align-items: flex-start; }
+    [dir="ltr"] .mobile-brand-title { align-items: flex-end; }
     
+    .sidebar-logo-mobile { font-family: var(--font-logo); font-size: 1.4rem; font-weight: 800; line-height: 1; letter-spacing: 1px; text-transform: lowercase; }
+    .sidebar-logo-mobile .logo-white { color: var(--text-main); }
+    .sidebar-logo-mobile .logo-red { color: var(--accent-red); }
+    .mobile-section-name { font-size: 0.8rem; color: var(--accent-red); font-weight: 700; letter-spacing: 0.5px; }
+    
+    /* إظهار الثيم في قائمة إعدادات الجوال */
     .mobile-only-theme { display: flex; }
+    
     .dynamic-content { padding: 20px 24px calc(90px + env(safe-area-inset-bottom)) 24px; }
     
     /* الشريط السفلي الشفاف الأنيق */
@@ -218,7 +239,11 @@ html[lang="en"] .brand-logo .brand-red { padding-right: 0; padding-left: 20px; }
         background: rgba(255, 255, 255, 0.6);
     }
 
-    .bottom-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); background: transparent; border: none; height: 100%; flex: 1; cursor: pointer; transition: var(--trans-smooth); }
+    .bottom-tab {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        color: var(--text-dim); background: transparent; border: none;
+        height: 100%; flex: 1; cursor: pointer; transition: var(--trans-smooth);
+    }
     .bottom-tab i { font-size: 1.6rem; transition: var(--trans-smooth); }
     .bottom-tab.active { color: var(--accent-red); }
     .bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--accent-red-dim)); }
