@@ -99,16 +99,15 @@ input, textarea { -webkit-user-select: auto; user-select: auto; }
 
 .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-/* الشعار المودرن للكمبيوتر (سطر واحد كما طلبت) */
-.sidebar-logo { display: flex; align-items: center; margin-bottom: 60px; font-family: var(--font-en); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.5px; color: var(--text-main); cursor: pointer; text-transform: capitalize; }
-.sidebar-logo span { color: var(--text-dim); }
+/* الشعار المودرن للكمبيوتر (سطرين كما طلبت) */
+.sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; font-family: var(--font-en); font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; color: var(--text-main); cursor: pointer; text-transform: capitalize; }
+.sidebar-logo span { color: var(--text-dim); font-size: 1.2rem; font-weight: 600; }
 
 .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
 .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
 .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
 .nav-btn.active { color: #fff; background-color: var(--accent-red); box-shadow: var(--shadow-glow); }
 
-/* الثيم منعزل تماماً في الكمبيوتر (أسفل الشريط) */
 .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .theme-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: var(--trans-smooth); }
 .theme-btn.active-theme { background-color: #ffffff; color: #141419; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
@@ -123,11 +122,9 @@ input, textarea { -webkit-user-select: auto; user-select: auto; }
 .friend-avatar:hover { border-color: var(--accent-red); transform: scale(1.1); }
 .online-dot { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: var(--accent-green); border: 2px solid var(--bg-base); border-radius: 50%; }
 
-/* زر إضافة الصديق وتأثيره */
 .add-friend-btn { width: 44px; height: 44px; border-radius: 50%; background-color: var(--surface-panel); border: 1px dashed var(--text-dim); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
 .add-friend-btn:hover { border-color: var(--text-main); color: var(--text-main); background: var(--surface-hover); transform: rotate(90deg); }
 
-/* رسالة الزائر المنسقة والمقفل */
 .guest-friends-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; opacity: 0.6; padding: 0 10px; }
 .guest-friends-msg i { font-size: 1.8rem; color: var(--text-dim); }
 .guest-friends-msg span { font-size: 0.75rem; color: var(--text-dim); line-height: 1.6; }
@@ -137,32 +134,26 @@ input, textarea { -webkit-user-select: auto; user-select: auto; }
 .top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
 .header-page-info { display: flex; align-items: center; }
-
-/* عنوان الصفحة في الكمبيوتر (متباعد ولونه أحمر) */
-.page-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-red); margin-inline-start: 40px; }
+.page-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-red); margin-inline-start: 40px; transition: var(--trans-smooth); }
 .mobile-brand-title { display: none; }
 
 .header-actions { display: flex; align-items: center; gap: 20px; direction: ltr; }
 .header-icon-btn { background: transparent; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; }
 .header-icon-btn:hover, .header-icon-btn.active { color: var(--text-main); background-color: var(--surface-hover); }
-
-/* نقطة الإشعار الحمراء (تظهر ديناميكياً) */
 .notification-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: var(--accent-red); border-radius: 50%; display: none; }
 
-/* القوائم المنسدلة الاحترافية (متوسطة المحاذاة) */
-.header-dropdown { position: absolute; top: 65px; left: 0; background-color: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); border-radius: 16px; width: 280px; box-shadow: var(--shadow-soft); display: none; flex-direction: column; z-index: 1000; direction: var(--dir); text-align: center; }
+/* القوائم المنسدلة */
+.header-dropdown { position: absolute; top: 65px; left: 0; background-color: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); border-radius: 16px; width: 280px; box-shadow: var(--shadow-soft); display: none; flex-direction: column; z-index: 1000; direction: var(--dir, rtl); text-align: center; }
 .header-dropdown.show { display: flex; }
 .dropdown-header { padding: 16px 20px; border-bottom: 1px solid rgba(100,100,100,0.1); font-weight: 700; font-size: 0.9rem; color: var(--text-main); display: flex; justify-content: center; }
 
-/* تصميم الإعدادات (أزرار مدمجة بدل قوائم) */
 .settings-group { padding: 20px; border-bottom: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .settings-group label { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
 .segmented-control { display: flex; background: var(--bg-base); border-radius: var(--radius-pill); padding: 4px; border: 1px solid rgba(100,100,100,0.1); width: 100%; direction: ltr; }
 .segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-family: var(--font-ar); font-weight: 600; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
 .segment-btn.active { background: var(--surface-panel); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-.mobile-only-theme { display: none; } /* مخفي في الكمبيوتر */
+.mobile-only-theme { display: none; } 
 
-/* قائمة التنبيهات */
 .empty-state { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--text-dim); }
 .empty-state i { font-size: 2.5rem; opacity: 0.5; }
 .empty-state span { font-size: 0.85rem; font-weight: 500; }
@@ -172,7 +163,6 @@ input, textarea { -webkit-user-select: auto; user-select: auto; }
 .btn-accept { flex: 1; background: var(--accent-green); color: #fff; border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
 .btn-reject { flex: 1; background: var(--surface-hover); color: var(--text-main); border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
 
-/* الملف الشخصي */
 .profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.2); margin-left: 10px; }
 .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.1); }
 .profile-info { display: flex; flex-direction: column; text-align: center; font-family: var(--font-en); }
@@ -198,7 +188,6 @@ input, textarea { -webkit-user-select: auto; user-select: auto; }
     
     .page-title { display: none; }
     
-    /* شعار الجوال (سطرين، محاذاة لجهة البداية - اليمين في العربي) */
     .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
     .brand-name { font-size: 1.3rem; font-weight: 800; color: var(--text-main); font-family: var(--font-en); line-height: 1.1; text-transform: capitalize; }
     .brand-name span { color: var(--text-dim); }
@@ -207,14 +196,13 @@ input, textarea { -webkit-user-select: auto; user-select: auto; }
     .mobile-only-theme { display: flex; }
     .dynamic-content { padding: 20px 24px calc(90px + env(safe-area-inset-bottom)) 24px; }
     
-    /* الشريط السفلي (شفاف جداً وأنيق) */
     .bottom-bar {
         display: flex; justify-content: space-around; align-items: center;
         position: fixed; 
         bottom: calc(15px + env(safe-area-inset-bottom));
         left: 50%; transform: translateX(-50%);
         width: calc(100% - 40px); max-width: 420px; height: 68px;
-        background: rgba(25, 25, 30, 0.25); /* شفافية عالية للدارك مود */
+        background: rgba(25, 25, 30, 0.25);
         backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
         border: none; box-shadow: none;
         border-radius: var(--radius-pill);
@@ -222,7 +210,7 @@ input, textarea { -webkit-user-select: auto; user-select: auto; }
     }
     
     [data-theme="light"] .bottom-bar {
-        background: rgba(255, 255, 255, 0.45); /* شفافية اللايت مود */
+        background: rgba(255, 255, 255, 0.45);
     }
 
     .bottom-tab {
