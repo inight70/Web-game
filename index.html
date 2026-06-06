@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -62,7 +61,6 @@
         </div>
     </div>
 
-    <!-- النافذة المنبثقة الجديدة لقبول أو رفض طلب الصداقة -->
     <div id="review-request-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeFriendModal('review-request-modal')"><i class="ph ph-x"></i></button>
@@ -203,7 +201,7 @@
         </nav>
     </div>
 
-    <!-- أكواد Firebase والمنطق الأساسي مع (Real-time Listener) -->
+    <!-- أكواد Firebase، الترجمة، والمنطق -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -215,7 +213,6 @@
         
         window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
         window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.friendToReview = null;
-        
         window.unsubscribeSnapshot = null;
 
         window.translations = {
@@ -448,7 +445,6 @@
             document.getElementById('review-request-modal').classList.remove('hidden');
         };
 
-        // دالة مراجعة الطلب والموافقة
         window.processFriendRequest = async function(isAccepted) {
             if(!window.friendToReview) return;
             const reqName = window.friendToReview;
@@ -456,12 +452,23 @@
             
             try {
                 if(isAccepted) {
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayUnion(reqName), friendRequests: window.arrayRemove(reqName) });
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
+                        friends: window.arrayUnion(reqName), 
+                        friendRequests: window.arrayRemove(reqName) 
+                    });
+                    
                     const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username_lower", "==", reqName.toLowerCase()));
                     const snap = await window.getDocsFunc(q);
-                    if(!snap.empty) { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { friends: window.arrayUnion(window.currentUserData.username) }); }
+                    
+                    if(!snap.empty) { 
+                        await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { 
+                            friends: window.arrayUnion(window.currentUserData.username) 
+                        }); 
+                    }
                 } else {
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friendRequests: window.arrayRemove(reqName) });
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
+                        friendRequests: window.arrayRemove(reqName) 
+                    });
                 }
             } catch(e) { 
                 console.error(e);
@@ -491,35 +498,42 @@
                 alert("تم إرسال الطلب بنجاح!"); closeFriendModal('add-friend-modal');
             } catch(e) { 
                 console.error("Add Friend Error:", e);
-                errDiv.innerText = "حدث خطأ غير معروف."; errDiv.style.display='block'; 
+                errDiv.innerText = "حدث خطأ في الإرسال."; errDiv.style.display='block'; 
             }
         }
 
-        // دالة الحذف المعدلة للحذف من الطرفين (Two-Way Deletion)
+        // --- هنا تم حل مشكلة الحذف المزدوج للصداقة ---
         async function confirmRemoveFriend() {
             if(!window.friendToRemove) return;
             try {
+                const targetFriendName = window.friendToRemove;
+                const myUid = window.authInstance.currentUser.uid;
                 const myName = window.currentUserData.username;
-                const friendName = window.friendToRemove;
 
-                // 1. حذف الصديق من قائمتي أنا
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
-                    friends: window.arrayRemove(friendName) 
+                // 1. مسح الصديق من قائمتي
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", myUid), { 
+                    friends: window.arrayRemove(targetFriendName) 
                 });
 
-                // 2. البحث عن ملف الصديق وحذف اسمي أنا من قائمته هو
-                const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username", "==", friendName));
+                // 2. البحث عن ملف الصديق في قاعدة البيانات
+                const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username_lower", "==", targetFriendName.toLowerCase()));
                 const snap = await window.getDocsFunc(q);
-                if(!snap.empty) {
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { 
-                        friends: window.arrayRemove(myName) 
+
+                // 3. مسح اسمي من قائمة الصديق
+                if (!snap.empty) {
+                    const targetDocId = snap.docs[0].id;
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", targetDocId), {
+                        friends: window.arrayRemove(myName)
                     });
                 }
 
+                // إغلاق النافذة (و onSnapshot سيتكفل بتحديث الواجهة تلقائياً وبسرعة)
                 closeFriendModal('remove-friend-modal');
+                window.friendToRemove = null;
+
             } catch(e) { 
-                console.error("Remove Friend Error:", e);
-                alert("حدث خطأ في عملية الحذف"); 
+                console.error("Error removing friend:", e);
+                alert("حدث خطأ أثناء الحذف. يرجى المحاولة لاحقاً."); 
             }
         }
 
