@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -5,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Deception</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=10.0">
+    <link rel="stylesheet" href="style.css?v=11.0">
 </head>
 <body>
 
     <div id="global-loader"><div class="spinner"></div></div>
 
-    <!-- نوافذ المصادقة والترحيب -->
+    <!-- نافذة المصادقة -->
     <div id="auth-modal" class="auth-overlay hidden">
         <div class="auth-card">
             <button class="close-modal-btn" onclick="closeAuthModal()"><i class="ph ph-x"></i></button>
@@ -47,7 +48,7 @@
         </div>
     </div>
 
-    <!-- نوافذ الأصدقاء -->
+    <!-- نوافذ الأصدقاء (إضافة / حذف / مراجعة الطلب) -->
     <div id="add-friend-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeFriendModal('add-friend-modal')"><i class="ph ph-x"></i></button>
@@ -61,12 +62,27 @@
         </div>
     </div>
 
+    <!-- النافذة المنبثقة الجديدة لقبول أو رفض طلب الصداقة -->
+    <div id="review-request-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button class="close-modal-btn" onclick="closeFriendModal('review-request-modal')"><i class="ph ph-x"></i></button>
+            <i class="ph-duotone ph-user-plus" style="font-size: 3.5rem; color: var(--accent-green); margin-bottom: 15px; display: inline-block;"></i>
+            <h2 data-i18n="friend_req_title">طلب صداقة</h2>
+            <p><span data-i18n="friend_req_from">لقد أرسل لك</span> <strong id="request-sender-name" style="color: var(--text-main);"></strong> <span data-i18n="friend_req_msg">طلب صداقة، هل توافق؟</span></p>
+            
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button class="btn-core" style="background: var(--accent-green); box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);" onclick="processFriendRequest(true)" data-i18n="accept">قبول</button>
+                <button class="btn-secondary" style="margin-top: 0;" onclick="processFriendRequest(false)" data-i18n="reject">رفض</button>
+            </div>
+        </div>
+    </div>
+
     <div id="remove-friend-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeFriendModal('remove-friend-modal')"><i class="ph ph-x"></i></button>
             <h2 data-i18n="remove_friend_title">حذف صديق</h2>
             <p><span data-i18n="remove_friend_desc">هل أنت متأكد أنك تريد حذف</span> <strong id="remove-friend-name"></strong>؟</p>
-            <button class="btn-secondary" onclick="closeFriendModal('remove-friend-modal')" data-i18n="cancel">إلغاء</button>
+            <button class="btn-secondary" style="margin-bottom: 15px;" onclick="closeFriendModal('remove-friend-modal')" data-i18n="cancel">إلغاء</button>
             <button class="btn-core" onclick="confirmRemoveFriend()" data-i18n="confirm_remove">تأكيد الحذف</button>
         </div>
     </div>
@@ -75,7 +91,6 @@
     <div id="app-shell" class="app-shell">
         
         <aside class="sidebar">
-            <!-- الشعار سطرين للكمبيوتر -->
             <div class="sidebar-logo">Decep<br><span>tion</span></div>
             <nav class="nav-menu">
                 <button class="nav-btn active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
@@ -108,7 +123,6 @@
                         <div class="header-dropdown" id="settings-dropdown">
                             <div class="dropdown-header" data-i18n="settings">الإعدادات</div>
                             
-                            <!-- تعديل ترتيب الأحجام: صغير، افتراضي، كبير -->
                             <div class="settings-group">
                                 <label data-i18n="font_size">حجم الواجهة</label>
                                 <div class="segmented-control">
@@ -159,7 +173,6 @@
                         <div class="profile-trigger" id="profile-trigger" onclick="toggleDropdown('user-dropdown', this)">
                             <div class="profile-avatar-fallback" id="header-avatar-fallback">ز</div>
                             <div class="profile-info">
-                                <!-- هنا كان الخلل، تم تخصيص الـ ID لنتحكم بالترجمة منه بذكاء -->
                                 <span class="profile-name" id="header-name" data-i18n="guest_name">زائر</span>
                             </div>
                             <i class="ph-bold ph-caret-down"></i>
@@ -179,7 +192,7 @@
             <div id="friends-container-desktop"></div>
         </aside>
 
-        <!-- شريط الجوال السفلي -->
+        <!-- شريط الجوال -->
         <nav class="bottom-bar">
             <button class="bottom-tab active" onclick="loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
             <button class="bottom-tab" onclick="loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
@@ -190,20 +203,23 @@
         </nav>
     </div>
 
-    <!-- أكواد Firebase، الترجمة، والمنطق -->
+    <!-- أكواد Firebase والمنطق الأساسي مع (Real-time Listener) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // الاستيراد الأهم هنا هو onSnapshot للتحديث اللحظي
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI", authDomain: "web-game-260b5.firebaseapp.com", projectId: "web-game-260b5", storageBucket: "web-game-260b5.firebasestorage.app", messagingSenderId: "682229509792", appId: "1:682229509792:web:11b4a404459630fcd6a3c5" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app); const db = getFirestore(app);
         
         window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
-        window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null;
+        window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.friendToReview = null;
+        
+        // متغير لإيقاف المستمع (Listener) عند تسجيل الخروج
+        window.unsubscribeSnapshot = null;
 
-        // قاموس الترجمة الفوري
         window.translations = {
             ar: {
                 "title_home": "الرئيسية", "title_play": "غرف اللعب", "title_achievements": "الإنجازات", "title_friends": "الأصدقاء", "title_store": "المتجر", "title_profile": "الملف الشخصي",
@@ -220,7 +236,8 @@
                 "confirm_login": "تأكيد الدخول", "confirm_register": "إنشاء الحساب",
                 "add_friend_title": "إضافة صديق", "add_friend_desc": "أدخل اسم المستخدم لإرسال طلب صداقة.", "search_friend_placeholder": "اسم المستخدم", "send_request": "إرسال الطلب",
                 "remove_friend_title": "حذف صديق", "remove_friend_desc": "هل أنت متأكد أنك تريد حذف", "cancel": "إلغاء", "confirm_remove": "تأكيد الحذف",
-                "matches": "المباريات", "wins": "الانتصارات", "friends": "الأصدقاء"
+                "friends": "الأصدقاء", "friend_req_from": "لقد أرسل لك", "friend_req_msg": "طلب صداقة، هل توافق؟", "friend_req_title": "طلب صداقة", "accept": "قبول", "reject": "رفض",
+                "new_friend_req": "طلب صداقة جديد من", "now": "الآن"
             },
             en: {
                 "title_home": "Home", "title_play": "Play Rooms", "title_achievements": "Achievements", "title_friends": "Friends", "title_store": "Store", "title_profile": "Profile",
@@ -237,7 +254,8 @@
                 "confirm_login": "Confirm Login", "confirm_register": "Create Account",
                 "add_friend_title": "Add Friend", "add_friend_desc": "Enter username to send a friend request.", "search_friend_placeholder": "Username", "send_request": "Send Request",
                 "remove_friend_title": "Remove Friend", "remove_friend_desc": "Are you sure you want to remove", "cancel": "Cancel", "confirm_remove": "Confirm Remove",
-                "matches": "Matches", "wins": "Wins", "friends": "Friends"
+                "friends": "Friends", "friend_req_from": "", "friend_req_msg": "sent you a friend request. Accept?", "friend_req_title": "Friend Request", "accept": "Accept", "reject": "Decline",
+                "new_friend_req": "New friend request from", "now": "Just now"
             }
         };
         window.currentLang = 'ar';
@@ -245,8 +263,7 @@
         const hideLoader = () => { const l = document.getElementById('global-loader'); if(l){ l.style.opacity = '0'; setTimeout(()=>l.style.visibility='hidden',400); } };
 
         window.renderFriendsList = function(containerId) {
-            const container = document.getElementById(containerId);
-            if(!container) return;
+            const container = document.getElementById(containerId); if(!container) return;
             if (window.isGuest || !window.currentUserData) {
                 container.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-lock-key"></i><span data-i18n="login_to_see_friends">${window.translations[window.currentLang].login_to_see_friends}</span></div>`;
                 return;
@@ -269,60 +286,87 @@
                 dot.style.display = 'none';
                 return;
             }
-            dot.style.display = 'block';
+            
+            dot.style.display = 'block'; 
             let html = '';
             window.currentUserData.friendRequests.forEach(req => {
-                html += `<div class="noti-item"><span class="noti-text"><strong>${req}</strong> أرسل طلب صداقة.</span><div class="noti-actions"><button class="btn-accept" onclick="acceptFriendRequest('${req}')">قبول</button><button class="btn-reject" onclick="rejectFriendRequest('${req}')">رفض</button></div></div>`;
+                html += `
+                    <div class="noti-item" onclick="openReviewRequestModal('${req}')">
+                        <div class="noti-icon"><i class="ph-bold ph-user-plus"></i></div>
+                        <div class="noti-text-content">
+                            <span class="noti-text"><span data-i18n="new_friend_req">${window.translations[window.currentLang].new_friend_req}</span> <strong>${req}</strong></span>
+                            <span class="noti-time" data-i18n="now">${window.translations[window.currentLang].now}</span>
+                        </div>
+                    </div>`;
             });
             list.innerHTML = html;
         };
 
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             const nameEl = document.getElementById('header-name');
             const fallbackAvatar = document.getElementById('header-avatar-fallback');
             const dropdownStatus = document.getElementById('dropdown-status-name');
             const dropdownContent = document.getElementById('dropdown-content-area');
 
+            // إذا كان هناك مستمع سابق (Real-time listener)، أوقفه لمنع التداخل
+            if (window.unsubscribeSnapshot) {
+                window.unsubscribeSnapshot();
+                window.unsubscribeSnapshot = null;
+            }
+
             if (user) {
-                window.isGuest = false; let displayName = user.email.split('@')[0]; 
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) { 
-                        window.currentUserData = userDoc.data(); displayName = window.currentUserData.username || displayName; 
+                window.isGuest = false; 
+                let isInitialLoad = true; // متغير لضمان تشغيل التأثيرات الواجهة مرة واحدة فقط عند الدخول
+
+                // ✨ هنا السحر الحقيقي (onSnapshot) للتحديث اللحظي المباشر
+                window.unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (userDoc) => {
+                    if (userDoc.exists()) {
+                        window.currentUserData = userDoc.data();
+                        let displayName = window.currentUserData.username || user.email.split('@')[0];
+
+                        // تحديث بيانات المستخدم في الواجهة
+                        nameEl.removeAttribute('data-i18n'); 
+                        nameEl.innerText = displayName;
+                        fallbackAvatar.innerText = displayName.charAt(0).toUpperCase();
+                        dropdownStatus.innerText = "متصل";
+
+                        // تطبيق الإعدادات
                         if (window.currentUserData.settings) {
                             if(window.toggleTheme) window.toggleTheme(window.currentUserData.settings.theme || 'dark', true);
                             if(window.setFontSize) window.setFontSize(window.currentUserData.settings.fontSize || 'default', true);
                             if(window.setAnimation) window.setAnimation(window.currentUserData.settings.animations !== false, true);
-                            if(window.setLanguage) window.setLanguage(window.currentUserData.settings.language || 'ar', true);
+                            if(window.setLanguage && window.currentLang !== window.currentUserData.settings.language) {
+                                window.setLanguage(window.currentUserData.settings.language || 'ar', true);
+                            }
+                        }
+
+                        // تحديث القوائم (الأصدقاء والتنبيهات) فوراً وبدون تحديث الصفحة!
+                        window.renderFriendsList('friends-container-desktop'); 
+                        if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
+                        window.renderNotifications();
+
+                        // في أول تحميل فقط، نفتح اللعبة ونخفي شاشة التحميل
+                        if (isInitialLoad) {
+                            dropdownContent.innerHTML = `
+                                <button class="dropdown-item" onclick="loadFragment('profile', null); toggleDropdown('');"><i class="ph ph-user-circle"></i> <span data-i18n="title_profile">${window.translations[window.currentLang].title_profile}</span></button>
+                                <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> <span data-i18n="logout">${window.translations[window.currentLang].logout}</span></button>
+                            `;
+                            if(window.clearAuthInputs) window.clearAuthInputs(); 
+                            document.getElementById('auth-modal').classList.add('hidden'); 
+                            document.getElementById('app-shell').classList.add('unlocked');
+                            
+                            const currentActive = document.querySelector('.nav-btn.active');
+                            if(currentActive) loadFragment(['home','play','achievements','store','profile'][Array.from(document.querySelectorAll('.nav-btn')).indexOf(currentActive)] || 'home', currentActive);
+                            hideLoader();
+                            isInitialLoad = false;
                         }
                     }
-                } catch (err) {}
+                });
 
-                // حل مشكلة اللغة: إزالة وسم الترجمة عن الاسم حتى لا يستبدل بكلمة زائر
-                nameEl.removeAttribute('data-i18n');
-                nameEl.innerText = displayName;
-                fallbackAvatar.innerText = displayName.charAt(0).toUpperCase();
-                dropdownStatus.innerText = "متصل";
-
-                dropdownContent.innerHTML = `
-                    <button class="dropdown-item" onclick="loadFragment('profile', null); toggleDropdown('');"><i class="ph ph-user-circle"></i> <span data-i18n="title_profile">${window.translations[window.currentLang].title_profile}</span></button>
-                    <button class="dropdown-item logout" onclick="handleLogout()"><i class="ph ph-sign-out"></i> <span data-i18n="logout">${window.translations[window.currentLang].logout}</span></button>
-                `;
-
-                window.renderFriendsList('friends-container-desktop'); window.renderNotifications();
-                if(window.clearAuthInputs) window.clearAuthInputs(); 
-                document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('app-shell').classList.add('unlocked');
-                
-                // جلب الصفحة الحالية بدل الرجوع دائما للرئيسية إن أمكن
-                const currentActive = document.querySelector('.nav-btn.active');
-                if(currentActive) loadFragment(['home','play','achievements','store','profile'][Array.from(document.querySelectorAll('.nav-btn')).indexOf(currentActive)] || 'home', currentActive);
-                hideLoader();
             } else {
                 if (!window.isGuest) {
                     window.currentUserData = null; if(window.clearAuthInputs) window.clearAuthInputs(); 
-                    // إعادة وسوم الترجمة للزائر
                     nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = window.translations[window.currentLang].guest_name;
-                    
                     document.getElementById('modal-welcome-view').style.display = 'block'; document.getElementById('modal-form-view').style.display = 'none';
                     document.getElementById('auth-modal').classList.remove('hidden'); document.getElementById('app-shell').classList.remove('unlocked');
                 }
@@ -353,12 +397,10 @@
     </script>
 
     <script>
-        // نظام اللغات والتحديث الفوري للواجهة
         window.setLanguage = async function(lang, skipSave = false) {
             window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active')); document.getElementById('lang-' + lang).classList.add('active');
             
-            // تحديث النصوص ذات وسم الترجمة (استثناء اسم المستخدم إذا كان مسجلاً الدخول)
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (window.translations[lang] && window.translations[lang][key]) {
@@ -368,7 +410,6 @@
             });
             window.renderNotifications(); window.renderFriendsList('friends-container-desktop'); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
             
-            // تحديث العناوين الحالية
             const activeBtn = document.querySelector('.nav-btn.active');
             if(activeBtn) {
                 const pageId = Array.from(document.querySelectorAll('.nav-btn')).indexOf(activeBtn);
@@ -404,11 +445,57 @@
             if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) { try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.theme": mode }); } catch (e) {} }
         };
 
+        // النوافذ المنبثقة للصداقة
         function openAddFriendModal() { document.getElementById('add-friend-modal').classList.remove('hidden'); document.getElementById('friend-error').style.display='none'; document.getElementById('search-friend-input').value=''; }
-        function closeFriendModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openRemoveFriendModal(friendName) { window.friendToRemove = friendName; document.getElementById('remove-friend-name').innerText = friendName; document.getElementById('remove-friend-modal').classList.remove('hidden'); }
+        function closeFriendModal(id) { document.getElementById(id).classList.add('hidden'); }
         
-        // نظام إرسال الصداقة المحصن باكتشاف قواعد الفايربيس
+        window.openReviewRequestModal = function(requesterName) {
+            window.friendToReview = requesterName;
+            document.getElementById('request-sender-name').innerText = requesterName;
+            toggleDropdown('noti-dropdown'); 
+            document.getElementById('review-request-modal').classList.remove('hidden');
+        };
+
+        // معالجة القبول والرفض بحمايات فائقة واعتماد كلي على onSnapshot للتحديث
+        window.processFriendRequest = async function(isAccepted) {
+            if(!window.friendToReview) return;
+            const reqName = window.friendToReview;
+            closeFriendModal('review-request-modal');
+            
+            try {
+                if(isAccepted) {
+                    // 1. أضفه لأصدقائي، واحذفه من طلباتي
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
+                        friends: window.arrayUnion(reqName), 
+                        friendRequests: window.arrayRemove(reqName) 
+                    });
+                    
+                    // 2. ابحث عن صديقي (باستخدام username_lower لضمان عدم وجود أخطاء في الحروف)
+                    const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username_lower", "==", reqName.toLowerCase()));
+                    const snap = await window.getDocsFunc(q);
+                    
+                    // 3. أضفني لأصدقائه
+                    if(!snap.empty) { 
+                        await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { 
+                            friends: window.arrayUnion(window.currentUserData.username) 
+                        }); 
+                    }
+                } else {
+                    // في حالة الرفض: احذفه من الطلبات فقط
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
+                        friendRequests: window.arrayRemove(reqName) 
+                    });
+                }
+                
+                // ملاحظة للمبرمج: لم نعد بحاجة لتحديث الواجهة يدوياً (renderFriendsList)، 
+                // لأن onSnapshot سيلاحظ التغيير في الداتابيس وسيحدث الواجهة أوتوماتيكياً! ✨
+            } catch(e) { 
+                console.error(e);
+                alert("حدث خطأ أثناء معالجة الطلب. يرجى المحاولة مرة أخرى."); 
+            }
+        };
+        
         async function sendFriendRequest() {
             const targetUsername = document.getElementById('search-friend-input').value.trim().toLowerCase(); 
             const errDiv = document.getElementById('friend-error'); 
@@ -431,35 +518,15 @@
                 alert("تم إرسال الطلب بنجاح!"); closeFriendModal('add-friend-modal');
             } catch(e) { 
                 console.error("Add Friend Error:", e);
-                let msg = "حدث خطأ غير معروف.";
-                if(e.code === "permission-denied") {
-                    msg = "مرفوض: يرجى تعديل (Firestore Rules) للسماح بالكتابة لمستخدم آخر.";
-                }
-                errDiv.innerText = msg; errDiv.style.display='block'; 
+                errDiv.innerText = "حدث خطأ غير معروف."; errDiv.style.display='block'; 
             }
-        }
-
-        async function acceptFriendRequest(reqName) {
-            try {
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayUnion(reqName), friendRequests: window.arrayRemove(reqName) });
-                const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username", "==", reqName));
-                const snap = await window.getDocsFunc(q);
-                if(!snap.empty) { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { friends: window.arrayUnion(window.currentUserData.username) }); }
-                window.currentUserData.friends.push(reqName); window.currentUserData.friendRequests = window.currentUserData.friendRequests.filter(r => r !== reqName);
-                window.renderFriendsList('friends-container-desktop'); window.renderNotifications(); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
-            } catch(e) { alert(e.code === "permission-denied" ? "مرفوض بسبب حماية فايربيس" : "حدث خطأ"); }
-        }
-
-        async function rejectFriendRequest(reqName) {
-            try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friendRequests: window.arrayRemove(reqName) }); window.currentUserData.friendRequests = window.currentUserData.friendRequests.filter(r => r !== reqName); window.renderNotifications(); } catch(e) {}
         }
 
         async function confirmRemoveFriend() {
             if(!window.friendToRemove) return;
             try {
                 await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayRemove(window.friendToRemove) });
-                window.currentUserData.friends = window.currentUserData.friends.filter(f => f !== window.friendToRemove);
-                window.renderFriendsList('friends-container-desktop'); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
+                // onSnapshot سيتكفل بتحديث الواجهة تلقائياً
                 closeFriendModal('remove-friend-modal');
             } catch(e) { alert("حدث خطأ"); }
         }
@@ -544,3 +611,6 @@
     </script>
 </body>
 </html>
+
+
+```
