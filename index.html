@@ -207,7 +207,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // الاستيراد الأهم هنا هو onSnapshot للتحديث اللحظي
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI", authDomain: "web-game-260b5.firebaseapp.com", projectId: "web-game-260b5", storageBucket: "web-game-260b5.firebasestorage.app", messagingSenderId: "682229509792", appId: "1:682229509792:web:11b4a404459630fcd6a3c5" };
@@ -217,7 +216,6 @@
         window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
         window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.friendToReview = null;
         
-        // متغير لإيقاف المستمع (Listener) عند تسجيل الخروج
         window.unsubscribeSnapshot = null;
 
         window.translations = {
@@ -308,7 +306,6 @@
             const dropdownStatus = document.getElementById('dropdown-status-name');
             const dropdownContent = document.getElementById('dropdown-content-area');
 
-            // إذا كان هناك مستمع سابق (Real-time listener)، أوقفه لمنع التداخل
             if (window.unsubscribeSnapshot) {
                 window.unsubscribeSnapshot();
                 window.unsubscribeSnapshot = null;
@@ -316,21 +313,18 @@
 
             if (user) {
                 window.isGuest = false; 
-                let isInitialLoad = true; // متغير لضمان تشغيل التأثيرات الواجهة مرة واحدة فقط عند الدخول
+                let isInitialLoad = true; 
 
-                // ✨ هنا السحر الحقيقي (onSnapshot) للتحديث اللحظي المباشر
                 window.unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (userDoc) => {
                     if (userDoc.exists()) {
                         window.currentUserData = userDoc.data();
                         let displayName = window.currentUserData.username || user.email.split('@')[0];
 
-                        // تحديث بيانات المستخدم في الواجهة
                         nameEl.removeAttribute('data-i18n'); 
                         nameEl.innerText = displayName;
                         fallbackAvatar.innerText = displayName.charAt(0).toUpperCase();
                         dropdownStatus.innerText = "متصل";
 
-                        // تطبيق الإعدادات
                         if (window.currentUserData.settings) {
                             if(window.toggleTheme) window.toggleTheme(window.currentUserData.settings.theme || 'dark', true);
                             if(window.setFontSize) window.setFontSize(window.currentUserData.settings.fontSize || 'default', true);
@@ -340,12 +334,10 @@
                             }
                         }
 
-                        // تحديث القوائم (الأصدقاء والتنبيهات) فوراً وبدون تحديث الصفحة!
                         window.renderFriendsList('friends-container-desktop'); 
                         if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
                         window.renderNotifications();
 
-                        // في أول تحميل فقط، نفتح اللعبة ونخفي شاشة التحميل
                         if (isInitialLoad) {
                             dropdownContent.innerHTML = `
                                 <button class="dropdown-item" onclick="loadFragment('profile', null); toggleDropdown('');"><i class="ph ph-user-circle"></i> <span data-i18n="title_profile">${window.translations[window.currentLang].title_profile}</span></button>
@@ -445,7 +437,6 @@
             if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) { try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.theme": mode }); } catch (e) {} }
         };
 
-        // النوافذ المنبثقة للصداقة
         function openAddFriendModal() { document.getElementById('add-friend-modal').classList.remove('hidden'); document.getElementById('friend-error').style.display='none'; document.getElementById('search-friend-input').value=''; }
         function openRemoveFriendModal(friendName) { window.friendToRemove = friendName; document.getElementById('remove-friend-name').innerText = friendName; document.getElementById('remove-friend-modal').classList.remove('hidden'); }
         function closeFriendModal(id) { document.getElementById(id).classList.add('hidden'); }
@@ -457,7 +448,7 @@
             document.getElementById('review-request-modal').classList.remove('hidden');
         };
 
-        // معالجة القبول والرفض بحمايات فائقة واعتماد كلي على onSnapshot للتحديث
+        // دالة مراجعة الطلب والموافقة
         window.processFriendRequest = async function(isAccepted) {
             if(!window.friendToReview) return;
             const reqName = window.friendToReview;
@@ -465,31 +456,13 @@
             
             try {
                 if(isAccepted) {
-                    // 1. أضفه لأصدقائي، واحذفه من طلباتي
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
-                        friends: window.arrayUnion(reqName), 
-                        friendRequests: window.arrayRemove(reqName) 
-                    });
-                    
-                    // 2. ابحث عن صديقي (باستخدام username_lower لضمان عدم وجود أخطاء في الحروف)
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayUnion(reqName), friendRequests: window.arrayRemove(reqName) });
                     const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username_lower", "==", reqName.toLowerCase()));
                     const snap = await window.getDocsFunc(q);
-                    
-                    // 3. أضفني لأصدقائه
-                    if(!snap.empty) { 
-                        await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { 
-                            friends: window.arrayUnion(window.currentUserData.username) 
-                        }); 
-                    }
+                    if(!snap.empty) { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { friends: window.arrayUnion(window.currentUserData.username) }); }
                 } else {
-                    // في حالة الرفض: احذفه من الطلبات فقط
-                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
-                        friendRequests: window.arrayRemove(reqName) 
-                    });
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friendRequests: window.arrayRemove(reqName) });
                 }
-                
-                // ملاحظة للمبرمج: لم نعد بحاجة لتحديث الواجهة يدوياً (renderFriendsList)، 
-                // لأن onSnapshot سيلاحظ التغيير في الداتابيس وسيحدث الواجهة أوتوماتيكياً! ✨
             } catch(e) { 
                 console.error(e);
                 alert("حدث خطأ أثناء معالجة الطلب. يرجى المحاولة مرة أخرى."); 
@@ -522,13 +495,32 @@
             }
         }
 
+        // دالة الحذف المعدلة للحذف من الطرفين (Two-Way Deletion)
         async function confirmRemoveFriend() {
             if(!window.friendToRemove) return;
             try {
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { friends: window.arrayRemove(window.friendToRemove) });
-                // onSnapshot سيتكفل بتحديث الواجهة تلقائياً
+                const myName = window.currentUserData.username;
+                const friendName = window.friendToRemove;
+
+                // 1. حذف الصديق من قائمتي أنا
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { 
+                    friends: window.arrayRemove(friendName) 
+                });
+
+                // 2. البحث عن ملف الصديق وحذف اسمي أنا من قائمته هو
+                const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username", "==", friendName));
+                const snap = await window.getDocsFunc(q);
+                if(!snap.empty) {
+                    await window.updateDocFunc(window.docFunc(window.dbInstance, "users", snap.docs[0].id), { 
+                        friends: window.arrayRemove(myName) 
+                    });
+                }
+
                 closeFriendModal('remove-friend-modal');
-            } catch(e) { alert("حدث خطأ"); }
+            } catch(e) { 
+                console.error("Remove Friend Error:", e);
+                alert("حدث خطأ في عملية الحذف"); 
+            }
         }
 
         window.clearAuthInputs = function() { const form = document.getElementById('firebase-form'); if(form) form.reset(); const err = document.getElementById('auth-error'); if(err) err.style.display = 'none'; };
