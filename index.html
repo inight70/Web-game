@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Deception</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="translations.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
@@ -404,48 +405,6 @@
         window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
         window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.friendToReview = null;
         window.unsubscribeSnapshot = null;
-
-        // تمت إضافة الترجمات الجديدة هنا
-        window.translations = {
-            ar: {
-                "title_home": "الرئيسية", "title_play": "غرف اللعب", "title_achievements": "الإنجازات", "title_friends": "الأصدقاء", "title_store": "المتجر", "title_profile": "الملف الشخصي",
-                "welcome_title": "النظام السحابي", "welcome_desc": "سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.",
-                "login_btn": "تسجيل الدخول", "guest_btn": "المتابعة كزائر", "register_btn": "حساب جديد",
-                "settings": "الإعدادات", "notifications": "التنبيهات", "no_noti": "لا يوجد تنبيهات حالياً",
-                "guest_name": "زائر", "guest_status": "غير مسجل", "logout": "تسجيل خروج",
-                "font_size": "حجم الواجهة", "font_small": "صغير", "font_default": "افتراضي", "font_large": "كبير",
-                "language": "اللغة", "animations": "المؤثرات الحركية", "anim_on": "تشغيل", "anim_off": "إيقاف",
-                "theme": "المظهر", "theme_dark": "داكن", "theme_light": "فاتح",
-                "login_to_see_friends": "يجب تسجيل الدخول لإضافة الأصدقاء ورؤيتهم.",
-                "email_user": "المعرف (Email/Username)", "password": "كلمة المرور", "username": "اسم المستخدم", "email": "البريد الإلكتروني", "confirm_pass": "تأكيد كلمة المرور",
-                "email_user_ph": "أدخل البيانات", "username_ph": "مثال: Player1",
-                "confirm_login": "تأكيد الدخول", "confirm_register": "إنشاء الحساب",
-                "add_friend_title": "إضافة صديق", "add_friend_desc": "أدخل اسم المستخدم لإرسال طلب صداقة.", "search_friend_placeholder": "اسم المستخدم", "send_request": "إرسال الطلب",
-                "remove_friend_title": "حذف صديق", "remove_friend_desc": "هل أنت متأكد أنك تريد حذف", "cancel": "إلغاء", "confirm_remove": "تأكيد الحذف",
-                "friends": "الأصدقاء", "friend_req_from": "لقد أرسل لك", "friend_req_msg": "طلب صداقة، هل توافق؟", "friend_req_title": "طلب صداقة", "accept": "قبول", "reject": "رفض",
-                "new_friend_req": "طلب صداقة جديد من", "now": "الآن",
-                "main_game_title": "Deception", "main_game_desc": "اكتشف الخداع، تفوق على خصومك، وكن الفائز في هذه المواجهة المليئة بالاستراتيجية والمكر. هل أنت مستعد للبدء؟", "play_now": "العب الآن", "focus_game_title": "طور التركيز", "focus_game_desc": "طور لعب سريع يعتمد على التركيز وسرعة البديهة. (سيتم إضافته لاحقاً)", "coming_soon": "قريباً"
-            },
-            en: {
-                "title_home": "Home", "title_play": "Play Rooms", "title_achievements": "Achievements", "title_friends": "Friends", "title_store": "Store", "title_profile": "Profile",
-                "welcome_title": "Cloud System", "welcome_desc": "Log in now to play, save progress, and interact with friends.",
-                "login_btn": "Log In", "guest_btn": "Continue as Guest", "register_btn": "New Account",
-                "settings": "Settings", "notifications": "Notifications", "no_noti": "No notifications currently",
-                "guest_name": "Guest", "guest_status": "Not registered", "logout": "Log Out",
-                "font_size": "UI Size", "font_small": "Small", "font_default": "Default", "font_large": "Large",
-                "language": "Language", "animations": "Animations", "anim_on": "On", "anim_off": "Off",
-                "theme": "Theme", "theme_dark": "Dark", "theme_light": "Light",
-                "login_to_see_friends": "You must log in to see and add friends.",
-                "email_user": "Identifier (Email/Username)", "password": "Password", "username": "Username", "email": "Email", "confirm_pass": "Confirm Password",
-                "email_user_ph": "Enter details", "username_ph": "e.g. Player1",
-                "confirm_login": "Confirm Login", "confirm_register": "Create Account",
-                "add_friend_title": "Add Friend", "add_friend_desc": "Enter username to send a friend request.", "search_friend_placeholder": "Username", "send_request": "Send Request",
-                "remove_friend_title": "Remove Friend", "remove_friend_desc": "Are you sure you want to remove", "cancel": "Cancel", "confirm_remove": "Confirm Remove",
-                "friends": "Friends", "friend_req_from": "", "friend_req_msg": "sent you a friend request. Accept?", "friend_req_title": "Friend Request", "accept": "Accept", "reject": "Decline",
-                "new_friend_req": "New friend request from", "now": "Just now",
-                "main_game_title": "Deception", "main_game_desc": "Discover the deception, outsmart your opponents, and be the winner in this strategic showdown. Are you ready?", "play_now": "Play Now", "focus_game_title": "Focus Mode", "focus_game_desc": "A fast-paced game mode relying on focus and quick reflexes. (Coming Soon)", "coming_soon": "Coming Soon"
-            }
-        };
         window.currentLang = 'ar';
 
         const hideLoader = () => { const l = document.getElementById('global-loader'); if(l){ l.style.opacity = '0'; setTimeout(()=>l.style.visibility='hidden',400); } };
@@ -558,7 +517,7 @@
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active')); const langBtn = document.getElementById('lang-' + lang); if(langBtn) langBtn.classList.add('active');
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (window.translations[lang] && window.translations[lang][key]) {
+                if (window.translations && window.translations[lang] && window.translations[lang][key]) {
                     if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) el.setAttribute('placeholder', window.translations[lang][key]);
                     else el.innerText = window.translations[lang][key];
                 }
@@ -709,13 +668,12 @@
             if(!window.isGuest) window.enterAsGuest(); 
         }
 
-        // تم استبدال هذه الدالة بالنسخة الجديدة التي تدعم مجلد pages
         window.loadFragment = async function(pageName, element) {
             const contentHolder = document.getElementById('content-holder');
             const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile' };
             
-            const pt = document.getElementById('page-title'); if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]];
-            const mn = document.getElementById('mobile-section-name'); if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]];
+            const pt = document.getElementById('page-title'); if(pt && window.translations) pt.innerText = window.translations[window.currentLang][titles[pageName]];
+            const mn = document.getElementById('mobile-section-name'); if(mn && window.translations) mn.innerText = window.translations[window.currentLang][titles[pageName]];
             
             document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
                 btn.classList.remove('active'); 
@@ -755,7 +713,7 @@
                 }
 
             } catch (error) {
-                if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${window.translations[window.currentLang][titles[pageName]]}...</div>`;
+                if(contentHolder && window.translations) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${window.translations[window.currentLang][titles[pageName]]}...</div>`;
             }
         }
     </script>
