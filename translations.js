@@ -1,0 +1,42 @@
+window.translations = {
+    ar: {
+        "title_home": "الرئيسية", "title_play": "غرف اللعب", "title_achievements": "الإنجازات", "title_friends": "الأصدقاء", "title_store": "المتجر", "title_profile": "الملف الشخصي",
+        "welcome_title": "النظام السحابي", "welcome_desc": "سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.",
+        "login_btn": "تسجيل الدخول", "guest_btn": "المتابعة كزائر", "register_btn": "حساب جديد",
+        "settings": "الإعدادات", "notifications": "التنبيهات", "no_noti": "لا يوجد تنبيهات حالياً",
+        "guest_name": "زائر", "guest_status": "غير مسجل", "logout": "تسجيل خروج",
+        "font_size": "حجم الواجهة", "font_small": "صغير", "font_default": "افتراضي", "font_large": "كبير",
+        "language": "اللغة", "animations": "المؤثرات الحركية", "anim_on": "تشغيل", "anim_off": "إيقاف",
+        "theme": "المظهر", "theme_dark": "داكن", "theme_light": "فاتح",
+        "login_to_see_friends": "يجب تسجيل الدخول لإضافة الأصدقاء ورؤيتهم.",
+        "email_user": "المعرف (Email/Username)", "password": "كلمة المرور", "username": "اسم المستخدم", "email": "البريد الإلكتروني", "confirm_pass": "تأكيد كلمة المرور",
+        "email_user_ph": "أدخل البيانات", "username_ph": "مثال: Player1",
+        "confirm_login": "تأكيد الدخول", "confirm_register": "إنشاء الحساب",
+        "add_friend_title": "إضافة صديق", "add_friend_desc": "أدخل اسم المستخدم لإرسال طلب صداقة.", "search_friend_placeholder": "اسم المستخدم", "send_request": "إرسال الطلب",
+        "remove_friend_title": "حذف صديق", "remove_friend_desc": "هل أنت متأكد أنك تريد حذف", "cancel": "إلغاء", "confirm_remove": "تأكيد الحذف",
+        "friends": "الأصدقاء", "friend_req_from": "لقد أرسل لك", "friend_req_msg": "طلب صداقة، هل توافق؟", "friend_req_title": "طلب صداقة", "accept": "قبول", "reject": "رفض",
+        "new_friend_req": "طلب صداقة جديد من", "now": "الآن",
+        "main_game_title": "Deception", "main_game_desc": "اكتشف الخداع، تفوق على خصومك، وكن الفائز في هذه المواجهة المليئة بالاستراتيجية والمكر. العب الآن أينما كنت وفي أي وقت!", "play_now": "العب الآن", "focus_game_title": "طور التركيز", "focus_game_desc": "طور لعب سريع يعتمد على التركيز وسرعة البديهة.", "coming_soon": "قريباً",
+        "how_to_play": "شرح اللعبة", "main_mode": "#TRENDING"
+    },
+    en: {
+        "title_home": "Home", "title_play": "Play Rooms", "title_achievements": "Achievements", "title_friends": "Friends", "title_store": "Store", "title_profile": "Profile",
+        "welcome_title": "Cloud System", "welcome_desc": "Log in now to play, save progress, and interact with friends.",
+        "login_btn": "Log In", "guest_btn": "Continue as Guest", "register_btn": "New Account",
+        "settings": "Settings", "notifications": "Notifications", "no_noti": "No notifications currently",
+        "guest_name": "Guest", "guest_status": "Not registered", "logout": "Log Out",
+        "font_size": "UI Size", "font_small": "Small", "font_default": "Default", "font_large": "Large",
+        "language": "Language", "animations": "Animations", "anim_on": "On", "anim_off": "Off",
+        "theme": "Theme", "theme_dark": "Dark", "theme_light": "Light",
+        "login_to_see_friends": "You must log in to see and add friends.",
+        "email_user": "Identifier (Email/Username)", "password": "Password", "username": "Username", "email": "Email", "confirm_pass": "Confirm Password",
+        "email_user_ph": "Enter details", "username_ph": "e.g. Player1",
+        "confirm_login": "Confirm Login", "confirm_register": "Create Account",
+        "add_friend_title": "Add Friend", "add_friend_desc": "Enter username to send a friend request.", "search_friend_placeholder": "Username", "send_request": "Send Request",
+        "remove_friend_title": "Remove Friend", "remove_friend_desc": "Are you sure you want to remove", "cancel": "Cancel", "confirm_remove": "Confirm Remove",
+        "friends": "Friends", "friend_req_from": "", "friend_req_msg": "sent you a friend request. Accept?", "friend_req_title": "Friend Request", "accept": "Accept", "reject": "Decline",
+        "new_friend_req": "New friend request from", "now": "Just now",
+        "main_game_title": "Deception", "main_game_desc": "Discover the deception, outsmart your opponents, and be the winner in this strategic showdown. Play now anywhere, anytime!", "play_now": "Play Now", "focus_game_title": "Focus Mode", "focus_game_desc": "A fast-paced game mode relying on focus and quick reflexes.", "coming_soon": "Coming Soon",
+        "how_to_play": "How to Play", "main_mode": "#TRENDING"
+    }
+};
