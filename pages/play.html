@@ -1,37 +1,46 @@
-<div class="play-page-container">
+<style>
+    .hero-game-card { background: linear-gradient(135deg, #ff4c6a 0%, #ff768e 100%); border-radius: 24px; padding: 40px; display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; box-shadow: 0 15px 35px rgba(255, 76, 106, 0.3); min-height: 340px; gap: 20px; margin-bottom: 20px; }
+    .hero-game-card::before { content: ''; position: absolute; top: -50%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%; z-index: 0; }
+    .hero-content { flex: 1; z-index: 2; max-width: 55%; }
+    .hero-badge { background: rgba(255, 255, 255, 0.2); color: #fff; padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; display: inline-block; margin-bottom: 15px; letter-spacing: 1px; backdrop-filter: blur(10px); }
+    .hero-title { font-size: 2.8rem; font-weight: 800; color: #ffffff; font-family: var(--font-en); line-height: 1.1; margin-bottom: 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .hero-desc { font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-weight: 500; margin-bottom: 25px; }
+    .hero-actions { display: flex; gap: 15px; flex-wrap: wrap; }
+    .btn-hero-primary { background-color: #ffffff; color: #ff4c6a; border: none; padding: 14px 28px; border-radius: 100px; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .btn-hero-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2); }
+    .btn-hero-secondary { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.4); padding: 14px 28px; border-radius: 100px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(5px); }
+    .btn-hero-secondary:hover { background-color: rgba(255, 255, 255, 0.25); border-color: #ffffff; }
+    .hero-image-wrapper { flex: 1; display: flex; justify-content: flex-end; align-items: center; position: relative; z-index: 1; }
+    .character-placeholder { width: 100%; height: 260px; background: rgba(0, 0, 0, 0.1); border: 2px dashed rgba(255, 255, 255, 0.3); border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: rgba(255, 255, 255, 0.7); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .character-placeholder i { font-size: 4rem; margin-bottom: 10px; }
     
+    .play-page-container { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 1000px; margin: 0 auto; padding-top: 10px; }
+    .game-card { background-color: var(--surface-panel); border-radius: 24px; padding: 30px; display: flex; gap: 30px; box-shadow: var(--shadow-soft); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(100,100,100,0.05); }
+    .secondary-game-card { align-items: center; opacity: 0.85; padding: 20px 30px; }
+    
+    @media (max-width: 768px) { .hero-game-card { flex-direction: column; padding: 30px 20px; text-align: center; } .hero-content { max-width: 100%; display: flex; flex-direction: column; align-items: center; } .hero-actions { justify-content: center; } .hero-image-wrapper { width: 100%; margin-top: 10px; } .secondary-game-card { text-align: center; padding: 20px; } }
+</style>
+
+<div class="play-page-container">
     <div class="hero-game-card">
         <div class="hero-content">
             <div class="hero-badge" data-i18n="main_mode">#TRENDING</div>
             <h2 class="hero-title" data-i18n="main_game_title">Deception</h2>
             <p class="hero-desc" data-i18n="main_game_desc">اكتشف الخداع، تفوق على خصومك، وكن الفائز في هذه المواجهة المليئة بالاستراتيجية والمكر. العب الآن أينما كنت وفي أي وقت!</p>
-            
             <div class="hero-actions">
-                <button class="btn-hero-primary" onclick="alert('سيتم فتح قائمة الغرف هنا!')">
-                    <span data-i18n="play_now">العب الآن</span> <i class="ph-bold ph-arrow-left"></i>
-                </button>
-                <button class="btn-hero-secondary" onclick="alert('نافذة شرح اللعبة ستظهر هنا')">
-                    <i class="ph-duotone ph-info"></i> <span data-i18n="how_to_play">شرح اللعبة</span>
-                </button>
+                <button class="btn-hero-primary" onclick="alert('سيتم فتح قائمة الغرف هنا!')"><span data-i18n="play_now">العب الآن</span> <i class="ph-bold ph-arrow-left"></i></button>
+                <button class="btn-hero-secondary" onclick="alert('نافذة شرح اللعبة ستظهر هنا')"><i class="ph-duotone ph-info"></i> <span data-i18n="how_to_play">شرح اللعبة</span></button>
             </div>
         </div>
-
         <div class="hero-image-wrapper">
-            <div class="character-placeholder">
-                <i class="ph-duotone ph-users-three"></i>
-                <span>مساحة شخصياتك هنا</span>
-            </div>
+            <div class="character-placeholder"><i class="ph-duotone ph-users-three"></i><span>مساحة شخصياتك هنا</span></div>
         </div>
     </div>
-
     <div class="game-card secondary-game-card" style="margin-top: 20px;">
-        <div class="game-info">
-            <h3 class="game-title" data-i18n="focus_game_title">Focus Mode</h3>
-            <p class="game-desc" data-i18n="focus_game_desc">طور لعب سريع يعتمد على التركيز وسرعة البديهة. (سيتم إضافته لاحقاً)</p>
-            <button class="btn-secondary play-now-btn" disabled style="opacity: 0.5; cursor: not-allowed; min-width: 150px; padding: 12px; margin-top: 10px;">
-                <i class="ph-duotone ph-lock"></i> <span data-i18n="coming_soon">قريباً</span>
-            </button>
+        <div class="game-info" style="display: flex; flex-direction: column; gap: 10px;">
+            <h3 class="game-title" data-i18n="focus_game_title" style="font-size: 1.4rem; color: var(--text-main);">Focus Mode</h3>
+            <p class="game-desc" data-i18n="focus_game_desc" style="font-size: 0.85rem; color: var(--text-dim);">طور لعب سريع يعتمد على التركيز وسرعة البديهة.</p>
+            <button class="btn-secondary play-now-btn" disabled style="opacity: 0.5; cursor: not-allowed; width: fit-content; padding: 12px 25px; margin-top: 10px;"><i class="ph-duotone ph-lock"></i> <span data-i18n="coming_soon">قريباً</span></button>
         </div>
     </div>
-
 </div>
