@@ -6,12 +6,6 @@
     <title>Deception</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
-    <!-- 
-    ========================================================================
-    ملف: style.css
-    (هذا القسم انسخه وضعه في ملف style.css واربطه في الـ HTML)
-    ========================================================================
-    -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
 
@@ -222,13 +216,6 @@
 </head>
 <body>
     
-    <!-- 
-    ========================================================================
-    ملف: index.html (منطقة الـ Body)
-    (هذا هو الكود الذي سيبقى في ملف index.html في مشروعك)
-    ========================================================================
-    -->
-
     <div id="global-loader"><div class="spinner"></div></div>
 
     <div id="auth-modal" class="auth-overlay hidden">
@@ -395,7 +382,6 @@
             <div id="friends-container-desktop"></div>
         </aside>
 
-        <!-- شريط الجوال -->
         <nav class="bottom-bar">
             <button class="bottom-tab active" onclick="window.loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
             <button class="bottom-tab" onclick="window.loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
@@ -406,13 +392,6 @@
         </nav>
     </div>
 
-    <!-- 
-    ========================================================================
-    ملف: firebase-config.js
-    (أثناء التطوير على جهازك، ضع كل الأكواد أدناه داخل ملف firebase-config.js 
-    واستدعه في HTML هكذا: <script type="module" src="firebase-config.js"></script>)
-    ========================================================================
-    -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -426,6 +405,7 @@
         window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.friendToReview = null;
         window.unsubscribeSnapshot = null;
 
+        // تمت إضافة الترجمات الجديدة هنا
         window.translations = {
             ar: {
                 "title_home": "الرئيسية", "title_play": "غرف اللعب", "title_achievements": "الإنجازات", "title_friends": "الأصدقاء", "title_store": "المتجر", "title_profile": "الملف الشخصي",
@@ -443,7 +423,8 @@
                 "add_friend_title": "إضافة صديق", "add_friend_desc": "أدخل اسم المستخدم لإرسال طلب صداقة.", "search_friend_placeholder": "اسم المستخدم", "send_request": "إرسال الطلب",
                 "remove_friend_title": "حذف صديق", "remove_friend_desc": "هل أنت متأكد أنك تريد حذف", "cancel": "إلغاء", "confirm_remove": "تأكيد الحذف",
                 "friends": "الأصدقاء", "friend_req_from": "لقد أرسل لك", "friend_req_msg": "طلب صداقة، هل توافق؟", "friend_req_title": "طلب صداقة", "accept": "قبول", "reject": "رفض",
-                "new_friend_req": "طلب صداقة جديد من", "now": "الآن"
+                "new_friend_req": "طلب صداقة جديد من", "now": "الآن",
+                "main_game_title": "Deception", "main_game_desc": "اكتشف الخداع، تفوق على خصومك، وكن الفائز في هذه المواجهة المليئة بالاستراتيجية والمكر. هل أنت مستعد للبدء؟", "play_now": "العب الآن", "focus_game_title": "طور التركيز", "focus_game_desc": "طور لعب سريع يعتمد على التركيز وسرعة البديهة. (سيتم إضافته لاحقاً)", "coming_soon": "قريباً"
             },
             en: {
                 "title_home": "Home", "title_play": "Play Rooms", "title_achievements": "Achievements", "title_friends": "Friends", "title_store": "Store", "title_profile": "Profile",
@@ -461,7 +442,8 @@
                 "add_friend_title": "Add Friend", "add_friend_desc": "Enter username to send a friend request.", "search_friend_placeholder": "Username", "send_request": "Send Request",
                 "remove_friend_title": "Remove Friend", "remove_friend_desc": "Are you sure you want to remove", "cancel": "Cancel", "confirm_remove": "Confirm Remove",
                 "friends": "Friends", "friend_req_from": "", "friend_req_msg": "sent you a friend request. Accept?", "friend_req_title": "Friend Request", "accept": "Accept", "reject": "Decline",
-                "new_friend_req": "New friend request from", "now": "Just now"
+                "new_friend_req": "New friend request from", "now": "Just now",
+                "main_game_title": "Deception", "main_game_desc": "Discover the deception, outsmart your opponents, and be the winner in this strategic showdown. Are you ready?", "play_now": "Play Now", "focus_game_title": "Focus Mode", "focus_game_desc": "A fast-paced game mode relying on focus and quick reflexes. (Coming Soon)", "coming_soon": "Coming Soon"
             }
         };
         window.currentLang = 'ar';
@@ -727,17 +709,25 @@
             if(!window.isGuest) window.enterAsGuest(); 
         }
 
-        window.loadFragment = function(pageName, element) {
+        // تم استبدال هذه الدالة بالنسخة الجديدة التي تدعم مجلد pages
+        window.loadFragment = async function(pageName, element) {
             const contentHolder = document.getElementById('content-holder');
             const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile' };
             
             const pt = document.getElementById('page-title'); if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]];
             const mn = document.getElementById('mobile-section-name'); if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]];
             
-            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { btn.classList.remove('active'); const icon = btn.querySelector('i'); if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); });
+            document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
+                btn.classList.remove('active'); 
+                const icon = btn.querySelector('i'); 
+                if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
+            });
 
             if(element) {
-                element.classList.add('active'); const icon = element.querySelector('i'); if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+                element.classList.add('active'); 
+                const icon = element.querySelector('i'); 
+                if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+                
                 const isNav = element.classList.contains('nav-btn');
                 const tabsList = isNav ? document.querySelectorAll('.nav-btn') : document.querySelectorAll('.bottom-tab');
                 const targetList = isNav ? document.querySelectorAll('.bottom-tab') : document.querySelectorAll('.nav-btn');
@@ -749,16 +739,25 @@
                 else { const matchedTab = targetList[index]; if(matchedTab) { matchedTab.classList.add('active'); matchedTab.querySelector('i').className = matchedTab.querySelector('i').className.replace('ph', 'ph-fill'); } }
             }
 
-            if (pageName === 'friends') {
-                if(contentHolder) contentHolder.innerHTML = `<div id="mobile-friends-wrapper" style="width:100%; max-width:400px; margin: 20px auto; display:flex; flex-direction:column; align-items:center; gap:20px;"></div>`;
-                window.renderFriendsList('mobile-friends-wrapper');
-            } else {
-                if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">${window.translations[window.currentLang][titles[pageName]]} - جاهز للبرمجة</div>`;
+            if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
+
+            try {
+                const response = await fetch(`pages/${pageName}.html`);
+                if (!response.ok) throw new Error('Page not found');
+                
+                const htmlContent = await response.text();
+                if(contentHolder) contentHolder.innerHTML = htmlContent;
+
+                if(window.setLanguage) window.setLanguage(window.currentLang, true);
+
+                if (pageName === 'friends') {
+                    window.renderFriendsList('mobile-friends-wrapper');
+                }
+
+            } catch (error) {
+                if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${window.translations[window.currentLang][titles[pageName]]}...</div>`;
             }
         }
     </script>
 </body>
 </html>
-
-
-```
