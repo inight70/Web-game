@@ -1,25 +1,37 @@
 <div class="play-page-container">
-    <div class="game-card main-game-card">
-        <div class="game-info">
-            <h2 class="game-title" data-i18n="main_game_title">Deception</h2>
-            <p class="game-desc" data-i18n="main_game_desc">اكتشف الخداع، تفوق على خصومك، وكن الفائز في هذه المواجهة المليئة بالاستراتيجية والمكر. هل أنت مستعد للبدء؟</p>
-            <button class="btn-core play-now-btn" onclick="alert('سيتم برمجة نظام الانضمام للغرف هنا!')">
-                <i class="ph-fill ph-play-circle"></i> <span data-i18n="play_now">العب الآن</span>
-            </button>
+    
+    <div class="hero-game-card">
+        <div class="hero-content">
+            <div class="hero-badge" data-i18n="main_mode">#TRENDING</div>
+            <h2 class="hero-title" data-i18n="main_game_title">Deception</h2>
+            <p class="hero-desc" data-i18n="main_game_desc">اكتشف الخداع، تفوق على خصومك، وكن الفائز في هذه المواجهة المليئة بالاستراتيجية والمكر. العب الآن أينما كنت وفي أي وقت!</p>
+            
+            <div class="hero-actions">
+                <button class="btn-hero-primary" onclick="alert('سيتم فتح قائمة الغرف هنا!')">
+                    <span data-i18n="play_now">العب الآن</span> <i class="ph-bold ph-arrow-left"></i>
+                </button>
+                <button class="btn-hero-secondary" onclick="alert('نافذة شرح اللعبة ستظهر هنا')">
+                    <i class="ph-duotone ph-info"></i> <span data-i18n="how_to_play">شرح اللعبة</span>
+                </button>
+            </div>
         </div>
-        <div class="game-image-placeholder">
-            <i class="ph-duotone ph-images"></i>
-            <span>مساحة مخصصة لصور الشخصيات</span>
+
+        <div class="hero-image-wrapper">
+            <div class="character-placeholder">
+                <i class="ph-duotone ph-users-three"></i>
+                <span>مساحة شخصياتك هنا</span>
+            </div>
         </div>
     </div>
 
-    <div class="game-card secondary-game-card">
+    <div class="game-card secondary-game-card" style="margin-top: 20px;">
         <div class="game-info">
             <h3 class="game-title" data-i18n="focus_game_title">Focus Mode</h3>
             <p class="game-desc" data-i18n="focus_game_desc">طور لعب سريع يعتمد على التركيز وسرعة البديهة. (سيتم إضافته لاحقاً)</p>
-            <button class="btn-secondary play-now-btn" disabled style="opacity: 0.5; cursor: not-allowed; min-width: 150px; padding: 12px;">
+            <button class="btn-secondary play-now-btn" disabled style="opacity: 0.5; cursor: not-allowed; min-width: 150px; padding: 12px; margin-top: 10px;">
                 <i class="ph-duotone ph-lock"></i> <span data-i18n="coming_soon">قريباً</span>
             </button>
         </div>
     </div>
+
 </div>
