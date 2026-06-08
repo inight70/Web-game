@@ -3,49 +3,67 @@
     
     .top-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .profile-card { background: var(--surface-panel); border-radius: 24px; padding: 25px; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; }
-    .profile-card-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(100,100,100,0.1); padding-bottom: 15px; }
+    .profile-card-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin-bottom: 5px; border-bottom: 1px solid rgba(100,100,100,0.1); padding-bottom: 15px; }
     
-    .level-shield-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 20px 0; }
+    /* اللفل */
+    .level-shield-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px 0 15px 0; }
     .level-shield { width: 90px; height: 100px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; box-shadow: 0 10px 20px rgba(255, 76, 106, 0.4); position: relative; transition: var(--trans-smooth); cursor: default; }
     .level-shield::before { content: ''; position: absolute; inset: 4px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1; }
     .level-number { position: relative; z-index: 2; font-size: 2.5rem; font-weight: 900; font-family: var(--font-en); background: linear-gradient(135deg, var(--accent-red), #ff8a9f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .level-title { position: relative; z-index: 2; font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-top: -5px; }
     
+    /* معلومات الحساب */
     .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; background: var(--bg-base); padding: 12px 15px; border-radius: 12px; }
     .info-label { color: var(--text-dim); font-weight: 600; }
     .info-value { color: var(--text-main); font-weight: 700; font-family: var(--font-en); }
 
+    /* المظهر والإعدادات */
     .appearance-section { display: flex; flex-direction: column; gap: 20px; }
     .avatar-wrapper { display: flex; align-items: center; gap: 20px; }
     .profile-avatar-large { width: 80px; height: 80px; border-radius: 50%; background: var(--bg-base); border: 3px solid var(--text-dim); display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; flex-shrink: 0; }
     .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-buttons { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-    .btn-avatar-option { background: var(--surface-hover); border: 1px solid rgba(100,100,100,0.1); color: var(--text-main); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+    .btn-avatar-option { background: var(--surface-hover); border: 1px solid rgba(100,100,100,0.1); color: var(--text-main); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; }
     .btn-avatar-option:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
-    .avatar-modal { position: absolute; inset: 0; background: var(--surface-panel); z-index: 10; display: flex; flex-direction: column; padding: 25px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
-    .avatar-modal.show { transform: translateY(0); }
-    .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; overflow-y: auto; }
-    .avatar-option-img { width: 100%; aspect-ratio: 1; border-radius: 50%; background: var(--bg-base); cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-    .avatar-option-img:hover { border-color: var(--accent-red); transform: scale(1.05); }
-    
+    /* إعدادات متقدمة */
     .setting-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
-    .edit-input { flex: 1; padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(100,100,100,0.2); background: var(--bg-base); color: var(--text-main); font-family: var(--font-en); font-weight: 600; outline: none; transition: 0.3s; }
+    .edit-input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(100,100,100,0.2); background: var(--bg-base); color: var(--text-main); font-family: var(--font-en); font-weight: 600; outline: none; transition: 0.3s; margin-bottom: 10px; }
     .edit-input:focus { border-color: var(--accent-red); }
-    .btn-save { background: var(--accent-red); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    .btn-save { background: var(--accent-red); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; flex: 1; }
     .btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 76, 106, 0.3); }
+    .btn-cancel { background: transparent; color: var(--text-dim); border: 1px solid rgba(100,100,100,0.2); padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; flex: 1; }
+    .btn-cancel:hover { background: var(--surface-hover); color: var(--text-main); }
 
-    /* تعديلات الأمبلم: ثابت إنجليزي/عربي، بدون ظل، حجم ديناميكي */
+    /* النوافذ المنبثقة (الأفتار، الأمبلم، البادج) */
+    .slide-modal { position: absolute; inset: 0; background: var(--surface-panel); z-index: 10; display: flex; flex-direction: column; padding: 25px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .slide-modal.show { transform: translateY(0); }
+    .modal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; overflow-y: auto; }
+    
+    .emblem-option { width: 100%; height: 50px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; background-size: cover; background-position: center; }
+    .emblem-option:hover { border-color: var(--accent-red); transform: scale(1.05); }
+    .badge-option { width: 100%; aspect-ratio: 1; border-radius: 12px; background: var(--surface-hover); cursor: pointer; border: 2px solid transparent; transition: 0.2s; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: var(--text-dim); }
+    .badge-option:hover { border-color: var(--accent-red); color: var(--accent-red); transform: scale(1.05); }
+
+    /* مستطيل الأمبلم (الأسطورة) - ثابت الاتجاه وخالي من الظل المزعج */
     .emblem-wrapper { position: relative; width: 100%; height: 130px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; }
     .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
     
-    /* غلاف الصورة (Background Size: cover) تقص الصورة باحترافية */
-    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-image: url('assets/images/default-emblem.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+    /* سر القص المثالي للصورة: position: right center يثبت الصورة يميناً ويقص اليسار الفارغ */
+    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-image: url('assets/images/default-emblem.png'); background-size: cover; background-position: right center; background-repeat: no-repeat; transition: 0.3s; }
     
-    /* ترتيب المحتوى: البادج يسار والاسم يمين */
-    .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 30px; }
-    .emblem-badge-placeholder { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.8); font-size: 1.5rem; backdrop-filter: blur(5px); }
-    .emblem-name { font-size: 2.2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 4px 15px rgba(0,0,0,0.8); letter-spacing: 1px; }
+    /* التدرج اللوني الخفيف لضمان قراءة الاسم فقط */
+    .emblem-gradient { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%, transparent 100%) !important; z-index: 1; pointer-events: none; }
+    
+    /* الترتيب: البادج يسار والاسم يمين */
+    .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: 0 30px; }
+    
+    /* البادج - أصبح زراً تفاعلياً مستقلاً */
+    .emblem-badge-btn { width: 55px; height: 55px; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.8rem; backdrop-filter: blur(5px); cursor: pointer; transition: 0.3s; z-index: 3; }
+    .emblem-badge-btn:hover { background: rgba(255, 76, 106, 0.4); border-color: var(--accent-red); transform: scale(1.1); }
+    
+    /* الاسم بظل خفيف جداً */
+    .emblem-name { font-size: 2.2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 4px rgba(0,0,0,0.4); letter-spacing: 1px; pointer-events: none; }
 
     .bottom-sections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     .section-header { font-size: 1.2rem; font-weight: bold; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
@@ -61,7 +79,8 @@
     @media (max-width: 768px) { 
         .top-profile-grid { grid-template-columns: 1fr; }
         .emblem-name { font-size: 1.6rem; }
-        .emblem-content { padding: 0 20px; gap: 10px; }
+        .emblem-content { padding: 0 20px; gap: 15px; }
+        .emblem-badge-btn { width: 45px; height: 45px; font-size: 1.4rem; }
     }
 </style>
 
@@ -79,19 +98,23 @@
             </div>
 
             <div class="info-row">
-                <span class="info-label" data-i18n="email">البريد الإلكتروني</span>
-                <span class="info-value" id="prof-email">...</span>
+                <span class="info-label" data-i18n="username">اسم المستخدم</span>
+                <span class="info-value" id="prof-disp-name">...</span>
             </div>
             <div class="info-row">
-                <span class="info-label">ID</span>
-                <span class="info-value" style="font-size: 0.8rem; opacity: 0.7;" id="prof-uid">...</span>
+                <span class="info-label" data-i18n="email">البريد الإلكتروني</span>
+                <span class="info-value" id="prof-email" style="font-size: 0.85rem;">...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label" data-i18n="stat_achievements">الإنجازات</span>
+                <span class="info-value">0</span>
             </div>
         </div>
 
         <div class="profile-card">
             <div class="profile-card-title"><i class="ph-bold ph-palette"></i> <span data-i18n="profile_appearance">المظهر والإعدادات</span></div>
             
-            <div class="appearance-section">
+            <div class="appearance-section" id="default-settings-view">
                 <div class="avatar-wrapper">
                     <div class="profile-avatar-large" id="main-profile-avatar">
                         <i class="ph-fill ph-user" style="font-size: 3rem; color: var(--text-dim);"></i>
@@ -100,21 +123,15 @@
                         <button class="btn-avatar-option" onclick="document.getElementById('avatar-modal').classList.add('show')">
                             <i class="ph-bold ph-smiley"></i> <span data-i18n="avatar_premade">أفتار جاهز</span>
                         </button>
-                        <button class="btn-avatar-option" onclick="alert('برمجة رفع الصورة من الجهاز تتطلب Storage في Firebase')">
+                        <button class="btn-avatar-option" onclick="alert('برمجة الرفع تتطلب Storage')">
                             <i class="ph-bold ph-upload-simple"></i> <span data-i18n="avatar_upload">رفع من الجهاز</span>
                         </button>
                     </div>
                 </div>
 
-                <div>
-                    <div style="margin-bottom: 8px;">
-                        <span class="info-label" data-i18n="change_username" style="font-size: 0.85rem;">تغيير الاسم</span>
-                    </div>
-                    <div class="setting-row">
-                        <input type="text" id="edit-username-input" class="edit-input" placeholder="Username" autocomplete="off">
-                        <button class="btn-save" id="save-name-btn" onclick="window.saveUsername()"><span data-i18n="save_btn">حفظ</span></button>
-                    </div>
-                </div>
+                <button class="btn-avatar-option" style="justify-content: center; padding: 12px; background: transparent;" onclick="window.toggleEditView(true)">
+                    <i class="ph-bold ph-pencil-simple"></i> <span data-i18n="edit_personal_info">تعديلات المعلومات الشخصية</span>
+                </button>
 
                 <div class="setting-row" style="margin-top: 5px;">
                     <span class="info-label" data-i18n="theme">المظهر</span>
@@ -132,32 +149,69 @@
                 </div>
             </div>
 
-            <div class="avatar-modal" id="avatar-modal">
+            <div class="appearance-section" id="edit-info-view" style="display: none;">
+                <input type="text" id="edit-username-input" class="edit-input" data-i18n="change_username" placeholder="تغيير الاسم" autocomplete="off">
+                <input type="email" id="edit-email-input" class="edit-input" data-i18n="change_email" placeholder="تغيير البريد" autocomplete="off">
+                <input type="password" id="edit-password-input" class="edit-input" data-i18n="change_password" placeholder="تغيير كلمة المرور (اختياري)" autocomplete="new-password">
+                
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-cancel" onclick="window.toggleEditView(false)" data-i18n="cancel_btn">إلغاء</button>
+                    <button class="btn-save" id="save-info-btn" onclick="window.savePersonalInfo()"><span data-i18n="save_btn">حفظ التعديلات</span></button>
+                </div>
+            </div>
+
+            <div class="slide-modal" id="avatar-modal">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h3 style="font-size: 1rem;" data-i18n="choose_avatar">اختر الأفتار الخاص بك</h3>
                     <button class="close-modal-btn" style="position: static;" onclick="document.getElementById('avatar-modal').classList.remove('show')"><i class="ph-bold ph-x"></i></button>
                 </div>
-                <div class="avatar-grid">
+                <div class="modal-grid">
                     <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=ff4c6a" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
                     <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=2ecc71" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Milo&backgroundColor=3498db" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Jack&backgroundColor=9b59b6" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
                     <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna&backgroundColor=f1c40f" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
                     <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=e67e22" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=1abc9c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Max&backgroundColor=e74c3c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="emblem-wrapper" onclick="alert('تغيير خلفية الأمبلم سيتوفر قريباً من المعرض!')">
-        <div class="emblem-bg"></div>
+    <div class="emblem-wrapper" onclick="document.getElementById('emblem-modal').classList.add('show')">
+        <div class="emblem-bg" id="current-emblem-bg"></div>
+        <div class="emblem-gradient"></div>
+        
         <div class="emblem-content">
-            <div class="emblem-badge-placeholder">
+            <button class="emblem-badge-btn" id="current-emblem-badge" onclick="event.stopPropagation(); document.getElementById('badge-modal').classList.add('show')">
                 <i class="ph-fill ph-shield-star"></i>
-            </div>
+            </button>
             <div class="emblem-name" id="emblem-username">Player</div>
+        </div>
+    </div>
+
+    <div class="slide-modal" id="emblem-modal" style="border-radius: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="font-size: 1rem;" data-i18n="choose_emblem">اختر خلفية الأمبلم</h3>
+            <button class="close-modal-btn" style="position: static;" onclick="document.getElementById('emblem-modal').classList.remove('show')"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="modal-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="emblem-option" style="background-image: url('assets/images/default-emblem.png');" onclick="window.changeEmblemBg(this.style.backgroundImage)"></div>
+            <div class="emblem-option" style="background: linear-gradient(90deg, #2c3e50, #3498db);" onclick="window.changeEmblemBg(this.style.background)"></div>
+            <div class="emblem-option" style="background: linear-gradient(90deg, #8e44ad, #c0392b);" onclick="window.changeEmblemBg(this.style.background)"></div>
+            <div class="emblem-option" style="background: linear-gradient(90deg, #16a085, #f39c12);" onclick="window.changeEmblemBg(this.style.background)"></div>
+        </div>
+    </div>
+
+    <div class="slide-modal" id="badge-modal" style="border-radius: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="font-size: 1rem;" data-i18n="choose_badge">اختر الشارة (Badge)</h3>
+            <button class="close-modal-btn" style="position: static;" onclick="document.getElementById('badge-modal').classList.remove('show')"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="modal-grid">
+            <div class="badge-option" onclick="window.changeEmblemBadge('ph-fill ph-shield-star')"><i class="ph-fill ph-shield-star"></i></div>
+            <div class="badge-option" onclick="window.changeEmblemBadge('ph-fill ph-sword')"><i class="ph-fill ph-sword"></i></div>
+            <div class="badge-option" onclick="window.changeEmblemBadge('ph-fill ph-skull')"><i class="ph-fill ph-skull"></i></div>
+            <div class="badge-option" onclick="window.changeEmblemBadge('ph-fill ph-ghost')"><i class="ph-fill ph-ghost"></i></div>
+            <div class="badge-option" onclick="window.changeEmblemBadge('ph-fill ph-fire')"><i class="ph-fill ph-fire"></i></div>
+            <div class="badge-option" onclick="window.changeEmblemBadge('ph-fill ph-crown')"><i class="ph-fill ph-crown"></i></div>
         </div>
     </div>
 
@@ -200,28 +254,25 @@
 
 <script>
     window.loadProfileData = function() {
-        // سحب البيانات من الحساب الحقيقي
         if(window.currentUserData) {
+            document.getElementById('prof-disp-name').innerText = window.currentUserData.username;
             document.getElementById('prof-email').innerText = window.currentUserData.email;
             document.getElementById('edit-username-input').value = window.currentUserData.username;
+            document.getElementById('edit-email-input').value = window.currentUserData.email;
             document.getElementById('emblem-username').innerText = window.currentUserData.username;
             
-            if(window.authInstance && window.authInstance.currentUser) {
-                document.getElementById('prof-uid').innerText = window.authInstance.currentUser.uid.substring(0, 12) + "...";
-            }
-
             let m = window.currentUserData.matches || 0;
             let w = window.currentUserData.wins || 0;
             document.getElementById('stat-m').innerText = m;
             document.getElementById('stat-w').innerText = w;
             document.getElementById('stat-wr').innerText = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
         } else if(window.isGuest) {
-            document.getElementById('prof-email').innerText = "حساب زائر (غير محفوظ)";
-            document.getElementById('edit-username-input').value = "زائر";
-            document.getElementById('emblem-username').innerText = "Guest Player";
+            document.getElementById('prof-disp-name').innerText = "زائر";
+            document.getElementById('prof-email').innerText = "حساب غير محفوظ";
+            document.getElementById('emblem-username').innerText = "Guest";
         }
 
-        // تحديث الأزرار بصرياً لتطابق إعدادات الموقع الحالية
+        // تلوين الأزرار بناءً على حالة الموقع الفعلية (الآن ستعمل بفضل التعديل في index)
         let isDark = document.body.getAttribute('data-theme') !== 'light';
         document.getElementById('prof-theme-dark').classList.toggle('active', isDark);
         document.getElementById('prof-theme-light').classList.toggle('active', !isDark);
@@ -243,41 +294,71 @@
         document.getElementById('prof-lang-en').classList.toggle('active', lang === 'en');
     };
 
-    // دالة حفظ الاسم فعلياً في قاعدة بيانات Firebase
-    window.saveUsername = async function() {
+    window.toggleEditView = function(show) {
+        document.getElementById('default-settings-view').style.display = show ? 'none' : 'flex';
+        document.getElementById('edit-info-view').style.display = show ? 'flex' : 'none';
+        document.getElementById('edit-password-input').value = ''; // تصفير الباسوورد دائماً
+    };
+
+    // حفظ المعلومات الشخصية باستخدام الاستدعاء الديناميكي (Dynamic Import) لتجنب تعديل index.html
+    window.savePersonalInfo = async function() {
         let newName = document.getElementById('edit-username-input').value.trim();
+        let newEmail = document.getElementById('edit-email-input').value.trim();
+        let newPass = document.getElementById('edit-password-input').value;
+        
         if(!newName || !window.authInstance || !window.authInstance.currentUser) {
-            alert("يرجى كتابة اسم وتأكد من تسجيل الدخول.");
+            alert("يرجى التأكد من البيانات وتسجيل الدخول.");
             return;
         }
 
-        let btn = document.getElementById('save-name-btn');
+        let btn = document.getElementById('save-info-btn');
         btn.innerText = '...';
 
         try {
-            // إرسال البيانات المحدثة لقاعدة البيانات
-            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), {
-                username: newName,
-                username_lower: newName.toLowerCase()
-            });
+            const user = window.authInstance.currentUser;
+            // استدعاء دوال التحديث من سيرفر فايربيس مباشرة
+            const { updateEmail, updatePassword } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
 
-            // تحديث الواجهة فوراً
-            document.getElementById('emblem-username').innerText = newName;
-            
-            let headerNameEl = document.getElementById('header-name');
-            if(headerNameEl) {
-                headerNameEl.removeAttribute('data-i18n');
-                headerNameEl.innerText = newName;
+            // 1. تحديث الاسم في قاعدة البيانات
+            if(newName !== window.currentUserData.username) {
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), {
+                    username: newName, username_lower: newName.toLowerCase()
+                });
             }
 
-            btn.innerText = window.currentLang === 'ar' ? 'تم!' : 'Done!';
+            // 2. تحديث الإيميل (يتطلب مصادقة حديثة أحياناً)
+            if(newEmail && newEmail !== window.currentUserData.email) {
+                await updateEmail(user, newEmail);
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), { email: newEmail });
+            }
+
+            // 3. تحديث الباسوورد
+            if(newPass && newPass.length >= 6) {
+                await updatePassword(user, newPass);
+            }
+
+            // تحديث الواجهة فوراً
+            document.getElementById('prof-disp-name').innerText = newName;
+            document.getElementById('emblem-username').innerText = newName;
+            document.getElementById('prof-email').innerText = newEmail;
+            
+            let headerNameEl = document.getElementById('header-name');
+            if(headerNameEl) headerNameEl.innerText = newName;
+
+            btn.innerText = window.currentLang === 'ar' ? 'تم الحفظ!' : 'Saved!';
             setTimeout(() => {
                 btn.innerHTML = `<span data-i18n="save_btn">${window.translations[window.currentLang]['save_btn']}</span>`;
-            }, 2000);
+                window.toggleEditView(false);
+            }, 1500);
 
         } catch(error) {
             console.error(error);
-            alert('حدث خطأ أثناء حفظ الاسم. حاول مرة أخرى.');
+            // رسالة تنبيه مهمة إذا كانت الجلسة قديمة
+            if(error.code === 'auth/requires-recent-login') {
+                alert("لتغيير الإيميل أو الرقم السري، يرجى تسجيل الخروج والدخول مجدداً لأسباب أمنية.");
+            } else {
+                alert('حدث خطأ أثناء الحفظ. تأكد من صحة البيانات.');
+            }
             btn.innerHTML = `<span data-i18n="save_btn">${window.translations[window.currentLang]['save_btn']}</span>`;
         }
     };
@@ -287,6 +368,17 @@
         document.getElementById('avatar-modal').classList.remove('show');
     };
 
-    // تشغيل جلب البيانات فور تحميل الصفحة
+    window.changeEmblemBg = function(bgValue) {
+        let bgElement = document.getElementById('current-emblem-bg');
+        if(bgValue.includes('url')) { bgElement.style.backgroundImage = bgValue; bgElement.style.background = ''; } 
+        else { bgElement.style.background = bgValue; bgElement.style.backgroundImage = ''; }
+        document.getElementById('emblem-modal').classList.remove('show');
+    };
+
+    window.changeEmblemBadge = function(iconClass) {
+        document.getElementById('current-emblem-badge').innerHTML = `<i class="${iconClass}"></i>`;
+        document.getElementById('badge-modal').classList.remove('show');
+    };
+
     window.loadProfileData();
 </script>
