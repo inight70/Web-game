@@ -1,5 +1,5 @@
 <style>
-    .htp-container { max-width: 800px; margin: 0 auto; padding: 20px 10px 60px 10px; animation: fadeInUp 0.5s ease forwards; }
+    .htp-container { max-width: 800px; margin: 0 auto; padding: 20px 10px 60px 10px; animation: smoothFadeIn 0.5s ease forwards; }
     .htp-header { text-align: center; margin-bottom: 40px; }
     .htp-header h2 { color: var(--accent-red); font-size: 2rem; margin-bottom: 15px; font-weight: 800; }
     .htp-header p { color: var(--text-dim); font-size: 1rem; line-height: 1.6; }
@@ -13,6 +13,7 @@
     .rule-card.evil .rule-icon { background: rgba(255, 50, 50, 0.15); color: #ff3333; }
     .rule-card.good .rule-icon { background: rgba(46, 204, 113, 0.15); color: var(--accent-green); }
     .rule-card.action .rule-icon { background: rgba(255, 200, 0, 0.15); color: #ffcc00; }
+    .rule-card.system .rule-icon { background: rgba(100, 100, 255, 0.15); color: #6666ff; }
     
     .rule-card h3 { color: var(--text-main); font-size: 1.2rem; font-weight: 700; }
     .rule-card p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; font-weight: 500; }
@@ -61,18 +62,30 @@
         </div>
     </div>
 
-    <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 1.3rem;">قواعد حاسمة:</h3>
+    <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 1.3rem;">قواعد حاسمة ونظام اللعب:</h3>
     <div class="rules-grid">
         <div class="rule-card action">
             <div class="rule-icon"><i class="ph-fill ph-gavel"></i></div>
             <h3 data-i18n="rule_accusation">حق توجيه الاتهام</h3>
-            <p data-i18n="rule_accusation_desc">يملك كل محقق فرصة واحدة فقط لتقديم بلاغ رسمي (تحديد القاتل + الدليل + الأداة معاً). إذا أخطأ في عنصر واحد، يُرفض البلاغ دون توضيح الخطأ.</p>
+            <p data-i18n="rule_accusation_desc">يملك كل محقق فرصة واحدة فقط لتقديم بلاغ رسمي (القاتل + الدليل + الأداة معاً). إذا أخطأ في عنصر واحد، يُرفض البلاغ دون توضيح الخطأ.</p>
+        </div>
+
+        <div class="rule-card system">
+            <div class="rule-icon"><i class="ph-fill ph-clock-counter-clockwise"></i></div>
+            <h3 data-i18n="rule_rounds">نظام الجولات</h3>
+            <p data-i18n="rule_rounds_desc">في كل جولة، يقدم الطبيب الشرعي تلميحاً جديداً. شرط أساسي: للانتقال للجولة التالية، يجب أن يقوم محقق واحد على الأقل باستخدام حق توجيه الاتهام الخاص به.</p>
         </div>
 
         <div class="rule-card action">
             <div class="rule-icon"><i class="ph-fill ph-crosshair"></i></div>
             <h3 data-i18n="rule_assassination">اغتيال الشاهد</h3>
-            <p data-i18n="rule_assassination_desc">إذا فاز المحققون، يحصل القاتل والشريك على فرصة أخيرة لتحديد من هو الشاهد واغتياله. إذا نجحوا، يُقلب الفوز لصالح فريق الشر!</p>
+            <p data-i18n="rule_assassination_desc">إذا فاز المحققون، يحصل القاتل والشريك على فرصة أخيرة لتحديد واغتيال الشاهد. إذا نجحوا، يُقلب الفوز لصالح الشر، وإذا أخطأوا يفوز المحققون فوراً.</p>
+        </div>
+
+        <div class="rule-card system" style="border-color: rgba(46, 204, 113, 0.4);">
+            <div class="rule-icon"><i class="ph-fill ph-crown"></i></div>
+            <h3 data-i18n="rule_win">كيفية الفوز</h3>
+            <p data-i18n="rule_win_desc">فريق الخير يفوز بتوجيه اتهام صحيح 100% والنجاة من الاغتيال. فريق الشر يفوز بنجاح التمويه حتى استنفاد فرص المحققين، أو باغتيال الشاهد في النهاية.</p>
         </div>
     </div>
 </div>
