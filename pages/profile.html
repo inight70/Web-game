@@ -1,11 +1,15 @@
 <style>
     .profile-container { max-width: 1000px; margin: 0 auto; padding: 10px 10px 80px 10px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; gap: 20px; }
     
+    /* رسالة قفل الحساب للزوار */
+    #guest-locked-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; gap: 15px; }
+    .locked-icon-wrapper { width: 100px; height: 100px; background: rgba(255, 76, 106, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    
+    /* الشبكة العلوية */
     .top-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .profile-card { background: var(--surface-panel); border-radius: 24px; padding: 25px; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; }
     .profile-card-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(100,100,100,0.1); padding-bottom: 15px; }
     
-    /* 1. معلومات الحساب مرتبة */
     .level-shield-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 20px 0; }
     .level-shield { width: 90px; height: 100px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; box-shadow: 0 10px 20px rgba(255, 76, 106, 0.4); position: relative; transition: var(--trans-smooth); cursor: default; }
     .level-shield::before { content: ''; position: absolute; inset: 4px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1; }
@@ -16,7 +20,6 @@
     .info-label { color: var(--text-dim); font-weight: 600; }
     .info-value { color: var(--text-main); font-weight: 700; font-family: var(--font-en); }
 
-    /* 2. المظهر والإعدادات (تغيير المعلومات الشخصية) */
     .appearance-section { display: flex; flex-direction: column; gap: 20px; }
     .avatar-wrapper { display: flex; align-items: center; gap: 20px; }
     .profile-avatar-large { width: 80px; height: 80px; border-radius: 50%; background: var(--bg-base); border: 3px solid var(--text-dim); display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; flex-shrink: 0; }
@@ -25,36 +28,40 @@
     .btn-avatar-option { background: var(--surface-hover); border: 1px solid rgba(100,100,100,0.1); color: var(--text-main); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
     .btn-avatar-option:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
-    /* نافذة الأفتار */
     .profile-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(10px); }
     .profile-modal.show { opacity: 1; visibility: visible; }
     .profile-modal-content { background: var(--surface-panel); width: 90%; max-width: 450px; border-radius: 24px; padding: 25px; box-shadow: var(--shadow-soft); position: relative; transform: translateY(20px); transition: 0.3s; display: flex; flex-direction: column; max-height: 80vh; }
     .profile-modal.show .profile-modal-content { transform: translateY(0); }
+    
     .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; overflow-y: auto; }
     .avatar-option-img { width: 100%; aspect-ratio: 1; border-radius: 50%; background: var(--bg-base); cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
     .avatar-option-img:hover { border-color: var(--accent-red); transform: scale(1.05); }
 
-    /* حقول التعديل */
+    /* شبكة اختيار الأمبلمات في النافذة */
+    .emblem-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; overflow-y: auto; }
+    .emblem-option { height: 80px; border-radius: 16px; background-size: cover; background-position: right center; cursor: pointer; position: relative; overflow: hidden; border: 2px solid transparent; transition: 0.2s; }
+    .emblem-option:hover { border-color: var(--accent-red); transform: scale(1.02); }
+    .emblem-option-name { position: absolute; bottom: 10px; left: 15px; color: white; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
     .edit-input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(100,100,100,0.2); background: var(--bg-base); color: var(--text-main); font-family: var(--font-en); font-weight: 600; outline: none; transition: 0.3s; text-align: left; direction: ltr; margin-bottom: 15px; }
     .edit-input:focus { border-color: var(--accent-red); }
     .setting-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px; display: block; font-weight: bold; }
 
-    /* 3. الأمبلم (مضبوط ديناميكياً بدون ظل أسود) */
-    .emblem-wrapper { position: relative; width: 100%; height: 130px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; }
+    /* الأمبلم المطور - زيادة الارتفاع على الكمبيوتر وتوسيط يمين */
+    .emblem-wrapper { position: relative; width: 100%; height: 200px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; }
     .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
     
-    /* سر القص الاحترافي: center right يركز على اليمين ويقص اليسار لتعبئة المساحة */
-    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-image: url('assets/images/default-emblem.png'); background-size: cover; background-position: center right; background-repeat: no-repeat; }
+    /* السر في background-position: right center; لمنع القص من جهة الشخصيات */
+    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-size: cover; background-position: right center; background-repeat: no-repeat; transition: 0.5s ease; }
     
-    /* ترتيب المحتوى: بادج يسار، اسم يمين (بدون أي ظلال تدرجية على اليسار) */
+    /* تدرج خفيف جداً يمين النص فقط للقراءة بدون سواد مزعج */
+    .emblem-gradient { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 30%, transparent 100%) !important; z-index: 1; }
+    
     .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 30px; }
     .emblem-badge-placeholder { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.9); font-size: 1.5rem; backdrop-filter: blur(5px); cursor: pointer; transition: 0.2s; }
     .emblem-badge-placeholder:hover { background: rgba(255, 76, 106, 0.4); border-color: var(--accent-red); }
-    
-    /* ظل خفيف جداً للاسم */
-    .emblem-name { font-size: 2.2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 5px rgba(0,0,0,0.5); letter-spacing: 1px; }
+    .emblem-name { font-size: 2.2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 4px rgba(0,0,0,0.5); letter-spacing: 1px; }
 
-    /* 4. الأقسام السفلية */
     .bottom-sections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     .section-header { font-size: 1.2rem; font-weight: bold; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
     
@@ -68,12 +75,24 @@
 
     @media (max-width: 768px) { 
         .top-profile-grid { grid-template-columns: 1fr; }
+        .emblem-wrapper { height: 130px; } /* تصغير الارتفاع في الجوال */
         .emblem-name { font-size: 1.6rem; }
         .emblem-content { padding: 0 20px; gap: 10px; }
     }
 </style>
 
-<div class="profile-container">
+<div id="guest-locked-section" class="profile-container" style="display: none;">
+    <div class="locked-icon-wrapper">
+        <i class="ph-duotone ph-lock-key" style="font-size: 4rem; color: var(--accent-red);"></i>
+    </div>
+    <h2 style="font-size: 2rem; font-weight: 800; color: var(--text-main);" data-i18n="profile_locked_title">الحساب مقفل</h2>
+    <p style="color: var(--text-dim); max-width: 400px; line-height: 1.6;" data-i18n="profile_locked_desc">يجب عليك تسجيل الدخول أولاً للوصول إلى الملف الشخصي والإحصائيات الخاصة بك.</p>
+    <button class="btn-core" style="width: fit-content; padding: 15px 40px; margin-top: 20px;" onclick="window.openLoginDirectly()">
+        <i class="ph-bold ph-sign-in"></i> <span data-i18n="login_now_btn">تسجيل الدخول الآن</span>
+    </button>
+</div>
+
+<div id="auth-required-section" class="profile-container" style="display: none;">
 
     <div class="top-profile-grid">
         <div class="profile-card">
@@ -154,14 +173,16 @@
                 
                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                     <button class="btn-avatar-option" style="flex: 1;" onclick="window.switchSettingsView('settings-main-view')"><span data-i18n="back_btn">عودة</span></button>
-                    <button class="btn-save" id="save-info-btn" style="flex: 2;" onclick="window.savePersonalInfo()"><span data-i18n="save_changes">حفظ التعديلات</span></button>
+                    <button class="btn-core" id="save-info-btn" style="flex: 2; padding: 10px; font-size: 0.9rem;" onclick="window.savePersonalInfo()"><span data-i18n="save_changes">حفظ التعديلات</span></button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="emblem-wrapper" onclick="window.openProfileModal('emblems-modal')">
-        <div class="emblem-bg"></div>
+        <div class="emblem-bg" id="user-emblem-bg" style="background-image: url('assets/images/default-emblem.png');"></div>
+        <div class="emblem-gradient"></div>
+        
         <div class="emblem-content">
             <div class="emblem-badge-placeholder" onclick="event.stopPropagation(); window.openProfileModal('badges-modal')">
                 <i class="ph-fill ph-shield-star"></i>
@@ -214,27 +235,34 @@
             <button class="close-modal-btn" style="position: static;" onclick="window.closeProfileModal('avatar-modal')"><i class="ph-bold ph-x"></i></button>
         </div>
         <div class="avatar-grid">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=ff4c6a" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=2ecc71" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Milo&backgroundColor=3498db" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Jack&backgroundColor=9b59b6" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna&backgroundColor=f1c40f" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=e67e22" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=1abc9c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
-            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Max&backgroundColor=e74c3c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Felix&backgroundColor=ff4c6a" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Aneka&backgroundColor=2ecc71" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Milo&backgroundColor=3498db" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Jack&backgroundColor=9b59b6" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Luna&backgroundColor=f1c40f" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Leo&backgroundColor=e67e22" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Zoe&backgroundColor=1abc9c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+            <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Max&backgroundColor=e74c3c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
         </div>
     </div>
 </div>
 
 <div class="profile-modal" id="emblems-modal">
-    <div class="profile-modal-content">
+    <div class="profile-modal-content" style="max-width: 600px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="font-size: 1.2rem; color: var(--text-main);" data-i18n="emblems_title">الخلفيات (الأمبلم)</h3>
             <button class="close-modal-btn" style="position: static;" onclick="window.closeProfileModal('emblems-modal')"><i class="ph-bold ph-x"></i></button>
         </div>
-        <div class="empty-content-box" style="min-height: 200px;">
-            <i class="ph-duotone ph-image-square"></i>
-            <span data-i18n="emblems_empty">لا تملك أي خلفيات إضافية حالياً. احصل عليها من المتجر أو الإنجازات!</span>
+        <div class="emblem-grid">
+            <div class="emblem-option" style="background-image: url('assets/images/default-emblem.png');" onclick="window.selectEmblem('assets/images/default-emblem.png')">
+                <span class="emblem-option-name" data-i18n="emblem_default">افتراضي</span>
+            </div>
+            <div class="emblem-option" style="background-image: url('assets/images/emblem-blue.png');" onclick="window.selectEmblem('assets/images/emblem-blue.png')">
+                <span class="emblem-option-name" data-i18n="emblem_blue">أزرق</span>
+            </div>
+            <div class="emblem-option" style="background-image: url('assets/images/emblem-green.png');" onclick="window.selectEmblem('assets/images/emblem-green.png')">
+                <span class="emblem-option-name" data-i18n="emblem_green">أخضر</span>
+            </div>
         </div>
     </div>
 </div>
@@ -258,22 +286,37 @@
 
 <script>
     window.loadProfileData = function() {
-        if(window.currentUserData) {
-            document.getElementById('info-username').innerText = window.currentUserData.username;
-            document.getElementById('emblem-username').innerText = window.currentUserData.username;
-            document.getElementById('edit-username-input').value = window.currentUserData.username;
-            
-            document.getElementById('info-email').innerText = window.currentUserData.email;
-            document.getElementById('edit-email-input').value = window.currentUserData.email;
-
-            let m = window.currentUserData.matches || 0;
-            let w = window.currentUserData.wins || 0;
-            document.getElementById('stat-m').innerText = m;
-            document.getElementById('stat-w').innerText = w;
-            document.getElementById('stat-wr').innerText = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
+        if(!window.currentUserData) {
+            document.getElementById('auth-required-section').style.display = 'none';
+            document.getElementById('guest-locked-section').style.display = 'flex';
+            return;
         }
 
-        // تلوين الأزرار حسب الإعدادات
+        document.getElementById('guest-locked-section').style.display = 'none';
+        document.getElementById('auth-required-section').style.display = 'flex';
+
+        document.getElementById('info-username').innerText = window.currentUserData.username;
+        document.getElementById('emblem-username').innerText = window.currentUserData.username;
+        document.getElementById('edit-username-input').value = window.currentUserData.username;
+        
+        document.getElementById('info-email').innerText = window.currentUserData.email;
+        document.getElementById('edit-email-input').value = window.currentUserData.email;
+
+        // جلب الأفتار والأمبلم من الداتا بيس إذا كانت موجودة
+        if(window.currentUserData.avatar) {
+            document.getElementById('main-profile-avatar').innerHTML = `<img src="${window.currentUserData.avatar}">`;
+        }
+        if(window.currentUserData.emblem) {
+            document.getElementById('user-emblem-bg').style.backgroundImage = `url('${window.currentUserData.emblem}')`;
+        }
+
+        let m = window.currentUserData.matches || 0;
+        let w = window.currentUserData.wins || 0;
+        document.getElementById('stat-m').innerText = m;
+        document.getElementById('stat-w').innerText = w;
+        document.getElementById('stat-wr').innerText = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
+
+        // تحديث حالة الأزرار بناءً على الإعدادات الفعلية
         let isDark = document.body.getAttribute('data-theme') !== 'light';
         document.getElementById('prof-theme-dark').classList.toggle('active', isDark);
         document.getElementById('prof-theme-light').classList.toggle('active', !isDark);
@@ -303,12 +346,26 @@
         document.getElementById('prof-lang-en').classList.toggle('active', lang === 'en');
     };
 
-    window.selectAvatar = function(src) {
+    // حفظ الأفتار المختار وتحديث الداتا بيس
+    window.selectAvatar = async function(src) {
         document.getElementById('main-profile-avatar').innerHTML = `<img src="${src}">`;
         window.closeProfileModal('avatar-modal');
+        if(window.authInstance && window.authInstance.currentUser) {
+            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { avatar: src });
+            window.currentUserData.avatar = src; // تحديث النسخة المحلية
+        }
     };
 
-    // دالة التحديث الشاملة (الاسم + الإيميل + الباسوورد) باستيراد مكتبة Auth ديناميكياً
+    // حفظ الأمبلم المختار وتحديث الداتا بيس
+    window.selectEmblem = async function(src) {
+        document.getElementById('user-emblem-bg').style.backgroundImage = `url('${src}')`;
+        window.closeProfileModal('emblems-modal');
+        if(window.authInstance && window.authInstance.currentUser) {
+            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { emblem: src });
+            window.currentUserData.emblem = src; // تحديث النسخة المحلية
+        }
+    };
+
     window.savePersonalInfo = async function() {
         if(!window.authInstance || !window.authInstance.currentUser) return;
         
@@ -321,7 +378,6 @@
         btn.innerText = '...';
 
         try {
-            // استيراد دوال تعديل الحساب من Firebase Auth برمجياً
             const authModule = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
             const updateEmailFunc = authModule.updateEmail;
             const updatePasswordFunc = authModule.updatePassword;
@@ -344,7 +400,6 @@
                 await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), updates);
             }
 
-            // تحديث الواجهة فوراً
             if(updates.username) {
                 document.getElementById('info-username').innerText = updates.username;
                 document.getElementById('emblem-username').innerText = updates.username;
@@ -370,6 +425,6 @@
         }
     };
 
-    // تشغيل جلب البيانات فور تحميل الصفحة
+    // تشغيل الصفحة
     window.loadProfileData();
 </script>
