@@ -62,7 +62,6 @@ window.renderFriendsList = async function(containerId) {
         
         for (const f of friends) {
             let avatarHtml = `<div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px; color:var(--text-main);">${f.charAt(0).toUpperCase()}</div>`;
-            
             try {
                 const q = query(collection(db, "users"), where("username_lower", "==", f.toLowerCase()));
                 const snap = await getDocs(q);
@@ -73,7 +72,6 @@ window.renderFriendsList = async function(containerId) {
                     }
                 }
             } catch(e) { console.error(e); }
-
             innerHtml += `<div class="friend-avatar" onclick="window.openRemoveFriendModal('${f}')">${avatarHtml}<div class="online-dot"></div></div>`;
         }
         if(listInner) listInner.innerHTML = innerHtml;
@@ -106,9 +104,7 @@ onAuthStateChanged(auth, (user) => {
             if (userDoc.exists()) {
                 window.currentUserData = userDoc.data();
                 let displayName = window.currentUserData.username || user.email.split('@')[0];
-
                 if(nameEl){ nameEl.removeAttribute('data-i18n'); nameEl.innerText = displayName; }
-                
                 if(fallbackAvatar) {
                     if(window.currentUserData.avatar) {
                         fallbackAvatar.innerHTML = `<img src="${window.currentUserData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
@@ -118,16 +114,13 @@ onAuthStateChanged(auth, (user) => {
                         fallbackAvatar.style.border = '';
                     }
                 }
-                
                 if(dropdownStatus) dropdownStatus.innerText = "متصل";
-
                 if (window.currentUserData.settings) {
                     if(window.toggleTheme) window.toggleTheme(window.currentUserData.settings.theme || 'dark', true);
                     if(window.setFontSize) window.setFontSize(window.currentUserData.settings.fontSize || 'default', true);
                     if(window.setAnimation) window.setAnimation(window.currentUserData.settings.animations !== false, true);
                     if(window.setLanguage && window.currentLang !== window.currentUserData.settings.language) window.setLanguage(window.currentUserData.settings.language || 'ar', true);
                 }
-
                 window.renderFriendsList('friends-container-desktop'); if(document.getElementById('mobile-friends-wrapper')) window.renderFriendsList('mobile-friends-wrapper');
                 window.renderNotifications();
 
@@ -136,7 +129,6 @@ onAuthStateChanged(auth, (user) => {
                     if(window.clearAuthInputs) window.clearAuthInputs(); 
                     document.getElementById('auth-modal').classList.add('hidden'); 
                     document.getElementById('app-shell').classList.add('unlocked');
-                    
                     const currentActive = document.querySelector('.nav-btn.active');
                     if(currentActive) window.loadFragment(['home','play','achievements','store','profile'][Array.from(document.querySelectorAll('.nav-btn')).indexOf(currentActive)] || 'home', currentActive);
                     hideLoader(); isInitialLoad = false;
@@ -157,13 +149,11 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// الدالة الأساسية لتسجيل الدخول والإنشاء
+// الدالة الجوهرية (المحسنة للعمل بدون تجميد)
 window.handleAuthSubmit = async function(e) {
-    if(e) e.preventDefault(); // الأمان الإضافي لمنع التحديث
-    
+    if(e) e.preventDefault(); // منع التحديث الافتراضي
     const errorDiv = document.getElementById('auth-error'); 
     const btn = document.getElementById('modal-submit-btn');
-    
     if(errorDiv) errorDiv.style.display = 'none'; 
     if(btn) { btn.disabled = true; btn.innerText = "جاري التحقق..."; }
     
@@ -171,6 +161,10 @@ window.handleAuthSubmit = async function(e) {
         if (window.currentFormMode === 'login') {
             let id = document.getElementById('login-id').value.trim(); 
             let pass = document.getElementById('login-password').value; 
+            
+            // تحقق برمجي صريح بديل عن الـ required
+            if(!id || !pass) throw { message: "الرجاء تعبئة جميع البيانات" };
+
             let email = id;
             if (!id.includes('@')) { 
                 const q = query(collection(db, "users"), where("username_lower", "==", id.toLowerCase())); 
@@ -185,18 +179,17 @@ window.handleAuthSubmit = async function(e) {
             const pass = document.getElementById('reg-password').value; 
             const conf = document.getElementById('reg-confirm').value;
             
+            if(!user || !email || !pass || !conf) throw { message: "الرجاء إكمال جميع الحقول" };
             if (pass !== conf) throw { message: "كلمات المرور غير متطابقة" }; 
             if (pass.length < 6) throw { message: "كلمة المرور 6 أحرف على الأقل" };
             
             const q = query(collection(db, "users"), where("username_lower", "==", user.toLowerCase())); 
             const snap = await getDocs(q); 
-            if (!snap.empty) throw { message: "اسم المستخدم محجوز" };
+            if (!snap.empty) throw { message: "اسم المستخدم محجوز مسبقاً" };
             
             const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pass);
             await setDoc(doc(db, "users", cred.user.uid), { 
-                username: user, 
-                username_lower: user.toLowerCase(), 
-                email: email.toLowerCase(), 
+                username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), 
                 matches: 0, wins: 0, friends: [], friendRequests: [], 
                 settings: { theme: 'dark', fontSize: 'default', animations: true, language: 'ar' }, 
                 createdAt: new Date().toISOString() 
@@ -205,38 +198,16 @@ window.handleAuthSubmit = async function(e) {
     } catch (err) {
         let msg = err.message; 
         if(msg.includes("invalid-credential")) msg = "البيانات غير صحيحة"; 
-        if(msg.includes("email-already-in-use")) msg = "البريد الإلكتروني مستخدم";
+        if(msg.includes("email-already-in-use")) msg = "البريد الإلكتروني مستخدم لحساب آخر";
         if(errorDiv) { errorDiv.innerText = msg; errorDiv.style.display = 'block'; }
     } finally { 
         if(btn) { 
             btn.disabled = false; 
-            try {
-                btn.innerText = window.currentFormMode === 'register' ? window.translations[window.currentLang].confirm_register : window.translations[window.currentLang].confirm_login; 
-            } catch(error) {
-                btn.innerText = window.currentFormMode === 'register' ? "تأكيد الحساب" : "تأكيد الدخول";
-            }
+            try { btn.innerText = window.currentFormMode === 'register' ? window.translations[window.currentLang].confirm_register : window.translations[window.currentLang].confirm_login; } 
+            catch(error) { btn.innerText = window.currentFormMode === 'register' ? "تأكيد الحساب" : "تأكيد الدخول"; }
         } 
     }
 };
-
-// -----------------------------------------------------------
-// الكود السحري لربط النموذج جذرياً ومنعه من عمل تحديث للصفحة!
-// -----------------------------------------------------------
-const bindFirebaseForm = () => {
-    const authForm = document.getElementById('firebase-form');
-    if (authForm) {
-        authForm.removeAttribute('onsubmit'); // مسح أي كود قديم في الـ HTML
-        authForm.addEventListener('submit', window.handleAuthSubmit); // ربط احترافي
-    }
-};
-
-// تشغيل الربط بمجرد اكتمال تحميل الصفحة
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindFirebaseForm);
-} else {
-    bindFirebaseForm();
-}
-// -----------------------------------------------------------
 
 window.setLanguage = async function(lang, skipSave = false) {
     window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -312,9 +283,7 @@ window.confirmRemoveFriend = async function() {
     if(!window.friendToRemove || !auth.currentUser) return;
     try {
         const targetFriendName = window.friendToRemove; const myUid = auth.currentUser.uid; const myName = window.currentUserData.username;
-        
         await updateDoc(doc(db, "users", myUid), { friends: arrayRemove(targetFriendName) });
-        
         const q = query(collection(db, "users"), where("username_lower", "==", targetFriendName.toLowerCase()));
         const snap = await getDocs(q);
         if (!snap.empty) { 
@@ -333,8 +302,11 @@ window.setFormType = function(type) {
     const tReg = document.getElementById('tab-register'); if(tReg) tReg.classList.toggle('active', type === 'register'); 
     const lFields = document.getElementById('login-fields'); if(lFields) lFields.style.display = type === 'login' ? 'block' : 'none'; 
     const rFields = document.getElementById('register-fields'); if(rFields) rFields.style.display = type === 'register' ? 'block' : 'none'; 
-    document.getElementById('login-id').required = type === 'login'; document.getElementById('login-password').required = type === 'login';
-    document.getElementById('reg-username').required = type === 'register'; document.getElementById('reg-email').required = type === 'register'; document.getElementById('reg-password').required = type === 'register';
+    
+    // إزالة الـ required من الحقول لتفادي المشكلة في المتصفحات
+    document.getElementById('login-id').required = false; document.getElementById('login-password').required = false;
+    document.getElementById('reg-username').required = false; document.getElementById('reg-email').required = false; document.getElementById('reg-password').required = false; document.getElementById('reg-confirm').required = false;
+    
     const sBtn = document.getElementById('modal-submit-btn'); if(sBtn) sBtn.innerText = type === 'register' ? (window.translations ? window.translations[window.currentLang].confirm_register : "تأكيد الحساب") : (window.translations ? window.translations[window.currentLang].confirm_login : "تأكيد الدخول");
 };
 
@@ -400,7 +372,6 @@ window.closeAuthModal = function() {
     if(!window.isGuest) window.enterAsGuest(); 
 };
 
-// وتصدير باقي الدوال العامة
 window.switchModalMode = window.switchModalMode || switchModalMode;
 window.openLoginDirectly = window.openLoginDirectly || openLoginDirectly;
 window.enterAsGuest = window.enterAsGuest || enterAsGuest;
@@ -472,3 +443,13 @@ window.loadFragment = async function(pageName, element) {
         if(contentHolder && window.translations) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${window.translations[window.currentLang][titles[pageName]]}...</div>`;
     }
 };
+
+// --- الحل السحري لإيقاف تجميد المتصفح تماماً عند تحميل الصفحة ---
+document.addEventListener('DOMContentLoaded', () => {
+    const authForm = document.getElementById('firebase-form');
+    if (authForm) {
+        authForm.setAttribute('novalidate', 'true'); // يمنع المتصفح من التدخل
+        authForm.addEventListener('submit', window.handleAuthSubmit);
+    }
+    if(window.setFormType) window.setFormType('login');
+});
