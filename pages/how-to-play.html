@@ -1,0 +1,78 @@
+<style>
+    .htp-container { max-width: 800px; margin: 0 auto; padding: 20px 10px 60px 10px; animation: fadeInUp 0.5s ease forwards; }
+    .htp-header { text-align: center; margin-bottom: 40px; }
+    .htp-header h2 { color: var(--accent-red); font-size: 2rem; margin-bottom: 15px; font-weight: 800; }
+    .htp-header p { color: var(--text-dim); font-size: 1rem; line-height: 1.6; }
+    
+    .rules-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-bottom: 40px; }
+    
+    .rule-card { background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; transition: var(--trans-smooth); }
+    .rule-card:hover { transform: translateY(-5px); border-color: rgba(255, 76, 106, 0.3); box-shadow: var(--shadow-soft); }
+    
+    .rule-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; background: rgba(255, 76, 106, 0.1); color: var(--accent-red); }
+    .rule-card.evil .rule-icon { background: rgba(255, 50, 50, 0.15); color: #ff3333; }
+    .rule-card.good .rule-icon { background: rgba(46, 204, 113, 0.15); color: var(--accent-green); }
+    .rule-card.action .rule-icon { background: rgba(255, 200, 0, 0.15); color: #ffcc00; }
+    
+    .rule-card h3 { color: var(--text-main); font-size: 1.2rem; font-weight: 700; }
+    .rule-card p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; font-weight: 500; }
+</style>
+
+<div class="htp-container">
+    <button class="btn-secondary" style="width: fit-content; padding: 10px 20px; margin-bottom: 30px; border-radius: 100px; display: flex; align-items: center; gap: 8px;" onclick="window.loadFragment('play', document.querySelectorAll('.nav-btn')[1])">
+        <i class="ph-bold ph-arrow-right"></i> <span data-i18n="back_to_play">العودة للعب</span>
+    </button>
+
+    <div class="htp-header">
+        <h2 data-i18n="htp_title">كيف تلعب Deception؟</h2>
+        <p data-i18n="htp_intro">لعبة استنتاج وتحليل نفسي تعتمد على الخداع وكشف الحقائق. ينقسم اللاعبون إلى فريقين (الخير والشر) بأدوار سرية.</p>
+    </div>
+
+    <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 1.3rem;">الشخصيات والأدوار:</h3>
+    <div class="rules-grid">
+        <div class="rule-card evil">
+            <div class="rule-icon"><i class="ph-fill ph-knife"></i></div>
+            <h3 data-i18n="role_murderer">القاتل</h3>
+            <p data-i18n="role_murderer_desc">يختار أداة الجريمة ودليلاً حاسماً في بداية اللعبة. هدفه النجاة من الاتهام.</p>
+        </div>
+        
+        <div class="rule-card evil">
+            <div class="rule-icon"><i class="ph-fill ph-mask-happy"></i></div>
+            <h3 data-i18n="role_accomplice">الشريك</h3>
+            <p data-i18n="role_accomplice_desc">يعرف هوية القاتل، ووظيفته التمويه وتضليل المحققين لحماية القاتل.</p>
+        </div>
+
+        <div class="rule-card good">
+            <div class="rule-icon"><i class="ph-fill ph-microscope"></i></div>
+            <h3 data-i18n="role_forensic">الطبيب الشرعي</h3>
+            <p data-i18n="role_forensic_desc">يعرف القاتل والأدلة، لكنه ممنوع من التحدث! يقدم تلميحات للمحققين عبر بطاقات خاصة، ولا يحق له توجيه الاتهام.</p>
+        </div>
+
+        <div class="rule-card good">
+            <div class="rule-icon"><i class="ph-fill ph-eye"></i></div>
+            <h3 data-i18n="role_witness">شاهد العيان</h3>
+            <p data-i18n="role_witness_desc">يعرف هوية القاتل والشريك، يحاول مساعدة فريقه بحذر شديد دون أن يكشف هويته للقتلة.</p>
+        </div>
+
+        <div class="rule-card good">
+            <div class="rule-icon"><i class="ph-fill ph-magnifying-glass"></i></div>
+            <h3 data-i18n="role_investigator">المحققون</h3>
+            <p data-i18n="role_investigator_desc">يحللون التلميحات لكشف القاتل والدليل والأداة.</p>
+        </div>
+    </div>
+
+    <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 1.3rem;">قواعد حاسمة:</h3>
+    <div class="rules-grid">
+        <div class="rule-card action">
+            <div class="rule-icon"><i class="ph-fill ph-gavel"></i></div>
+            <h3 data-i18n="rule_accusation">حق توجيه الاتهام</h3>
+            <p data-i18n="rule_accusation_desc">يملك كل محقق فرصة واحدة فقط لتقديم بلاغ رسمي (تحديد القاتل + الدليل + الأداة معاً). إذا أخطأ في عنصر واحد، يُرفض البلاغ دون توضيح الخطأ.</p>
+        </div>
+
+        <div class="rule-card action">
+            <div class="rule-icon"><i class="ph-fill ph-crosshair"></i></div>
+            <h3 data-i18n="rule_assassination">اغتيال الشاهد</h3>
+            <p data-i18n="rule_assassination_desc">إذا فاز المحققون، يحصل القاتل والشريك على فرصة أخيرة لتحديد من هو الشاهد واغتياله. إذا نجحوا، يُقلب الفوز لصالح فريق الشر!</p>
+        </div>
+    </div>
+</div>
