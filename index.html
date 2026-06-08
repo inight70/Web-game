@@ -704,7 +704,21 @@
                 if (!response.ok) throw new Error('Page not found');
                 
                 const htmlContent = await response.text();
-                if(contentHolder) contentHolder.innerHTML = htmlContent;
+                
+                // حقن الكود داخل الـ content-holder
+                if(contentHolder) {
+                    contentHolder.innerHTML = htmlContent;
+
+                    // --- الكود السحري الجديد لتشغيل الجافاسكريبت داخل الصفحات الفرعية ---
+                    const scripts = contentHolder.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                    // ------------------------------------------------------------------
+                }
 
                 if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
