@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 // إعدادات منصة فايربيس السحابية الخاصة بمشروعك
@@ -412,3 +412,12 @@ window.loadFragment = async function(pageName, element) {
         if(contentHolder && window.translations) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${window.translations[window.currentLang][titles[pageName]]}...</div>`;
     }
 };
+
+// --- هنا الكود المضاف والربط الصحيح بالـ window في نهاية الملف تماماً لتفعيل الأزرار ---
+window.switchModalMode = window.switchModalMode || switchModalMode;
+window.openLoginDirectly = window.openLoginDirectly || openLoginDirectly;
+window.enterAsGuest = window.enterAsGuest || enterAsGuest;
+window.closeAuthModal = window.closeAuthModal || closeAuthModal;
+window.setFormType = window.setFormType || setFormType;
+window.handleAuthSubmit = window.handleAuthSubmit || handleAuthSubmit;
+window.toggleDropdown = window.toggleDropdown || toggleDropdown;
