@@ -1,0 +1,13 @@
+<div class="empty-state" style="margin-top: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+    <div style="width: 100px; height: 100px; background: rgba(255, 76, 106, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+        <i class="ph-duotone ph-trophy" style="font-size: 4rem; color: var(--accent-red);"></i>
+    </div>
+    <h2 style="color: var(--text-main); font-size: 1.8rem; margin-bottom: 10px;" data-i18n="leaderboard_btn">المتصدرون</h2>
+    <p style="font-size: 0.95rem; color: var(--text-dim); max-width: 350px; line-height: 1.6;" data-i18n="leaderboard_empty">
+        لا يوجد لاعبين حالياً في القائمة لأن اللعبة لم تنطلق بعد. كن أول من يتصدر!
+    </p>
+    
+    <button class="btn-secondary" style="width: fit-content; padding: 12px 30px; margin-top: 30px;" onclick="window.loadFragment('play', document.querySelectorAll('.nav-btn')[1])">
+        <i class="ph-bold ph-arrow-right"></i> العودة للعب
+    </button>
+</div>
