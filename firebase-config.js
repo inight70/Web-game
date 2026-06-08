@@ -3,7 +3,6 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, on
 import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-// إعدادات منصة فايربيس السحابية الخاصة بمشروعك
 const firebaseConfig = { 
     apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI", 
     authDomain: "web-game-260b5.firebaseapp.com", 
@@ -18,7 +17,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ربط النسخ الحالية بنطاق النافذة العالمي لتتمكن الصفحات الفرعية من استدعائها
 window.authInstance = auth; 
 window.dbInstance = db; 
 window.storageInstance = storage; 
@@ -32,7 +30,6 @@ window.queryFunc = query;
 window.whereFunc = where; 
 window.collectionFunc = collection;
 
-// إدارة حالات التطبيق العامة
 window.isGuest = false; 
 window.currentFormMode = 'login'; 
 window.currentUserData = null; 
@@ -46,7 +43,6 @@ const hideLoader = () => {
     if(l){ l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 400); } 
 };
 
-// جلب وعرض قائمة الأصدقاء بشكل غير متزامن لعرض الأفتارات الحقيقية
 window.renderFriendsList = async function(containerId) {
     const container = document.getElementById(containerId); if(!container) return;
     if (window.isGuest || !window.currentUserData) {
@@ -98,7 +94,6 @@ window.renderNotifications = function() {
     list.innerHTML = html;
 };
 
-// مراقب حالة الاستمع اللحظي لتسجيل الدخول وتحديث البيانات والخصوصية
 onAuthStateChanged(auth, (user) => {
     const nameEl = document.getElementById('header-name'); const fallbackAvatar = document.getElementById('header-avatar-fallback');
     const dropdownStatus = document.getElementById('dropdown-status-name'); const dropdownContent = document.getElementById('dropdown-content-area');
@@ -162,26 +157,86 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+// الدالة الأساسية لتسجيل الدخول والإنشاء
 window.handleAuthSubmit = async function(e) {
-    e.preventDefault(); const errorDiv = document.getElementById('auth-error'); const btn = document.getElementById('modal-submit-btn');
-    errorDiv.style.display = 'none'; btn.disabled = true; btn.innerText = "جاري التحقق...";
+    if(e) e.preventDefault(); // الأمان الإضافي لمنع التحديث
+    
+    const errorDiv = document.getElementById('auth-error'); 
+    const btn = document.getElementById('modal-submit-btn');
+    
+    if(errorDiv) errorDiv.style.display = 'none'; 
+    if(btn) { btn.disabled = true; btn.innerText = "جاري التحقق..."; }
+    
     try {
         if (window.currentFormMode === 'login') {
-            let id = document.getElementById('login-id').value.trim(); let pass = document.getElementById('login-password').value; let email = id;
-            if (!id.includes('@')) { const q = query(collection(db, "users"), where("username_lower", "==", id.toLowerCase())); const snap = await getDocs(q); if (snap.empty) throw { message: "البيانات غير صحيحة" }; email = snap.docs[0].data().email; }
+            let id = document.getElementById('login-id').value.trim(); 
+            let pass = document.getElementById('login-password').value; 
+            let email = id;
+            if (!id.includes('@')) { 
+                const q = query(collection(db, "users"), where("username_lower", "==", id.toLowerCase())); 
+                const snap = await getDocs(q); 
+                if (snap.empty) throw { message: "البيانات غير صحيحة" }; 
+                email = snap.docs[0].data().email; 
+            }
             await signInWithEmailAndPassword(auth, email, pass);
         } else {
-            const user = document.getElementById('reg-username').value.trim(); const email = document.getElementById('reg-email').value.trim(); const pass = document.getElementById('reg-password').value; const conf = document.getElementById('reg-confirm').value;
-            if (pass !== conf) throw { message: "كلمات المرور غير متطابقة" }; if (pass.length < 6) throw { message: "كلمة المرور 6 أحرف على الأقل" };
-            const q = query(collection(db, "users"), where("username_lower", "==", user.toLowerCase())); const snap = await getDocs(q); if (!snap.empty) throw { message: "اسم المستخدم محجوز" };
+            const user = document.getElementById('reg-username').value.trim(); 
+            const email = document.getElementById('reg-email').value.trim(); 
+            const pass = document.getElementById('reg-password').value; 
+            const conf = document.getElementById('reg-confirm').value;
+            
+            if (pass !== conf) throw { message: "كلمات المرور غير متطابقة" }; 
+            if (pass.length < 6) throw { message: "كلمة المرور 6 أحرف على الأقل" };
+            
+            const q = query(collection(db, "users"), where("username_lower", "==", user.toLowerCase())); 
+            const snap = await getDocs(q); 
+            if (!snap.empty) throw { message: "اسم المستخدم محجوز" };
+            
             const cred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), pass);
-            await setDoc(doc(db, "users", cred.user.uid), { username: user, username_lower: user.toLowerCase(), email: email.toLowerCase(), matches: 0, wins: 0, friends: [], friendRequests: [], settings: { theme: 'dark', fontSize: 'default', animations: true, language: 'ar' }, createdAt: new Date().toISOString() });
+            await setDoc(doc(db, "users", cred.user.uid), { 
+                username: user, 
+                username_lower: user.toLowerCase(), 
+                email: email.toLowerCase(), 
+                matches: 0, wins: 0, friends: [], friendRequests: [], 
+                settings: { theme: 'dark', fontSize: 'default', animations: true, language: 'ar' }, 
+                createdAt: new Date().toISOString() 
+            });
         }
     } catch (err) {
-        let msg = err.message; if(msg.includes("invalid-credential")) msg = "البيانات غير صحيحة"; if(msg.includes("email-already-in-use")) msg = "البريد الإلكتروني مستخدم";
-        errorDiv.innerText = msg; errorDiv.style.display = 'block';
-    } finally { btn.disabled = false; btn.innerText = window.currentFormMode === 'register' ? window.translations[window.currentLang].confirm_register : window.translations[window.currentLang].confirm_login; }
+        let msg = err.message; 
+        if(msg.includes("invalid-credential")) msg = "البيانات غير صحيحة"; 
+        if(msg.includes("email-already-in-use")) msg = "البريد الإلكتروني مستخدم";
+        if(errorDiv) { errorDiv.innerText = msg; errorDiv.style.display = 'block'; }
+    } finally { 
+        if(btn) { 
+            btn.disabled = false; 
+            try {
+                btn.innerText = window.currentFormMode === 'register' ? window.translations[window.currentLang].confirm_register : window.translations[window.currentLang].confirm_login; 
+            } catch(error) {
+                btn.innerText = window.currentFormMode === 'register' ? "تأكيد الحساب" : "تأكيد الدخول";
+            }
+        } 
+    }
 };
+
+// -----------------------------------------------------------
+// الكود السحري لربط النموذج جذرياً ومنعه من عمل تحديث للصفحة!
+// -----------------------------------------------------------
+const bindFirebaseForm = () => {
+    const authForm = document.getElementById('firebase-form');
+    if (authForm) {
+        authForm.removeAttribute('onsubmit'); // مسح أي كود قديم في الـ HTML
+        authForm.addEventListener('submit', window.handleAuthSubmit); // ربط احترافي
+    }
+};
+
+// تشغيل الربط بمجرد اكتمال تحميل الصفحة
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindFirebaseForm);
+} else {
+    bindFirebaseForm();
+}
+// -----------------------------------------------------------
 
 window.setLanguage = async function(lang, skipSave = false) {
     window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -253,7 +308,6 @@ window.processFriendRequest = async function(isAccepted) {
     } catch(e) { alert("حدث خطأ أثناء معالجة الطلب."); }
 };
 
-// دالة حذف الصديق اللحظية والمعدلة بدقة متناهية من الطرفين
 window.confirmRemoveFriend = async function() {
     if(!window.friendToRemove || !auth.currentUser) return;
     try {
@@ -281,7 +335,7 @@ window.setFormType = function(type) {
     const rFields = document.getElementById('register-fields'); if(rFields) rFields.style.display = type === 'register' ? 'block' : 'none'; 
     document.getElementById('login-id').required = type === 'login'; document.getElementById('login-password').required = type === 'login';
     document.getElementById('reg-username').required = type === 'register'; document.getElementById('reg-email').required = type === 'register'; document.getElementById('reg-password').required = type === 'register';
-    const sBtn = document.getElementById('modal-submit-btn'); if(sBtn) sBtn.innerText = type === 'register' ? window.translations[window.currentLang].confirm_register : window.translations[window.currentLang].confirm_login;
+    const sBtn = document.getElementById('modal-submit-btn'); if(sBtn) sBtn.innerText = type === 'register' ? (window.translations ? window.translations[window.currentLang].confirm_register : "تأكيد الحساب") : (window.translations ? window.translations[window.currentLang].confirm_login : "تأكيد الدخول");
 };
 
 window.toggleDropdown = function(dropdownId, triggerElement) {
@@ -346,7 +400,14 @@ window.closeAuthModal = function() {
     if(!window.isGuest) window.enterAsGuest(); 
 };
 
-// نظام تحميل وحقن الصفحات الفرعية المطور والمنفذ للقوة البرمجية الفورية
+// وتصدير باقي الدوال العامة
+window.switchModalMode = window.switchModalMode || switchModalMode;
+window.openLoginDirectly = window.openLoginDirectly || openLoginDirectly;
+window.enterAsGuest = window.enterAsGuest || enterAsGuest;
+window.closeAuthModal = window.closeAuthModal || closeAuthModal;
+window.setFormType = window.setFormType || setFormType;
+window.toggleDropdown = window.toggleDropdown || toggleDropdown;
+
 window.loadFragment = async function(pageName, element) {
     const contentHolder = document.getElementById('content-holder');
     const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile' };
@@ -393,7 +454,6 @@ window.loadFragment = async function(pageName, element) {
         const htmlContent = await response.text();
         if(contentHolder) contentHolder.innerHTML = htmlContent;
 
-        // ميزة إجبار المتصفح على تشغيل أكواد الجافاسكريبت المكتوبة داخل الصفحات الفرعية
         const scripts = contentHolder.querySelectorAll('script');
         scripts.forEach(oldScript => {
             const newScript = document.createElement('script');
@@ -412,12 +472,3 @@ window.loadFragment = async function(pageName, element) {
         if(contentHolder && window.translations) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${window.translations[window.currentLang][titles[pageName]]}...</div>`;
     }
 };
-
-// --- هنا الكود المضاف والربط الصحيح بالـ window في نهاية الملف تماماً لتفعيل الأزرار ---
-window.switchModalMode = window.switchModalMode || switchModalMode;
-window.openLoginDirectly = window.openLoginDirectly || openLoginDirectly;
-window.enterAsGuest = window.enterAsGuest || enterAsGuest;
-window.closeAuthModal = window.closeAuthModal || closeAuthModal;
-window.setFormType = window.setFormType || setFormType;
-window.handleAuthSubmit = window.handleAuthSubmit || handleAuthSubmit;
-window.toggleDropdown = window.toggleDropdown || toggleDropdown;
