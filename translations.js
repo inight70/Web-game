@@ -26,8 +26,10 @@ window.translations = {
         "role_forensic": "الطبيب الشرعي", "role_forensic_desc": "يعرف القاتل والأدلة، لكنه ممنوع من التحدث! يقدم تلميحات للمحققين عبر بطاقات خاصة، ولا يحق له توجيه الاتهام.",
         "role_witness": "شاهد العيان", "role_witness_desc": "يعرف هوية القاتل والشريك، يحاول مساعدة فريقه بحذر شديد دون أن يكشف هويته للقتلة.",
         "role_investigator": "المحققون", "role_investigator_desc": "يحللون التلميحات لكشف القاتل والدليل والأداة.",
-        "rule_accusation": "حق توجيه الاتهام", "rule_accusation_desc": "يملك كل محقق فرصة واحدة فقط لتقديم بلاغ رسمي (تحديد القاتل + الدليل + الأداة معاً). إذا أخطأ في عنصر واحد، يُرفض البلاغ دون توضيح الخطأ.",
-        "rule_assassination": "اغتيال الشاهد", "rule_assassination_desc": "إذا فاز المحققون، يحصل القاتل والشريك على فرصة أخيرة لتحديد من هو الشاهد واغتياله. إذا نجحوا، يُقلب الفوز لصالح فريق الشر!",
+        "rule_accusation": "حق توجيه الاتهام", "rule_accusation_desc": "يملك كل محقق فرصة واحدة فقط لتقديم بلاغ رسمي (القاتل + الدليل + الأداة معاً). إذا أخطأ في عنصر واحد، يُرفض البلاغ دون توضيح الخطأ.",
+        "rule_assassination": "اغتيال الشاهد", "rule_assassination_desc": "إذا فاز المحققون، يحصل القاتل والشريك على فرصة أخيرة لتحديد واغتيال الشاهد. إذا نجحوا، يُقلب الفوز لصالح الشر، وإذا أخطأوا يفوز المحققون فوراً.",
+        "rule_rounds": "نظام الجولات", "rule_rounds_desc": "في كل جولة، يقدم الطبيب الشرعي تلميحاً جديداً. شرط أساسي: للانتقال للجولة التالية، يجب أن يقوم محقق واحد على الأقل باستخدام حق توجيه الاتهام الخاص به.",
+        "rule_win": "كيفية الفوز", "rule_win_desc": "فريق الخير يفوز بتوجيه اتهام صحيح 100% والنجاة من الاغتيال. فريق الشر يفوز بنجاح التمويه حتى استنفاد فرص المحققين، أو باغتيال الشاهد في النهاية.",
         "back_to_play": "العودة للعب"
     },
     en: {
@@ -57,8 +59,10 @@ window.translations = {
         "role_forensic": "Forensic Scientist", "role_forensic_desc": "Knows the truth but cannot speak! Gives hints via special cards and cannot make an accusation.",
         "role_witness": "The Witness", "role_witness_desc": "Knows the Murderer and Accomplice. Tries to help their team carefully without exposing themselves.",
         "role_investigator": "Investigators", "role_investigator_desc": "Analyze hints to uncover the Murderer, Weapon, and Evidence.",
-        "rule_accusation": "The Accusation", "rule_accusation_desc": "Each investigator has only ONE chance to make an official accusation (guessing Murderer + Weapon + Evidence). If one is wrong, it fails silently.",
-        "rule_assassination": "Witness Assassination", "rule_assassination_desc": "If investigators win, Evil gets one chance to identify and assassinate the Witness. If successful, Evil steals the win!",
+        "rule_accusation": "The Accusation", "rule_accusation_desc": "Each investigator has only ONE chance to make an official accusation (Murderer + Weapon + Evidence). If one is wrong, it fails silently.",
+        "rule_assassination": "Witness Assassination", "rule_assassination_desc": "If investigators win, Evil gets one chance to identify and assassinate the Witness. If successful, Evil steals the win! If they fail, investigators win immediately.",
+        "rule_rounds": "Round System", "rule_rounds_desc": "Every round, the Forensic Scientist provides a new hint. A strict rule: to advance to the next round, at least one investigator MUST use their accusation right.",
+        "rule_win": "How to Win", "rule_win_desc": "Good wins by a 100% correct accusation and surviving the assassination. Evil wins by surviving until investigators run out of chances, or by successfully assassinating the Witness.",
         "back_to_play": "Back to Play"
     }
 };
