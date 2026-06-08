@@ -1,20 +1,35 @@
 <style>
     .profile-container { max-width: 1000px; margin: 0 auto; padding: 10px 10px 80px 10px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; gap: 20px; }
     
-    /* رسالة قفل الحساب للزوار */
     #guest-locked-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; gap: 15px; }
     .locked-icon-wrapper { width: 100px; height: 100px; background: rgba(255, 76, 106, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
     
+    /* 1. الأمبلم في أعلى الصفحة */
+    .emblem-wrapper { position: relative; width: 100%; height: 200px; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-soft); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; }
+    .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
+    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-size: cover; background-position: right center; background-repeat: no-repeat; transition: 0.5s ease; }
+    .emblem-gradient { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 30%, transparent 100%) !important; z-index: 1; }
+    .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 30px; }
+    .emblem-badge-placeholder { width: 55px; height: 55px; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.9); font-size: 1.8rem; backdrop-filter: blur(5px); cursor: pointer; transition: 0.2s; }
+    .emblem-badge-placeholder:hover { background: rgba(255, 76, 106, 0.4); border-color: var(--accent-red); }
+    .emblem-name { font-size: 2.5rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: 1px; }
+
+    /* 2. الشبكة الوسطى (معلومات الحساب + الإعدادات) */
     .top-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .profile-card { background: var(--surface-panel); border-radius: 24px; padding: 25px; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; }
     .profile-card-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(100,100,100,0.1); padding-bottom: 15px; }
     
-    .level-shield-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 20px 0; }
-    .level-shield { width: 90px; height: 100px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; box-shadow: 0 10px 20px rgba(255, 76, 106, 0.4); position: relative; transition: var(--trans-smooth); cursor: default; }
-    .level-shield::before { content: ''; position: absolute; inset: 4px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1; }
-    .level-number { position: relative; z-index: 2; font-size: 2.5rem; font-weight: 900; font-family: var(--font-en); background: linear-gradient(135deg, var(--accent-red), #ff8a9f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .level-title { position: relative; z-index: 2; font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-top: -5px; }
+    /* تصميم اللفل وشريط ה- XP */
+    .level-section { display: flex; flex-direction: column; align-items: center; width: 100%; padding-bottom: 10px; }
+    .level-shield { width: 80px; height: 90px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; box-shadow: 0 10px 20px rgba(255, 76, 106, 0.4); position: relative; cursor: default; margin-bottom: 15px; }
+    .level-shield::before { content: ''; position: absolute; inset: 3px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1; }
+    .level-number { position: relative; z-index: 2; font-size: 2.2rem; font-weight: 900; font-family: var(--font-en); background: linear-gradient(135deg, var(--accent-red), #ff8a9f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .level-title { position: relative; z-index: 2; font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-top: -5px; }
     
+    .xp-bar-container { width: 85%; height: 8px; background: var(--bg-base); border-radius: 100px; overflow: hidden; border: 1px solid rgba(100,100,100,0.1); }
+    .xp-progress { height: 100%; width: 0%; background: var(--accent-red); box-shadow: 0 0 10px var(--accent-red); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+    .xp-text { font-size: 0.75rem; font-family: var(--font-en); color: var(--text-dim); font-weight: 700; margin-top: 5px; }
+
     .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; background: var(--bg-base); padding: 12px 15px; border-radius: 12px; }
     .info-label { color: var(--text-dim); font-weight: 600; }
     .info-value { color: var(--text-main); font-weight: 700; font-family: var(--font-en); }
@@ -27,6 +42,10 @@
     .btn-avatar-option { background: var(--surface-hover); border: 1px solid rgba(100,100,100,0.1); color: var(--text-main); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
     .btn-avatar-option:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
+    /* زر الخزانة الأنيق */
+    .btn-wardrobe { background: linear-gradient(135deg, rgba(255, 76, 106, 0.1), transparent); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+    .btn-wardrobe:hover { background: var(--accent-red); color: white; box-shadow: var(--shadow-glow); }
+
     .profile-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(10px); }
     .profile-modal.show { opacity: 1; visibility: visible; }
     .profile-modal-content { background: var(--surface-panel); width: 90%; max-width: 550px; border-radius: 24px; padding: 25px; box-shadow: var(--shadow-soft); position: relative; transform: translateY(20px); transition: 0.3s; display: flex; flex-direction: column; max-height: 80vh; }
@@ -36,7 +55,6 @@
     .avatar-option-img { width: 100%; aspect-ratio: 1; border-radius: 50%; background: var(--bg-base); cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
     .avatar-option-img:hover { border-color: var(--accent-red); transform: scale(1.05); }
 
-    /* تنسيق نافذة الأمبلم الأنيقة */
     .emblem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; overflow-y: auto; max-height: 400px; padding: 5px; }
     .emblem-option { height: 100px; border-radius: 16px; background-size: cover; background-position: right center; cursor: pointer; position: relative; overflow: hidden; border: 2px solid transparent; transition: 0.3s; box-shadow: var(--shadow-soft); }
     .emblem-option:hover { border-color: var(--accent-red); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255, 76, 106, 0.4); }
@@ -45,20 +63,6 @@
     .edit-input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(100,100,100,0.2); background: var(--bg-base); color: var(--text-main); font-family: var(--font-en); font-weight: 600; outline: none; transition: 0.3s; text-align: left; direction: ltr; margin-bottom: 15px; }
     .edit-input:focus { border-color: var(--accent-red); }
     .setting-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px; display: block; font-weight: bold; }
-
-    /* الأمبلم المطور - بدون أي ظل أو تدرج! */
-    .emblem-wrapper { position: relative; width: 100%; height: 200px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; }
-    .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
-    
-    /* قص الصورة بـ cover والتركيز على اليمين فقط لتناسب كل الشاشات */
-    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-size: cover; background-position: right center; background-repeat: no-repeat; transition: 0.5s ease; }
-    
-    .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 30px; }
-    .emblem-badge-placeholder { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.9); font-size: 1.5rem; backdrop-filter: blur(5px); cursor: pointer; transition: 0.2s; }
-    .emblem-badge-placeholder:hover { background: rgba(255, 76, 106, 0.4); border-color: var(--accent-red); }
-    
-    /* ظل النص تم تخفيفه لدرجة ناعمة جداً */
-    .emblem-name { font-size: 2.2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: 1px; }
 
     .bottom-sections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     .section-header { font-size: 1.2rem; font-weight: bold; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
@@ -73,7 +77,7 @@
 
     @media (max-width: 768px) { 
         .top-profile-grid { grid-template-columns: 1fr; }
-        .emblem-wrapper { height: 130px; } /* تصغير في الجوال مع المحافظة على التناسب */
+        .emblem-wrapper { height: 130px; } 
         .emblem-name { font-size: 1.6rem; }
         .emblem-content { padding: 0 20px; gap: 10px; }
         .emblem-grid { grid-template-columns: 1fr; }
@@ -93,15 +97,31 @@
 
 <div id="auth-required-section" class="profile-container" style="display: none;">
 
+    <div class="emblem-wrapper" onclick="window.openProfileModal('emblems-modal')">
+        <div class="emblem-bg" id="user-emblem-bg" style="background-image: url('assets/images/default-emblem.png');"></div>
+        <div class="emblem-gradient"></div>
+        <div class="emblem-content">
+            <div class="emblem-badge-placeholder" onclick="event.stopPropagation(); window.openProfileModal('badges-modal')">
+                <i class="ph-fill ph-shield-star"></i>
+            </div>
+            <div class="emblem-name" id="emblem-username">Player</div>
+        </div>
+    </div>
+
     <div class="top-profile-grid">
+        
         <div class="profile-card">
             <div class="profile-card-title"><i class="ph-bold ph-identification-card"></i> <span data-i18n="profile_acc_info">معلومات الحساب</span></div>
             
-            <div class="level-shield-wrapper">
+            <div class="level-section">
                 <div class="level-shield">
-                    <span class="level-number">1</span>
+                    <span class="level-number" id="user-level">1</span>
                     <span class="level-title">Level</span>
                 </div>
+                <div class="xp-bar-container">
+                    <div class="xp-progress" id="user-xp-bar"></div>
+                </div>
+                <div class="xp-text" id="user-xp-text">0 / 1000 XP</div>
             </div>
 
             <div class="info-row">
@@ -109,17 +129,21 @@
                 <span class="info-value" id="info-username">...</span>
             </div>
             <div class="info-row">
-                <span class="info-label" data-i18n="email">البريد الإلكتروني</span>
-                <span class="info-value" style="font-size: 0.8rem;" id="info-email">...</span>
+                <span class="info-label">ID</span>
+                <span class="info-value" style="font-size: 0.8rem; opacity: 0.7;" id="prof-uid">...</span>
             </div>
             <div class="info-row">
-                <span class="info-label" data-i18n="achievements_count">الإنجازات</span>
+                <span class="info-label" data-i18n="achievements_count">الإنجازات المكتسبة</span>
                 <span class="info-value">0</span>
             </div>
+
+            <button class="btn-avatar-option" style="margin-top: 10px; justify-content: center; background: transparent; border-style: dashed;" onclick="window.switchSettingsView('settings-edit-view')">
+                <i class="ph-bold ph-pencil-simple"></i> <span data-i18n="edit_personal_info">تعديل المعلومات الشخصية</span>
+            </button>
         </div>
 
         <div class="profile-card" id="settings-card-wrapper">
-            <div class="profile-card-title"><i class="ph-bold ph-palette"></i> <span data-i18n="profile_appearance">المظهر والإعدادات</span></div>
+            <div class="profile-card-title"><i class="ph-bold ph-game-controller"></i> <span data-i18n="game_settings">إعدادات اللعبة</span></div>
             
             <div id="settings-main-view" class="appearance-section">
                 <div class="avatar-wrapper">
@@ -128,7 +152,7 @@
                     </div>
                     <div class="avatar-buttons">
                         <button class="btn-avatar-option" onclick="window.openProfileModal('avatar-modal')">
-                            <i class="ph-bold ph-smiley"></i> <span data-i18n="avatar_premade">أفتار جاهز</span>
+                            <i class="ph-bold ph-images"></i> <span data-i18n="avatar_list">مجموعة الأفتارات</span>
                         </button>
                         <input type="file" id="avatar-upload-input" accept="image/png, image/jpeg" style="display: none;" onchange="window.uploadAvatar(event)">
                         <button class="btn-avatar-option" id="upload-avatar-btn" onclick="document.getElementById('avatar-upload-input').click()">
@@ -137,22 +161,22 @@
                     </div>
                 </div>
 
-                <button class="btn-avatar-option" style="background: var(--surface-panel); border: 1px solid var(--accent-red); color: var(--accent-red);" onclick="window.switchSettingsView('settings-edit-view')">
-                    <i class="ph-bold ph-pencil-simple"></i> <span data-i18n="edit_personal_info">تعديل المعلومات الشخصية</span>
+                <button class="btn-wardrobe" onclick="alert('سيتم برمجة صفحة الخزانة لاحقاً لدمج الأمبلمات والشخصيات والبادجات!')">
+                    <i class="ph-duotone ph-paint-brush-broad" style="font-size: 1.4rem;"></i> <span data-i18n="advanced_customization">خزانة المظهر الشاملة</span>
                 </button>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                    <span class="info-label" data-i18n="theme">المظهر</span>
-                    <div class="segmented-control" style="width: 150px; margin: 0;">
-                        <button class="segment-btn" id="prof-theme-light" onclick="window.updateProfileTheme('light')" data-i18n="theme_light">فاتح</button>
-                        <button class="segment-btn" id="prof-theme-dark" onclick="window.updateProfileTheme('dark')" data-i18n="theme_dark">داكن</button>
+                    <span class="info-label"><i class="ph-fill ph-music-notes"></i> <span data-i18n="setting_music">الموسيقى</span></span>
+                    <div class="segmented-control" style="width: 120px; margin: 0;">
+                        <button class="segment-btn active" data-i18n="on">تشغيل</button>
+                        <button class="segment-btn" data-i18n="off">إيقاف</button>
                     </div>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="info-label" data-i18n="language">اللغة</span>
-                    <div class="segmented-control" style="width: 150px; margin: 0;">
-                        <button class="segment-btn" id="prof-lang-en" onclick="window.updateProfileLang('en')">EN</button>
-                        <button class="segment-btn" id="prof-lang-ar" onclick="window.updateProfileLang('ar')">AR</button>
+                    <span class="info-label"><i class="ph-fill ph-speaker-high"></i> <span data-i18n="setting_sfx">المؤثرات</span></span>
+                    <div class="segmented-control" style="width: 120px; margin: 0;">
+                        <button class="segment-btn active" data-i18n="on">تشغيل</button>
+                        <button class="segment-btn" data-i18n="off">إيقاف</button>
                     </div>
                 </div>
             </div>
@@ -176,16 +200,6 @@
                     <button class="btn-core" id="save-info-btn" style="flex: 2; padding: 10px; font-size: 0.9rem;" onclick="window.savePersonalInfo()"><span data-i18n="save_changes">حفظ التعديلات</span></button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="emblem-wrapper" onclick="window.openProfileModal('emblems-modal')">
-        <div class="emblem-bg" id="user-emblem-bg" style="background-image: url('assets/images/default-emblem.png');"></div>
-        <div class="emblem-content">
-            <div class="emblem-badge-placeholder" onclick="event.stopPropagation(); window.openProfileModal('badges-modal')">
-                <i class="ph-fill ph-shield-star"></i>
-            </div>
-            <div class="emblem-name" id="emblem-username">Player</div>
         </div>
     </div>
 
@@ -246,8 +260,8 @@
 </div>
 
 <div class="profile-modal" id="emblems-modal">
-    <div class="profile-modal-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <div class="profile-modal-content" style="max-width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="font-size: 1.2rem; color: var(--text-main);" data-i18n="emblems_title">الخلفيات (الأمبلم)</h3>
             <button class="close-modal-btn" style="position: static;" onclick="window.closeProfileModal('emblems-modal')"><i class="ph-bold ph-x"></i></button>
         </div>
@@ -296,9 +310,21 @@
         document.getElementById('info-username').innerText = window.currentUserData.username;
         document.getElementById('emblem-username').innerText = window.currentUserData.username;
         document.getElementById('edit-username-input').value = window.currentUserData.username;
-        
-        document.getElementById('info-email').innerText = window.currentUserData.email;
         document.getElementById('edit-email-input').value = window.currentUserData.email;
+
+        if(window.authInstance && window.authInstance.currentUser) {
+            document.getElementById('prof-uid').innerText = window.authInstance.currentUser.uid.substring(0, 12) + "...";
+        }
+
+        // جلب المستوى ونقاط XP
+        let lvl = window.currentUserData.level || 1;
+        let xp = window.currentUserData.xp || 0;
+        let nextLevelXp = lvl * 1000; // قواعد اللفل المستقبلية
+        let xpPercentage = Math.min((xp / nextLevelXp) * 100, 100);
+
+        document.getElementById('user-level').innerText = lvl;
+        document.getElementById('user-xp-bar').style.width = xpPercentage + '%';
+        document.getElementById('user-xp-text').innerText = `${xp} / ${nextLevelXp} XP`;
 
         if(window.currentUserData.avatar) {
             document.getElementById('main-profile-avatar').innerHTML = `<img src="${window.currentUserData.avatar}">`;
@@ -312,35 +338,21 @@
         document.getElementById('stat-m').innerText = m;
         document.getElementById('stat-w').innerText = w;
         document.getElementById('stat-wr').innerText = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
-
-        let isDark = document.body.getAttribute('data-theme') !== 'light';
-        document.getElementById('prof-theme-dark').classList.toggle('active', isDark);
-        document.getElementById('prof-theme-light').classList.toggle('active', !isDark);
-
-        let isAr = window.currentLang === 'ar';
-        document.getElementById('prof-lang-ar').classList.toggle('active', isAr);
-        document.getElementById('prof-lang-en').classList.toggle('active', !isAr);
     };
 
     window.switchSettingsView = function(viewId) {
         document.getElementById('settings-main-view').style.display = viewId === 'settings-main-view' ? 'flex' : 'none';
         document.getElementById('settings-edit-view').style.display = viewId === 'settings-edit-view' ? 'flex' : 'none';
+        
+        // إعادة تعيين واجهة الأزرار عند الإغلاق
+        if(viewId === 'settings-main-view') {
+            document.getElementById('edit-password-input').value = '';
+            document.getElementById('save-info-btn').innerHTML = `<span data-i18n="save_changes">${window.translations[window.currentLang]['save_changes']}</span>`;
+        }
     };
 
     window.openProfileModal = function(id) { document.getElementById(id).classList.add('show'); };
     window.closeProfileModal = function(id) { document.getElementById(id).classList.remove('show'); };
-
-    window.updateProfileTheme = function(theme) {
-        if(window.toggleTheme) window.toggleTheme(theme);
-        document.getElementById('prof-theme-dark').classList.toggle('active', theme === 'dark');
-        document.getElementById('prof-theme-light').classList.toggle('active', theme === 'light');
-    };
-
-    window.updateProfileLang = function(lang) {
-        if(window.setLanguage) window.setLanguage(lang);
-        document.getElementById('prof-lang-ar').classList.toggle('active', lang === 'ar');
-        document.getElementById('prof-lang-en').classList.toggle('active', lang === 'en');
-    };
 
     window.selectAvatar = async function(src) {
         document.getElementById('main-profile-avatar').innerHTML = `<img src="${src}">`;
@@ -349,7 +361,6 @@
             await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { avatar: src });
             window.currentUserData.avatar = src; 
             
-            // تحديث الهيدر فوراً
             let fallbackAvatar = document.getElementById('header-avatar-fallback');
             if(fallbackAvatar) {
                 fallbackAvatar.innerHTML = `<img src="${src}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
@@ -358,7 +369,6 @@
         }
     };
 
-    // دالة رفع الأفتار من الجهاز عبر Firebase Storage
     window.uploadAvatar = async function(event) {
         const file = event.target.files[0];
         if(!file) return;
@@ -369,23 +379,19 @@
         
         try {
             if(!window.storageInstance) throw new Error("Storage is not initialized");
-            
             const storageModule = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js");
-            // مسار الصورة في المخزن سيكون باسم الـ UID لضمان عدم التكرار
             const storageRef = storageModule.ref(window.storageInstance, `avatars/${window.authInstance.currentUser.uid}_${Date.now()}`);
             
             await storageModule.uploadBytes(storageRef, file);
             const downloadURL = await storageModule.getDownloadURL(storageRef);
             
-            // حفظ الرابط في قاعدة البيانات وتحديث الواجهة
             await window.selectAvatar(downloadURL);
             
         } catch(error) {
             console.error("Upload error:", error);
-            alert("حدث خطأ أثناء الرفع. تأكد من إعداد وتفعيل Storage في لوحة تحكم فايربيس الخاصة بك.");
+            alert("حدث خطأ أثناء الرفع. تأكد من تفعيل Storage وقواعده في فايربيس.");
         } finally {
             btn.innerHTML = originalHtml;
-            // تصفير الـ input للسماح برفع نفس الصورة مرة أخرى إذا أراد
             document.getElementById('avatar-upload-input').value = "";
         }
     };
@@ -412,17 +418,15 @@
 
         try {
             const authModule = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
-            const updateEmailFunc = authModule.updateEmail;
-            const updatePasswordFunc = authModule.updatePassword;
-
+            
             let updates = {};
 
             if(newEmail && newEmail !== user.email) {
-                await updateEmailFunc(user, newEmail);
+                await authModule.updateEmail(user, newEmail);
                 updates.email = newEmail;
             }
             if(newPass && newPass.length >= 6) {
-                await updatePasswordFunc(user, newPass);
+                await authModule.updatePassword(user, newPass);
             }
             if(newName && newName !== window.currentUserData.username) {
                 updates.username = newName;
@@ -439,23 +443,18 @@
                 let headerName = document.getElementById('header-name');
                 if(headerName) { headerName.removeAttribute('data-i18n'); headerName.innerText = updates.username; }
             }
-            if(updates.email) {
-                document.getElementById('info-email').innerText = updates.email;
-            }
 
-            document.getElementById('edit-password-input').value = '';
-            window.switchSettingsView('settings-main-view');
+            btn.innerText = window.currentLang === 'ar' ? 'تم الحفظ!' : 'Saved!';
+            setTimeout(() => { window.switchSettingsView('settings-main-view'); }, 1500);
 
         } catch(error) {
             console.error(error);
             if(error.code === 'auth/requires-recent-login') {
                 alert("لأسباب أمنية، تغيير الإيميل أو الباسوورد يتطلب تسجيل الخروج والدخول من جديد.");
             } else {
-                alert("حدث خطأ أثناء الحفظ. تأكد من صحة البيانات.");
+                alert("حدث خطأ أثناء الحفظ. تأكد من صحة البيانات أو حاول مجدداً.");
             }
-        } finally {
-            // حل مشكلة (undefined) بكتابة النص بشكل يدوي حسب اللغة
-            btn.innerHTML = window.currentLang === 'ar' ? '<span>حفظ التعديلات</span>' : '<span>Save Changes</span>';
+            btn.innerHTML = `<span data-i18n="save_changes">${window.translations[window.currentLang]['save_changes']}</span>`;
         }
     };
 
