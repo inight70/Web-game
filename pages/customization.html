@@ -1,0 +1,97 @@
+<style>
+    .customization-container { max-width: 1000px; margin: 0 auto; padding: 20px 10px 80px 10px; animation: smoothFadeIn 0.5s ease forwards; }
+    
+    .cust-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+    .btn-back-cust { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); color: var(--text-main); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
+    .btn-back-cust:hover { background: var(--surface-hover); color: var(--accent-red); }
+    .cust-title { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
+
+    .cust-tabs { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+    .cust-tab-btn { background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); color: var(--text-dim); padding: 12px 25px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .cust-tab-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); box-shadow: var(--shadow-glow); }
+    
+    /* شبكة الأمبلمات في صفحة التخصيص */
+    .emblem-grid-large { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .emblem-card-preview { position: relative; height: 160px; border-radius: 20px; overflow: hidden; border: 3px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-soft); }
+    .emblem-card-preview:hover { transform: translateY(-5px); border-color: rgba(255, 76, 106, 0.5); }
+    .emblem-card-preview.equipped { border-color: var(--accent-green); }
+    .emblem-card-preview.equipped::after { content: 'مُجهز'; position: absolute; top: 10px; left: 10px; background: var(--accent-green); color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; z-index: 10; }
+    [dir="ltr"] .emblem-card-preview.equipped::after { content: 'Equipped'; right: 10px; left: auto; }
+    
+    .emblem-bg-preview { position: absolute; inset: 0; background-size: cover; background-position: right center; transition: 0.5s ease; }
+    .emblem-name-preview { position: absolute; bottom: 0; left: 0; right: 0; padding: 25px 15px 15px; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%); color: white; font-weight: 800; font-size: 1.2rem; font-family: var(--font-en); text-align: left; }
+
+    /* شبكة البادجات */
+    .badges-grid-large { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; display: none; }
+    .badge-card { background: var(--surface-panel); border-radius: 16px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; border: 1px solid rgba(100,100,100,0.1); cursor: pointer; transition: 0.3s; }
+    .badge-card:hover { transform: translateY(-5px); border-color: var(--accent-red); }
+    .badge-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2rem; }
+    .badge-title { font-size: 0.85rem; font-weight: bold; color: var(--text-main); text-align: center; }
+
+    @media (max-width: 768px) {
+        .emblem-grid-large { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="customization-container">
+    <div class="cust-header">
+        <button class="btn-back-cust" onclick="window.loadFragment('profile', document.querySelectorAll('.nav-btn')[4])"><i class="ph-bold ph-arrow-right"></i></button>
+        <h2 class="cust-title" data-i18n="advanced_customization">تعديلات المظهر المتقدمة</h2>
+    </div>
+
+    <div class="cust-tabs">
+        <button class="cust-tab-btn active" onclick="switchCustTab('emblems', this)"><i class="ph-duotone ph-image-square"></i> <span data-i18n="emblems_title">الخلفيات (الأمبلم)</span></button>
+        <button class="cust-tab-btn" onclick="switchCustTab('badges', this)"><i class="ph-duotone ph-shield-star"></i> <span data-i18n="badges_title">الشارات (البادج)</span></button>
+        <button class="cust-tab-btn" onclick="alert('سيتم إضافة خزانة الشخصيات (Characters) في التحديث القادم!')"><i class="ph-duotone ph-users"></i> الشخصيات</button>
+    </div>
+
+    <div id="cust-emblems-view" class="emblem-grid-large">
+        <div class="emblem-card-preview equipped" onclick="window.selectEmblemCustom('assets/images/default-emblem.png')">
+            <div class="emblem-bg-preview" style="background-image: url('assets/images/default-emblem.png');"></div>
+            <div class="emblem-name-preview" data-i18n="emblem_default">افتراضي</div>
+        </div>
+        <div class="emblem-card-preview" onclick="window.selectEmblemCustom('assets/images/emblem-blue.png')">
+            <div class="emblem-bg-preview" style="background-image: url('assets/images/emblem-blue.png');"></div>
+            <div class="emblem-name-preview" data-i18n="emblem_blue">أزرق</div>
+        </div>
+        <div class="emblem-card-preview" onclick="window.selectEmblemCustom('assets/images/emblem-green.png')">
+            <div class="emblem-bg-preview" style="background-image: url('assets/images/emblem-green.png');"></div>
+            <div class="emblem-name-preview" data-i18n="emblem_green">أخضر</div>
+        </div>
+    </div>
+
+    <div id="cust-badges-view" class="badges-grid-large">
+        <div class="badge-card">
+            <div class="badge-icon" style="background: rgba(255, 76, 106, 0.2); color: var(--accent-red); border: 2px solid var(--accent-red);">
+                <i class="ph-fill ph-shield-star"></i>
+            </div>
+            <span class="badge-title" data-i18n="badge_beginner">مبتدئ</span>
+        </div>
+        <div class="badge-card" style="opacity: 0.5;">
+            <div class="badge-icon" style="background: var(--bg-base); color: var(--text-dim);">
+                <i class="ph-duotone ph-lock"></i>
+            </div>
+            <span class="badge-title">مغلق</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchCustTab(tab, btn) {
+        document.querySelectorAll('.cust-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        document.getElementById('cust-emblems-view').style.display = tab === 'emblems' ? 'grid' : 'none';
+        document.getElementById('cust-badges-view').style.display = tab === 'badges' ? 'grid' : 'none';
+    }
+
+    window.selectEmblemCustom = async function(src) {
+        if(window.authInstance && window.authInstance.currentUser) {
+            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { emblem: src });
+            window.currentUserData.emblem = src;
+            alert(window.currentLang === 'ar' ? 'تم تجهيز الأمبلم بنجاح!' : 'Emblem equipped successfully!');
+            // العودة لصفحة الحساب ليرى التغيير
+            window.loadFragment('profile', document.querySelectorAll('.nav-btn')[4]);
+        }
+    };
+</script>
