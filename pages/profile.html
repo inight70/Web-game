@@ -1,156 +1,186 @@
 <style>
-    .profile-container { max-width: 1000px; margin: 0 auto; padding: 10px 10px 80px 10px; animation: smoothFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; display: flex; flex-direction: column; gap: 20px; }
+    .profile-container { max-width: 1000px; margin: 0 auto; padding: 10px 10px 80px 10px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; gap: 20px; }
     
-    /* 1. المربعات العلوية (المعلومات والمظهر) */
     .top-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .profile-card { background: var(--surface-panel); border-radius: 24px; padding: 25px; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-soft); position: relative; }
+    .profile-card { background: var(--surface-panel); border-radius: 24px; padding: 25px; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; }
     .profile-card-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(100,100,100,0.1); padding-bottom: 15px; }
     
-    /* الأفتار الدائري */
-    .avatar-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 10px; }
-    .profile-avatar-large { width: 90px; height: 90px; border-radius: 50%; background: var(--bg-base); border: 3px solid var(--accent-red); cursor: pointer; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; box-shadow: var(--shadow-glow); }
-    .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-edit-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: var(--trans-smooth); color: white; }
-    .profile-avatar-large:hover .avatar-edit-overlay { opacity: 1; }
-    .avatar-buttons { display: flex; gap: 10px; justify-content: center; }
-    .btn-avatar-option { background: var(--surface-hover); border: 1px solid rgba(100,100,100,0.2); color: var(--text-main); padding: 8px 15px; border-radius: 100px; font-size: 0.8rem; cursor: pointer; transition: 0.3s; }
-    .btn-avatar-option:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
-
-    .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+    /* 1. تصميم اللفل المميز في معلومات الحساب */
+    .level-shield-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 20px 0; }
+    .level-shield { width: 90px; height: 100px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; box-shadow: 0 10px 20px rgba(255, 76, 106, 0.4); position: relative; transition: var(--trans-smooth); cursor: default; }
+    .level-shield::before { content: ''; position: absolute; inset: 4px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1; }
+    .level-number { position: relative; z-index: 2; font-size: 2.5rem; font-weight: 900; font-family: var(--font-en); background: linear-gradient(135deg, var(--accent-red), #ff8a9f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .level-title { position: relative; z-index: 2; font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-top: -5px; }
+    
+    .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; background: var(--bg-base); padding: 12px 15px; border-radius: 12px; }
     .info-label { color: var(--text-dim); }
     .info-value { color: var(--text-main); font-weight: 700; font-family: var(--font-en); }
 
-    /* 2. مستطيل اللوبي (Destiny Emblem) */
+    /* 2. المظهر والأفتار */
+    .appearance-section { display: flex; flex-direction: column; gap: 20px; }
+    .avatar-wrapper { display: flex; align-items: center; gap: 20px; }
+    .profile-avatar-large { width: 80px; height: 80px; border-radius: 50%; background: var(--bg-base); border: 3px solid var(--text-dim); display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; flex-shrink: 0; }
+    .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-buttons { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .btn-avatar-option { background: var(--surface-hover); border: 1px solid rgba(100,100,100,0.1); color: var(--text-main); padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+    .btn-avatar-option:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
+
+    /* نافذة اختيار الأفتار */
+    .avatar-modal { position: absolute; inset: 0; background: var(--surface-panel); z-index: 10; display: flex; flex-direction: column; padding: 25px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .avatar-modal.show { transform: translateY(0); }
+    .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; overflow-y: auto; }
+    .avatar-option-img { width: 100%; aspect-ratio: 1; border-radius: 50%; background: var(--bg-base); cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+    .avatar-option-img:hover { border-color: var(--accent-red); transform: scale(1.05); }
+    
+    .setting-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+    .edit-input { flex: 1; padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(100,100,100,0.2); background: var(--bg-base); color: var(--text-main); font-family: var(--font-en); font-weight: 600; outline: none; }
+    .edit-input:focus { border-color: var(--accent-red); }
+    .btn-save { background: var(--accent-red); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+
+    /* 3. مستطيل الأمبلم (Destiny Style) */
     .emblem-wrapper { position: relative; width: 100%; height: 130px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; }
     .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
-    /* هنا نستخدم الديفولت وإذا لم تكن الصورة موجودة سيعرض لون رمادي أنيق */
-    .emblem-bg { position: absolute; inset: 0; background-color: #2a2a35; background-image: url('assets/images/default-emblem.png'); background-size: cover; background-position: center; }
-    /* تدرج لوني أسود من اليسار لضمان وضوح الاسم دائماً */
-    .emblem-gradient { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 100%); z-index: 1; }
-    [dir="ltr"] .emblem-gradient { background: linear-gradient(270deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 100%); }
+    /* مسار الصورة الافتراضية، تأكد من رفع صورتك بهذا الاسم في GitHub */
+    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-image: url('assets/images/default-emblem.png'); background-size: cover; background-position: center; }
     
-    .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; padding: 0 30px; gap: 20px; }
-    .emblem-level-box { background: rgba(255, 76, 106, 0.9); color: white; width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 1.2rem; font-family: var(--font-en); border: 2px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
-    .emblem-name { font-size: 2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 4px 10px rgba(0,0,0,0.5); letter-spacing: 1px; }
+    /* التدرج اللوني - يغطي الأطراف لإبراز النص والبادج */
+    .emblem-gradient { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.8) 100%); z-index: 1; }
+    
+    /* توزيع المحتوى: البادج في جهة، والاسم في جهة أخرى */
+    .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
+    .emblem-badge-placeholder { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.5); font-size: 1.5rem; backdrop-filter: blur(5px); }
+    .emblem-name { font-size: 2.2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 4px 15px rgba(0,0,0,0.8); letter-spacing: 1px; }
 
-    /* 3. الأقسام السفلية (المعرض، المباريات، الاحصائيات) */
-    .bottom-sections-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    /* 4. الأقسام السفلية متجاوبة */
+    .bottom-sections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     .section-header { font-size: 1.2rem; font-weight: bold; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
     
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-    .stat-box { background: var(--bg-base); padding: 20px 10px; border-radius: 16px; text-align: center; border: 1px solid rgba(100,100,100,0.05); }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stat-box { background: var(--bg-base); padding: 20px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; justify-content: center; }
     .stat-value { font-size: 1.8rem; font-weight: 900; color: var(--accent-red); font-family: var(--font-en); margin-bottom: 5px; }
-    .stat-label { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; }
+    .stat-label { font-size: 0.75rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
 
-    .empty-content-box { background: var(--bg-base); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px dashed rgba(100,100,100,0.2); color: var(--text-dim); gap: 15px; }
+    .empty-content-box { background: var(--bg-base); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px dashed rgba(100,100,100,0.2); color: var(--text-dim); gap: 15px; height: 100%; min-height: 150px; }
     .empty-content-box i { font-size: 2.5rem; opacity: 0.5; }
 
     @media (max-width: 768px) { 
         .top-profile-grid { grid-template-columns: 1fr; }
-        .bottom-sections-grid { grid-template-columns: 1fr; }
-        .emblem-name { font-size: 1.5rem; }
+        .emblem-name { font-size: 1.6rem; }
+        .emblem-content { padding: 0 20px; }
     }
 </style>
-
-<img src="x" onerror="
-    if(window.currentUserData) {
-        document.getElementById('prof-username').innerText = window.currentUserData.username;
-        document.getElementById('emblem-username').innerText = window.currentUserData.username;
-        document.getElementById('prof-email').innerText = window.currentUserData.email;
-        let m = window.currentUserData.matches || 0;
-        let w = window.currentUserData.wins || 0;
-        document.getElementById('stat-m').innerText = m;
-        document.getElementById('stat-w').innerText = w;
-        document.getElementById('stat-wr').innerText = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
-    }
-    this.remove();
-" style="display:none;">
 
 <div class="profile-container">
 
     <div class="top-profile-grid">
-        
         <div class="profile-card">
             <div class="profile-card-title"><i class="ph-bold ph-identification-card"></i> <span data-i18n="profile_acc_info">معلومات الحساب</span></div>
             
-            <div class="avatar-wrapper">
-                <div class="profile-avatar-large">
-                    <i class="ph-fill ph-user" style="font-size: 3.5rem; color: var(--text-dim);"></i>
-                    <div class="avatar-edit-overlay">
-                        <i class="ph-bold ph-pencil-simple"></i>
-                    </div>
-                </div>
-                <div class="avatar-buttons">
-                    <button class="btn-avatar-option" onclick="alert('سيتم برمجة رفع الصورة لاحقاً')"><i class="ph-bold ph-upload-simple"></i> <span data-i18n="avatar_upload">رفع من الجهاز</span></button>
-                    <button class="btn-avatar-option" onclick="alert('سيتم ربط مكتبة الأفتارات الجاهزة هنا')"><i class="ph-bold ph-smiley"></i> <span data-i18n="avatar_premade">أفتار جاهز</span></button>
+            <div class="level-shield-wrapper">
+                <div class="level-shield">
+                    <span class="level-number">1</span>
+                    <span class="level-title">Level</span>
                 </div>
             </div>
 
             <div class="info-row">
-                <span class="info-label" data-i18n="username">اسم المستخدم</span>
-                <span class="info-value" id="prof-username">يتم التحميل...</span>
+                <span class="info-label" data-i18n="email">البريد الإلكتروني</span>
+                <span class="info-value" id="prof-email">...</span>
             </div>
             <div class="info-row">
-                <span class="info-label" data-i18n="email">البريد الإلكتروني</span>
-                <span class="info-value" id="prof-email">يتم التحميل...</span>
+                <span class="info-label">ID</span>
+                <span class="info-value" style="font-size: 0.8rem; opacity: 0.7;" id="prof-uid">...</span>
             </div>
         </div>
 
         <div class="profile-card">
             <div class="profile-card-title"><i class="ph-bold ph-palette"></i> <span data-i18n="profile_appearance">المظهر والإعدادات</span></div>
             
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="appearance-section">
+                <div class="avatar-wrapper">
+                    <div class="profile-avatar-large" id="main-profile-avatar">
+                        <i class="ph-fill ph-user" style="font-size: 3rem; color: var(--text-dim);"></i>
+                    </div>
+                    <div class="avatar-buttons">
+                        <button class="btn-avatar-option" onclick="document.getElementById('avatar-modal').classList.add('show')">
+                            <i class="ph-bold ph-smiley"></i> <span data-i18n="avatar_premade">أفتار جاهز</span>
+                        </button>
+                        <button class="btn-avatar-option" onclick="alert('برمجة رفع الصورة من الجهاز تتطلب Storage في Firebase')">
+                            <i class="ph-bold ph-upload-simple"></i> <span data-i18n="avatar_upload">رفع من الجهاز</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <input type="text" id="edit-username-input" class="edit-input" placeholder="Username">
+                    <button class="btn-save" onclick="alert('حفظ الاسم سيتم برمجته لاحقاً')"><span data-i18n="save_btn">حفظ</span></button>
+                </div>
+
+                <div class="setting-row">
                     <span class="info-label" data-i18n="theme">المظهر</span>
-                    <div class="segmented-control" style="width: 150px;">
+                    <div class="segmented-control" style="width: 160px; margin: 0;">
                         <button class="segment-btn" onclick="window.toggleTheme('light')" data-i18n="theme_light">فاتح</button>
                         <button class="segment-btn active" onclick="window.toggleTheme('dark')" data-i18n="theme_dark">داكن</button>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="setting-row">
                     <span class="info-label" data-i18n="language">اللغة</span>
-                    <div class="segmented-control" style="width: 150px;">
+                    <div class="segmented-control" style="width: 160px; margin: 0;">
                         <button class="segment-btn lang-btn" onclick="window.setLanguage('en')">EN</button>
                         <button class="segment-btn lang-btn active" onclick="window.setLanguage('ar')">AR</button>
                     </div>
                 </div>
-                <button class="btn-secondary" style="margin-top: 10px; color: var(--accent-red); border-color: rgba(255, 76, 106, 0.2);" onclick="window.handleLogout()">
-                    <i class="ph-bold ph-sign-out"></i> <span data-i18n="logout">تسجيل خروج</span>
-                </button>
+            </div>
+
+            <div class="avatar-modal" id="avatar-modal">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="font-size: 1rem;" data-i18n="choose_avatar">اختر الأفتار الخاص بك</h3>
+                    <button class="close-modal-btn" style="position: static;" onclick="document.getElementById('avatar-modal').classList.remove('show')"><i class="ph-bold ph-x"></i></button>
+                </div>
+                <div class="avatar-grid">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=ff4c6a" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=2ecc71" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Milo&backgroundColor=3498db" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Jack&backgroundColor=9b59b6" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna&backgroundColor=f1c40f" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=e67e22" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=1abc9c" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Max&backgroundColor=e74c3c" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                </div>
             </div>
         </div>
-
     </div>
 
-    <div class="emblem-wrapper" onclick="alert('سيتمكن المستخدم من تغيير خلفية الأمبلم من المعرض!')">
+    <div class="emblem-wrapper" onclick="alert('تغيير خلفية الأمبلم سيتوفر قريباً من المعرض!')">
         <div class="emblem-bg"></div>
         <div class="emblem-gradient"></div>
+        
         <div class="emblem-content">
-            <div class="emblem-level-box">1</div> <div class="emblem-name" id="emblem-username">Player Name</div>
+            <div class="emblem-badge-placeholder">
+                <i class="ph-fill ph-shield-star"></i>
+            </div>
+            <div class="emblem-name" id="emblem-username">Player</div>
         </div>
     </div>
 
     <div class="bottom-sections-grid">
-        
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            <div class="profile-card" style="padding: 20px;">
-                <div class="section-header"><i class="ph-duotone ph-image"></i> <span data-i18n="tab_gallery">المعرض</span></div>
-                <div class="empty-content-box">
-                    <i class="ph-duotone ph-package"></i>
-                    <span data-i18n="gallery_empty">المعرض فارغ حالياً. افتح الإنجازات أو زر المتجر للحصول على عناصر جديدة!</span>
-                </div>
-            </div>
-
-            <div class="profile-card" style="padding: 20px;">
-                <div class="section-header"><i class="ph-duotone ph-clock-counter-clockwise"></i> <span data-i18n="tab_history">آخر المباريات</span></div>
-                <div class="empty-content-box">
-                    <i class="ph-duotone ph-game-controller"></i>
-                    <span data-i18n="history_empty">لم تلعب أي مباراة بعد. انطلق إلى غرف اللعب الآن!</span>
-                </div>
+        <div class="profile-card" style="padding: 20px;">
+            <div class="section-header"><i class="ph-duotone ph-image"></i> <span data-i18n="tab_gallery">المعرض</span></div>
+            <div class="empty-content-box">
+                <i class="ph-duotone ph-package"></i>
+                <span data-i18n="gallery_empty">المعرض فارغ حالياً. افتح الإنجازات أو زر المتجر للحصول على عناصر جديدة!</span>
             </div>
         </div>
 
-        <div class="profile-card" style="padding: 20px; height: fit-content;">
+        <div class="profile-card" style="padding: 20px;">
+            <div class="section-header"><i class="ph-duotone ph-clock-counter-clockwise"></i> <span data-i18n="tab_history">آخر المباريات</span></div>
+            <div class="empty-content-box">
+                <i class="ph-duotone ph-game-controller"></i>
+                <span data-i18n="history_empty">لم تلعب أي مباراة بعد. انطلق إلى غرف اللعب الآن!</span>
+            </div>
+        </div>
+
+        <div class="profile-card" style="padding: 20px;">
             <div class="section-header"><i class="ph-duotone ph-chart-line-up"></i> <span data-i18n="tab_stats">الإحصائيات</span></div>
             <div class="stats-grid">
                 <div class="stat-box">
@@ -167,7 +197,42 @@
                 </div>
             </div>
         </div>
-
     </div>
 
 </div>
+
+<script>
+    function loadProfileData() {
+        if(window.currentUserData) {
+            // تعبئة البيانات في المربعات
+            document.getElementById('prof-email').innerText = window.currentUserData.email;
+            document.getElementById('edit-username-input').value = window.currentUserData.username;
+            document.getElementById('emblem-username').innerText = window.currentUserData.username;
+            
+            // إضافة UID كمعلومة إضافية احترافية
+            if(window.authInstance && window.authInstance.currentUser) {
+                document.getElementById('prof-uid').innerText = window.authInstance.currentUser.uid.substring(0, 12) + "...";
+            }
+
+            // الإحصائيات
+            let m = window.currentUserData.matches || 0;
+            let w = window.currentUserData.wins || 0;
+            document.getElementById('stat-m').innerText = m;
+            document.getElementById('stat-w').innerText = w;
+            document.getElementById('stat-wr').innerText = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
+        } else if(window.isGuest) {
+            document.getElementById('prof-email').innerText = "حساب زائر (غير محفوظ)";
+            document.getElementById('edit-username-input').value = "زائر";
+            document.getElementById('emblem-username').innerText = "Guest Player";
+        }
+    }
+
+    // دالة لتغيير الأفتار (وهمية حالياً للتجربة)
+    function selectAvatar(src) {
+        document.getElementById('main-profile-avatar').innerHTML = `<img src="${src}">`;
+        document.getElementById('avatar-modal').classList.remove('show');
+    }
+
+    // تشغيل الدالة فور تحميل هذه الصفحة
+    loadProfileData();
+</script>
