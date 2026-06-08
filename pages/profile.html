@@ -35,15 +35,14 @@
     .btn-save { background: var(--accent-red); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
     .btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 76, 106, 0.3); }
 
-    /* مستطيل الأمبلم - ثابت لا يتأثر باللغة */
+    /* تعديلات الأمبلم: ثابت إنجليزي/عربي، بدون ظل، حجم ديناميكي */
     .emblem-wrapper { position: relative; width: 100%; height: 130px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; }
     .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
-    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-image: url('assets/images/default-emblem.png'); background-size: cover; background-position: center; }
     
-    /* التدرج اللوني ثابت من اليسار لليمين دائماً */
-    .emblem-gradient { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%) !important; z-index: 1; }
+    /* غلاف الصورة (Background Size: cover) تقص الصورة باحترافية */
+    .emblem-bg { position: absolute; inset: 0; background-color: #1a1a24; background-image: url('assets/images/default-emblem.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }
     
-    /* الترتيب: البادج يسار ثم الاسم يمين */
+    /* ترتيب المحتوى: البادج يسار والاسم يمين */
     .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 30px; }
     .emblem-badge-placeholder { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.8); font-size: 1.5rem; backdrop-filter: blur(5px); }
     .emblem-name { font-size: 2.2rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 4px 15px rgba(0,0,0,0.8); letter-spacing: 1px; }
@@ -113,22 +112,22 @@
                     </div>
                     <div class="setting-row">
                         <input type="text" id="edit-username-input" class="edit-input" placeholder="Username" autocomplete="off">
-                        <button class="btn-save" id="save-name-btn" onclick="saveUsername()"><span data-i18n="save_btn">حفظ</span></button>
+                        <button class="btn-save" id="save-name-btn" onclick="window.saveUsername()"><span data-i18n="save_btn">حفظ</span></button>
                     </div>
                 </div>
 
                 <div class="setting-row" style="margin-top: 5px;">
                     <span class="info-label" data-i18n="theme">المظهر</span>
                     <div class="segmented-control" style="width: 160px; margin: 0;">
-                        <button class="segment-btn" id="prof-theme-light" onclick="updateProfileTheme('light')" data-i18n="theme_light">فاتح</button>
-                        <button class="segment-btn" id="prof-theme-dark" onclick="updateProfileTheme('dark')" data-i18n="theme_dark">داكن</button>
+                        <button class="segment-btn" id="prof-theme-light" onclick="window.updateProfileTheme('light')" data-i18n="theme_light">فاتح</button>
+                        <button class="segment-btn" id="prof-theme-dark" onclick="window.updateProfileTheme('dark')" data-i18n="theme_dark">داكن</button>
                     </div>
                 </div>
                 <div class="setting-row">
                     <span class="info-label" data-i18n="language">اللغة</span>
                     <div class="segmented-control" style="width: 160px; margin: 0;">
-                        <button class="segment-btn" id="prof-lang-en" onclick="updateProfileLang('en')">EN</button>
-                        <button class="segment-btn" id="prof-lang-ar" onclick="updateProfileLang('ar')">AR</button>
+                        <button class="segment-btn" id="prof-lang-en" onclick="window.updateProfileLang('en')">EN</button>
+                        <button class="segment-btn" id="prof-lang-ar" onclick="window.updateProfileLang('ar')">AR</button>
                     </div>
                 </div>
             </div>
@@ -139,14 +138,14 @@
                     <button class="close-modal-btn" style="position: static;" onclick="document.getElementById('avatar-modal').classList.remove('show')"><i class="ph-bold ph-x"></i></button>
                 </div>
                 <div class="avatar-grid">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=ff4c6a" class="avatar-option-img" onclick="selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=2ecc71" class="avatar-option-img" onclick="selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Milo&backgroundColor=3498db" class="avatar-option-img" onclick="selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Jack&backgroundColor=9b59b6" class="avatar-option-img" onclick="selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna&backgroundColor=f1c40f" class="avatar-option-img" onclick="selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=e67e22" class="avatar-option-img" onclick="selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=1abc9c" class="avatar-option-img" onclick="selectAvatar(this.src)">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Max&backgroundColor=e74c3c" class="avatar-option-img" onclick="selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=ff4c6a" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=2ecc71" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Milo&backgroundColor=3498db" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Jack&backgroundColor=9b59b6" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Luna&backgroundColor=f1c40f" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=e67e22" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=1abc9c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Max&backgroundColor=e74c3c" class="avatar-option-img" onclick="window.selectAvatar(this.src)">
                 </div>
             </div>
         </div>
@@ -154,8 +153,6 @@
 
     <div class="emblem-wrapper" onclick="alert('تغيير خلفية الأمبلم سيتوفر قريباً من المعرض!')">
         <div class="emblem-bg"></div>
-        <div class="emblem-gradient"></div>
-        
         <div class="emblem-content">
             <div class="emblem-badge-placeholder">
                 <i class="ph-fill ph-shield-star"></i>
@@ -199,11 +196,11 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
-    function loadProfileData() {
+    window.loadProfileData = function() {
+        // سحب البيانات من الحساب الحقيقي
         if(window.currentUserData) {
             document.getElementById('prof-email').innerText = window.currentUserData.email;
             document.getElementById('edit-username-input').value = window.currentUserData.username;
@@ -224,7 +221,7 @@
             document.getElementById('emblem-username').innerText = "Guest Player";
         }
 
-        // تلوين الأزرار حسب حالة الموقع الحالية
+        // تحديث الأزرار بصرياً لتطابق إعدادات الموقع الحالية
         let isDark = document.body.getAttribute('data-theme') !== 'light';
         document.getElementById('prof-theme-dark').classList.toggle('active', isDark);
         document.getElementById('prof-theme-light').classList.toggle('active', !isDark);
@@ -232,23 +229,22 @@
         let isAr = window.currentLang === 'ar';
         document.getElementById('prof-lang-ar').classList.toggle('active', isAr);
         document.getElementById('prof-lang-en').classList.toggle('active', !isAr);
-    }
+    };
 
-    // دوال مصغرة لتغيير الإعدادات وتحديث الأزرار محلياً في نفس اللحظة
-    function updateProfileTheme(theme) {
+    window.updateProfileTheme = function(theme) {
         if(window.toggleTheme) window.toggleTheme(theme);
         document.getElementById('prof-theme-dark').classList.toggle('active', theme === 'dark');
         document.getElementById('prof-theme-light').classList.toggle('active', theme === 'light');
-    }
+    };
 
-    function updateProfileLang(lang) {
+    window.updateProfileLang = function(lang) {
         if(window.setLanguage) window.setLanguage(lang);
         document.getElementById('prof-lang-ar').classList.toggle('active', lang === 'ar');
         document.getElementById('prof-lang-en').classList.toggle('active', lang === 'en');
-    }
+    };
 
-    // دالة حفظ الاسم في قاعدة البيانات (Firebase)
-    async function saveUsername() {
+    // دالة حفظ الاسم فعلياً في قاعدة بيانات Firebase
+    window.saveUsername = async function() {
         let newName = document.getElementById('edit-username-input').value.trim();
         if(!newName || !window.authInstance || !window.authInstance.currentUser) {
             alert("يرجى كتابة اسم وتأكد من تسجيل الدخول.");
@@ -284,12 +280,13 @@
             alert('حدث خطأ أثناء حفظ الاسم. حاول مرة أخرى.');
             btn.innerHTML = `<span data-i18n="save_btn">${window.translations[window.currentLang]['save_btn']}</span>`;
         }
-    }
+    };
 
-    function selectAvatar(src) {
+    window.selectAvatar = function(src) {
         document.getElementById('main-profile-avatar').innerHTML = `<img src="${src}">`;
         document.getElementById('avatar-modal').classList.remove('show');
-    }
+    };
 
-    loadProfileData();
+    // تشغيل جلب البيانات فور تحميل الصفحة
+    window.loadProfileData();
 </script>
