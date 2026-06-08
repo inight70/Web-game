@@ -158,7 +158,8 @@
         .noti-time { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; }
 
         .profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.2); margin-left: 10px; }
-        .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.1); }
+        .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.1); overflow: hidden; }
+        .profile-avatar-fallback img { width: 100%; height: 100%; object-fit: cover; }
         .profile-info { display: flex; flex-direction: column; text-align: center; font-family: var(--font-en); }
         .profile-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
         .profile-status { font-size: 0.7rem; color: var(--text-dim); }
@@ -397,12 +398,17 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // إضافة موديول الصور (Storage)
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCLFj5UTX9EtuehoMWV02gkPsAgKPvMhzI", authDomain: "web-game-260b5.firebaseapp.com", projectId: "web-game-260b5", storageBucket: "web-game-260b5.firebasestorage.app", messagingSenderId: "682229509792", appId: "1:682229509792:web:11b4a404459630fcd6a3c5" };
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app); const db = getFirestore(app);
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
+        const storage = getStorage(app); // تشغيل مساحة التخزين
         
-        window.authInstance = auth; window.dbInstance = db; window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
+        window.authInstance = auth; window.dbInstance = db; window.storageInstance = storage; 
+        window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection;
         window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData = null; window.friendToRemove = null; window.friendToReview = null;
         window.unsubscribeSnapshot = null;
         window.currentLang = 'ar';
@@ -453,7 +459,18 @@
                         let displayName = window.currentUserData.username || user.email.split('@')[0];
 
                         if(nameEl){ nameEl.removeAttribute('data-i18n'); nameEl.innerText = displayName; }
-                        if(fallbackAvatar) fallbackAvatar.innerText = displayName.charAt(0).toUpperCase();
+                        
+                        // تزامن الأفتار في الهيدر
+                        if(fallbackAvatar) {
+                            if(window.currentUserData.avatar) {
+                                fallbackAvatar.innerHTML = `<img src="${window.currentUserData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                                fallbackAvatar.style.border = 'none';
+                            } else {
+                                fallbackAvatar.innerHTML = displayName.charAt(0).toUpperCase();
+                                fallbackAvatar.style.border = '';
+                            }
+                        }
+                        
                         if(dropdownStatus) dropdownStatus.innerText = "متصل";
 
                         if (window.currentUserData.settings) {
@@ -482,6 +499,7 @@
                 if (!window.isGuest) {
                     window.currentUserData = null; if(window.clearAuthInputs) window.clearAuthInputs(); 
                     if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = window.translations[window.currentLang].guest_name; }
+                    if(fallbackAvatar) { fallbackAvatar.innerHTML = "ز"; fallbackAvatar.style.border = ''; }
                     if(document.getElementById('modal-welcome-view')) document.getElementById('modal-welcome-view').style.display = 'block'; 
                     if(document.getElementById('modal-form-view')) document.getElementById('modal-form-view').style.display = 'none';
                     if(document.getElementById('auth-modal')) document.getElementById('auth-modal').classList.remove('hidden'); 
@@ -625,6 +643,7 @@
                 document.body.removeAttribute('data-theme'); document.documentElement.className=''; document.body.className='';
                 window.currentUserData = null; window.clearAuthInputs(); 
                 const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = window.translations[window.currentLang].guest_name; }
+                const fallbackAvatar = document.getElementById('header-avatar-fallback'); if(fallbackAvatar) { fallbackAvatar.innerHTML = "ز"; fallbackAvatar.style.border = ''; }
                 const wView = document.getElementById('modal-welcome-view'); if(wView) wView.style.display = 'block'; 
                 const fView = document.getElementById('modal-form-view'); if(fView) fView.style.display = 'none';
                 const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.remove('hidden'); 
@@ -652,7 +671,7 @@
             window.isGuest = true; window.currentUserData = null;
             const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = window.translations[window.currentLang].guest_name; }
             const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = window.translations[window.currentLang].guest_status; 
-            const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) avtFall.innerText = "ز";
+            const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) { avtFall.innerHTML = "ز"; avtFall.style.border = ''; }
             window.renderFriendsList('friends-container-desktop'); window.renderNotifications();
             const dropContent = document.getElementById('dropdown-content-area'); if(dropContent) dropContent.innerHTML = `<button class="dropdown-item" onclick="window.openLoginDirectly()"><i class="ph ph-sign-in"></i> <span data-i18n="login_btn">${window.translations[window.currentLang].login_btn}</span></button>`;
             window.clearAuthInputs(); 
@@ -672,8 +691,16 @@
             const contentHolder = document.getElementById('content-holder');
             const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile' };
             
-            const pt = document.getElementById('page-title'); if(pt && window.translations) pt.innerText = window.translations[window.currentLang][titles[pageName]];
-            const mn = document.getElementById('mobile-section-name'); if(mn && window.translations) mn.innerText = window.translations[window.currentLang][titles[pageName]];
+            const pt = document.getElementById('page-title'); 
+            const mn = document.getElementById('mobile-section-name'); 
+            
+            if (titles[pageName] && window.translations) {
+                if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]];
+                if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]];
+            } else {
+                if(pt) pt.innerText = '';
+                if(mn) mn.innerText = '';
+            }
             
             document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
                 btn.classList.remove('active'); 
@@ -704,21 +731,16 @@
                 if (!response.ok) throw new Error('Page not found');
                 
                 const htmlContent = await response.text();
-                
-                // حقن الكود داخل الـ content-holder
-                if(contentHolder) {
-                    contentHolder.innerHTML = htmlContent;
+                if(contentHolder) contentHolder.innerHTML = htmlContent;
 
-                    // --- الكود السحري الجديد لتشغيل الجافاسكريبت داخل الصفحات الفرعية ---
-                    const scripts = contentHolder.querySelectorAll('script');
-                    scripts.forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                        oldScript.parentNode.replaceChild(newScript, oldScript);
-                    });
-                    // ------------------------------------------------------------------
-                }
+                // إعادة تشغيل الجافاسكريبت داخل الصفحات المحقونة
+                const scripts = contentHolder.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
 
                 if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
