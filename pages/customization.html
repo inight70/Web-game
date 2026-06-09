@@ -6,7 +6,6 @@
     .btn-back-cust:hover { background: var(--surface-hover); color: var(--accent-red); }
     .cust-title { font-size: 1.8rem; font-weight: 900; color: var(--text-main); letter-spacing: -0.5px; }
 
-    /* زيادة المسافة السفلية، وخدعة الـ Padding و Margin لمنع قص الوهج والسماح بالتمرير الأفقي في الجوال */
     .cust-tabs-wrapper { width: 100%; flex-shrink: 0; margin-bottom: 25px; }
     .cust-tabs { display: flex; flex-wrap: nowrap; gap: 12px; overflow-x: auto; padding: 15px 20px 35px 20px; margin: -15px -20px -35px -20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
     .cust-tabs::-webkit-scrollbar { display: none; }
@@ -18,15 +17,11 @@
     .cust-content-area { flex: 1; overflow-y: auto; padding: 20px; margin: -20px; scrollbar-width: none; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%); }
     .cust-content-area::-webkit-scrollbar { display: none; }
 
-    /* تصميم الأمبلمات والخرائط */
     .grid-premium-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding-bottom: 80px; }
     .premium-card-preview { position: relative; height: 160px; border-radius: 24px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 20px rgba(0,0,0,0.2); direction: ltr; border: 2px solid rgba(255,255,255,0.05); }
     .premium-card-preview:hover:not(.locked) { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
     
-    /* لون الإطار للأمبلم المحدد أصبح أبيض */
     .premium-card-preview.equipped { border-color: rgba(255, 255, 255, 0.9); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5), 0 8px 25px rgba(255, 255, 255, 0.2); transform: scale(1.02); z-index: 10; }
-    
-    /* علامة الصح للأمبلمات باللون الأبيض */
     .premium-card-preview .item-equipped-mark { background: white; color: black; }
     
     .item-equipped-mark { position: absolute; top: 15px; left: 15px; background: var(--accent-green); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: popIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -40,10 +35,8 @@
     .card-bg-layer { position: absolute; inset: 0; background-size: cover; background-position: right center; background-repeat: no-repeat; transition: transform 0.5s ease; }
     .premium-card-preview:hover:not(.locked) .card-bg-layer { transform: scale(1.1); }
     
-    /* كبسولة الاسم زجاجية بدون أيقونة للأمبلمات */
     .card-name-pill { position: absolute; bottom: 12px; left: 12px; background: rgba(20, 20, 25, 0.65); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 6px 14px; border-radius: 100px; font-size: 0.85rem; font-weight: 700; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 6px; }
 
-    /* البادجات */
     .grid-small-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 20px; padding-bottom: 80px; }
     .small-item-card { background: var(--surface-panel); border-radius: 20px; padding: 25px 10px; display: flex; flex-direction: column; align-items: center; gap: 15px; border: 2px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px rgba(0,0,0,0.1); position: relative; }
     .small-item-card:hover:not(.locked) { transform: translateY(-6px); border-color: rgba(255, 76, 106, 0.4); box-shadow: 0 15px 30px rgba(255, 76, 106, 0.15); }
@@ -53,7 +46,6 @@
     .small-item-card:hover:not(.locked) .badge-icon { transform: scale(1.1); }
     .small-item-title { font-size: 0.9rem; font-weight: bold; color: var(--text-main); text-align: center; }
 
-    /* الألقاب */
     .grid-titles { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding-bottom: 80px; }
     .title-card { background: var(--surface-panel); border-radius: 18px; padding: 22px; display: flex; align-items: center; justify-content: space-between; border: 2px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
     .title-card:hover:not(.locked) { border-color: rgba(255, 215, 0, 0.6); transform: translateX(-8px); background: rgba(255, 215, 0, 0.05); box-shadow: 0 15px 30px rgba(255, 215, 0, 0.1); }
@@ -81,7 +73,6 @@
 </div>
 
 <script>
-    // تم إضافة "افتراضي" وتأكيد وجود الأخضر والأزرق
     const gameAssets = {
         emblems: window.globalStoreEmblems || [
             { id: 'default', name: 'الافتراضي', src: 'assets/images/default-emblem.png', locked: false, req: '' },
@@ -100,18 +91,19 @@
         ]
     };
 
-    const userData = window.currentUserData || {};
-
     function renderEmblems() {
         const renderer = document.getElementById('dynamic-content-renderer'); if(!renderer) return;
+        // هنا نجلب الداتا الطازجة في كل مرة تُستدعى فيها الدالة
+        const liveUserData = window.currentUserData || {}; 
+        
         let html = '<div class="grid-premium-cards">';
         gameAssets.emblems.forEach(item => {
-            const isEquipped = userData.emblem === item.src || (item.id === 'default' && !userData.emblem);
+            // التعديل هنا: نستخدم includes لضمان التطابق حتى لو اختلف جزء من الرابط
+            const isEquipped = (liveUserData.emblem && liveUserData.emblem.includes(item.src)) || (item.id === 'default' && !liveUserData.emblem);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>` : '';
             const lockOverlay = item.locked ? `<div class="item-locked-mark"><i class="ph-bold ph-lock"></i><span class="item-locked-text">${item.req}</span></div>` : '';
             
-            // تمت إزالة الأيقونة من الكبسولة لتبدو أنيقة
             html += `
                 <div class="premium-card-preview ${statusClass}" data-type="emblem" data-val="${item.src}" onclick="!${item.locked} && handleSelection(this, 'emblem', '${item.src}')">
                     ${checkMark}
@@ -127,9 +119,11 @@
 
     function renderMaps() {
         const renderer = document.getElementById('dynamic-content-renderer'); if(!renderer) return;
+        const liveUserData = window.currentUserData || {};
+        
         let html = '<div class="grid-premium-cards">';
         gameAssets.maps.forEach(item => {
-            const isEquipped = userData.map === item.id || (item.id === 'classic' && !userData.map);
+            const isEquipped = liveUserData.map === item.id || (item.id === 'classic' && !liveUserData.map);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>` : '';
             const lockOverlay = item.locked ? `<div class="item-locked-mark"><i class="ph-bold ph-lock"></i><span class="item-locked-text">${item.req}</span></div>` : '';
@@ -149,9 +143,11 @@
 
     function renderBadges() {
         const renderer = document.getElementById('dynamic-content-renderer'); if(!renderer) return;
+        const liveUserData = window.currentUserData || {};
+        
         let html = '<div class="grid-small-items">';
         gameAssets.badges.forEach(item => {
-            const isEquipped = userData.badge === item.id || (item.id === 'beginner' && !userData.badge);
+            const isEquipped = liveUserData.badge === item.id || (item.id === 'beginner' && !liveUserData.badge);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:8px; left:8px; width:24px; height:24px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>` : '';
             
@@ -171,9 +167,11 @@
 
     function renderTitles() {
         const renderer = document.getElementById('dynamic-content-renderer'); if(!renderer) return;
+        const liveUserData = window.currentUserData || {};
+        
         let html = '<div class="grid-titles">';
         gameAssets.titles.forEach(item => {
-            const isEquipped = userData.title === item.name || (item.id === 'none' && (!userData.title || userData.title === 'none'));
+            const isEquipped = liveUserData.title === item.name || (item.id === 'none' && (!liveUserData.title || liveUserData.title === 'none'));
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:28px; height:28px;"><i class="ph-bold ph-check" style="font-size:0.9rem;"></i></div>` : '';
             const lockIcon = item.locked ? `<i class="ph-bold ph-lock" style="color:var(--text-dim); font-size:1.5rem;"></i>` : '';
@@ -215,7 +213,9 @@
         });
 
         element.classList.add('equipped');
-        let markHTML = `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>`;
+        
+        // ضبط ألوان الصح حسب القسم، الأبيض للأمبلمات والخرائط
+        let markHTML = `<div class="item-equipped-mark" style="${(type==='emblem' || type==='map') ? 'background:white; color:black;' : ''}"><i class="ph-bold ph-check"></i></div>`;
         if(type === 'badge') markHTML = `<div class="item-equipped-mark" style="top:8px; left:8px; width:24px; height:24px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>`;
         if(type === 'title') markHTML = `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:28px; height:28px;"><i class="ph-bold ph-check" style="font-size:0.9rem;"></i></div>`;
         
@@ -231,14 +231,10 @@
         }
     };
 
-    /* 
-      دالة تهيئة عامة تحل مشكلة "الشاشة البيضاء" 
-      نربطها بالنافذة وننفذها، لضمان عملها في كل مرة تزور فيها الصفحة.
-    */
     window.initCustomizationPage = function() {
         const renderer = document.getElementById('dynamic-content-renderer');
         if(!renderer) {
-            setTimeout(window.initCustomizationPage, 50); // انتظار 50 جزء من الثانية ليتكون الـ DOM
+            setTimeout(window.initCustomizationPage, 50);
             return;
         }
         let initialTab = window.targetCustomizationTab || 'emblems';
@@ -251,6 +247,5 @@
         }
     };
 
-    // تشغيل الدالة فوراً
     window.initCustomizationPage();
 </script>
