@@ -1,19 +1,22 @@
 <style>
-    .customization-container { max-width: 1100px; margin: 0 auto; padding: 20px 10px 80px 10px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; height: calc(100vh - 100px); }
+    .customization-container { max-width: 1100px; margin: 0 auto; padding: 20px 10px 0 10px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; height: calc(100vh - 80px); }
     
-    .cust-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; flex-shrink: 0; }
+    .cust-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; flex-shrink: 0; padding: 0 5px; }
     .btn-back-cust { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); color: var(--text-main); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
     .btn-back-cust:hover { background: var(--surface-hover); color: var(--accent-red); }
     .cust-title { font-size: 1.6rem; font-weight: 800; color: var(--text-main); }
 
-    /* حل مشكلة قص الأزرار والتوهج باستخدام flex-wrap وحواف كافية */
-    .cust-tabs-wrapper { margin-bottom: 20px; flex-shrink: 0; padding: 10px 5px; }
-    .cust-tabs { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .cust-tab-btn { background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.05); color: var(--text-dim); padding: 14px 28px; border-radius: 100px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0; }
+    /* أزرار سلسة جداً على الجوال: لا تتكدس وتُسحب لليمين واليسار باحترافية */
+    .cust-tabs-wrapper { margin-bottom: 10px; flex-shrink: 0; width: 100%; }
+    .cust-tabs { display: flex; gap: 12px; overflow-x: auto; padding: 10px 5px 20px 5px; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+    .cust-tabs::-webkit-scrollbar { display: none; }
+    
+    .cust-tab-btn { background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.05); color: var(--text-dim); padding: 14px 28px; border-radius: 100px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0; white-space: nowrap; }
     .cust-tab-btn:hover { background: var(--surface-hover); color: var(--text-main); transform: translateY(-2px); }
     .cust-tab-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); box-shadow: 0 8px 25px rgba(255, 76, 106, 0.5); transform: translateY(-3px); }
     
-    .cust-content-area { flex: 1; overflow-y: auto; padding: 5px; scrollbar-width: none; }
+    /* التأثير السينمائي المذهل في الأسفل لمنع القص المفاجئ (Fade Out Mask) */
+    .cust-content-area { flex: 1; overflow-y: auto; padding: 10px 10px 100px 10px; scrollbar-width: none; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%); }
     .cust-content-area::-webkit-scrollbar { display: none; }
 
     /* الأمبلمات */
@@ -33,7 +36,7 @@
     .emblem-bg-preview { position: absolute; inset: 0; background-size: cover; background-position: right center; background-repeat: no-repeat; }
     .emblem-name-preview { position: absolute; bottom: 0; left: 0; right: 0; padding: 25px 15px 15px; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%); color: white; font-weight: 800; font-size: 1.2rem; font-family: var(--font-en); text-align: left; z-index: 2; }
 
-    /* البادجات */
+    /* البادجات والأفتارات */
     .grid-small-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
     .small-item-card { background: var(--surface-panel); border-radius: 20px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; border: 2px solid transparent; cursor: pointer; transition: 0.2s ease-in-out; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
     .small-item-card:hover:not(.locked) { transform: translateY(-5px); border-color: rgba(255, 76, 106, 0.5); }
@@ -41,9 +44,10 @@
     .small-item-card.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
     
     .badge-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; }
+    .avatar-icon-preview { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--text-dim); }
     .small-item-title { font-size: 0.85rem; font-weight: bold; color: var(--text-main); text-align: center; }
 
-    /* الألقاب (Titles) */
+    /* الألقاب */
     .grid-titles { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
     .title-card { background: var(--surface-panel); border-radius: 16px; padding: 18px; display: flex; align-items: center; justify-content: space-between; border: 2px solid transparent; cursor: pointer; transition: 0.2s ease-in-out; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
     .title-card:hover:not(.locked) { border-color: gold; transform: translateX(-5px); background: rgba(255, 215, 0, 0.05); }
@@ -54,7 +58,6 @@
     @media (max-width: 768px) {
         .grid-emblems { grid-template-columns: 1fr; }
         .emblem-card-preview { height: 120px; }
-        .cust-tabs { justify-content: center; }
     }
 </style>
 
@@ -69,6 +72,7 @@
             <button class="cust-tab-btn" id="tab-emblems" onclick="switchCustTab('emblems', this)"><i class="ph-duotone ph-image-square"></i> الخلفيات (Emblems)</button>
             <button class="cust-tab-btn" id="tab-badges" onclick="switchCustTab('badges', this)"><i class="ph-duotone ph-shield-star"></i> الشارات (Badges)</button>
             <button class="cust-tab-btn" id="tab-titles" onclick="switchCustTab('titles', this)"><i class="ph-duotone ph-text-aa"></i> الألقاب (Titles)</button>
+            <button class="cust-tab-btn" id="tab-avatars" onclick="switchCustTab('avatars', this)"><i class="ph-duotone ph-user-circle"></i> الأفتارات (Avatars)</button>
         </div>
     </div>
 
@@ -76,7 +80,7 @@
 </div>
 
 <script>
-    // جاهزة لاستقبال البيانات من أي مكان (المتجر أو الإنجازات) لاحقاً 
+    // جاهزة لاستقبال البيانات من المتجر والإنجازات (تمت إضافة أفتارات لربطها بزر البروفايل)
     const gameAssets = {
         emblems: window.globalStoreEmblems || [
             { id: 'default', name: 'افتراضي', src: 'assets/images/default-emblem.png', locked: false, req: '' },
@@ -88,6 +92,9 @@
         ],
         titles: window.globalStoreTitles || [
             { id: 'none', name: 'بدون لقب', locked: false, req: '' }
+        ],
+        avatars: window.globalStoreAvatars || [
+            { id: 'av1', name: 'افتراضي', src: 'https://i.ibb.co/Vvz3zJ5/default-avatar.png', locked: false, req: '' }
         ]
     };
 
@@ -158,38 +165,62 @@
         renderer.innerHTML = html;
     }
 
+    function renderAvatars() {
+        let html = '<div class="grid-small-items">';
+        gameAssets.avatars.forEach(item => {
+            const isEquipped = userData.avatar === item.src;
+            const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
+            const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>` : '';
+            
+            html += `
+                <div class="small-item-card ${statusClass}" data-type="avatar" data-val="${item.src}" onclick="!${item.locked} && handleSelection(this, 'avatar', '${item.src}')">
+                    ${checkMark}
+                    <img src="${item.src}" class="avatar-icon-preview" style="border-color: ${isEquipped ? 'var(--accent-green)' : 'transparent'};">
+                    <span class="small-item-title">${item.locked ? 'مغلق' : item.name}</span>
+                </div>
+            `;
+        });
+        html += '</div>';
+        renderer.innerHTML = html;
+    }
+
     window.switchCustTab = function(tabName, btnElement) {
         document.querySelectorAll('.cust-tab-btn').forEach(b => b.classList.remove('active'));
-        if(btnElement) btnElement.classList.add('active');
+        if(btnElement) {
+            btnElement.classList.add('active');
+            // عمل تمرير (Scroll) ذكي للزر ليظهر كاملاً على الجوال
+            btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
         
         if(tabName === 'emblems') renderEmblems();
         else if(tabName === 'badges') renderBadges();
         else if(tabName === 'titles') renderTitles();
+        else if(tabName === 'avatars') renderAvatars();
     };
 
-    // التفاعل اللحظي بالواجهة (بدون إعادة تحميل أو رسائل)
     window.handleSelection = async function(element, type, value) {
         const container = element.parentElement;
         
-        // إزالة الكلاس والعلامة من العنصر السابق
         container.querySelectorAll('.equipped').forEach(el => {
             el.classList.remove('equipped');
             const mark = el.querySelector('.item-equipped-mark');
             if(mark) mark.remove();
+            // مسح إطار الأفتار إذا كان موجوداً
+            const img = el.querySelector('img');
+            if(img) img.style.borderColor = 'transparent';
         });
 
-        // إضافة الكلاس والعلامة للعنصر الجديد فوراً
         element.classList.add('equipped');
         let markHTML = `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>`;
-        if(type === 'badge') markHTML = `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>`;
+        if(type === 'badge' || type === 'avatar') markHTML = `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>`;
         if(type === 'title') markHTML = `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:25px; height:25px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>`;
         
         element.insertAdjacentHTML('afterbegin', markHTML);
+        const img = element.querySelector('img');
+        if(img) img.style.borderColor = 'var(--accent-green)';
 
-        // تحديث المتغير المحلي فوراً
         window.currentUserData[type] = value;
 
-        // الحفظ في فايربيس في الخلفية بصمت
         if(window.authInstance && window.authInstance.currentUser) {
             let updateData = {};
             updateData[type] = value;
@@ -199,6 +230,12 @@
         }
     };
 
+    // القراءة من الـ targetCustomizationTab المُرسل من البروفايل
     let initialTab = window.targetCustomizationTab || 'emblems';
-    window.switchCustTab(initialTab, document.getElementById(`tab-${initialTab}`));
+    let targetBtn = document.getElementById(`tab-${initialTab}`);
+    if(targetBtn) {
+        window.switchCustTab(initialTab, targetBtn);
+    } else {
+        window.switchCustTab('emblems', document.getElementById('tab-emblems'));
+    }
 </script>
