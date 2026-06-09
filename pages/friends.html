@@ -1,114 +1,265 @@
 <style>
-    .friends-page-container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; height: calc(100vh - 80px); }
-    .friends-header { font-size: 1.8rem; font-weight: 900; color: var(--text-main); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+    /* الحاوية الأساسية لصفحة الأصدقاء */
+    .friends-page-container { max-width: 1000px; margin: 0 auto; padding: 20px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; gap: 30px; min-height: 80vh; }
     
-    /* شبكة عرض الأصدقاء المتكيفة */
-    .friends-grid { display: grid; gap: 20px; align-items: start; padding-bottom: 80px; }
+    /* 1. قسم إضافة صديق (ثابت ولا يحذف) */
+    .add-friend-section { background: var(--surface-panel); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); display: flex; flex-wrap: wrap; gap: 15px; align-items: center; border: 1px solid rgba(100,100,100,0.05); }
+    .add-friend-input { flex: 1; min-width: 200px; padding: 15px 20px; border-radius: 14px; border: 1px solid rgba(100,100,100,0.2); background: var(--bg-base); color: var(--text-main); font-family: var(--font-en); font-weight: bold; outline: none; transition: 0.3s; }
+    .add-friend-input:focus { border-color: var(--accent-red); box-shadow: 0 0 10px rgba(255, 76, 106, 0.2); }
+    .btn-add-friend { background: linear-gradient(135deg, var(--accent-red) 0%, #ff768e 100%); color: white; border: none; padding: 15px 30px; border-radius: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 76, 106, 0.3); display: flex; align-items: center; gap: 8px; }
+    .btn-add-friend:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.5); }
 
-    /* =========================================
-       1. تصميم الكمبيوتر (Desktop) - أفتارات دائرية
-       ========================================= */
-    .friend-desktop-view { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s; padding: 15px; border-radius: 20px; border: 1px solid transparent; }
-    .friend-desktop-view:hover { background: var(--surface-panel); border-color: rgba(255, 76, 106, 0.3); transform: translateY(-5px); }
-    .fd-avatar-wrapper { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--surface-hover); overflow: hidden; position: relative; transition: 0.3s; }
-    .friend-desktop-view:hover .fd-avatar-wrapper { border-color: var(--accent-red); box-shadow: 0 10px 20px rgba(255, 76, 106, 0.4); }
-    .fd-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .fd-name { font-weight: 700; color: var(--text-main); font-size: 0.95rem; font-family: var(--font-en); text-align: center; }
+    /* 2. قسم المتصفح / الكمبيوتر (أفتارات دائرية) */
+    .desktop-friends-grid { display: flex; flex-wrap: wrap; gap: 20px; padding: 10px; }
+    .friend-avatar-card { width: 80px; height: 80px; border-radius: 50%; position: relative; cursor: pointer; transition: 0.3s; border: 3px solid var(--surface-panel); box-shadow: var(--shadow-soft); background: var(--bg-base); display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .friend-avatar-card img { width: 100%; height: 100%; object-fit: cover; }
+    .friend-avatar-card:hover { transform: translateY(-5px) scale(1.05); border-color: var(--accent-red); box-shadow: 0 10px 20px rgba(255, 76, 106, 0.3); }
+    .friend-status-dot { position: absolute; bottom: 5px; right: 5px; width: 15px; height: 15px; background: var(--accent-green); border-radius: 50%; border: 2px solid var(--bg-base); }
 
-    /* =========================================
-       2. تصميم الجوال (Mobile) - بطاقات أمبلم كاملة
-       ========================================= */
-    .friend-mobile-wrapper { display: flex; flex-direction: column; width: 100%; max-width: 450px; margin: 0 auto; border-radius: 24px; overflow: hidden; background: var(--surface-panel); box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
-    .friend-mobile-wrapper.active { border-color: var(--accent-red); box-shadow: 0 15px 30px rgba(255, 76, 106, 0.2); }
-    
-    .friend-mobile-card { position: relative; height: 130px; cursor: pointer; display: flex; align-items: center; padding: 0 20px; gap: 15px; overflow: hidden; }
-    .fm-bg { position: absolute; inset: 0; background-size: cover; background-position: right center; z-index: 1; transition: 0.5s; }
-    .friend-mobile-card:hover .fm-bg { transform: scale(1.05); }
-    .fm-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 100%); z-index: 2; }
-    
-    .fm-content { position: relative; z-index: 3; display: flex; align-items: center; gap: 15px; width: 100%; }
-    .fm-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--accent-green); overflow: hidden; flex-shrink: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; }
-    .fm-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    
-    /* البادج الصغير فوق الأفتار */
-    .fm-badge { position: absolute; bottom: -5px; right: -5px; width: 24px; height: 24px; background: rgba(0,0,0,0.8); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
-
-    .fm-info { display: flex; flex-direction: column; gap: 5px; }
-    .fm-name { font-size: 1.4rem; font-weight: 900; color: white; font-family: var(--font-en); line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-    .fm-title { font-size: 0.75rem; font-weight: bold; color: gold; background: rgba(0,0,0,0.6); padding: 2px 10px; border-radius: 100px; width: fit-content; border: 1px solid rgba(255,215,0,0.3); }
-
-    /* الأزرار المنسدلة في الجوال */
-    .fm-actions-dropdown { display: flex; flex-direction: column; gap: 8px; padding: 0 20px; max-height: 0; overflow: hidden; opacity: 0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(0,0,0,0.2); }
-    .friend-mobile-wrapper.active .fm-actions-dropdown { max-height: 200px; padding: 15px 20px; opacity: 1; }
-
-    /* =========================================
-       3. النافذة المنبثقة للكمبيوتر (Modal)
-       ========================================= */
+    /* 3. النافذة المنبثقة للكمبيوتر (عند ضغط الأفتار) */
     .friend-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s ease; }
-    .friend-modal-content { background: var(--surface-panel); width: 90%; max-width: 450px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+    .friend-modal-content { background: var(--surface-panel); width: 90%; max-width: 450px; border-radius: 24px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 20px; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     
-    /* عرض الأمبلم داخل النافذة (نفس تصميم الجوال تقريباً لكن ثابت) */
-    .modal-emblem-header { position: relative; height: 150px; display: flex; align-items: center; padding: 0 25px; }
-    .modal-actions-body { padding: 25px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-base); }
+    /* تصميم الأمبلم المصغر داخل النافذة (نفس البروفايل بس أصغر شوي) */
+    .friend-modal-emblem { position: relative; width: 100%; height: 130px; border-radius: 18px; overflow: hidden; display: flex; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .friend-modal-bg { position: absolute; inset: 0; background-size: cover; background-position: right center; z-index: 1; }
+    .friend-modal-info { position: relative; z-index: 2; display: flex; align-items: center; gap: 15px; padding: 0 20px; width: 100%; }
+    .friend-modal-badge { width: 50px; height: 50px; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: white; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
+    .friend-modal-texts { display: flex; flex-direction: column; gap: 5px; }
+    .friend-modal-name { font-size: 1.8rem; font-weight: 900; color: white; font-family: var(--font-en); text-shadow: 0 2px 8px rgba(0,0,0,0.8); line-height: 1; margin: 0; }
+    .friend-modal-title { font-size: 0.75rem; font-weight: 700; color: gold; background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 100px; backdrop-filter: blur(5px); width: fit-content; text-transform: uppercase; }
 
-    /* =========================================
-       4. تصميم الأزرار الموحدة (جوال وكمبيوتر)
-       ========================================= */
-    .btn-f-action { width: 100%; padding: 12px 15px; border-radius: 14px; font-size: 0.95rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; border: none; }
-    .btn-f-profile { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); }
-    .btn-f-profile:hover { background: rgba(255, 255, 255, 0.15); color: white; }
-    .btn-f-history { background: rgba(46, 204, 113, 0.1); color: var(--accent-green); border: 1px solid rgba(46, 204, 113, 0.2); }
-    .btn-f-history:hover { background: var(--accent-green); color: white; }
-    .btn-f-delete { background: rgba(255, 76, 106, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); }
-    .btn-f-delete:hover { background: var(--accent-red); color: white; }
+    /* الأزرار الثلاثة */
+    .friend-actions-group { display: flex; flex-direction: column; gap: 10px; }
+    .btn-friend-action { width: 100%; padding: 14px; border-radius: 14px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; border: none; }
+    .btn-friend-profile { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); }
+    .btn-friend-profile:hover { background: rgba(255,255,255,0.15); }
+    .btn-friend-history { background: rgba(255, 215, 0, 0.1); color: gold; border: 1px solid rgba(255, 215, 0, 0.2); }
+    .btn-friend-history:hover { background: rgba(255, 215, 0, 0.2); }
+    .btn-friend-remove { background: rgba(255, 76, 106, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); }
+    .btn-friend-remove:hover { background: var(--accent-red); color: white; }
+    
+    .close-modal-friend { background: transparent; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; align-self: flex-end; margin-bottom: -10px; transition: 0.2s; }
+    .close-modal-friend:hover { color: var(--accent-red); }
 
-    /* =========================================
-       5. التحكم بالظهور (Media Queries)
-       ========================================= */
-    /* الافتراضي (للكمبيوتر): نعرض الأفتارات الدائرية ونخفي بطاقات الجوال */
-    .friends-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-    .d-mobile-only { display: none !important; }
-    .d-desktop-only { display: flex !important; }
+    /* 4. قسم الجوال (كروت الأمبلم) */
+    .mobile-friends-wrapper { display: none; width: 100%; max-width: 400px; margin: 0 auto; flex-direction: column; gap: 15px; }
+    .mobile-friend-card { background: var(--surface-panel); border-radius: 20px; overflow: hidden; border: 1px solid rgba(100,100,100,0.05); box-shadow: var(--shadow-soft); transition: 0.3s; display: flex; flex-direction: column; }
+    
+    .mobile-emblem-header { position: relative; height: 100px; display: flex; align-items: center; padding: 0 15px; cursor: pointer; }
+    .mobile-emblem-bg { position: absolute; inset: 0; background-size: cover; background-position: right center; z-index: 1; }
+    .mobile-emblem-info { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; width: 100%; }
+    .mobile-emblem-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; object-fit: cover; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .mobile-emblem-texts { display: flex; flex-direction: column; gap: 3px; }
+    .mobile-emblem-name { font-size: 1.4rem; font-weight: 900; color: white; font-family: var(--font-en); text-shadow: 0 2px 5px rgba(0,0,0,0.8); line-height: 1; }
+    .mobile-emblem-title { font-size: 0.65rem; color: gold; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 100px; width: fit-content; }
 
-    /* شاشات الجوال: نعرض بطاقات الأمبلم ونخفي الأفتارات الدائرية */
+    /* خيارات الجوال (تظهر عند النقر) */
+    .mobile-friend-actions { display: none; padding: 15px; background: var(--bg-base); flex-direction: column; gap: 8px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .mobile-friend-card.expanded .mobile-friend-actions { display: flex; animation: smoothFadeIn 0.3s ease; }
+
+    /* الميديا كويري (التحكم بالظهور حسب الجهاز) */
     @media (max-width: 768px) {
-        .friends-grid { grid-template-columns: 1fr; padding-bottom: 100px; }
-        .d-mobile-only { display: flex !important; }
-        .d-desktop-only { display: none !important; }
+        .desktop-friends-grid { display: none; }
+        .mobile-friends-wrapper { display: flex; }
+        .add-friend-section { padding: 15px; }
+        .add-friend-input { width: 100%; }
+        .btn-add-friend { width: 100%; justify-content: center; }
     }
 </style>
 
 <div class="friends-page-container">
-    <div class="friends-header">
-        <i class="ph-duotone ph-users-three" style="color: var(--accent-red);"></i> قائمة الأصدقاء
+    
+    <div class="section-header" style="font-size: 1.5rem; font-weight: 800; display:flex; align-items:center; gap:10px; color:var(--text-main);">
+        <i class="ph-duotone ph-users-three" style="color:var(--accent-red);"></i> قائمة الأصدقاء
     </div>
 
-    <div class="friends-grid" id="friends-list-renderer">
+    <div class="add-friend-section">
+        <input type="text" id="add-friend-input" class="add-friend-input" placeholder="أدخل اسم المستخدم للصديق...">
+        <button class="btn-add-friend" onclick="window.addFriendFunction()">
+            <i class="ph-bold ph-user-plus"></i> إضافة صديق
+        </button>
+    </div>
+
+    <div class="desktop-friends-grid" id="desktop-friends-container">
         </div>
+
+    <div id="mobile-friends-wrapper" class="mobile-friends-wrapper">
+        </div>
+
 </div>
 
-<div class="friend-modal-overlay" id="desktop-friend-modal" onclick="window.closeFriendModal(event)">
-    <div class="friend-modal-content" id="desktop-friend-modal-content" onclick="event.stopPropagation()">
-        <div class="modal-emblem-header">
-            <div class="fm-bg" id="modal-f-bg" style="background-image: url('assets/images/default-emblem.png');"></div>
-            <div class="fm-overlay"></div>
-            <div class="fm-content">
-                <div class="fm-avatar">
-                    <img id="modal-f-avatar" src="https://i.ibb.co/Vvz3zJ5/default-avatar.png">
-                    <div class="fm-badge" id="modal-f-badge-container"><i class="ph-fill ph-shield-star" id="modal-f-badge" style="color:white;"></i></div>
-                </div>
-                <div class="fm-info">
-                    <div class="fm-name" id="modal-f-name">Player</div>
-                    <div class="fm-title" id="modal-f-title">بدون لقب</div>
+<div class="friend-modal-overlay" id="friend-action-modal">
+    <div class="friend-modal-content">
+        <button class="close-modal-friend" onclick="window.closeFriendModal()"><i class="ph-bold ph-x"></i></button>
+        
+        <div class="friend-modal-emblem">
+            <div class="friend-modal-bg" id="modal-f-emblem" style="background-image: url('assets/images/default-emblem.png');"></div>
+            <div class="friend-modal-info">
+                <div class="friend-modal-badge"><i id="modal-f-badge" class="ph-fill ph-shield-star"></i></div>
+                <div class="friend-modal-texts">
+                    <div class="friend-modal-name" id="modal-f-name">Player</div>
+                    <div class="friend-modal-title" id="modal-f-title">بدون لقب</div>
                 </div>
             </div>
-            <button onclick="window.closeFriendModal()" style="position:absolute; top:15px; right:15px; z-index:10; background:rgba(0,0,0,0.5); border:none; color:white; width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; justify-content:center; align-items:center; backdrop-filter:blur(5px);"><i class="ph-bold ph-x"></i></button>
         </div>
-        
-        <div class="modal-actions-body">
-            <button class="btn-f-action btn-f-profile" onclick="window.goToFriendProfile()"><i class="ph-bold ph-user"></i> عرض الملف الشخصي</button>
-            <button class="btn-f-action btn-f-history" onclick="window.goToFriendHistory()"><i class="ph-bold ph-clock-counter-clockwise"></i> سجل المباريات</button>
-            <button class="btn-f-action btn-f-delete" onclick="window.deleteFriend()"><i class="ph-bold ph-user-minus"></i> حذف صديق</button>
+
+        <div class="friend-actions-group">
+            <button class="btn-friend-action btn-friend-profile" onclick="window.viewFriendProfile()"><i class="ph-bold ph-user"></i> عرض الملف الشخصي</button>
+            <button class="btn-friend-action btn-friend-history" onclick="window.viewFriendHistory()"><i class="ph-bold ph-clock-counter-clockwise"></i> سجل المباريات</button>
+            <button class="btn-friend-action btn-friend-remove" onclick="window.removeFriend()"><i class="ph-bold ph-user-minus"></i> حذف من الأصدقاء</button>
         </div>
     </div>
 </div>
+
+<script>
+    // متغير لحفظ بيانات الصديق المحدد حالياً
+    window.currentSelectedFriend = null;
+
+    // دالة محاكاة للفايربيس (تأكد من ربطها بالكود الفعلي الخاص بك)
+    window.addFriendFunction = function() {
+        const input = document.getElementById('add-friend-input');
+        if(!input.value.trim()) return alert("يرجى إدخال اسم الصديق");
+        // هنا تضع كود الفايربيس الخاص بك للإضافة
+        console.log("Adding friend:", input.value);
+        input.value = '';
+    };
+
+    // دالة ترسم الأصدقاء لحظياً للكمبيوتر والجوال
+    window.renderRealTimeFriends = function(friendsArray) {
+        const desktopContainer = document.getElementById('desktop-friends-container');
+        const mobileContainer = document.getElementById('mobile-friends-wrapper');
+        
+        if(!friendsArray || friendsArray.length === 0) {
+            desktopContainer.innerHTML = '<p style="color:var(--text-dim);">لا يوجد أصدقاء حالياً.</p>';
+            mobileContainer.innerHTML = '<p style="color:var(--text-dim); text-align:center;">لا يوجد أصدقاء حالياً.</p>';
+            return;
+        }
+
+        let desktopHTML = '';
+        let mobileHTML = '';
+
+        friendsArray.forEach(friend => {
+            // بيانات افتراضية إذا كان الصديق لا يملكها
+            const avatar = friend.avatar || 'https://i.ibb.co/Vvz3zJ5/default-avatar.png';
+            const emblem = friend.emblem || 'assets/images/default-emblem.png';
+            const badge = friend.badgeIcon || 'ph-shield-star';
+            const title = friend.title && friend.title !== 'none' ? friend.title : '';
+            const friendJSON = JSON.stringify(friend).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
+            // 1. بناء كارت المتصفح (أفتار فقط)
+            desktopHTML += `
+                <div class="friend-avatar-card" onclick="window.openFriendModal('${friendJSON}')">
+                    <img src="${avatar}">
+                    <div class="friend-status-dot"></div>
+                </div>
+            `;
+
+            // 2. بناء كارت الجوال (أمبلم يفتح للأسفل)
+            mobileHTML += `
+                <div class="mobile-friend-card" id="mobile-card-${friend.uid}">
+                    <div class="mobile-emblem-header" onclick="window.toggleMobileFriendActions('${friend.uid}')">
+                        <div class="mobile-emblem-bg" style="background-image: url('${emblem}');"></div>
+                        <div class="mobile-emblem-info">
+                            <img src="${avatar}" class="mobile-emblem-avatar">
+                            <div class="mobile-emblem-texts">
+                                <span class="mobile-emblem-name">${friend.username}</span>
+                                ${title ? `<span class="mobile-emblem-title">${title}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mobile-friend-actions">
+                        <button class="btn-friend-action btn-friend-profile" onclick="window.viewFriendProfile('${friend.uid}')"><i class="ph-bold ph-user"></i> الملف الشخصي</button>
+                        <button class="btn-friend-action btn-friend-history" onclick="window.viewFriendHistory('${friend.uid}')"><i class="ph-bold ph-clock-counter-clockwise"></i> سجل المباريات</button>
+                        <button class="btn-friend-action btn-friend-remove" onclick="window.removeFriend('${friend.uid}')"><i class="ph-bold ph-user-minus"></i> حذف صديق</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        desktopContainer.innerHTML = desktopHTML;
+        mobileContainer.innerHTML = mobileHTML;
+    };
+
+    // التحكم بالنافذة المنبثقة (للكمبيوتر)
+    window.openFriendModal = function(friendDataString) {
+        const friend = JSON.parse(friendDataString);
+        window.currentSelectedFriend = friend;
+        
+        document.getElementById('modal-f-name').innerText = friend.username;
+        document.getElementById('modal-f-emblem').style.backgroundImage = `url('${friend.emblem || 'assets/images/default-emblem.png'}')`;
+        document.getElementById('modal-f-badge').className = `ph-fill ${friend.badgeIcon || 'ph-shield-star'}`;
+        
+        const titleEl = document.getElementById('modal-f-title');
+        if(friend.title && friend.title !== 'none') {
+            titleEl.style.display = 'block';
+            titleEl.innerText = friend.title;
+        } else {
+            titleEl.style.display = 'none';
+        }
+
+        const modal = document.getElementById('friend-action-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modal.querySelector('.friend-modal-content').style.transform = 'scale(1)';
+        }, 10);
+    };
+
+    window.closeFriendModal = function() {
+        const modal = document.getElementById('friend-action-modal');
+        modal.style.opacity = '0';
+        modal.querySelector('.friend-modal-content').style.transform = 'scale(0.9)';
+        setTimeout(() => { modal.style.display = 'none'; window.currentSelectedFriend = null; }, 300);
+    };
+
+    // التوسيع في الجوال
+    window.toggleMobileFriendActions = function(uid) {
+        const card = document.getElementById(`mobile-card-${uid}`);
+        if(card) {
+            // إغلاق كل الكروت الأخرى لتجربة أرتب
+            document.querySelectorAll('.mobile-friend-card').forEach(c => {
+                if(c.id !== `mobile-card-${uid}`) c.classList.remove('expanded');
+            });
+            card.classList.toggle('expanded');
+        }
+    };
+
+    // إجراءات الأزرار (أربطها بملفاتك)
+    window.viewFriendProfile = function(uid) {
+        const targetId = uid || (window.currentSelectedFriend ? window.currentSelectedFriend.uid : null);
+        console.log("View Profile for:", targetId);
+        // window.loadFragment('friend-profile', targetId);
+        window.closeFriendModal();
+    };
+
+    window.viewFriendHistory = function(uid) {
+        const targetId = uid || (window.currentSelectedFriend ? window.currentSelectedFriend.uid : null);
+        console.log("View History for:", targetId);
+        window.closeFriendModal();
+    };
+
+    window.removeFriend = function(uid) {
+        const targetId = uid || (window.currentSelectedFriend ? window.currentSelectedFriend.uid : null);
+        if(confirm("هل أنت متأكد من حذف هذا الصديق؟")) {
+            console.log("Removing friend:", targetId);
+            // اكتب كود حذف الفايربيس هنا
+            window.closeFriendModal();
+        }
+    };
+
+    // --- نظام التحديث اللحظي (Firebase Real-time Mock) ---
+    // هذا الكود يستمع للفايربيس. تم وضع بيانات تجريبية لترى الشكل، يجب عليك استبداله بكود onSnapshot الخاص بك.
+    window.initFriendsPage = function() {
+        // [هنا تضع كود Firebase الخاص بك الذي يجلب مصفوفة الأصدقاء]
+        // مثال وهمي للتجربة:
+        const mockFriendsFromFirebase = [
+            { uid: 'f1', username: 'Ahmed123', avatar: 'https://i.ibb.co/Vvz3zJ5/default-avatar.png', emblem: 'assets/images/emblem-blue.png', badgeIcon: 'ph-sword', title: 'القناص' },
+            { uid: 'f2', username: 'Sara_Pro', avatar: 'https://i.ibb.co/Vvz3zJ5/default-avatar.png', emblem: 'assets/images/emblem-green.png', badgeIcon: 'ph-shield-check', title: 'none' }
+        ];
+        
+        window.renderRealTimeFriends(mockFriendsFromFirebase);
+    };
+
+    window.initFriendsPage();
+</script>
