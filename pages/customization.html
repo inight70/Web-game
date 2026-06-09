@@ -6,58 +6,55 @@
     .btn-back-cust:hover { background: var(--surface-hover); color: var(--accent-red); }
     .cust-title { font-size: 1.6rem; font-weight: 800; color: var(--text-main); }
 
-    /* تبويبات الأقسام بتصميم Seamless بدون إطار مقصوص */
-    .cust-tabs-wrapper { margin-bottom: 25px; flex-shrink: 0; }
-    .cust-tabs { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+    /* حل مشكلة قص الأزرار والتوهج */
+    .cust-tabs-wrapper { margin-bottom: 20px; flex-shrink: 0; }
+    .cust-tabs { display: flex; gap: 12px; overflow-x: auto; padding: 15px 10px 30px 10px; margin: -15px -10px -15px -10px; scrollbar-width: none; align-items: center; }
     .cust-tabs::-webkit-scrollbar { display: none; }
-    .cust-tab-btn { background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.05); color: var(--text-dim); padding: 14px 28px; border-radius: 100px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .cust-tab-btn:hover { background: var(--surface-hover); color: var(--text-main); }
-    .cust-tab-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.4); transform: translateY(-2px); }
+    .cust-tab-btn { background: var(--surface-panel); border: 1px solid rgba(100,100,100,0.05); color: var(--text-dim); padding: 14px 28px; border-radius: 100px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0; }
+    .cust-tab-btn:hover { background: var(--surface-hover); color: var(--text-main); transform: translateY(-2px); }
+    .cust-tab-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); box-shadow: 0 8px 25px rgba(255, 76, 106, 0.5); transform: translateY(-3px); }
     
-    /* الحاضنة الديناميكية لعرض المحتوى */
     .cust-content-area { flex: 1; overflow-y: auto; padding: 5px; scrollbar-width: none; }
     .cust-content-area::-webkit-scrollbar { display: none; }
 
-    /* شبكة الأمبلمات */
+    /* الأمبلمات */
     .grid-emblems { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-    .emblem-card-preview { position: relative; height: 130px; border-radius: 20px; overflow: hidden; border: 3px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-soft); direction: ltr; }
+    .emblem-card-preview { position: relative; height: 140px; border-radius: 20px; overflow: hidden; border: 3px solid transparent; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-soft); direction: ltr; }
     .emblem-card-preview:hover:not(.locked) { transform: translateY(-5px); border-color: rgba(255, 76, 106, 0.5); }
     
-    /* مظهر الأمبلم المجهز (علامة صح خضراء) */
-    .emblem-card-preview.equipped { border-color: var(--accent-green); box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3); }
-    .item-equipped-mark { position: absolute; top: 12px; left: 12px; background: var(--accent-green); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1rem; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .emblem-card-preview.equipped { border-color: var(--accent-green); box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3); transform: scale(1.02); }
+    .item-equipped-mark { position: absolute; top: 12px; left: 12px; background: var(--accent-green); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1rem; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.3); animation: popIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
     
-    /* مظهر الأمبلم المغلق (قفل) */
-    .emblem-card-preview.locked { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8); }
-    .item-locked-mark { position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; gap: 5px; }
+    .emblem-card-preview.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+    .item-locked-mark { position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; gap: 5px; }
     .item-locked-mark i { font-size: 2rem; }
-    .item-locked-text { font-size: 0.8rem; font-weight: bold; background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 100px; backdrop-filter: blur(5px); }
+    .item-locked-text { font-size: 0.8rem; font-weight: bold; background: rgba(0,0,0,0.8); padding: 4px 12px; border-radius: 100px; backdrop-filter: blur(5px); }
 
     .emblem-bg-preview { position: absolute; inset: 0; background-size: cover; background-position: right center; background-repeat: no-repeat; }
     .emblem-name-preview { position: absolute; bottom: 0; left: 0; right: 0; padding: 25px 15px 15px; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%); color: white; font-weight: 800; font-size: 1.2rem; font-family: var(--font-en); text-align: left; z-index: 2; }
 
-    /* شبكة البادجات والأفتارات */
+    /* البادجات */
     .grid-small-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
     .small-item-card { background: var(--surface-panel); border-radius: 20px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; border: 2px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
     .small-item-card:hover:not(.locked) { transform: translateY(-5px); border-color: rgba(255, 76, 106, 0.5); }
-    .small-item-card.equipped { border-color: var(--accent-green); }
-    .small-item-card.locked { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8); }
+    .small-item-card.equipped { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.05); }
+    .small-item-card.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
     
     .badge-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; }
-    .avatar-icon { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; }
     .small-item-title { font-size: 0.85rem; font-weight: bold; color: var(--text-main); text-align: center; }
 
-    /* شبكة الألقاب (Titles) */
+    /* الألقاب (Titles) */
     .grid-titles { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
     .title-card { background: var(--surface-panel); border-radius: 16px; padding: 18px; display: flex; align-items: center; justify-content: space-between; border: 2px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
-    .title-card:hover:not(.locked) { border-color: gold; transform: translateX(-5px); }
+    .title-card:hover:not(.locked) { border-color: gold; transform: translateX(-5px); background: rgba(255, 215, 0, 0.05); }
     .title-card.equipped { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.05); }
-    .title-card.locked { opacity: 0.6; cursor: not-allowed; }
+    .title-card.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
     .title-text { font-size: 1.1rem; font-weight: 800; color: gold; text-transform: uppercase; letter-spacing: 1px; }
 
     @media (max-width: 768px) {
         .grid-emblems { grid-template-columns: 1fr; }
-        .emblem-card-preview { height: 110px; }
+        .emblem-card-preview { height: 120px; }
     }
 </style>
 
@@ -72,52 +69,28 @@
             <button class="cust-tab-btn" id="tab-emblems" onclick="switchCustTab('emblems', this)"><i class="ph-duotone ph-image-square"></i> الخلفيات (Emblems)</button>
             <button class="cust-tab-btn" id="tab-badges" onclick="switchCustTab('badges', this)"><i class="ph-duotone ph-shield-star"></i> الشارات (Badges)</button>
             <button class="cust-tab-btn" id="tab-titles" onclick="switchCustTab('titles', this)"><i class="ph-duotone ph-text-aa"></i> الألقاب (Titles)</button>
-            <button class="cust-tab-btn" id="tab-avatars" onclick="switchCustTab('avatars', this)"><i class="ph-duotone ph-users"></i> الأفتارات (Avatars)</button>
-            <button class="cust-tab-btn" id="tab-backgrounds" onclick="switchCustTab('backgrounds', this)"><i class="ph-duotone ph-monitor"></i> خلفيات الشاشة</button>
         </div>
     </div>
 
-    <div class="cust-content-area" id="dynamic-content-renderer">
-        </div>
+    <div class="cust-content-area" id="dynamic-content-renderer"></div>
 </div>
 
 <script>
-    // ==========================================
-    // 1. قاعدة بيانات المظهر (قابلة للتوسع مستقبلاً)
-    // لتضيف أي أمبلم، فقط ضع سطر جديد هنا ولن تحتاج لتعديل الـ HTML أبداً!
-    // ==========================================
-
+    // قاعدة البيانات الديناميكية (الآن تحتوي فقط على ما تملكه فعلياً أو ما هو جاهز)
     const gameAssets = {
         emblems: [
             { id: 'default', name: 'افتراضي', src: 'assets/images/default-emblem.png', locked: false, req: '' },
             { id: 'blue', name: 'أزرق', src: 'assets/images/emblem-blue.png', locked: false, req: '' },
-            { id: 'green', name: 'أخضر', src: 'assets/images/emblem-green.png', locked: false, req: '' },
-            { id: 'crimson_king', name: 'الملك القرمزي', src: 'assets/images/emblem-red.png', locked: true, req: 'افتح عبر المتجر' },
-            { id: 'shadow_hunter', name: 'صائد الظلال', src: 'assets/images/emblem-dark.png', locked: true, req: 'اربح 50 مباراة' }
+            { id: 'green', name: 'أخضر', src: 'assets/images/emblem-green.png', locked: false, req: '' }
+            // سيتم دمج ملف المتجر والإنجازات هنا مستقبلاً
         ],
         badges: [
-            { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a', locked: false, req: '' },
-            { id: 'veteran', name: 'مخضرم', icon: 'ph-sword', color: '#3498db', locked: true, req: 'الوصول للمستوى 10' },
-            { id: 'master', name: 'محترف', icon: 'ph-crown', color: '#f1c40f', locked: true, req: 'شراء من المتجر' }
+            { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a', locked: false, req: '' }
         ],
         titles: [
-            { id: 'none', name: 'بدون لقب', locked: false, req: '' },
-            { id: 'top_player', name: 'Top Player', locked: true, req: 'المصنف الأول' },
-            { id: 'best_of_the_best', name: 'Best of the Best', locked: true, req: 'شراء حصري' },
-            { id: 'silent_killer', name: 'Silent Killer', locked: true, req: 'فز كقاتل 10 مرات' }
-        ],
-        avatars: [
-            { id: 'av1', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Felix&backgroundColor=ff4c6a', locked: false },
-            { id: 'av2', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Aneka&backgroundColor=2ecc71', locked: false },
-            { id: 'av3', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Milo&backgroundColor=3498db', locked: false },
-            { id: 'av4', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Jack&backgroundColor=9b59b6', locked: false },
-            { id: 'av5', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Luna&backgroundColor=f1c40f', locked: false }
+            { id: 'none', name: 'بدون لقب', locked: false, req: '' }
         ]
     };
-
-    // ==========================================
-    // 2. دوال الرسم الديناميكي (Render Functions)
-    // ==========================================
 
     const renderer = document.getElementById('dynamic-content-renderer');
     const userData = window.currentUserData || {};
@@ -131,7 +104,7 @@
             const lockOverlay = item.locked ? `<div class="item-locked-mark"><i class="ph-bold ph-lock"></i><span class="item-locked-text">${item.req}</span></div>` : '';
             
             html += `
-                <div class="emblem-card-preview ${statusClass}" onclick="!${item.locked} && equipItem('emblem', '${item.src}')">
+                <div class="emblem-card-preview ${statusClass}" data-type="emblem" data-val="${item.src}" onclick="!${item.locked} && handleSelection(this, 'emblem', '${item.src}')">
                     ${checkMark}
                     <div class="emblem-bg-preview" style="background-image: url('${item.src}');"></div>
                     ${lockOverlay}
@@ -148,10 +121,10 @@
         gameAssets.badges.forEach(item => {
             const isEquipped = userData.badge === item.id || (item.id === 'beginner' && !userData.badge);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
-            const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:5px; left:5px; width:20px; height:20px;"><i class="ph-bold ph-check" style="font-size:0.7rem;"></i></div>` : '';
+            const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>` : '';
             
             html += `
-                <div class="small-item-card ${statusClass}" onclick="!${item.locked} && equipItem('badge', '${item.id}')">
+                <div class="small-item-card ${statusClass}" data-type="badge" data-val="${item.id}" onclick="!${item.locked} && handleSelection(this, 'badge', '${item.id}')">
                     ${checkMark}
                     <div class="badge-icon" style="background: ${item.color}20; color: ${item.color}; border: 2px solid ${isEquipped ? 'transparent' : item.color};">
                         ${item.locked ? '<i class="ph-fill ph-lock"></i>' : `<i class="ph-fill ${item.icon}"></i>`}
@@ -169,11 +142,11 @@
         gameAssets.titles.forEach(item => {
             const isEquipped = userData.title === item.name || (item.id === 'none' && !userData.title);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
-            const checkMark = isEquipped ? `<div class="item-equipped-mark" style="position:relative; top:0; left:0;"><i class="ph-bold ph-check"></i></div>` : '';
+            const checkMark = isEquipped ? `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:25px; height:25px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>` : '';
             const lockIcon = item.locked ? `<i class="ph-bold ph-lock" style="color:var(--text-dim);"></i>` : '';
             
             html += `
-                <div class="title-card ${statusClass}" onclick="!${item.locked} && equipItem('title', '${item.id === 'none' ? '' : item.name}')">
+                <div class="title-card ${statusClass}" data-type="title" data-val="${item.name}" onclick="!${item.locked} && handleSelection(this, 'title', '${item.id === 'none' ? '' : item.name}')">
                     <div style="display:flex; flex-direction:column; gap:5px;">
                         <span class="title-text" style="${item.locked ? 'color:var(--text-dim);' : ''}">${item.name}</span>
                         ${item.locked ? `<span style="font-size:0.7rem; color:var(--text-dim);">${item.req}</span>` : ''}
@@ -186,28 +159,6 @@
         renderer.innerHTML = html;
     }
 
-    function renderAvatars() {
-        let html = '<div class="grid-small-items">';
-        gameAssets.avatars.forEach(item => {
-            const isEquipped = userData.avatar === item.src;
-            const statusClass = isEquipped ? 'equipped' : '';
-            const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:5px; left:5px; width:20px; height:20px;"><i class="ph-bold ph-check" style="font-size:0.7rem;"></i></div>` : '';
-            
-            html += `
-                <div class="small-item-card ${statusClass}" onclick="equipItem('avatar', '${item.src}')">
-                    ${checkMark}
-                    <img src="${item.src}" class="avatar-icon">
-                </div>
-            `;
-        });
-        html += '</div>';
-        renderer.innerHTML = html;
-    }
-
-    // ==========================================
-    // 3. نظام التبديل والحفظ الفعلي
-    // ==========================================
-
     window.switchCustTab = function(tabName, btnElement) {
         document.querySelectorAll('.cust-tab-btn').forEach(b => b.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
@@ -215,42 +166,42 @@
         if(tabName === 'emblems') renderEmblems();
         else if(tabName === 'badges') renderBadges();
         else if(tabName === 'titles') renderTitles();
-        else if(tabName === 'avatars') renderAvatars();
-        else {
-            renderer.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:300px; color:var(--text-dim);"><i class="ph-duotone ph-monitor" style="font-size:4rem; margin-bottom:10px;"></i><p>قسم خلفيات الشاشة سيتم فتحه قريباً!</p></div>`;
-        }
     };
 
-    // دالة حفظ الاختيار في Firebase وتحديث الشاشة فوراً
-    window.equipItem = async function(type, value) {
-        if(!window.authInstance || !window.authInstance.currentUser) return;
+    // التفاعل اللحظي بالواجهة (بدون إعادة تحميل أو رسائل)
+    window.handleSelection = async function(element, type, value) {
+        // 1. تحديث الـ DOM فوراً لإعطاء تجربة سلسة
+        const container = element.parentElement;
         
-        try {
+        // إزالة الكلاس والعلامة من العنصر السابق
+        container.querySelectorAll('.equipped').forEach(el => {
+            el.classList.remove('equipped');
+            const mark = el.querySelector('.item-equipped-mark');
+            if(mark) mark.remove();
+        });
+
+        // إضافة الكلاس والعلامة للعنصر الجديد
+        element.classList.add('equipped');
+        
+        let markHTML = `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>`;
+        if(type === 'badge') markHTML = `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>`;
+        if(type === 'title') markHTML = `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:25px; height:25px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>`;
+        
+        element.insertAdjacentHTML('afterbegin', markHTML);
+
+        // 2. تحديث المتغير المحلي
+        window.currentUserData[type] = value;
+
+        // 3. الحفظ في فايربيس في الخلفية بصمت
+        if(window.authInstance && window.authInstance.currentUser) {
             let updateData = {};
             updateData[type] = value;
-            
-            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), updateData);
-            window.currentUserData[type] = value;
-            
-            // إعادة رسم القسم الحالي لظهور علامة (صح)
-            let activeTabBtn = document.querySelector('.cust-tab-btn.active');
-            let activeTabId = activeTabBtn.id.replace('tab-', '');
-            window.switchCustTab(activeTabId, activeTabBtn);
-            
-            // تحديث الهيدر إذا كان التغيير في الأفتار
-            if(type === 'avatar') {
-                let fallbackAvatar = document.getElementById('header-avatar-fallback');
-                if(fallbackAvatar) fallbackAvatar.innerHTML = `<img src="${value}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-            }
-
-        } catch(error) {
-            console.error(error);
-            alert("حدث خطأ أثناء التجهيز.");
+            try {
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), updateData);
+            } catch(e) { console.error("Save error: ", e); }
         }
     };
 
-    // تشغيل التبويب المطلوب تلقائياً عند فتح الصفحة
     let initialTab = window.targetCustomizationTab || 'emblems';
     window.switchCustTab(initialTab, document.getElementById(`tab-${initialTab}`));
-
 </script>
