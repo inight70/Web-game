@@ -6,6 +6,7 @@
     .btn-back-cust:hover { background: var(--surface-hover); color: var(--accent-red); }
     .cust-title { font-size: 1.6rem; font-weight: 800; color: var(--text-main); }
 
+    /* حل مشكلة قص الأزرار والتوهج */
     .cust-tabs-wrapper { margin-bottom: 20px; flex-shrink: 0; }
     .cust-tabs { display: flex; gap: 12px; overflow-x: auto; padding: 15px 10px 30px 10px; margin: -15px -10px -15px -10px; scrollbar-width: none; align-items: center; }
     .cust-tabs::-webkit-scrollbar { display: none; }
@@ -33,7 +34,7 @@
     .emblem-bg-preview { position: absolute; inset: 0; background-size: cover; background-position: right center; background-repeat: no-repeat; }
     .emblem-name-preview { position: absolute; bottom: 0; left: 0; right: 0; padding: 25px 15px 15px; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%); color: white; font-weight: 800; font-size: 1.2rem; font-family: var(--font-en); text-align: left; z-index: 2; }
 
-    /* البادجات والأفتارات */
+    /* البادجات */
     .grid-small-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
     .small-item-card { background: var(--surface-panel); border-radius: 20px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; border: 2px solid transparent; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
     .small-item-card:hover:not(.locked) { transform: translateY(-5px); border-color: rgba(255, 76, 106, 0.5); }
@@ -41,7 +42,6 @@
     .small-item-card.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
     
     .badge-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; }
-    .avatar-icon { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; }
     .small-item-title { font-size: 0.85rem; font-weight: bold; color: var(--text-main); text-align: center; }
 
     /* الألقاب (Titles) */
@@ -69,8 +69,6 @@
             <button class="cust-tab-btn" id="tab-emblems" onclick="switchCustTab('emblems', this)"><i class="ph-duotone ph-image-square"></i> الخلفيات (Emblems)</button>
             <button class="cust-tab-btn" id="tab-badges" onclick="switchCustTab('badges', this)"><i class="ph-duotone ph-shield-star"></i> الشارات (Badges)</button>
             <button class="cust-tab-btn" id="tab-titles" onclick="switchCustTab('titles', this)"><i class="ph-duotone ph-text-aa"></i> الألقاب (Titles)</button>
-            <button class="cust-tab-btn" id="tab-avatars" onclick="switchCustTab('avatars', this)"><i class="ph-duotone ph-user-circle"></i> الأفتارات (Avatars)</button>
-            <button class="cust-tab-btn" id="tab-backgrounds" onclick="switchCustTab('backgrounds', this)"><i class="ph-duotone ph-monitor"></i> خلفيات الشاشة</button>
         </div>
     </div>
 
@@ -78,29 +76,19 @@
 </div>
 
 <script>
-    // ربط مصفوفة البيانات بشكل متزامن. (سيتم حقن الإنجازات والمتجر فيها مستقبلاً)
-    window.gameAssets = window.gameAssets || {
+    // قاعدة البيانات الديناميكية (الآن تحتوي فقط على ما تملكه فعلياً أو ما هو جاهز)
+    const gameAssets = {
         emblems: [
             { id: 'default', name: 'افتراضي', src: 'assets/images/default-emblem.png', locked: false, req: '' },
             { id: 'blue', name: 'أزرق', src: 'assets/images/emblem-blue.png', locked: false, req: '' },
             { id: 'green', name: 'أخضر', src: 'assets/images/emblem-green.png', locked: false, req: '' }
+            // سيتم دمج ملف المتجر والإنجازات هنا مستقبلاً
         ],
         badges: [
-            { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a', locked: false, req: '' },
-            { id: 'veteran', name: 'مخضرم', icon: 'ph-sword', color: '#3498db', locked: true, req: 'الوصول للمستوى 10' },
-            { id: 'master', name: 'محترف', icon: 'ph-crown', color: '#f1c40f', locked: true, req: 'شراء من المتجر' }
+            { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a', locked: false, req: '' }
         ],
         titles: [
-            { id: 'none', name: 'بدون لقب', locked: false, req: '' },
-            { id: 'top_player', name: 'Top Player', locked: true, req: 'المصنف الأول' },
-            { id: 'silent_killer', name: 'Silent Killer', locked: true, req: 'فز كقاتل 10 مرات' }
-        ],
-        avatars: [
-            { id: 'av1', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Felix&backgroundColor=ff4c6a', locked: false },
-            { id: 'av2', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Aneka&backgroundColor=2ecc71', locked: false },
-            { id: 'av3', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Milo&backgroundColor=3498db', locked: false },
-            { id: 'av4', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Jack&backgroundColor=9b59b6', locked: false },
-            { id: 'av5', src: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Luna&backgroundColor=f1c40f', locked: false }
+            { id: 'none', name: 'بدون لقب', locked: false, req: '' }
         ]
     };
 
@@ -109,14 +97,14 @@
 
     function renderEmblems() {
         let html = '<div class="grid-emblems">';
-        window.gameAssets.emblems.forEach(item => {
+        gameAssets.emblems.forEach(item => {
             const isEquipped = userData.emblem === item.src || (item.id === 'default' && !userData.emblem);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>` : '';
             const lockOverlay = item.locked ? `<div class="item-locked-mark"><i class="ph-bold ph-lock"></i><span class="item-locked-text">${item.req}</span></div>` : '';
             
             html += `
-                <div class="emblem-card-preview ${statusClass}" data-val="${item.src}" onclick="!${item.locked} && handleSelection(this, 'emblem', '${item.src}')">
+                <div class="emblem-card-preview ${statusClass}" data-type="emblem" data-val="${item.src}" onclick="!${item.locked} && handleSelection(this, 'emblem', '${item.src}')">
                     ${checkMark}
                     <div class="emblem-bg-preview" style="background-image: url('${item.src}');"></div>
                     ${lockOverlay}
@@ -130,13 +118,13 @@
 
     function renderBadges() {
         let html = '<div class="grid-small-items">';
-        window.gameAssets.badges.forEach(item => {
+        gameAssets.badges.forEach(item => {
             const isEquipped = userData.badge === item.id || (item.id === 'beginner' && !userData.badge);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>` : '';
             
             html += `
-                <div class="small-item-card ${statusClass}" data-val="${item.id}" onclick="!${item.locked} && handleSelection(this, 'badge', '${item.id}')">
+                <div class="small-item-card ${statusClass}" data-type="badge" data-val="${item.id}" onclick="!${item.locked} && handleSelection(this, 'badge', '${item.id}')">
                     ${checkMark}
                     <div class="badge-icon" style="background: ${item.color}20; color: ${item.color}; border: 2px solid ${isEquipped ? 'transparent' : item.color};">
                         ${item.locked ? '<i class="ph-fill ph-lock"></i>' : `<i class="ph-fill ${item.icon}"></i>`}
@@ -151,37 +139,19 @@
 
     function renderTitles() {
         let html = '<div class="grid-titles">';
-        window.gameAssets.titles.forEach(item => {
-            const isEquipped = userData.title === item.name || (item.id === 'none' && (!userData.title || userData.title === ''));
+        gameAssets.titles.forEach(item => {
+            const isEquipped = userData.title === item.name || (item.id === 'none' && !userData.title);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:25px; height:25px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>` : '';
             const lockIcon = item.locked ? `<i class="ph-bold ph-lock" style="color:var(--text-dim);"></i>` : '';
             
             html += `
-                <div class="title-card ${statusClass}" data-val="${item.name}" onclick="!${item.locked} && handleSelection(this, 'title', '${item.id === 'none' ? '' : item.name}')">
+                <div class="title-card ${statusClass}" data-type="title" data-val="${item.name}" onclick="!${item.locked} && handleSelection(this, 'title', '${item.id === 'none' ? '' : item.name}')">
                     <div style="display:flex; flex-direction:column; gap:5px;">
                         <span class="title-text" style="${item.locked ? 'color:var(--text-dim);' : ''}">${item.name}</span>
                         ${item.locked ? `<span style="font-size:0.7rem; color:var(--text-dim);">${item.req}</span>` : ''}
                     </div>
                     ${item.locked ? lockIcon : checkMark}
-                </div>
-            `;
-        });
-        html += '</div>';
-        renderer.innerHTML = html;
-    }
-
-    function renderAvatars() {
-        let html = '<div class="grid-small-items">';
-        window.gameAssets.avatars.forEach(item => {
-            const isEquipped = userData.avatar === item.src;
-            const statusClass = isEquipped ? 'equipped' : '';
-            const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>` : '';
-            
-            html += `
-                <div class="small-item-card ${statusClass}" data-val="${item.src}" onclick="handleSelection(this, 'avatar', '${item.src}')">
-                    ${checkMark}
-                    <img src="${item.src}" class="avatar-icon">
                 </div>
             `;
         });
@@ -196,44 +166,39 @@
         if(tabName === 'emblems') renderEmblems();
         else if(tabName === 'badges') renderBadges();
         else if(tabName === 'titles') renderTitles();
-        else if(tabName === 'avatars') renderAvatars();
-        else {
-            renderer.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:300px; color:var(--text-dim);"><i class="ph-duotone ph-monitor" style="font-size:4rem; margin-bottom:10px;"></i><p>قسم خلفيات الشاشة سيتم فتحه قريباً!</p></div>`;
-        }
     };
 
-    // التفاعل اللحظي والحفظ الفوري والصامت
+    // التفاعل اللحظي بالواجهة (بدون إعادة تحميل أو رسائل)
     window.handleSelection = async function(element, type, value) {
+        // 1. تحديث الـ DOM فوراً لإعطاء تجربة سلسة
         const container = element.parentElement;
         
-        // إزالة حالة (مجهز) من العنصر القديم
+        // إزالة الكلاس والعلامة من العنصر السابق
         container.querySelectorAll('.equipped').forEach(el => {
             el.classList.remove('equipped');
             const mark = el.querySelector('.item-equipped-mark');
             if(mark) mark.remove();
         });
 
-        // إضافة حالة (مجهز) للعنصر الذي تم الضغط عليه
+        // إضافة الكلاس والعلامة للعنصر الجديد
         element.classList.add('equipped');
         
         let markHTML = `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>`;
-        if(type === 'badge' || type === 'avatar') markHTML = `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>`;
+        if(type === 'badge') markHTML = `<div class="item-equipped-mark" style="top:5px; left:5px; width:22px; height:22px;"><i class="ph-bold ph-check" style="font-size:0.75rem;"></i></div>`;
         if(type === 'title') markHTML = `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:25px; height:25px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>`;
         
         element.insertAdjacentHTML('afterbegin', markHTML);
 
-        // تحديث البيانات المحلية والحفظ في فايربيس
+        // 2. تحديث المتغير المحلي
         window.currentUserData[type] = value;
 
-        if(type === 'avatar') {
-            let fallbackAvatar = document.getElementById('header-avatar-fallback');
-            if(fallbackAvatar) fallbackAvatar.innerHTML = `<img src="${value}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-        }
-
+        // 3. الحفظ في فايربيس في الخلفية بصمت
         if(window.authInstance && window.authInstance.currentUser) {
-            let updateData = {}; updateData[type] = value;
-            try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), updateData); } 
-            catch(e) { console.error("Save error"); }
+            let updateData = {};
+            updateData[type] = value;
+            try {
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), updateData);
+            } catch(e) { console.error("Save error: ", e); }
         }
     };
 
