@@ -4,23 +4,27 @@
     #guest-locked-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; gap: 15px; }
     .locked-icon-wrapper { width: 100px; height: 100px; background: rgba(255, 76, 106, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
     
-    /* الأمبلم: بدون أي ظل على اليسار ومستطيل الشكل */
+    /* 1. الأمبلم: بدون أي ظلال على اليسار تماماً! */
     .emblem-wrapper { position: relative; width: 100%; height: 180px; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-soft); border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; background-color: #1a1a24; }
     .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
     .emblem-bg { position: absolute; inset: 0; background-size: cover; background-position: right center; background-repeat: no-repeat; transition: 0.5s ease; }
     
     .emblem-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: 0 35px; }
     
-    .emblem-badge-placeholder { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2rem; cursor: pointer; transition: 0.2s; flex-shrink: 0; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.4); color: white; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    .emblem-badge-placeholder:hover { transform: scale(1.1); filter: brightness(1.2); }
+    /* البادج واللقب بإطارات منقطة بيضاء */
+    .emblem-badge-placeholder { width: 60px; height: 60px; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.9); font-size: 2rem; backdrop-filter: blur(5px); cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+    .emblem-badge-placeholder:hover { background: rgba(255, 76, 106, 0.4); border-color: white; transform: scale(1.1); }
     
     .emblem-text-group { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
     .emblem-name { font-size: 2.6rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 8px rgba(0,0,0,0.6); letter-spacing: 1px; line-height: 1; }
     
     .emblem-title-display { font-size: 0.85rem; font-weight: 700; color: white; margin-top: 8px; cursor: pointer; transition: 0.2s; padding: 6px 16px; background: rgba(255,255,255,0.1); border-radius: 8px; backdrop-filter: blur(5px); border: 1px dashed rgba(255,255,255,0.4); }
     .emblem-title-display:hover { border-color: white; background: rgba(255,255,255,0.2); }
+    
+    /* إذا كان اللقب حقيقياً ومجهزاً، نغير لونه للذهبي ونزيل التنقيط ليصبح فخماً */
     .emblem-title-display.equipped-title { color: gold; border: 1px solid rgba(255, 215, 0, 0.5); background: rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px; }
 
+    /* 2. الشبكة الوسطى */
     .top-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .profile-card { background: var(--surface-panel); border-radius: 24px; padding: 25px; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; height: 100%; }
     .profile-card-title { font-size: 1.1rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid rgba(100,100,100,0.1); padding-bottom: 15px; }
@@ -75,11 +79,10 @@
 
     @media (max-width: 768px) { 
         .top-profile-grid { grid-template-columns: 1fr; }
-        .emblem-wrapper { height: 110px; border-radius: 18px; } 
-        .emblem-name { font-size: 1.6rem; }
-        .emblem-badge-placeholder { width: 45px; height: 45px; font-size: 1.4rem; }
-        .emblem-content { padding: 0 15px; gap: 12px; }
-        .emblem-title-display { font-size: 0.7rem; padding: 2px 8px; }
+        .emblem-wrapper { height: 120px; border-radius: 18px; } 
+        .emblem-name { font-size: 1.8rem; }
+        .emblem-badge-placeholder { width: 50px; height: 50px; font-size: 1.5rem; }
+        .emblem-content { padding: 0 15px; gap: 15px; }
     }
 </style>
 
@@ -97,7 +100,7 @@
     <div class="emblem-wrapper" onclick="window.goToCustomization('emblems')">
         <div class="emblem-bg" id="user-emblem-bg" style="background-image: url('assets/images/default-emblem.png');"></div>
         <div class="emblem-content">
-            <div class="emblem-badge-placeholder" id="user-badge-display" onclick="event.stopPropagation(); window.goToCustomization('badges')">
+            <div class="emblem-badge-placeholder" onclick="event.stopPropagation(); window.goToCustomization('badges')">
                 <i class="ph-fill ph-shield-star"></i>
             </div>
             <div class="emblem-text-group">
@@ -153,30 +156,30 @@
                 </div>
                 
                 <div style="display: flex; gap: 10px; margin-top: auto;">
-                    <button class="btn-avatar-option" style="flex: 1; border-color: transparent;" onclick="window.switchInfoView('main')"><span data-i18n="back_btn">عودة</span></button>
-                    <button class="btn-core" id="save-info-btn" style="flex: 2; padding: 12px; font-size: 0.95rem;" onclick="window.savePersonalInfo()"><span data-i18n="save_changes">حفظ التعديلات</span></button>
+                    <button class="btn-avatar-option" style="flex: 1;" onclick="window.switchInfoView('main')"><span data-i18n="back_btn">عودة</span></button>
+                    <button class="btn-core" id="save-info-btn" style="flex: 2; padding: 10px; font-size: 0.9rem;" onclick="window.savePersonalInfo()"><span data-i18n="save_changes">حفظ التعديلات</span></button>
                 </div>
             </div>
         </div>
 
-        <div class="profile-card" id="settings-card-wrapper">
+        <div class="profile-card">
             <div class="profile-card-title"><i class="ph-bold ph-palette"></i> <span data-i18n="profile_appearance">المظهر والإعدادات</span></div>
             
             <div class="appearance-section">
                 <div class="privacy-setting">
                     <span class="privacy-label"><i class="ph-fill ph-user-circle"></i> البروفايل (اللفل والإنجازات)</span>
                     <div class="segmented-control" style="width: 100%;">
-                        <button class="segment-btn active" id="priv-prof-all" onclick="window.setPrivacy('profile', 'all', this)">الجميع</button>
-                        <button class="segment-btn" id="priv-prof-friends" onclick="window.setPrivacy('profile', 'friends', this)">الأصدقاء</button>
-                        <button class="segment-btn" id="priv-prof-nobody" onclick="window.setPrivacy('profile', 'nobody', this)">لا أحد</button>
+                        <button class="segment-btn active" onclick="window.setPrivacy('profile', 'all', this)">الجميع</button>
+                        <button class="segment-btn" onclick="window.setPrivacy('profile', 'friends', this)">الأصدقاء</button>
+                        <button class="segment-btn" onclick="window.setPrivacy('profile', 'nobody', this)">لا أحد</button>
                     </div>
                 </div>
                 <div class="privacy-setting">
                     <span class="privacy-label"><i class="ph-fill ph-chart-bar"></i> السجل والاحصائيات</span>
                     <div class="segmented-control" style="width: 100%;">
-                        <button class="segment-btn active" id="priv-hist-all" onclick="window.setPrivacy('history', 'all', this)">الجميع</button>
-                        <button class="segment-btn" id="priv-hist-friends" onclick="window.setPrivacy('history', 'friends', this)">الأصدقاء</button>
-                        <button class="segment-btn" id="priv-hist-nobody" onclick="window.setPrivacy('history', 'nobody', this)">لا أحد</button>
+                        <button class="segment-btn active" onclick="window.setPrivacy('history', 'all', this)">الجميع</button>
+                        <button class="segment-btn" onclick="window.setPrivacy('history', 'friends', this)">الأصدقاء</button>
+                        <button class="segment-btn" onclick="window.setPrivacy('history', 'nobody', this)">لا أحد</button>
                     </div>
                 </div>
 
@@ -195,6 +198,7 @@
                 <span data-i18n="gallery_empty">المعرض فارغ حالياً. افتح الإنجازات أو زر المتجر للحصول على عناصر جديدة!</span>
             </div>
         </div>
+
         <div class="profile-card" style="padding: 20px;">
             <div class="section-header"><i class="ph-duotone ph-clock-counter-clockwise"></i> <span data-i18n="tab_history">آخر المباريات</span></div>
             <div class="empty-content-box">
@@ -202,6 +206,7 @@
                 <span data-i18n="history_empty">لم تلعب أي مباراة بعد. انطلق إلى غرف اللعب الآن!</span>
             </div>
         </div>
+
         <div class="profile-card" style="padding: 20px;">
             <div class="section-header"><i class="ph-duotone ph-chart-line-up"></i> <span data-i18n="tab_stats">الإحصائيات</span></div>
             <div class="stats-grid">
@@ -223,15 +228,6 @@
 </div>
 
 <script>
-    // مصفوفة العناصر الموحدة (مهمة جداً لجلب لون وأيقونة البادج برمجياً)
-    window.gameAssets = window.gameAssets || {
-        badges: [
-            { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a' },
-            { id: 'veteran', name: 'مخضرم', icon: 'ph-sword', color: '#3498db' },
-            { id: 'master', name: 'محترف', icon: 'ph-crown', color: '#f1c40f' }
-        ]
-    };
-
     window.goToCustomization = function(tabName) {
         window.targetCustomizationTab = tabName;
         window.loadFragment('customization', null);
@@ -252,24 +248,14 @@
         document.getElementById('edit-username-input').value = window.currentUserData.username;
         document.getElementById('edit-email-input').value = window.currentUserData.email;
 
-        // جلب اللقب وتغيير شكله
+        // التحقق من اللقب وإظهار الاستايل المناسب
         let titleEl = document.getElementById('emblem-title');
-        if(window.currentUserData.title && window.currentUserData.title !== '') {
+        if(window.currentUserData.title) {
             titleEl.innerText = window.currentUserData.title;
             titleEl.classList.add('equipped-title');
         } else {
             titleEl.innerText = 'بدون لقب';
             titleEl.classList.remove('equipped-title');
-        }
-
-        // جلب البادج (الشارة) وعرضه ديناميكياً
-        let currentBadgeId = window.currentUserData.badge || 'beginner';
-        let badgeData = window.gameAssets.badges.find(b => b.id === currentBadgeId);
-        if(badgeData) {
-            let badgeEl = document.getElementById('user-badge-display');
-            badgeEl.innerHTML = `<i class="ph-fill ${badgeData.icon}"></i>`;
-            badgeEl.style.color = badgeData.color;
-            badgeEl.style.borderColor = badgeData.color;
         }
 
         let lvl = window.currentUserData.level || 1;
@@ -290,16 +276,6 @@
         document.getElementById('stat-m').innerText = m;
         document.getElementById('stat-w').innerText = w;
         document.getElementById('stat-wr').innerText = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
-
-        // تفعيل أزرار الخصوصية المحفوظة
-        if(window.currentUserData.privacy_profile) {
-            document.querySelectorAll('[id^="priv-prof-"]').forEach(b => b.classList.remove('active'));
-            document.getElementById('priv-prof-' + window.currentUserData.privacy_profile).classList.add('active');
-        }
-        if(window.currentUserData.privacy_history) {
-            document.querySelectorAll('[id^="priv-hist-"]').forEach(b => b.classList.remove('active'));
-            document.getElementById('priv-hist-' + window.currentUserData.privacy_history).classList.add('active');
-        }
     };
 
     window.switchInfoView = function(viewType) {
@@ -312,19 +288,11 @@
         }
     };
 
-    window.setPrivacy = async function(type, value, btn) {
+    window.setPrivacy = function(type, value, btn) {
         const parent = btn.parentElement;
         parent.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        if(window.authInstance && window.authInstance.currentUser) {
-            let updateData = {};
-            updateData[`privacy_${type}`] = value;
-            try {
-                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), updateData);
-                window.currentUserData[`privacy_${type}`] = value;
-            } catch(e) { console.error("Privacy save error"); }
-        }
+        // يتم ربطها مستقبلاً بقاعدة البيانات
     };
 
     window.savePersonalInfo = async function() {
