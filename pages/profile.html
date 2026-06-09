@@ -43,12 +43,13 @@
 
     .btn-edit-info { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: var(--text-main); padding: 12px; border-radius: 14px; font-size: 0.95rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; margin-top: auto; }
     .btn-edit-info:hover { background: rgba(255, 255, 255, 0.15); border-color: white; color: white; }
+    
+    /* زر تسجيل الخروج تمت إضافته هنا */
+    .btn-logout-acc { background: rgba(255, 76, 106, 0.1); color: var(--accent-red); padding: 12px; border-radius: 14px; font-size: 0.95rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid transparent; }
+    .btn-logout-acc:hover { background: var(--accent-red); color: white; }
+
     [data-theme="light"] .btn-edit-info { border-color: rgba(0,0,0,0.2); color: var(--text-main); }
     [data-theme="light"] .btn-edit-info:hover { background: rgba(0,0,0,0.1); border-color: black; }
-
-    /* زر تسجيل الخروج الجديد */
-    .btn-logout { background: transparent; border: 1px solid rgba(255, 76, 106, 0.4); color: var(--accent-red); padding: 12px; border-radius: 14px; font-size: 0.95rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; margin-top: 5px; }
-    .btn-logout:hover { background: rgba(255, 76, 106, 0.1); border-color: var(--accent-red); }
 
     #profile-card-content-edit { display: flex; flex-direction: column; flex: 1; gap: 15px; }
     .edit-input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(100,100,100,0.2); background: var(--bg-base); color: var(--text-main); font-family: var(--font-en); font-weight: 600; outline: none; transition: 0.3s; text-align: left; direction: ltr; margin-top: 5px; }
@@ -78,7 +79,6 @@
     .stat-label { font-size: 0.75rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
     .empty-content-box { background: var(--bg-base); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px dashed rgba(100,100,100,0.2); color: var(--text-dim); gap: 15px; height: 100%; min-height: 150px; }
 
-    /* النافذة المنبثقة للأفتارات */
     .avatar-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s ease; }
     .avatar-modal-content { background: var(--surface-panel); width: 90%; max-width: 600px; border-radius: 24px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 20px; transform: scale(0.9); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 85vh; }
     .avatar-modal-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; font-weight: bold; color: var(--text-main); border-bottom: 1px solid rgba(100,100,100,0.1); padding-bottom: 15px; }
@@ -91,19 +91,14 @@
     .avatar-pick-card:hover { border-color: rgba(255, 76, 106, 0.5); transform: translateY(-3px); }
     .avatar-pick-card.selected { border-color: var(--accent-green); box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); }
 
-    /* تعديلات الجوال الاحترافية للصورة والبادج */
+    /* تعديلات الجوال: تصغير اللقب ومسافة أقل ليصبح أقرب للبادج */
     @media (max-width: 768px) { 
         .top-profile-grid { grid-template-columns: 1fr; }
         .emblem-wrapper { height: 120px; border-radius: 18px; } 
-        /* تصغير الصورة وحصرها في اليمين مع تلاشي سلس لترك مساحة للنص */
-        .emblem-bg { width: 75%; right: 0; left: auto; background-size: cover; mask-image: linear-gradient(to right, transparent 0%, black 45%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 45%); }
-        
         .emblem-name { font-size: 1.8rem; }
         .emblem-badge-placeholder { width: 50px; height: 50px; font-size: 1.5rem; }
-        /* تقريب المسافة بين البادج والاسم */
-        .emblem-content { padding: 0 15px; gap: 10px; }
-        /* تصغير اللقب في الجوال */
-        .emblem-title-display { font-size: 0.65rem; padding: 2px 8px; margin-top: 0; }
+        .emblem-content { padding: 0 15px; gap: 12px; } /* تقريب المسافة */
+        .emblem-title-display { font-size: 0.65rem; padding: 2px 8px; margin-left: 0; } /* تصغير المربع */
     }
 </style>
 
@@ -158,8 +153,7 @@
                 <button class="btn-edit-info" onclick="window.switchInfoView('edit')">
                     <i class="ph-bold ph-pencil-simple"></i> <span data-i18n="edit_personal_info">تعديل المعلومات الشخصية</span>
                 </button>
-                <!-- زر تسجيل الخروج -->
-                <button class="btn-logout" onclick="window.logoutUser()">
+                <button class="btn-logout-acc" onclick="if(window.logoutUser) window.logoutUser(); else if(window.authInstance) window.authInstance.signOut();">
                     <i class="ph-bold ph-sign-out"></i> تسجيل الخروج
                 </button>
             </div>
@@ -260,10 +254,17 @@
 </div>
 
 <script>
-    // تمرير القسم للـ window ليلتقطه ملف الكوستمايزيشن
+    // تعديل التوجيه لضمان استدعاء دالة التهيئة حتى لو تم تحميل الصفحة سابقاً
     window.goToCustomization = function(tabName) {
         window.targetCustomizationTab = tabName; 
         window.loadFragment('customization');
+        
+        // فرض التحديث حتى لو الـ DOM موجود من قبل
+        setTimeout(() => {
+            if(typeof window.initCustomizationPage === 'function') {
+                window.initCustomizationPage();
+            }
+        }, 50);
     };
 
     window.switchInfoView = function(viewType) {
@@ -411,16 +412,6 @@
             btn.innerText = 'تم الحفظ!'; setTimeout(() => { window.switchInfoView('main'); }, 1500);
         } catch(error) {
             console.error(error); alert("خطأ. تأكد من البيانات أو أعد تسجيل الدخول."); btn.innerText = 'حفظ التعديلات';
-        }
-    };
-
-    window.logoutUser = async function() {
-        if(window.authInstance) {
-            try {
-                await window.authInstance.signOut();
-                window.currentUserData = null;
-                window.location.reload();
-            } catch(e) { console.error(e); }
         }
     };
 
