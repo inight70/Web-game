@@ -24,6 +24,7 @@ window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData
 window.friendToRemove = null; window.friendToReview = null;
 window.unsubscribeSnapshot = null; window.currentLang = 'ar';
 
+// مكتبة الأصول (Assets) لاستخراج أيقونات البادجات للأصدقاء بشكل صحيح
 window.gameAssets = window.gameAssets || {
     badges: [
         { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a' },
@@ -32,6 +33,7 @@ window.gameAssets = window.gameAssets || {
     ]
 };
 
+// نظام المزامنة اللحظية (Real-time) الخاص بالأصدقاء
 window.friendsCache = window.friendsCache || {};
 window.friendListeners = window.friendListeners || {};
 
@@ -40,61 +42,75 @@ const hideLoader = () => {
     if(l){ l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 400); } 
 };
 
-// الدالة الموحدة لبناء البادج ليتطابق مع البروفايل 100%
-function getSharedBadgeHtml(badgeId, size = '50px', fontSize = '1.6rem') {
+// دالة مساعدة لتوحيد شكل البادج (مطابق للبروفايل 100%)
+function getSharedBadgeHtml(badgeId, size = '45px', fontSize = '1.4rem') {
     let badgeObj = window.gameAssets.badges.find(b => b.id === badgeId) || window.gameAssets.badges[0];
-    return `<div style="width: ${size}; height: ${size}; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: ${fontSize}; color: ${badgeObj.color}; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0;"><i class="ph-fill ${badgeObj.icon}"></i></div>`;
+    return `<div style="width: ${size}; height: ${size}; background: rgba(255,255,255,0.1); border: 2px dashed ${badgeObj.color}; color: ${badgeObj.color}; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: ${fontSize}; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0;"><i class="ph-fill ${badgeObj.icon}"></i></div>`;
 }
 
+// 1. الدالة المسؤولة عن بدء الاستماع لحظة بلحظة لكل صديق
 window.setupRealtimeFriends = function() {
     if (!window.currentUserData) return;
     const friendsArray = window.currentUserData.friends || [];
 
+    // تنظيف المستمعين القدامى (إذا حذفت صديقاً)
     Object.keys(window.friendListeners).forEach(fName => {
         if (!friendsArray.includes(fName)) {
-            window.friendListeners[fName](); 
+            window.friendListeners[fName](); // إيقاف الاستماع
             delete window.friendListeners[fName];
             delete window.friendsCache[fName];
         }
     });
 
-    if (friendsArray.length === 0) { window.drawFriendsUI(); return; }
+    if (friendsArray.length === 0) {
+        window.drawFriendsUI();
+        return;
+    }
 
+    // إضافة مستمع لحظي لكل صديق جديد
     friendsArray.forEach(fName => {
         if (!window.friendListeners[fName]) {
             const q = query(collection(db, "users"), where("username_lower", "==", fName.toLowerCase()));
             window.friendListeners[fName] = onSnapshot(q, (snap) => {
-                if (!snap.empty) { window.friendsCache[fName] = snap.docs[0].data(); } 
-                else { window.friendsCache[fName] = { username: fName }; }
+                if (!snap.empty) {
+                    window.friendsCache[fName] = snap.docs[0].data();
+                } else {
+                    window.friendsCache[fName] = { username: fName };
+                }
+                // عند حدوث أي تغيير في الطرف الآخر، أعد رسم الواجهة فوراً
                 window.drawFriendsUI();
             });
         }
     });
 };
 
+// 2. دالة رسم واجهة الأصدقاء (يتم استدعاؤها لحظياً عند أي تغيير)
 window.drawFriendsUI = function() {
     const desktopContainer = document.getElementById('friends-container-desktop');
     const mobileContainer = document.getElementById('mobile-friends-wrapper');
     const friendsArray = (window.currentUserData && window.currentUserData.friends) ? window.currentUserData.friends : [];
 
+    // ---- رسم واجهة سطح المكتب (دوائر جانبية) ----
     if (desktopContainer) {
         if (window.isGuest || !window.currentUserData) {
             desktopContainer.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لرؤية الأصدقاء</span></div>`;
         } else if (friendsArray.length === 0) {
-            desktopContainer.innerHTML = `<div class="friends-header">الأصدقاء</div><button class="add-friend-btn-circle" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
+            desktopContainer.innerHTML = `<div class="friends-header">الأصدقاء</div><button class="add-friend-btn" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
         } else {
             let dHtml = `<div class="friends-header">الأصدقاء</div><div style="display:flex; flex-direction:column; gap:15px; align-items:center; width:100%;">`;
             friendsArray.forEach(fName => {
                 const fData = window.friendsCache[fName] || { username: fName };
                 let avatarHtml = `<div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px; color:var(--text-main);">${fName.charAt(0).toUpperCase()}</div>`;
                 if (fData.avatar) avatarHtml = `<img src="${fData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                // تمرير false لتحديد أنه كمبيوتر (Popover)
                 dHtml += `<div class="friend-avatar" onclick="window.openFriendActionModal('${fName}', event, false)">${avatarHtml}<div class="online-dot"></div></div>`;
             });
-            dHtml += `</div><button class="add-friend-btn-circle" style="margin-top: 15px;" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
+            dHtml += `</div><button class="add-friend-btn" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
             desktopContainer.innerHTML = dHtml;
         }
     }
 
+    // ---- رسم واجهة الجوال (الأفتار خارج الأمبلم) ----
     if (mobileContainer) {
         if (window.isGuest || !window.currentUserData) {
             mobileContainer.innerHTML = `<div class="empty-content-box" style="height: 100%; border:none; justify-content:center;"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لإضافة الأصدقاء ورؤيتهم.</span></div>`;
@@ -105,10 +121,14 @@ window.drawFriendsUI = function() {
             friendsArray.forEach(fName => {
                 const fData = window.friendsCache[fName] || { username: fName };
                 
+                // الأفتار
                 let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">${fName.charAt(0).toUpperCase()}</div>`;
                 if (fData.avatar) avatarInner = `<img src="${fData.avatar}">`;
                 
-                let badgeHtml = getSharedBadgeHtml(fData.badge || 'beginner', '45px', '1.4rem');
+                // البادج
+                let badgeHtml = getSharedBadgeHtml(fData.badge || 'beginner', '40px', '1.2rem');
+                
+                // الأمبلم
                 let emblemSrc = fData.emblem || 'assets/images/default-emblem.png';
                 let titleHtml = (fData.title && fData.title !== '') ? `<div class="friend-title">${fData.title}</div>` : '';
                 
@@ -120,6 +140,7 @@ window.drawFriendsUI = function() {
                         </div>
                         <div class="friend-emblem-card">
                             <div class="friend-emblem-bg" style="background-image: url('${emblemSrc}');"></div>
+                            <div class="friend-emblem-gradient"></div>
                             <div class="friend-emblem-content">
                                 ${badgeHtml}
                                 <div class="friend-text-group">
@@ -136,52 +157,54 @@ window.drawFriendsUI = function() {
     }
 };
 
-window.renderFriendsList = function(containerId, isFullCard = false) { window.setupRealtimeFriends(); };
+window.renderFriendsList = function(containerId, isFullCard = false) {
+    window.setupRealtimeFriends();
+};
 
-// 3. النوافذ الذكية للأصدقاء
+// 3. النافذة الذكية (Modal للجوال / Popover ستايل ديسكورد للكمبيوتر)
 window.openFriendActionModal = function(friendName, event, isMobile) {
-    // التحقق المسبق: إذا ضغط المستخدم على صديق مفتوح مسبقاً في الكمبيوتر، يتم إغلاقه بدلاً من إعادة فتحه
-    let existingPopover = document.getElementById('friend-popover');
-    if(existingPopover && !isMobile) {
-        let currentOpenFriend = existingPopover.getAttribute('data-friend');
-        existingPopover.remove();
-        if(currentOpenFriend === friendName) return; // Toggle Close
-    }
-
+    // تنظيف النوافذ السابقة
     let existingModal = document.getElementById('dynamic-friend-modal');
     if(existingModal) existingModal.remove();
+    let existingPopover = document.getElementById('friend-popover');
+    if(existingPopover) existingPopover.remove();
 
     const friendData = window.friendsCache[friendName] || { username: friendName };
 
-    let badgeHtml = getSharedBadgeHtml(friendData.badge || 'beginner', '55px', '1.8rem');
-    let fEmblem = friendData.emblem || 'assets/images/default-emblem.png';
-    let fEmail = friendData.email || 'مخفي';
-    
+    // تجهيز العناصر
+    let badgeHtml = getSharedBadgeHtml(friendData.badge || 'beginner', '45px', '1.4rem');
+    let avatarInner = `<div style="width: 100%; height: 100%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1rem; color: white;">${friendData.username.charAt(0).toUpperCase()}</div>`;
+    if (friendData.avatar) avatarInner = `<img src="${friendData.avatar}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    let avatarCircle = `<div style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index:3;">${avatarInner}</div>`;
+
     let titleHtml = '';
     if(friendData.title && friendData.title !== '') {
-        titleHtml = `<div style="font-size: 0.8rem; font-weight: 700; color: gold; text-transform: uppercase; letter-spacing: 1px; padding: 4px 12px; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(5px); border: 1px solid rgba(255,215,0,0.5); margin-top: 5px;">${friendData.title}</div>`;
+        titleHtml = `<div style="font-size: 0.75rem; font-weight: 700; color: gold; text-transform: uppercase; letter-spacing: 1px; padding: 4px 12px; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(5px); border: 1px solid rgba(255,215,0,0.5); margin-top: 5px;">${friendData.title}</div>`;
     }
 
+    let fEmblem = friendData.emblem || 'assets/images/default-emblem.png';
+
     if (isMobile) {
-        // نافذة الجوال (Modal) بدون ظلال
+        // --- نافذة الجوال (Modal) تم ضبط ارتفاع الأمبلم ليكون 110px حتى لا يغطي الاسم ---
         const modalHtml = `
             <div class="profile-modal-content" style="padding: 0; overflow: hidden; background: var(--surface-panel); width: 90%; max-width: 420px; border-radius: 24px; box-shadow: var(--shadow-soft); position: relative; animation: smoothFadeIn 0.3s ease;">
                 <button onclick="document.getElementById('dynamic-friend-modal').remove()" style="position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(0,0,0,0.5); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
                 
-                <div style="position: relative; width: 100%; height: 130px; background-color: #1a1a24; direction: ltr !important;">
+                <div style="position: relative; width: 100%; height: 120px; background-color: #1a1a24; direction: ltr !important;">
                     <div style="position: absolute; inset: 0; background-image: url('${fEmblem}'); background-size: cover; background-position: right center;"></div>
+                    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%); z-index: 1;"></div>
                     
-                    <div style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 20px;">
+                    <div style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding: 0 15px;">
+                        ${avatarCircle}
                         ${badgeHtml}
                         <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
-                            <div style="font-size: 1.8rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 8px rgba(0,0,0,0.9); letter-spacing: 0.5px; line-height: 1;">${friendData.username}</div>
+                            <div style="font-size: 1.6rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 5px rgba(0,0,0,0.6); letter-spacing: 0.5px; line-height: 1;">${friendData.username}</div>
                             ${titleHtml}
                         </div>
                     </div>
                 </div>
 
                 <div style="padding: 20px; display: flex; flex-direction: column; gap: 10px;">
-                    <div style="font-size: 0.8rem; color: var(--text-dim); text-align: center; margin-bottom: 5px;">${fEmail}</div>
                     <button style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 12px; border-radius: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s;" onclick="alert('سيتم فتح البروفايل')"><i class="ph-bold ph-user-circle"></i> الملف الشخصي</button>
                     <button style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 12px; border-radius: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s;" onclick="alert('سيتم فتح السجل')"><i class="ph-bold ph-clock-counter-clockwise"></i> السجل</button>
                     <button style="background: rgba(255, 76, 106, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.3); padding: 12px; border-radius: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s;" onclick="document.getElementById('dynamic-friend-modal').remove(); window.openRemoveFriendModal('${friendName}');"><i class="ph-bold ph-user-minus"></i> حذف صديق</button>
@@ -197,35 +220,34 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
         document.body.appendChild(modal);
 
     } else {
-        // نافذة الكمبيوتر (Popover واسع بدون ظلال وبدون أفتار)
+        // --- نافذة الكمبيوتر الجانبية (Discord Style Popover) ---
         const rect = event.currentTarget.getBoundingClientRect();
         let leftPos = rect.right + 15;
-        if (leftPos + 360 > window.innerWidth) { leftPos = rect.left - 360 - 15; }
+        if (leftPos + 300 > window.innerWidth) { leftPos = rect.left - 300 - 15; }
         let topPos = rect.top;
-        if (topPos + 340 > window.innerHeight) { topPos = window.innerHeight - 350; }
+        if (topPos + 320 > window.innerHeight) { topPos = window.innerHeight - 330; }
 
         const popover = document.createElement('div');
         popover.id = 'friend-popover';
-        popover.setAttribute('data-friend', friendName); // لحفظ حالة Toggle
-        popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 360px; background: var(--surface-panel); border-radius: 20px; box-shadow: var(--shadow-soft); z-index: 100000; overflow: hidden; animation: smoothFadeIn 0.2s ease; border: 1px solid rgba(100,100,100,0.1);`;
+        popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 300px; background: var(--surface-panel); border-radius: 20px; box-shadow: var(--shadow-soft); z-index: 100000; overflow: hidden; animation: smoothFadeIn 0.2s ease; border: 1px solid rgba(100,100,100,0.1);`;
         
         popover.innerHTML = `
-            <div style="position: relative; width: 100%; height: 130px; background-color: #1a1a24; direction: ltr !important;">
+            <div style="position: relative; width: 100%; height: 110px; background-color: #1a1a24; direction: ltr !important;">
                 <div style="position: absolute; inset: 0; background-image: url('${fEmblem}'); background-size: cover; background-position: right center;"></div>
-                
-                <div style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 20px;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 60%, transparent 100%); z-index: 1;"></div>
+                <div style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 0 15px;">
+                    ${avatarCircle}
                     ${badgeHtml}
                     <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
-                        <div style="font-size: 1.6rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 8px rgba(0,0,0,0.9); line-height: 1;">${friendData.username}</div>
+                        <div style="font-size: 1.3rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 2px 4px rgba(0,0,0,0.6); line-height: 1;">${friendData.username}</div>
                         ${titleHtml}
                     </div>
                 </div>
             </div>
             <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-size: 0.8rem; color: var(--text-dim); text-align: center; margin-bottom: 5px;">${fEmail}</div>
-                <button style="background: var(--bg-base); color: var(--text-main); border: 1px solid rgba(100,100,100,0.1); padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.9rem;" onclick="alert('فتح البروفايل')"><i class="ph-bold ph-user-circle"></i> الملف الشخصي</button>
-                <button style="background: var(--bg-base); color: var(--text-main); border: 1px solid rgba(100,100,100,0.1); padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.9rem;" onclick="alert('فتح السجل')"><i class="ph-bold ph-clock-counter-clockwise"></i> السجل</button>
-                <button style="background: rgba(255, 76, 106, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.9rem;" onclick="document.getElementById('friend-popover').remove(); window.openRemoveFriendModal('${friendName}');"><i class="ph-bold ph-user-minus"></i> حذف صديق</button>
+                <button style="background: var(--bg-base); color: var(--text-main); border: 1px solid rgba(100,100,100,0.1); padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem;" onclick="alert('فتح البروفايل')"><i class="ph-bold ph-user-circle"></i> الملف الشخصي</button>
+                <button style="background: var(--bg-base); color: var(--text-main); border: 1px solid rgba(100,100,100,0.1); padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem;" onclick="alert('فتح السجل')"><i class="ph-bold ph-clock-counter-clockwise"></i> السجل</button>
+                <button style="background: rgba(255, 76, 106, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem;" onclick="document.getElementById('friend-popover').remove(); window.openRemoveFriendModal('${friendName}');"><i class="ph-bold ph-user-minus"></i> حذف صديق</button>
             </div>
         `;
         document.body.appendChild(popover);
@@ -236,7 +258,7 @@ window.renderNotifications = function() {
     const list = document.getElementById('noti-list'); const dot = document.getElementById('noti-dot');
     if(!list || !dot) return;
     if (window.isGuest || !window.currentUserData || !window.currentUserData.friendRequests || window.currentUserData.friendRequests.length === 0) {
-        list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span data-i18n="no_noti">لا يوجد تنبيهات حالياً</span></div>`;
+        list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
         dot.style.display = 'none'; return;
     }
     dot.style.display = 'block'; let html = '';
@@ -246,7 +268,7 @@ window.renderNotifications = function() {
     list.innerHTML = html;
 };
 
-// المراقب الأساسي
+// المراقب الأساسي لحسابك أنت
 onAuthStateChanged(auth, (user) => {
     const nameEl = document.getElementById('header-name'); const fallbackAvatar = document.getElementById('header-avatar-fallback');
     const dropdownStatus = document.getElementById('dropdown-status-name'); const dropdownContent = document.getElementById('dropdown-content-area');
@@ -255,7 +277,7 @@ onAuthStateChanged(auth, (user) => {
 
     if (user) {
         window.isGuest = false; let isInitialLoad = true; 
-        window.unsubscribeSnapshot = window.onSnapshotFunc(doc(db, "users", user.uid), (userDoc) => {
+        window.unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (userDoc) => {
             if (userDoc.exists()) {
                 window.currentUserData = userDoc.data();
                 let displayName = window.currentUserData.username || user.email.split('@')[0];
@@ -376,8 +398,7 @@ window.setLanguage = async function(lang, skipSave = false) {
             else el.innerText = window.translations[lang][key];
         }
     });
-    window.renderNotifications(); 
-    window.drawFriendsUI();
+    window.renderNotifications(); window.drawFriendsUI();
     
     const activeBtn = document.querySelector('.nav-btn.active');
     if(activeBtn) {
@@ -474,11 +495,11 @@ window.toggleDropdown = function(dropdownId, triggerElement) {
     if (!isOpen && tgt) { tgt.classList.add('show'); if(triggerElement) triggerElement.classList.add('active'); }
 };
 
+// إغلاق Popover الأصدقاء عند النقر في أي مكان فارغ
 window.onclick = function(e) { 
     if (!e.target.closest('.header-icon-btn') && !e.target.closest('.profile-trigger') && !e.target.closest('.header-dropdown') && !e.target.closest('.modal-card')) { 
         document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show')); document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active')); 
     }
-    // إغلاق نافذة الأصدقاء في الكمبيوتر عند النقر خارجها
     if (!e.target.closest('#friend-popover') && !e.target.closest('.friend-avatar')) {
         const pop = document.getElementById('friend-popover');
         if (pop) pop.remove();
@@ -520,7 +541,7 @@ window.enterAsGuest = function() {
     const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
     const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = "غير مسجل"; 
     const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) { avtFall.innerHTML = "ز"; avtFall.style.border = ''; }
-    window.renderFriendsList('friends-container-desktop', false); window.renderNotifications();
+    window.setupRealtimeFriends(); window.renderNotifications();
     const dropContent = document.getElementById('dropdown-content-area'); if(dropContent) dropContent.innerHTML = `<button class="dropdown-item" onclick="window.openLoginDirectly()"><i class="ph ph-sign-in"></i> <span>تسجيل الدخول</span></button>`;
     window.clearAuthInputs(); 
     const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
