@@ -4,7 +4,22 @@
     #guest-locked-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; gap: 15px; }
     .locked-icon-wrapper { width: 100px; height: 100px; background: rgba(255, 76, 106, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
     
-    /* تم مسح استايلات الامبلم القديمة من هنا لأنها أصبحت موحدة في game-assets.js */
+    .emblem-wrapper { position: relative; width: 100%; height: 180px; border-radius: 24px; overflow: hidden; border: 2px solid transparent; transition: var(--trans-smooth); cursor: pointer; direction: ltr !important; background: var(--surface-panel); box-shadow: var(--shadow-soft); }
+    .emblem-wrapper:hover { border-color: var(--accent-red); transform: translateY(-3px); }
+    .emblem-bg { position: absolute; inset: 0; background-size: cover; background-position: center right; background-repeat: no-repeat; transition: 0.5s ease; z-index: 1; }
+    
+    .emblem-content { position: relative; z-index: 2; display: flex; align-items: center; justify-content: flex-start; gap: 25px; padding: 0 40px; height: 100%; width: 100%; }
+    
+    .emblem-badge-placeholder { width: 65px; height: 65px; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.9); font-size: 2.2rem; backdrop-filter: blur(5px); cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+    .emblem-badge-placeholder:hover { background: rgba(255, 76, 106, 0.4); transform: scale(1.1); }
+    
+    .emblem-text-group { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 5px; }
+    .emblem-name { font-size: 2.6rem; font-weight: 800; color: white; font-family: var(--font-en); text-shadow: 0 4px 10px rgba(0,0,0,0.6); letter-spacing: 1px; line-height: 1; margin: 0; }
+    
+    .emblem-title-display { font-size: 0.85rem; font-weight: 700; color: rgba(255, 215, 0, 0.9); text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.2s; padding: 4px 12px; background: rgba(0,0,0,0.5); border-radius: 100px; backdrop-filter: blur(5px); border: 1px solid transparent; }
+    .emblem-title-display:hover { background: rgba(0,0,0,0.7); color: white !important; }
+    .emblem-title-display.empty-title { background: rgba(255,255,255,0.15); border: 1px dashed rgba(255,255,255,0.5); color: white !important; font-size: 0.75rem; }
+    .emblem-title-display.empty-title:hover { background: rgba(255,255,255,0.25); border-color: white !important; }
 
     .top-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .profile-card { background: var(--surface-panel); border-radius: 24px; padding: 25px; border: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; }
@@ -77,6 +92,11 @@
 
     @media (max-width: 768px) { 
         .top-profile-grid { grid-template-columns: 1fr; }
+        .emblem-wrapper { height: 120px; border-radius: 18px; } 
+        .emblem-name { font-size: 1.8rem; }
+        .emblem-badge-placeholder { width: 50px; height: 50px; font-size: 1.5rem; }
+        .emblem-content { padding: 0 15px; gap: 12px; }
+        .emblem-title-display { font-size: 0.65rem; padding: 2px 8px; margin-left: 0; }
     }
 </style>
 
@@ -91,7 +111,18 @@
 
 <div id="auth-required-section" class="profile-container" style="display: none;">
 
-    <div id="profile-emblem-render-target"></div>
+    <div class="emblem-wrapper" onclick="window.goToCustomization('emblems')">
+        <div class="emblem-bg" id="user-emblem-bg" style="background-image: url('assets/images/default-emblem.png');"></div>
+        <div class="emblem-content">
+            <div class="emblem-badge-placeholder" onclick="event.stopPropagation(); window.goToCustomization('badges')" id="emblem-badge">
+                <i class="ph-fill ph-shield-star"></i>
+            </div>
+            <div class="emblem-text-group">
+                <div class="emblem-name" id="emblem-username">Player</div>
+                <div class="emblem-title-display empty-title" onclick="event.stopPropagation(); window.goToCustomization('titles')" id="emblem-title">إضافة لقب</div>
+            </div>
+        </div>
+    </div>
 
     <div class="top-profile-grid">
         <div class="profile-card">
@@ -224,6 +255,7 @@
     window.goToCustomization = function(tabName) {
         window.targetCustomizationTab = tabName; 
         window.loadFragment('customization');
+        
         setTimeout(() => {
             if(typeof window.initCustomizationPage === 'function') {
                 window.initCustomizationPage();
@@ -241,9 +273,11 @@
     };
 
     window.loadProfileData = function() {
-        if(!window.currentUserData) {
-            document.getElementById('auth-required-section').style.display = 'none';
-            document.getElementById('guest-locked-section').style.display = 'flex';
+        if(!window.currentUserData || !window.GAME_ASSETS) {
+            if(!window.currentUserData) {
+                document.getElementById('auth-required-section').style.display = 'none';
+                document.getElementById('guest-locked-section').style.display = 'flex';
+            }
             return;
         }
 
@@ -251,12 +285,43 @@
         document.getElementById('auth-required-section').style.display = 'flex';
 
         document.getElementById('info-username').innerText = window.currentUserData.username;
+        document.getElementById('emblem-username').innerText = window.currentUserData.username;
         document.getElementById('edit-username-input').value = window.currentUserData.username;
         document.getElementById('edit-email-input').value = window.currentUserData.email;
 
-        // حقن الامبلم الموحد للبروفايل مع تفعيل الخصائص التفاعلية للبادج والتايتل
-        document.getElementById('profile-emblem-render-target').innerHTML = 
-            window.UI_COMPONENTS.buildUnifiedEmblem(window.currentUserData, '180px', true, true);
+        // --- تحديث شكل اللقب بناءً على ملف Assets ---
+        let titleEl = document.getElementById('emblem-title');
+        let userTitle = window.currentUserData.title;
+        if(userTitle && userTitle !== 'none' && userTitle.trim() !== '') {
+            titleEl.innerText = userTitle;
+            titleEl.classList.remove('empty-title');
+            
+            // سحب لون اللقب من المركز
+            let titleObj = window.GAME_ASSETS.titles.find(t => t.name === userTitle);
+            if(titleObj && titleObj.color) {
+                titleEl.style.color = titleObj.color;
+                titleEl.style.borderColor = titleObj.color;
+            } else {
+                titleEl.style.color = 'gold'; // اللون الاحتياطي
+                titleEl.style.borderColor = 'gold';
+            }
+        } else {
+            titleEl.innerText = 'إضافة لقب';
+            titleEl.classList.add('empty-title');
+            titleEl.style.color = '';
+            titleEl.style.borderColor = '';
+        }
+
+        // --- تحديث شكل البادج بناءً على ملف Assets ---
+        let badgeEl = document.getElementById('emblem-badge');
+        let userBadgeId = window.currentUserData.badge || 'beginner';
+        let badgeObj = window.GAME_ASSETS.badges.find(b => b.id === userBadgeId) || window.GAME_ASSETS.badges[0];
+        
+        if (badgeEl && badgeObj) {
+            badgeEl.style.borderColor = badgeObj.color;
+            badgeEl.style.color = badgeObj.color;
+            badgeEl.innerHTML = `<i class="ph-fill ${badgeObj.icon}"></i>`;
+        }
 
         if(window.currentUserData.privacy_profile) {
             document.querySelectorAll('#privacy-profile-setting .segment-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-val') === window.currentUserData.privacy_profile); });
@@ -275,7 +340,10 @@
         document.getElementById('user-xp-text').innerText = `${xp} / ${nextLevelXp} XP`;
 
         if(window.currentUserData.avatar) {
-            document.getElementById('main-profile-avatar').innerHTML = `<img src="${window.currentUserData.avatar}">`;
+            document.getElementById('main-profile-avatar').innerHTML = `<img src="${window.currentUserData.avatar}" style="width:100%; height:100%; object-fit:cover;">`;
+        }
+        if(window.currentUserData.emblem) {
+            document.getElementById('user-emblem-bg').style.backgroundImage = `url('${window.currentUserData.emblem}')`;
         }
 
         let m = window.currentUserData.matches || 0;
@@ -334,13 +402,12 @@
     
     window.saveLoreleiAvatar = async function() {
         if(!window.selectedTempAvatar) { alert("اختر أفتاراً أولاً"); return; }
-        document.getElementById('main-profile-avatar').innerHTML = `<img src="${window.selectedTempAvatar}">`;
+        document.getElementById('main-profile-avatar').innerHTML = `<img src="${window.selectedTempAvatar}" style="width:100%; height:100%; object-fit:cover;">`;
         if(window.authInstance && window.authInstance.currentUser) {
             await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { avatar: window.selectedTempAvatar });
             window.currentUserData.avatar = window.selectedTempAvatar; 
             let fallbackAvatar = document.getElementById('header-avatar-fallback');
             if(fallbackAvatar) fallbackAvatar.innerHTML = `<img src="${window.selectedTempAvatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-            window.loadProfileData(); // تحديث البروفايل لضمان تحديث الأصول
         }
         window.closeAvatarModal();
     };
@@ -361,10 +428,9 @@
             if(Object.keys(updates).length > 0) { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), updates); }
             if(updates.username) {
                 document.getElementById('info-username').innerText = updates.username;
+                document.getElementById('emblem-username').innerText = updates.username;
                 let hName = document.getElementById('header-name');
                 if(hName) { hName.removeAttribute('data-i18n'); hName.innerText = updates.username; }
-                window.currentUserData.username = updates.username;
-                window.loadProfileData(); // لإعادة رسم الامبلم بالاسم الجديد
             }
             btn.innerText = 'تم الحفظ!'; setTimeout(() => { window.switchInfoView('main'); }, 1500);
         } catch(error) {
