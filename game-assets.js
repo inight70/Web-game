@@ -26,39 +26,40 @@ window.GAME_ASSETS = {
 // ==========================================
 window.UI_COMPONENTS = {
     
-    getBadgeHtml: function(badgeId, size = '45px', fontSize = '1.4rem') {
+    getBadgeHtml: function(badgeId, size = '40px', fontSize = '1.2rem') {
         let badgeObj = window.GAME_ASSETS.badges.find(b => b.id === badgeId) || window.GAME_ASSETS.badges[0];
         return `<div style="width: ${size}; height: ${size}; background: rgba(255,255,255,0.1); border: 2px dashed ${badgeObj.color}; color: ${badgeObj.color}; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: ${fontSize}; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0;"><i class="ph-fill ${badgeObj.icon}"></i></div>`;
     },
 
     getTitleHtml: function(titleStr) {
         if (!titleStr || titleStr === 'none' || titleStr.trim() === '') return '';
-        return `<div style="font-size: 0.75rem; font-weight: 700; color: gold; text-transform: uppercase; letter-spacing: 1px; padding: 4px 12px; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(5px); border: 1px solid rgba(255,215,0,0.5); margin-top: 5px;">${titleStr}</div>`;
+        return `<div style="font-size: 0.65rem; font-weight: 700; color: gold; text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px; background: rgba(0,0,0,0.6); border-radius: 6px; backdrop-filter: blur(5px); border: 1px solid rgba(255,215,0,0.5); margin-top: 4px;">${titleStr}</div>`;
     },
 
-    buildEmblemCard: function(userData, height = "120px", hideAvatar = false) {
-        // حماية متقدمة: إذا كانت البيانات فارغة، نضع قيم افتراضية حتى لا يعلق النظام
+    // الارتفاع الافتراضي هنا أصبح 85px ليكون شريطاً مستطيلاً عريضاً بدلاً من مربع
+    buildEmblemCard: function(userData, height = "85px", hideAvatar = false) {
         if (!userData) userData = {};
         const safeName = userData.username || 'Unknown';
         const emblemSrc = userData.emblem || 'assets/images/default-emblem.png';
-        const badgeHtml = this.getBadgeHtml(userData.badge || 'beginner', '50px', '1.5rem');
+        
+        const badgeHtml = this.getBadgeHtml(userData.badge || 'beginner', '38px', '1.1rem');
         const titleHtml = this.getTitleHtml(userData.title);
 
         let avatarHtml = '';
         if (!hideAvatar) {
-            let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1.2rem; color:white;">${safeName.charAt(0).toUpperCase()}</div>`;
+            let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1.1rem; color:white;">${safeName.charAt(0).toUpperCase()}</div>`;
             if (userData.avatar) avatarInner = `<img src="${userData.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-            avatarHtml = `<div style="width: 55px; height: 55px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index:3;">${avatarInner}</div>`;
+            avatarHtml = `<div style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index:3;">${avatarInner}</div>`;
         }
 
         return `
-            <div style="position: relative; width: 100%; height: ${height}; border-radius: 20px; overflow: hidden; direction: ltr !important; background-color: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); box-shadow: var(--shadow-soft); transition: 0.3s;">
+            <div style="position: relative; width: 100%; height: ${height}; border-radius: 20px; overflow: hidden; direction: ltr !important; background-color: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); box-shadow: var(--shadow-soft); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
                 <div style="position: absolute; inset: 0; background-image: url('${emblemSrc}'); background-size: cover; background-position: right center;"></div>
-                <div style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 15px;">
+                <div style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 0 15px;">
                     ${avatarHtml}
                     ${badgeHtml}
                     <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
-                        <div style="font-size: 1.5rem; font-weight: 800; color: white; font-family: var(--font-en); letter-spacing: 0.5px; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">${safeName}</div>
+                        <div style="font-size: 1.3rem; font-weight: 800; color: white; font-family: var(--font-en); letter-spacing: 0.5px; line-height: 1; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">${safeName}</div>
                         ${titleHtml}
                     </div>
                 </div>
