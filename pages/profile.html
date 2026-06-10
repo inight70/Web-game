@@ -208,8 +208,8 @@
                     <span class="privacy-label"><i class="ph-fill ph-chart-bar"></i> السجل والاحصائيات</span>
                     <div class="segmented-control" style="width: 100%;">
                         <button class="segment-btn active" data-val="all" onclick="window.setPrivacy('history', 'all', this)">الجميع</button>
-                        <button class="segment-btn" data-val="friends" onclick="window.setPrivacy('history', 'friends', this)">الأصدقاء</button>
-                        <button class="segment-btn" data-val="nobody" onclick="window.setPrivacy('history', 'nobody', this)">لا أحد</button>
+                        <button class="segment-btn" data-val="friends" onclick="window.setPrivacy('profile', 'friends', this)">الأصدقاء</button>
+                        <button class="segment-btn" data-val="nobody" onclick="window.setPrivacy('profile', 'nobody', this)">لا أحد</button>
                     </div>
                 </div>
 
@@ -296,13 +296,12 @@
             titleEl.innerText = userTitle;
             titleEl.classList.remove('empty-title');
             
-            // سحب لون اللقب من المركز
             let titleObj = window.GAME_ASSETS.titles.find(t => t.name === userTitle);
             if(titleObj && titleObj.color) {
                 titleEl.style.color = titleObj.color;
                 titleEl.style.borderColor = titleObj.color;
             } else {
-                titleEl.style.color = 'gold'; // اللون الاحتياطي
+                titleEl.style.color = 'gold';
                 titleEl.style.borderColor = 'gold';
             }
         } else {
@@ -412,6 +411,7 @@
         window.closeAvatarModal();
     };
 
+    // الدالة المحدثة التي تحتوي على المزامنة القوية مع الأصدقاء
     window.savePersonalInfo = async function() {
         let newName = document.getElementById('edit-username-input').value.trim();
         let newEmail = document.getElementById('edit-email-input').value.trim();
@@ -422,11 +422,24 @@
         try {
             const authModule = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
             let updates = {};
+            let oldName = window.currentUserData.username;
+            
             if(newEmail && newEmail !== user.email) { await authModule.updateEmail(user, newEmail); updates.email = newEmail; }
             if(newPass && newPass.length >= 6) { await authModule.updatePassword(user, newPass); }
-            if(newName && newName !== window.currentUserData.username) { updates.username = newName; updates.username_lower = newName.toLowerCase(); }
-            if(Object.keys(updates).length > 0) { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), updates); }
+            if(newName && newName !== oldName) { 
+                updates.username = newName; 
+                updates.username_lower = newName.toLowerCase(); 
+            }
+            
+            if(Object.keys(updates).length > 0) { 
+                await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), updates); 
+            }
+            
             if(updates.username) {
+                // مزامنة الاسم الجديد في حسابات الأصدقاء فوراً
+                if(window.syncUsernameChange) {
+                    await window.syncUsernameChange(oldName, updates.username);
+                }
                 document.getElementById('info-username').innerText = updates.username;
                 document.getElementById('emblem-username').innerText = updates.username;
                 let hName = document.getElementById('header-name');
