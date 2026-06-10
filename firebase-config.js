@@ -32,9 +32,6 @@ const hideLoader = () => {
     if(l){ l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 400); } 
 };
 
-// ==========================================
-// مراقب الخروج من الصفحة (Away Mode)
-// ==========================================
 document.addEventListener("visibilitychange", async () => {
     if (auth.currentUser && !window.isGuest) {
         const state = document.visibilityState === 'visible' ? 'online' : 'away';
@@ -98,7 +95,6 @@ window.drawFriendsUI = function() {
                         let avatarHtml = `<div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px; color:var(--text-main);">${safeName.charAt(0).toUpperCase()}</div>`;
                         if (fData.avatar) avatarHtml = `<img src="${fData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
                         
-                        // تحديد لون النقطة بناءً على الحالة
                         let dotColor = 'var(--accent-green)';
                         if(fData.status === 'offline') dotColor = 'gray';
                         else if(fData.status === 'away') dotColor = 'orange';
@@ -127,8 +123,8 @@ window.drawFriendsUI = function() {
                         let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">${safeName.charAt(0).toUpperCase()}</div>`;
                         if (fData.avatar) avatarInner = `<img src="${fData.avatar}">`;
                         
-                        // ارتفاع الأمبلم في الموبايل
-                        let emblemHTML = window.UI_COMPONENTS ? window.UI_COMPONENTS.buildEmblemCard(fData, "100px", true) : '';
+                        // هنا الارتفاع 80px ليعطي شكل الشريط المستطيل الممتد بالعرض
+                        let emblemHTML = window.UI_COMPONENTS ? window.UI_COMPONENTS.buildEmblemCard(fData, "80px", true) : '';
                         
                         let dotColor = 'var(--accent-green)';
                         let shadowColor = 'rgba(46, 204, 113, 0.5)';
@@ -158,7 +154,6 @@ window.renderFriendsList = function(containerId, isFullCard = false) {
     window.setupRealtimeFriends();
 };
 
-// --- أنيميشن عصري واحترافي جداً يطابق معايير الويب الحديثة ---
 const style = document.createElement('style');
 style.innerHTML = `
     @keyframes smoothScaleIn {
@@ -212,8 +207,8 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
         `;
 
         if (isMobile) {
-            // ارتفاع الأمبلم في الموبايل داخل النافذة
-            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "140px", true);
+            // ارتفاع 95px في النافذة المنبثقة للجوال ليبقى مستطيلاً أفقياً (Banner Style)
+            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "95px", true);
             const modalHtml = `
                 <div class="profile-modal-content friend-data-card" style="padding: 0; width: 95%;">
                     <button onclick="document.getElementById('dynamic-friend-modal').remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
@@ -231,7 +226,6 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
         } else {
             const rect = event.currentTarget.getBoundingClientRect();
             let leftPos = rect.right + 15;
-            // تصغير وتعديل حجم المربع في الكمبيوتر ليكون 360 بكسل بدلاً من 460 (أكثر أناقة ومناسبة)
             if (leftPos + 360 > window.innerWidth) { leftPos = rect.left - 360 - 15; }
             let topPos = rect.top;
             if (topPos + 380 > window.innerHeight) { topPos = window.innerHeight - 380; }
@@ -241,8 +235,8 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
             popover.setAttribute('data-friend', friendName);
             popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 360px; background: var(--surface-panel); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); z-index: 100000; overflow: hidden; animation: smoothScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; border: 1px solid rgba(255,255,255,0.08);`;
             
-            // ارتفاع الأمبلم في الكمبيوتر
-            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "130px", true);
+            // ارتفاع 100px للكمبيوتر ليكون مستطيلاً ممتداً بالعرض
+            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "100px", true);
 
             popover.innerHTML = `
                 ${emblemHTML}
@@ -296,13 +290,13 @@ window.viewFriendProfile = function(fName) {
             `;
         }
 
-        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "180px", true);
+        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "120px", true);
         
         const modal = document.createElement('div');
         modal.className = 'friend-data-modal';
         modal.innerHTML = `
             <div class="friend-data-card" style="max-width: 500px;">
-                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);"><i class="ph-bold ph-x"></i></button>
                 ${emblemHTML}
                 ${contentHtml}
             </div>
@@ -357,13 +351,13 @@ window.viewFriendHistory = function(fName) {
             `;
         }
 
-        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "180px", true);
+        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "120px", true);
         
         const modal = document.createElement('div');
         modal.className = 'friend-data-modal';
         modal.innerHTML = `
             <div class="friend-data-card" style="max-width: 550px;">
-                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);"><i class="ph-bold ph-x"></i></button>
                 ${emblemHTML}
                 ${contentHtml}
             </div>
@@ -408,9 +402,6 @@ window.renderNotifications = function() {
     list.innerHTML = html;
 };
 
-// ==========================================
-// تحديث أونلاين عند الدخول
-// ==========================================
 onAuthStateChanged(auth, async (user) => {
     const nameEl = document.getElementById('header-name'); const fallbackAvatar = document.getElementById('header-avatar-fallback');
     const dropdownStatus = document.getElementById('dropdown-status-name'); const dropdownContent = document.getElementById('dropdown-content-area');
@@ -420,7 +411,6 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         window.isGuest = false; let isInitialLoad = true; 
         
-        // تغيير الحالة لأونلاين عند استرجاع الجلسة
         try { await updateDoc(doc(db, "users", user.uid), { status: 'online' }); } catch(e){}
 
         window.unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (userDoc) => {
@@ -499,7 +489,6 @@ window.handleAuthSubmit = async function(e) {
                 email = snap.docs[0].data().email; 
             }
             authResult = await signInWithEmailAndPassword(auth, email, pass);
-            // تحديث الحالة فور الدخول
             await updateDoc(doc(db, "users", authResult.user.uid), { status: 'online' });
         } else {
             const user = document.getElementById('reg-username').value.trim(); 
