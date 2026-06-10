@@ -14,7 +14,7 @@
     /* حاوية الحالات (Morphing Container) */
     .hero-state-machine { flex: 1; z-index: 2; max-width: 50%; position: relative; height: 300px; display: flex; align-items: center; }
     
-    /* الحالات (الصفحات الداخلية للبطاقة) - تم تحسين السلاسة ومنع الاهتزاز */
+    /* الحالات (الصفحات الداخلية للبطاقة) */
     .hero-state { width: 100%; position: absolute; transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0; pointer-events: none; transform: translateX(20px); display: flex; flex-direction: column; align-items: flex-start; }
     .hero-state.active { opacity: 1; pointer-events: auto; transform: translateX(0); z-index: 10; }
     .hero-state.exit-left { transform: translateX(-20px); opacity: 0; pointer-events: none; z-index: 1; }
@@ -49,9 +49,7 @@
     .room-code-input::placeholder { color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: normal; text-transform: none; }
     .room-join-submit { background: white; color: var(--accent-red); border: none; padding: 0 25px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
 
-    /* =========================================
-       حل مشكلة الـ Hover في الجوال وتخصيص اللمس
-       ========================================= */
+    /* حل مشكلة اللمس في الجوال */
     @media (hover: hover) {
         .hero-badge-btn:hover { background: rgba(255, 255, 255, 0.35); transform: translateY(-2px); }
         .btn-hero-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2); }
@@ -61,7 +59,6 @@
         .room-join-submit:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
     }
     
-    /* تأثير الضغط الفعلي للجوال والكمبيوتر معاً */
     .btn-hero-primary:active, .room-create-btn:active, .room-join-submit:active { transform: scale(0.95); transition: 0.1s; }
     .btn-hero-secondary:active, .btn-back-room:active { transform: scale(0.95); background-color: rgba(255, 255, 255, 0.3); transition: 0.1s; }
 
@@ -73,7 +70,6 @@
     .game-card { background-color: var(--surface-panel); border-radius: 24px; padding: 30px; display: flex; gap: 30px; box-shadow: var(--shadow-soft); transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
     .secondary-game-card { align-items: center; opacity: 0.85; padding: 20px 30px; }
 
-    /* استجابة الجوال */
     @media (max-width: 768px) { 
         .hero-game-card { flex-direction: column; padding: 30px 20px 0 20px; text-align: center; min-height: auto; } 
         .hero-state-machine { max-width: 100%; width: 100%; height: auto; min-height: 250px; padding: 0 0 20px 0; } 
@@ -146,13 +142,18 @@
 
 <script>
     function switchHeroState(targetState) {
-        // حماية: إذا كان زائراً أو غير مسجل، يتم توجيهه لتسجيل الدخول فوراً
         if (window.isGuest || !window.currentUserData) {
-            if(window.openLoginDirectly) {
-                window.openLoginDirectly();
-            } else {
-                alert("يرجى تسجيل الدخول لتتمكن من اللعب أونلاين!");
-            }
+            const wView = document.getElementById('modal-welcome-view'); 
+            const fView = document.getElementById('modal-form-view'); 
+            const aModal = document.getElementById('auth-modal'); 
+            const shell = document.getElementById('app-shell'); 
+            
+            if(wView) wView.style.display = 'none'; 
+            if(fView) fView.style.display = 'block';
+            if(window.setFormType) window.setFormType('login'); 
+            if(aModal) aModal.classList.remove('hidden'); 
+            if(shell) shell.classList.remove('unlocked'); 
+            if(window.toggleDropdown) window.toggleDropdown('');
             return;
         }
 
@@ -182,7 +183,10 @@
     }
 
     function handleCreateRoom() {
-        alert("جارِ تجهيز غرفة اللعب... (سيتم برمجتها للاتصال بالفايربيس قريباً)");
+        // مؤقتاً، ننقل اللاعب مباشرة لصفحة اللوبي لرؤية التصميم
+        // (عند برمجة الفايربيس سنقوم بإنشاء الكود في السيرفر أولاً قبل النقل)
+        const playBtn = document.querySelectorAll('.nav-btn')[1];
+        if (window.loadFragment) window.loadFragment('lobby', playBtn);
     }
 
     function handleJoinRoom() {
@@ -191,6 +195,8 @@
             alert("الرجاء إدخال كود غرفة صحيح!");
             return;
         }
-        alert("جارِ البحث عن الغرفة: " + code);
+        // مؤقتاً، ننقل اللاعب لصفحة اللوبي
+        const playBtn = document.querySelectorAll('.nav-btn')[1];
+        if (window.loadFragment) window.loadFragment('lobby', playBtn);
     }
 </script>
