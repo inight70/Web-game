@@ -146,8 +146,13 @@
 
 <script>
     function switchHeroState(targetState) {
+        // حماية: إذا كان زائراً أو غير مسجل، يتم توجيهه لتسجيل الدخول فوراً
         if (window.isGuest || !window.currentUserData) {
-            alert("يرجى تسجيل الدخول لتتمكن من اللعب أونلاين!");
+            if(window.openLoginDirectly) {
+                window.openLoginDirectly();
+            } else {
+                alert("يرجى تسجيل الدخول لتتمكن من اللعب أونلاين!");
+            }
             return;
         }
 
@@ -162,7 +167,7 @@
             setTimeout(() => {
                 stateRooms.classList.remove('exit-left');
                 stateRooms.classList.add('active');
-                img.style.transform = "scale(1.08) translateX(-15px)"; // تأثير تكبير خفيف
+                img.style.transform = "scale(1.08) translateX(-15px)"; 
             }, 50);
         } else {
             stateRooms.classList.remove('active');
