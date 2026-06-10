@@ -1,31 +1,21 @@
 <style>
     .lobby-master-container { max-width: 900px; margin: 0 auto; padding: 20px 10px 90px 10px; animation: smoothFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    
-    /* سبينر حقيقي يدور */
     @keyframes spinFast { 100% { transform: rotate(360deg); } }
     .animate-spin { animation: spinFast 1s linear infinite; display: inline-block; }
 
-    /* =========================================
-       1. الهيدر التكتيكي الفخم (Tactical Header)
-       ========================================= */
     .premium-lobby-header {
         background: var(--surface-panel); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
         padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;
         box-shadow: 0 15px 40px rgba(0,0,0,0.4); margin-bottom: 25px; position: relative; overflow: hidden;
     }
-    /* خط النيون العلوي */
     .premium-lobby-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent-red), transparent); opacity: 0.8; }
 
     .lobby-header-left { display: flex; flex-direction: column; gap: 8px; }
-    .room-status-badge {
-        font-size: 0.8rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px;
-        display: flex; align-items: center; gap: 6px;
-    }
+    .room-status-badge { font-size: 0.8rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 6px; }
 
     .code-value-box {
         background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); padding: 8px 20px;
-        border-radius: 12px; display: inline-flex; align-items: center; gap: 15px; cursor: pointer;
-        transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 12px; display: inline-flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s;
     }
     .code-value-box:hover { background: rgba(255, 76, 106, 0.1); border-color: rgba(255, 76, 106, 0.4); transform: translateY(-2px); }
     .code-text { font-size: 2rem; font-weight: 900; color: white; font-family: var(--font-en); letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
@@ -33,8 +23,6 @@
     .code-value-box:hover .copy-icon { color: var(--accent-red); }
 
     .lobby-header-right { display: flex; align-items: center; gap: 15px; }
-    
-    /* زر الإعدادات الجديد */
     .btn-room-settings {
         background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main);
         width: 45px; height: 45px; border-radius: 14px; display: flex; justify-content: center; align-items: center;
@@ -42,26 +30,18 @@
     }
     .btn-room-settings:hover { background: rgba(255,255,255,0.1); color: white; transform: rotate(45deg); }
 
-    /* =========================================
-       2. شبكة اللاعبين (الأمبلمات بدون أفتار)
-       ========================================= */
     .lobby-section-title { font-size: 1.1rem; font-weight: 800; color: white; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
     
     .emblems-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-
     .player-slot-wrap { position: relative; transition: 0.3s; }
     .player-slot-wrap:hover { transform: translateY(-3px); }
 
-    /* النجمة الفخمة بديل التاج */
     .host-star-wrapper {
         position: absolute; top: -10px; left: -10px; z-index: 10;
-        background: var(--bg-base); padding: 4px; border-radius: 50%;
-        display: flex; justify-content: center; align-items: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        background: var(--bg-base); padding: 4px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
     .host-star-wrapper i { font-size: 1.4rem; color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(255,76,106,0.8)); }
 
-    /* مكان فارغ احترافي يتطابق مع شكل الأمبلم */
     .empty-emblem-slot {
         height: 85px; border-radius: 20px; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.1);
         display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
@@ -71,23 +51,45 @@
     .empty-emblem-slot i { font-size: 1.8rem; }
     .empty-emblem-slot span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* =========================================
-       3. أزرار التحكم السفلية
-       ========================================= */
     .lobby-bottom-actions { display: flex; gap: 15px; }
-    .btn-ready-master {
-        flex: 2; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1);
-        padding: 16px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer;
-        transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; justify-content: center; align-items: center; gap: 10px;
-    }
+    .btn-ready-master { flex: 2; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
     .btn-ready-master.is-ready { background: var(--accent-red); color: white; border-color: var(--accent-red); box-shadow: 0 10px 25px rgba(255, 76, 106, 0.3); }
     .btn-ready-master:active { transform: scale(0.98); }
     
-    .btn-leave-master {
-        flex: 1; background: transparent; color: var(--text-dim); padding: 16px; border-radius: 18px;
-        font-weight: 800; font-size: 1rem; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px;
-    }
+    .btn-leave-master { flex: 1; background: transparent; color: var(--text-dim); padding: 16px; border-radius: 18px; font-weight: 800; font-size: 1rem; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
     .btn-leave-master:hover { background: rgba(255,76,106,0.1); color: var(--accent-red); border-color: var(--accent-red); }
+
+    /* =========================================
+       نافذة دعوة الأصدقاء (Invite Modal)
+       ========================================= */
+    .invite-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 15px; }
+    .invite-modal-overlay.show { opacity: 1; visibility: visible; }
+    .invite-modal-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 30px 60px rgba(0,0,0,0.6); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.4s; max-height: 85vh; }
+    .invite-modal-overlay.show .invite-modal-card { transform: scale(1) translateY(0); }
+
+    .invite-header { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+    .invite-title { font-size: 1.3rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; }
+    .close-invite-btn { background: rgba(255,255,255,0.05); border: none; color: var(--text-dim); width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; }
+    .close-invite-btn:hover { background: rgba(255,76,106,0.1); color: var(--accent-red); transform: rotate(90deg); }
+
+    .invite-list-wrapper { padding: 15px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
+    .invite-list-wrapper::-webkit-scrollbar { display: none; }
+    
+    .friend-invite-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg-base); padding: 12px 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); transition: 0.3s; cursor: pointer; }
+    .friend-invite-row:hover { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
+    .friend-info-mini { display: flex; align-items: center; gap: 12px; }
+    .friend-av-mini { width: 45px; height: 45px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: bold; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+    .friend-av-mini img { width: 100%; height: 100%; object-fit: cover; }
+    .friend-name-mini { font-size: 1rem; font-weight: 800; color: var(--text-main); font-family: var(--font-en); }
+    
+    .custom-checkbox { width: 26px; height: 26px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; transition: 0.2s; color: transparent; }
+    .friend-invite-row.selected .custom-checkbox { background: var(--accent-red); border-color: var(--accent-red); color: white; box-shadow: 0 0 10px rgba(255,76,106,0.4); }
+
+    .invite-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); display: flex; gap: 10px; }
+    .btn-select-all { flex: 1; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+    .btn-select-all:hover { background: rgba(255,255,255,0.05); }
+    .btn-send-invites { flex: 2; background: var(--accent-red); color: white; border: none; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(255,76,106,0.3); display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .btn-send-invites:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,76,106,0.4); }
 
     @media (max-width: 768px) {
         .emblems-grid { grid-template-columns: 1fr; }
@@ -103,14 +105,13 @@
         <div class="lobby-header-left">
             <div class="room-status-badge">
                 <i class="ph-bold ph-spinner animate-spin"></i> 
-                <span id="player-count-text">بانتظار اللاعبين... (1/6)</span>
+                <span id="player-count-text">بانتظار اللاعبين...</span>
             </div>
             <div class="code-value-box" onclick="copyRoomCode()">
                 <span class="code-text" id="dynamic-room-code">----</span>
                 <i class="ph-bold ph-copy copy-icon"></i>
             </div>
         </div>
-        
         <div class="lobby-header-right">
             <button class="btn-room-settings" onclick="openRoomSettings()">
                 <i class="ph-fill ph-gear-six"></i>
@@ -120,7 +121,7 @@
 
     <div class="lobby-section-title">
         <span>فريق العمليات</span>
-        <span style="font-size:0.8rem; color:var(--text-dim);" id="ready-count-text">جاهز: 0/1</span>
+        <span style="font-size:0.8rem; color:var(--text-dim);" id="ready-count-text"></span>
     </div>
 
     <div class="emblems-grid" id="lobby-players-grid">
@@ -137,12 +138,24 @@
             <i class="ph-bold ph-sign-out" style="font-size: 1.2rem;"></i> مغادرة
         </button>
     </div>
+</div>
 
+<div class="invite-modal-overlay" id="invite-friends-modal" onclick="if(event.target === this) closeInviteModal()">
+    <div class="invite-modal-card">
+        <div class="invite-header">
+            <div class="invite-title"><i class="ph-fill ph-users-three" style="color: var(--accent-red);"></i> دعوة الأصدقاء</div>
+            <button class="close-invite-btn" onclick="closeInviteModal()"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="invite-list-wrapper" id="invite-friends-list"></div>
+        <div class="invite-footer">
+            <button class="btn-select-all" id="btn-select-all" onclick="toggleSelectAllFriends()">تحديد الكل</button>
+            <button class="btn-send-invites" id="btn-send-inv-submit" onclick="sendInvitesToSelected()"><i class="ph-bold ph-paper-plane-tilt"></i> إرسال الدعوات</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // دالة لجلب بيانات اللاعبين ورسمهم (تُستدعى من room-manager.js)
-    window.fetchAndRenderLobbyPlayers = async function() {
+    window.fetchAndRenderLobbyPlayers = function() {
         if (!window.currentRoomData || !window.UI_COMPONENTS) return;
 
         document.getElementById('dynamic-room-code').innerText = window.currentRoomData.id;
@@ -152,49 +165,33 @@
         document.getElementById('player-count-text').innerText = `بانتظار اللاعبين... (${playersArray.length}/${maxPlayers})`;
 
         const grid = document.getElementById('lobby-players-grid');
-        grid.innerHTML = ''; // مسح التحميل
+        grid.innerHTML = ''; 
 
-        // سحب بيانات كل لاعب من مجموعة users
-        const { getDocs, query, collection, where } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-        
-        try {
-            // بحث عن المستخدمين الموجودين في المصفوفة
-            const q = query(collection(window.dbInstance, "users"), where("username_lower", "in", playersArray));
-            const snap = await getDocs(q);
+        playersArray.forEach(pName => {
+            // سحب البيانات من الكاش اللحظي بدلاً من طلبها كل مرة
+            let pData = window.lobbyPlayersCache[pName] || window.friendsCache[pName] || { username: pName };
+            let emblem = window.UI_COMPONENTS.buildEmblemCard(pData, "85px", true);
             
-            let playersData = {};
-            snap.forEach(doc => { playersData[doc.data().username_lower] = doc.data(); });
+            let hostMark = (window.currentRoomData.hostId === pData.uid || pName === playersArray[0]) ? 
+                `<div class="host-star-wrapper"><i class="ph-fill ph-star-four"></i></div>` : '';
 
-            // رسم الأمبلمات بناءً على الترتيب
-            playersArray.forEach(pName => {
-                let pData = playersData[pName] || { username: pName };
-                // بناء الأمبلم بدون أفتار داخلي (hideAvatar = true) وبطول 85px
-                let emblem = window.UI_COMPONENTS.buildEmblemCard(pData, "85px", true);
-                
-                // إضافة النجمة إذا كان هو المالك
-                let hostMark = (window.currentRoomData.hostId === pData.uid || pName === playersArray[0]) ? 
-                    `<div class="host-star-wrapper"><i class="ph-fill ph-star-four"></i></div>` : '';
+            grid.innerHTML += `
+                <div class="player-slot-wrap">
+                    ${hostMark}
+                    ${emblem}
+                </div>
+            `;
+        });
 
-                grid.innerHTML += `
-                    <div class="player-slot-wrap">
-                        ${hostMark}
-                        ${emblem}
-                    </div>
-                `;
-            });
-
-            // رسم الأماكن الفارغة
-            const emptyCount = maxPlayers - playersArray.length;
-            for(let i=0; i<emptyCount; i++) {
-                grid.innerHTML += `
-                    <div class="empty-emblem-slot" onclick="alert('سيتم فتح قائمة دعوة الأصدقاء')">
-                        <i class="ph-duotone ph-plus-circle"></i>
-                        <span>دعوة</span>
-                    </div>
-                `;
-            }
-
-        } catch (error) { console.error("Error rendering players:", error); }
+        const emptyCount = maxPlayers - playersArray.length;
+        for(let i=0; i<emptyCount; i++) {
+            grid.innerHTML += `
+                <div class="empty-emblem-slot" onclick="openInviteModal()">
+                    <i class="ph-duotone ph-plus-circle"></i>
+                    <span>دعوة صديق</span>
+                </div>
+            `;
+        }
     };
 
     function copyRoomCode() {
@@ -212,15 +209,133 @@
         } else {
             btn.innerHTML = `<i class="ph-bold ph-check-circle" style="font-size: 1.4rem;"></i> أنا جاهز`;
         }
-        // سيتم ربطها بالفايربيس لإخبار الآخرين أنك جاهز
     }
 
-    function openRoomSettings() {
-        alert("سيتم فتح نافذة إعدادات الغرفة (الوقت، الطور، الخ) لاحقاً.");
+    function openRoomSettings() { alert("سيتم برمجة إعدادات الغرفة هنا."); }
+
+    /* --- منطق إرسال الدعوات المطور --- */
+    window.selectedFriendsToInvite = new Set();
+
+    function openInviteModal() {
+        const modal = document.getElementById('invite-friends-modal');
+        const listContainer = document.getElementById('invite-friends-list');
+        window.selectedFriendsToInvite.clear();
+        updateSelectAllBtnText();
+
+        const friendsArray = (window.currentUserData && Array.isArray(window.currentUserData.friends)) ? window.currentUserData.friends : [];
+        const currentPlayers = window.currentRoomData ? window.currentRoomData.players : [];
+        
+        if (friendsArray.length === 0) {
+            listContainer.innerHTML = `<div style="text-align:center; padding: 40px 20px; color: var(--text-dim);"><i class="ph-duotone ph-users-slash" style="font-size:3rem; margin-bottom:10px;"></i><br>لا يوجد أصدقاء لدعوتهم.</div>`;
+        } else {
+            let html = '';
+            friendsArray.forEach(fName => {
+                // لا تظهر الصديق إذا كان موجوداً مسبقاً في الغرفة
+                if(currentPlayers.includes(fName.toLowerCase())) return; 
+
+                const fData = window.friendsCache[fName] || { username: fName };
+                const safeName = fData.username || fName;
+                let avHtml = `<span>${safeName.charAt(0).toUpperCase()}</span>`;
+                if(fData.avatar) avHtml = `<img src="${fData.avatar}">`;
+                
+                html += `
+                    <div class="friend-invite-row" onclick="toggleFriendSelection(this, '${fName}')" data-fname="${fName}">
+                        <div class="friend-info-mini">
+                            <div class="friend-av-mini">${avHtml}</div>
+                            <div class="friend-name-mini">${safeName}</div>
+                        </div>
+                        <div class="custom-checkbox"><i class="ph-bold ph-check"></i></div>
+                    </div>
+                `;
+            });
+            if(html === '') html = `<div style="text-align:center; padding: 40px 20px; color: var(--text-dim);">جميع أصدقائك موجودون في الغرفة بالفعل!</div>`;
+            listContainer.innerHTML = html;
+        }
+
+        modal.classList.add('show');
     }
 
-    // تفعيل السيرفر عند دخول الصفحة
-    if (window.currentRoomId) {
-        window.listenToRoom(); // إذا كان لديه غرفة مسبقاً
+    function closeInviteModal() { document.getElementById('invite-friends-modal').classList.remove('show'); }
+
+    function toggleFriendSelection(rowElement, friendName) {
+        if (window.selectedFriendsToInvite.has(friendName)) {
+            window.selectedFriendsToInvite.delete(friendName);
+            rowElement.classList.remove('selected');
+        } else {
+            window.selectedFriendsToInvite.add(friendName);
+            rowElement.classList.add('selected');
+        }
+        updateSelectAllBtnText();
     }
+
+    function toggleSelectAllFriends() {
+        const rows = document.querySelectorAll('.friend-invite-row');
+        if (rows.length === 0) return;
+
+        if (window.selectedFriendsToInvite.size === rows.length) {
+            window.selectedFriendsToInvite.clear();
+            rows.forEach(r => r.classList.remove('selected'));
+        } else {
+            rows.forEach(r => {
+                const fname = r.getAttribute('data-fname');
+                window.selectedFriendsToInvite.add(fname);
+                r.classList.add('selected');
+            });
+        }
+        updateSelectAllBtnText();
+    }
+
+    function updateSelectAllBtnText() {
+        const rows = document.querySelectorAll('.friend-invite-row');
+        const btn = document.getElementById('btn-select-all');
+        if(rows.length === 0) return;
+
+        if (window.selectedFriendsToInvite.size === rows.length) {
+            btn.innerText = "إلغاء التحديد";
+            btn.style.color = "var(--accent-red)";
+        } else {
+            btn.innerText = "تحديد الكل";
+            btn.style.color = "var(--text-main)";
+        }
+    }
+
+    // إرسال الدعوات الفعلي لقاعدة البيانات
+    async function sendInvitesToSelected() {
+        if (window.selectedFriendsToInvite.size === 0) return;
+        
+        const btn = document.getElementById('btn-send-inv-submit');
+        btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> جاري الإرسال...';
+        btn.disabled = true;
+
+        try {
+            const { getDocs, query, collection, where, updateDoc, doc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            const friendsArray = Array.from(window.selectedFriendsToInvite).map(f => f.toLowerCase());
+            
+            const q = query(collection(window.dbInstance, "users"), where("username_lower", "in", friendsArray));
+            const snap = await getDocs(q);
+            
+            const inviteData = {
+                roomId: window.currentRoomId,
+                hostName: window.currentUserData.username,
+                timestamp: Date.now()
+            };
+
+            snap.forEach(async (d) => {
+                await updateDoc(doc(window.dbInstance, "users", d.id), {
+                    gameInvites: arrayUnion(inviteData)
+                });
+            });
+            
+            alert(`تم إرسال دعوات لـ ${window.selectedFriendsToInvite.size} أصدقاء! (ستصلهم في الإشعارات)`);
+            closeInviteModal();
+        } catch (e) {
+            console.error(e);
+            alert("حدث خطأ أثناء الإرسال");
+        } finally {
+            btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> إرسال الدعوات';
+            btn.disabled = false;
+        }
+    }
+
+    if (window.currentRoomId) { window.listenToRoom(); }
 </script>
