@@ -1,7 +1,9 @@
 <style>
-    .friends-page-container { max-width: 800px; margin: 0 auto; padding: 20px 10px 80px 10px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; height: calc(100vh - 100px); }
+    /* تقليل الـ padding الجانبي للحاوية لزيادة العرض */
+    .friends-page-container { max-width: 800px; margin: 0 auto; padding: 20px 0px 80px 0px; animation: smoothFadeIn 0.5s ease forwards; display: flex; flex-direction: column; height: calc(100vh - 100px); overflow-x: hidden; }
     
-    .friends-header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-shrink: 0; }
+    /* إبقاء الهيدر في المنتصف مع حواف */
+    .friends-header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 0 15px; flex-shrink: 0; }
     .friends-title-group { display: flex; align-items: center; gap: 15px; }
     .friends-icon { width: 50px; height: 50px; background: rgba(46, 204, 113, 0.1); color: var(--accent-green); border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; }
     .friends-title { font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
@@ -9,19 +11,19 @@
     .add-friend-btn-circle { width: 44px; height: 44px; border-radius: 50%; background-color: var(--surface-panel); border: 1px dashed var(--text-dim); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-soft); }
     .add-friend-btn-circle:hover { border-color: var(--text-main); color: var(--text-main); background: var(--surface-hover); transform: rotate(90deg); }
 
-    #mobile-friends-wrapper { flex: 1; overflow-y: auto; padding: 5px; scrollbar-width: none; display: flex; flex-direction: column; gap: 15px; overflow-x: hidden; }
+    /* حاوية الأصدقاء تأخذ العرض الكامل تقريباً */
+    #mobile-friends-wrapper { flex: 1; overflow-y: auto; padding: 5px 10px; scrollbar-width: none; display: flex; flex-direction: column; gap: 12px; overflow-x: hidden; }
     #mobile-friends-wrapper::-webkit-scrollbar { display: none; }
 
-    /* تم تقليل الفراغ (gap) ليعطي مساحة أكبر للأمبلم */
-    .friend-row { display: flex; align-items: center; gap: 8px; width: 100%; cursor: pointer; transition: 0.3s; direction: ltr; }
-    .friend-row:hover .hover-emblem-wrap > div { border-color: var(--accent-green) !important; transform: translateY(-3px); }
+    .friend-row { display: flex; align-items: center; gap: 6px; width: 100%; cursor: pointer; transition: 0.3s; direction: ltr; }
+    .friend-row:hover .hover-emblem-wrap > div { border-color: var(--accent-green) !important; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(46, 204, 113, 0.15); }
     .friend-row:hover .friend-avatar-outside { border-color: var(--accent-green); transform: scale(1.05); }
 
-    /* دفع الأفتار أقصى اليسار مع تصغير طفيف جداً للموازنة */
-    .friend-avatar-outside { width: 65px; height: 65px; border-radius: 50%; background: var(--surface-panel); border: 2px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; color: white; position: relative; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s; z-index: 5; margin-left: -2px; }
+    /* دفع الأفتار أقصى اليسار خارج الحواف تقريباً */
+    .friend-avatar-outside { width: 68px; height: 68px; border-radius: 50%; background: var(--surface-panel); border: 2px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; color: white; position: relative; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 5; margin-left: -5px; }
     .friend-avatar-outside img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     
-    .online-dot-large { position: absolute; bottom: 2px; right: 2px; width: 16px; height: 16px; background: var(--accent-green); border: 3px solid var(--bg-base); border-radius: 50%; box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); z-index: 10; }
+    .online-dot-large { position: absolute; bottom: 2px; right: 2px; width: 16px; height: 16px; background: var(--accent-green); border: 3px solid var(--bg-base); border-radius: 50%; box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); z-index: 10; transition: 0.3s; }
 </style>
 
 <div class="friends-page-container">
@@ -41,10 +43,10 @@
 <script>
     setTimeout(() => {
         if (typeof window.setupRealtimeFriends === 'function') {
-            window.setupRealtimeFriends(); // تفعيل مستمعين الفايربيس (Listeners)
+            window.setupRealtimeFriends(); 
         }
         if (typeof window.drawFriendsUI === 'function') {
-            window.drawFriendsUI(); // رسم الواجهة
+            window.drawFriendsUI(); 
         }
     }, 50);
 </script>
