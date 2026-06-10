@@ -14,7 +14,7 @@
     /* حاوية الحالات (Morphing Container) */
     .hero-state-machine { flex: 1; z-index: 2; max-width: 50%; position: relative; height: 300px; display: flex; align-items: center; }
     
-    /* الحالات (الصفحات الداخلية للبطاقة) */
+    /* الحالات (الصفحات الداخلية للبطاقة) - تم تحسين السلاسة ومنع الاهتزاز */
     .hero-state { width: 100%; position: absolute; transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0; pointer-events: none; transform: translateX(20px); display: flex; flex-direction: column; align-items: flex-start; }
     .hero-state.active { opacity: 1; pointer-events: auto; transform: translateX(0); z-index: 10; }
     .hero-state.exit-left { transform: translateX(-20px); opacity: 0; pointer-events: none; z-index: 1; }
@@ -49,7 +49,9 @@
     .room-code-input::placeholder { color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: normal; text-transform: none; }
     .room-join-submit { background: white; color: var(--accent-red); border: none; padding: 0 25px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
 
-    /* حل مشكلة اللمس في الجوال */
+    /* =========================================
+       حل مشكلة الـ Hover في الجوال وتخصيص اللمس
+       ========================================= */
     @media (hover: hover) {
         .hero-badge-btn:hover { background: rgba(255, 255, 255, 0.35); transform: translateY(-2px); }
         .btn-hero-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2); }
@@ -59,6 +61,7 @@
         .room-join-submit:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
     }
     
+    /* تأثير الضغط الفعلي للجوال والكمبيوتر معاً */
     .btn-hero-primary:active, .room-create-btn:active, .room-join-submit:active { transform: scale(0.95); transition: 0.1s; }
     .btn-hero-secondary:active, .btn-back-room:active { transform: scale(0.95); background-color: rgba(255, 255, 255, 0.3); transition: 0.1s; }
 
@@ -70,6 +73,7 @@
     .game-card { background-color: var(--surface-panel); border-radius: 24px; padding: 30px; display: flex; gap: 30px; box-shadow: var(--shadow-soft); transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
     .secondary-game-card { align-items: center; opacity: 0.85; padding: 20px 30px; }
 
+    /* استجابة الجوال */
     @media (max-width: 768px) { 
         .hero-game-card { flex-direction: column; padding: 30px 20px 0 20px; text-align: center; min-height: auto; } 
         .hero-state-machine { max-width: 100%; width: 100%; height: auto; min-height: 250px; padding: 0 0 20px 0; } 
@@ -117,7 +121,7 @@
                 <div class="room-divider">أو انضم لغرفة</div>
 
                 <div class="room-join-wrapper">
-                    <input type="text" class="room-code-input" id="inlineRoomCode" placeholder="أدخل كود الغرفة" maxlength="6" autocomplete="off">
+                    <input type="text" class="room-code-input" id="inlineRoomCode" placeholder="أدخل كود الغرفة" maxlength="4" autocomplete="off">
                     <button class="room-join-submit" onclick="handleJoinRoom()">
                         <i class="ph-bold ph-sign-in" style="font-size: 1.3rem;"></i>
                     </button>
@@ -142,6 +146,7 @@
 
 <script>
     function switchHeroState(targetState) {
+        // حماية قاطعة لفتح نافذة الدخول إجبارياً في الجوال والكمبيوتر
         if (window.isGuest || !window.currentUserData) {
             const wView = document.getElementById('modal-welcome-view'); 
             const fView = document.getElementById('modal-form-view'); 
@@ -182,21 +187,47 @@
         }
     }
 
-    function handleCreateRoom() {
-        // مؤقتاً، ننقل اللاعب مباشرة لصفحة اللوبي لرؤية التصميم
-        // (عند برمجة الفايربيس سنقوم بإنشاء الكود في السيرفر أولاً قبل النقل)
-        const playBtn = document.querySelectorAll('.nav-btn')[1];
-        if (window.loadFragment) window.loadFragment('lobby', playBtn);
+    async function handleCreateRoom() {
+        const btn = document.querySelector('.room-create-btn');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> جاري الإنشاء...';
+        btn.disabled = true;
+
+        if (window.createFirebaseRoom) {
+            const success = await window.createFirebaseRoom();
+            if (success) {
+                window.loadFragment('lobby', document.querySelectorAll('.nav-btn')[1]);
+            }
+        } else {
+            alert("ملف السيرفر غير متصل! يرجى التأكد من استدعاء room-manager.js");
+        }
+
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
     }
 
-    function handleJoinRoom() {
+    async function handleJoinRoom() {
         const code = document.getElementById('inlineRoomCode').value.trim().toUpperCase();
-        if (code.length < 4) {
-            alert("الرجاء إدخال كود غرفة صحيح!");
+        if (code.length !== 4) {
+            alert("كود الغرفة يجب أن يكون 4 أحرف!");
             return;
         }
-        // مؤقتاً، ننقل اللاعب لصفحة اللوبي
-        const playBtn = document.querySelectorAll('.nav-btn')[1];
-        if (window.loadFragment) window.loadFragment('lobby', playBtn);
+
+        const btn = document.querySelector('.room-join-submit');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>';
+        btn.disabled = true;
+
+        if (window.joinFirebaseRoom) {
+            const success = await window.joinFirebaseRoom(code);
+            if (success) {
+                window.loadFragment('lobby', document.querySelectorAll('.nav-btn')[1]);
+            }
+        } else {
+            alert("ملف السيرفر غير متصل! يرجى التأكد من استدعاء room-manager.js");
+        }
+
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
     }
 </script>
