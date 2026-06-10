@@ -24,57 +24,12 @@ window.isGuest = false; window.currentFormMode = 'login'; window.currentUserData
 window.friendToRemove = null; window.friendToReview = null;
 window.unsubscribeSnapshot = null; window.currentLang = 'ar';
 
-// مكتبة الأصول (يفضل نقلها لملف منفصل مستقبلاً كما اتفقنا)
-window.gameAssets = window.gameAssets || {
-    badges: [
-        { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a' },
-        { id: 'veteran', name: 'مخضرم', icon: 'ph-sword', color: '#3498db' },
-        { id: 'master', name: 'محترف', icon: 'ph-crown', color: '#f1c40f' }
-    ]
-};
-
 window.friendsCache = window.friendsCache || {};
 window.friendListeners = window.friendListeners || {};
 
 const hideLoader = () => { 
     const l = document.getElementById('global-loader'); 
     if(l){ l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 400); } 
-};
-
-// دالة مساعدة لتوحيد شكل البادج
-function getSharedBadgeHtml(badgeId, size = '45px', fontSize = '1.4rem') {
-    let badgeObj = window.gameAssets.badges.find(b => b.id === badgeId) || window.gameAssets.badges[0];
-    return `<div style="width: ${size}; height: ${size}; background: rgba(255,255,255,0.1); border: 2px dashed ${badgeObj.color}; color: ${badgeObj.color}; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: ${fontSize}; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0;"><i class="ph-fill ${badgeObj.icon}"></i></div>`;
-}
-
-// دالة بناء الأمبلم الموحدة (بدون ظل يسار، مع خيار إخفاء الأفتار وتغيير الحجم)
-window.buildUnifiedEmblem = function(userData, height = "120px", hideAvatar = false) {
-    const emblemSrc = userData.emblem || 'assets/images/default-emblem.png';
-    const badgeHtml = getSharedBadgeHtml(userData.badge || 'beginner', '50px', '1.5rem');
-    const titleHtml = (userData.title && userData.title !== 'none' && userData.title !== '') 
-        ? `<div style="font-size: 0.75rem; font-weight: 700; color: gold; text-transform: uppercase; letter-spacing: 1px; padding: 4px 12px; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(5px); border: 1px solid rgba(255,215,0,0.5); margin-top: 5px;">${userData.title}</div>` 
-        : '';
-
-    let avatarHtml = '';
-    if (!hideAvatar) {
-        let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1.2rem; color:white;">${userData.username.charAt(0).toUpperCase()}</div>`;
-        if (userData.avatar) avatarInner = `<img src="${userData.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-        avatarHtml = `<div style="width: 55px; height: 55px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index:3;">${avatarInner}</div>`;
-    }
-
-    return `
-        <div style="position: relative; width: 100%; height: ${height}; border-radius: 20px; overflow: hidden; direction: ltr !important; background-color: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); box-shadow: var(--shadow-soft); transition: 0.3s;">
-            <div style="position: absolute; inset: 0; background-image: url('${emblemSrc}'); background-size: cover; background-position: right center;"></div>
-            <div style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 15px;">
-                ${avatarHtml}
-                ${badgeHtml}
-                <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
-                    <div style="font-size: 1.5rem; font-weight: 800; color: white; font-family: var(--font-en); letter-spacing: 0.5px; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">${userData.username}</div>
-                    ${titleHtml}
-                </div>
-            </div>
-        </div>
-    `;
 };
 
 window.setupRealtimeFriends = function() {
@@ -114,7 +69,6 @@ window.drawFriendsUI = function() {
     const mobileContainer = document.getElementById('mobile-friends-wrapper');
     const friendsArray = (window.currentUserData && window.currentUserData.friends) ? window.currentUserData.friends : [];
 
-    // ---- رسم واجهة سطح المكتب ----
     if (desktopContainer) {
         if (window.isGuest || !window.currentUserData) {
             desktopContainer.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لرؤية الأصدقاء</span></div>`;
@@ -133,7 +87,6 @@ window.drawFriendsUI = function() {
         }
     }
 
-    // ---- رسم واجهة الجوال (بالشكل الجديد الموحد) ----
     if (mobileContainer) {
         if (window.isGuest || !window.currentUserData) {
             mobileContainer.innerHTML = `<div class="empty-content-box" style="height: 100%; border:none; justify-content:center;"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لإضافة الأصدقاء ورؤيتهم.</span></div>`;
@@ -144,12 +97,10 @@ window.drawFriendsUI = function() {
             friendsArray.forEach(fName => {
                 const fData = window.friendsCache[fName] || { username: fName, emblem: '', badge: 'beginner', title: '' };
                 
-                // الأفتار الخارجي (تم تكبيره ونقله لليسار عبر الـ CSS)
                 let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">${fName.charAt(0).toUpperCase()}</div>`;
                 if (fData.avatar) avatarInner = `<img src="${fData.avatar}">`;
                 
-                // استدعاء دالة الأمبلم الموحدة وإخفاء الأفتار من داخلها
-                let emblemHTML = window.buildUnifiedEmblem(fData, "85px", true);
+                let emblemHTML = window.UI_COMPONENTS.buildUnifiedEmblem(fData, "85px", true);
                 
                 mHtml += `
                     <div class="friend-row" onclick="window.openFriendActionModal('${fName}', event, true)">
@@ -174,14 +125,10 @@ window.renderFriendsList = function(containerId, isFullCard = false) {
 
 window.openFriendActionModal = function(friendName, event, isMobile) {
     let existingPopover = document.getElementById('friend-popover');
-    
-    // إغلاق المربع إذا تم الضغط على نفس الأفتار مرة ثانية (ميزة الإغلاق بالتكرار)
     if (existingPopover && existingPopover.getAttribute('data-friend') === friendName) {
         existingPopover.remove();
         return;
     }
-
-    // تنظيف النوافذ السابقة
     if(existingPopover) existingPopover.remove();
     let existingModal = document.getElementById('dynamic-friend-modal');
     if(existingModal) existingModal.remove();
@@ -189,15 +136,12 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
     const friendData = window.friendsCache[friendName] || { username: friendName, emblem: '', badge: 'beginner', title: '' };
 
     if (isMobile) {
-        // --- نافذة الجوال ---
-        const emblemHTML = window.buildUnifiedEmblem(friendData, "120px", false);
+        const emblemHTML = window.UI_COMPONENTS.buildUnifiedEmblem(friendData, "120px", false);
         
         const modalHtml = `
             <div class="profile-modal-content" style="padding: 0; overflow: hidden; background: var(--surface-panel); width: 90%; max-width: 420px; border-radius: 24px; box-shadow: var(--shadow-soft); position: relative; animation: smoothFadeIn 0.3s ease;">
                 <button onclick="document.getElementById('dynamic-friend-modal').remove()" style="position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(0,0,0,0.5); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
-                
                 ${emblemHTML}
-
                 <div style="padding: 20px; display: flex; flex-direction: column; gap: 10px;">
                     <button style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 12px; border-radius: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s;" onclick="alert('سيتم فتح البروفايل')"><i class="ph-bold ph-user-circle"></i> الملف الشخصي</button>
                     <button style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 12px; border-radius: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s;" onclick="alert('سيتم فتح السجل')"><i class="ph-bold ph-clock-counter-clockwise"></i> السجل</button>
@@ -214,10 +158,9 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
         document.body.appendChild(modal);
 
     } else {
-        // --- نافذة الكمبيوتر الجانبية (تم تكبير المربع، إزالة الأفتار، وإضافة ميزة الإغلاق) ---
         const rect = event.currentTarget.getBoundingClientRect();
         let leftPos = rect.right + 15;
-        if (leftPos + 380 > window.innerWidth) { leftPos = rect.left - 380 - 15; } // تكبير المساحة إلى 380px
+        if (leftPos + 380 > window.innerWidth) { leftPos = rect.left - 380 - 15; }
         let topPos = rect.top;
         if (topPos + 350 > window.innerHeight) { topPos = window.innerHeight - 350; }
 
@@ -226,8 +169,7 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
         popover.setAttribute('data-friend', friendName);
         popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 380px; background: var(--surface-panel); border-radius: 24px; box-shadow: var(--shadow-soft); z-index: 100000; overflow: hidden; animation: smoothFadeIn 0.2s ease; border: 1px solid rgba(100,100,100,0.1);`;
         
-        // بناء الأمبلم بـ height أكبر وبدون أفتار (hideAvatar = true)
-        const emblemHTML = window.buildUnifiedEmblem(friendData, "140px", true);
+        const emblemHTML = window.UI_COMPONENTS.buildUnifiedEmblem(friendData, "140px", true);
 
         popover.innerHTML = `
             ${emblemHTML}
