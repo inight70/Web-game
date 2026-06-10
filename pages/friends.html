@@ -37,3 +37,14 @@
 
     <div id="mobile-friends-wrapper"></div>
 </div>
+
+<script>
+    setTimeout(() => {
+        if (typeof window.setupRealtimeFriends === 'function') {
+            window.setupRealtimeFriends(); // تفعيل مستمعين الفايربيس (Listeners)
+        }
+        if (typeof window.drawFriendsUI === 'function') {
+            window.drawFriendsUI(); // رسم الواجهة
+        }
+    }, 50);
+</script>
