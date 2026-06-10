@@ -33,96 +33,108 @@ const hideLoader = () => {
 };
 
 window.setupRealtimeFriends = function() {
-    if (!window.currentUserData) return;
-    const friendsArray = window.currentUserData.friends || [];
+    try {
+        if (!window.currentUserData) return;
+        const friendsArray = Array.isArray(window.currentUserData.friends) ? window.currentUserData.friends : [];
 
-    Object.keys(window.friendListeners).forEach(fName => {
-        if (!friendsArray.includes(fName)) {
-            window.friendListeners[fName](); 
-            delete window.friendListeners[fName];
-            delete window.friendsCache[fName];
+        Object.keys(window.friendListeners).forEach(fName => {
+            if (!friendsArray.includes(fName)) {
+                window.friendListeners[fName](); 
+                delete window.friendListeners[fName];
+                delete window.friendsCache[fName];
+            }
+        });
+
+        if (friendsArray.length === 0) {
+            window.drawFriendsUI();
+            return;
         }
-    });
 
-    if (friendsArray.length === 0) {
-        window.drawFriendsUI();
-        return;
-    }
-
-    friendsArray.forEach(fName => {
-        if (!window.friendListeners[fName]) {
-            const q = query(collection(db, "users"), where("username_lower", "==", fName.toLowerCase()));
-            window.friendListeners[fName] = onSnapshot(q, (snap) => {
-                if (!snap.empty) {
-                    window.friendsCache[fName] = snap.docs[0].data();
-                } else {
-                    window.friendsCache[fName] = { username: fName };
-                }
-                window.drawFriendsUI();
-            });
-        }
-    });
+        friendsArray.forEach(fName => {
+            if (!fName || typeof fName !== 'string') return;
+            if (!window.friendListeners[fName]) {
+                const q = query(collection(db, "users"), where("username_lower", "==", fName.toLowerCase()));
+                window.friendListeners[fName] = onSnapshot(q, (snap) => {
+                    if (!snap.empty) {
+                        window.friendsCache[fName] = snap.docs[0].data();
+                    } else {
+                        window.friendsCache[fName] = { username: fName };
+                    }
+                    window.drawFriendsUI();
+                });
+            }
+        });
+    } catch (e) { console.error("Error in setupRealtimeFriends:", e); }
 };
 
 window.drawFriendsUI = function() {
-    const desktopContainer = document.getElementById('friends-container-desktop');
-    const mobileContainer = document.getElementById('mobile-friends-wrapper');
-    const friendsArray = (window.currentUserData && window.currentUserData.friends) ? window.currentUserData.friends : [];
+    try {
+        const desktopContainer = document.getElementById('friends-container-desktop');
+        const mobileContainer = document.getElementById('mobile-friends-wrapper');
+        const friendsArray = (window.currentUserData && Array.isArray(window.currentUserData.friends)) ? window.currentUserData.friends : [];
 
-    // --- خط الدفاع الأول: التأكد من وجود ملف game-assets.js ---
-    if (!window.UI_COMPONENTS) {
-        console.error("ملف game-assets.js غير مرتبط بشكل صحيح أو لم يتم تحميله بعد!");
-        return; // نوقف الدالة هنا حتى لا تنهار الصفحة
-    }
-
-    if (desktopContainer) {
-        if (window.isGuest || !window.currentUserData) {
-            desktopContainer.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لرؤية الأصدقاء</span></div>`;
-        } else if (friendsArray.length === 0) {
-            desktopContainer.innerHTML = `<div class="friends-header">الأصدقاء</div><button class="add-friend-btn" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
-        } else {
-            let dHtml = `<div class="friends-header">الأصدقاء</div><div style="display:flex; flex-direction:column; gap:15px; align-items:center; width:100%;">`;
-            friendsArray.forEach(fName => {
-                const fData = window.friendsCache[fName] || { username: fName };
-                let avatarHtml = `<div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px; color:var(--text-main);">${fName.charAt(0).toUpperCase()}</div>`;
-                if (fData.avatar) avatarHtml = `<img src="${fData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                dHtml += `<div class="friend-avatar" onclick="window.openFriendActionModal('${fName}', event, false)">${avatarHtml}<div class="online-dot"></div></div>`;
-            });
-            dHtml += `</div><button class="add-friend-btn" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
-            desktopContainer.innerHTML = dHtml;
+        if (desktopContainer) {
+            if (window.isGuest || !window.currentUserData) {
+                desktopContainer.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لرؤية الأصدقاء</span></div>`;
+            } else if (friendsArray.length === 0) {
+                desktopContainer.innerHTML = `<div class="friends-header">الأصدقاء</div><button class="add-friend-btn" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
+            } else {
+                let dHtml = `<div class="friends-header">الأصدقاء</div><div style="display:flex; flex-direction:column; gap:15px; align-items:center; width:100%;">`;
+                friendsArray.forEach(fName => {
+                    if (!fName || typeof fName !== 'string') return;
+                    try {
+                        const fData = window.friendsCache[fName] || { username: fName };
+                        const safeName = fData.username || fName;
+                        let avatarHtml = `<div style="width:100%; height:100%; border-radius:50%; background:var(--surface-panel); display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:16px; color:var(--text-main);">${safeName.charAt(0).toUpperCase()}</div>`;
+                        if (fData.avatar) avatarHtml = `<img src="${fData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                        dHtml += `<div class="friend-avatar" onclick="window.openFriendActionModal('${fName}', event, false)">${avatarHtml}<div class="online-dot"></div></div>`;
+                    } catch(e) { console.error("Error drawing desktop friend", fName, e); }
+                });
+                dHtml += `</div><button class="add-friend-btn" onclick="window.openAddFriendModal()"><i class="ph-bold ph-plus"></i></button>`;
+                desktopContainer.innerHTML = dHtml;
+            }
         }
-    }
 
-    if (mobileContainer) {
-        if (window.isGuest || !window.currentUserData) {
-            mobileContainer.innerHTML = `<div class="empty-content-box" style="height: 100%; border:none; justify-content:center;"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لإضافة الأصدقاء ورؤيتهم.</span></div>`;
-        } else if (friendsArray.length === 0) {
-            mobileContainer.innerHTML = `<div class="empty-content-box" style="height: 100%; border:none; justify-content:center;"><i class="ph-duotone ph-users-slash"></i><span>قائمة الأصدقاء فارغة. قم بإضافة أصدقاء جدد!</span></div>`;
-        } else {
-            let mHtml = '';
-            friendsArray.forEach(fName => {
-                const fData = window.friendsCache[fName] || { username: fName, emblem: '', badge: 'beginner', title: '' };
-                
-                let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">${fName.charAt(0).toUpperCase()}</div>`;
-                if (fData.avatar) avatarInner = `<img src="${fData.avatar}">`;
-                
-                let emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "85px", true);
-                
-                mHtml += `
-                    <div class="friend-row" onclick="window.openFriendActionModal('${fName}', event, true)">
-                        <div class="friend-avatar-outside">
-                            ${avatarInner}
-                            <div class="online-dot-large"></div>
-                        </div>
-                        <div style="flex: 1; transition: 0.3s;" class="hover-emblem-wrap">
-                            ${emblemHTML}
-                        </div>
-                    </div>
-                `;
-            });
-            mobileContainer.innerHTML = mHtml;
+        if (mobileContainer) {
+            if (window.isGuest || !window.currentUserData) {
+                mobileContainer.innerHTML = `<div class="empty-content-box" style="height: 100%; border:none; justify-content:center;"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لإضافة الأصدقاء ورؤيتهم.</span></div>`;
+            } else if (friendsArray.length === 0) {
+                mobileContainer.innerHTML = `<div class="empty-content-box" style="height: 100%; border:none; justify-content:center;"><i class="ph-duotone ph-users-slash"></i><span>قائمة الأصدقاء فارغة. قم بإضافة أصدقاء جدد!</span></div>`;
+            } else {
+                let mHtml = '';
+                friendsArray.forEach(fName => {
+                    if (!fName || typeof fName !== 'string') return;
+                    try {
+                        const fData = window.friendsCache[fName] || { username: fName, emblem: '', badge: 'beginner', title: '' };
+                        const safeName = fData.username || fName;
+                        
+                        let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">${safeName.charAt(0).toUpperCase()}</div>`;
+                        if (fData.avatar) avatarInner = `<img src="${fData.avatar}">`;
+                        
+                        let emblemHTML = "";
+                        if (window.UI_COMPONENTS && window.UI_COMPONENTS.buildEmblemCard) {
+                            emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "85px", true);
+                        } else {
+                            emblemHTML = `<div style="color:red; font-size:12px; padding:10px;">ملف game-assets غير متصل!</div>`;
+                        }
+                        
+                        mHtml += `
+                            <div class="friend-row" onclick="window.openFriendActionModal('${fName}', event, true)">
+                                <div class="friend-avatar-outside">
+                                    ${avatarInner}
+                                    <div class="online-dot-large"></div>
+                                </div>
+                                <div style="flex: 1; transition: 0.3s;" class="hover-emblem-wrap">
+                                    ${emblemHTML}
+                                </div>
+                            </div>
+                        `;
+                    } catch(e) { console.error("Error drawing mobile friend", fName, e); }
+                });
+                mobileContainer.innerHTML = mHtml;
+            }
         }
-    }
+    } catch (err) { console.error("FATAL ERROR IN drawFriendsUI:", err); }
 };
 
 window.renderFriendsList = function(containerId, isFullCard = false) {
@@ -135,89 +147,72 @@ style.innerHTML = `
         0% { opacity: 0; transform: scale(0.85) translateY(15px); }
         100% { opacity: 1; transform: scale(1) translateY(0); }
     }
-    .friend-btn-action {
-        background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(100,100,100,0.15); padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .friend-btn-action:hover {
-        background: var(--surface-hover); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); color: white;
-    }
-    .friend-btn-danger {
-        background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem;
-    }
-    .friend-btn-danger:hover {
-        background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.4); border-color: var(--accent-red);
-    }
-    .friend-data-modal {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 1000000; display: flex; justify-content: center; align-items: center; animation: smoothFadeIn 0.3s ease; padding: 20px;
-    }
-    .friend-data-card {
-        background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); overflow: hidden; animation: popoverScaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; position: relative;
-    }
+    .friend-btn-action { background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(100,100,100,0.15); padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .friend-btn-action:hover { background: var(--surface-hover); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); color: white; }
+    .friend-btn-danger { background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; }
+    .friend-btn-danger:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.4); border-color: var(--accent-red); }
+    .friend-data-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 1000000; display: flex; justify-content: center; align-items: center; animation: smoothFadeIn 0.3s ease; padding: 20px; }
+    .friend-data-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); overflow: hidden; animation: popoverScaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; position: relative; }
     .locked-view-msg { padding: 40px 20px; text-align: center; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; gap: 15px; }
 `;
 document.head.appendChild(style);
 
-
 window.openFriendActionModal = function(friendName, event, isMobile) {
-    // --- خط الدفاع الثاني ---
-    if (!window.UI_COMPONENTS) {
-        console.error("لا يمكن فتح النافذة، ملف game-assets.js مفقود!");
-        return;
-    }
+    try {
+        let existingPopover = document.getElementById('friend-popover');
+        if (existingPopover && existingPopover.getAttribute('data-friend') === friendName) { existingPopover.remove(); return; }
 
-    let existingPopover = document.getElementById('friend-popover');
-    if (existingPopover && existingPopover.getAttribute('data-friend') === friendName) { existingPopover.remove(); return; }
+        if(existingPopover) existingPopover.remove();
+        let existingModal = document.getElementById('dynamic-friend-modal');
+        if(existingModal) existingModal.remove();
 
-    if(existingPopover) existingPopover.remove();
-    let existingModal = document.getElementById('dynamic-friend-modal');
-    if(existingModal) existingModal.remove();
+        const friendData = window.friendsCache[friendName] || { username: friendName, emblem: '', badge: 'beginner', title: '' };
 
-    const friendData = window.friendsCache[friendName] || { username: friendName, emblem: '', badge: 'beginner', title: '' };
-
-    const actionButtons = `
-        <div style="padding: 20px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-base);">
-            <button class="friend-btn-action" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendProfile('${friendName}');"><i class="ph-bold ph-user-circle" style="font-size:1.2rem;"></i> عرض الملف الشخصي</button>
-            <button class="friend-btn-action" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendHistory('${friendName}');"><i class="ph-bold ph-clock-counter-clockwise" style="font-size:1.2rem;"></i> سجل المباريات</button>
-            <button class="friend-btn-danger" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.openRemoveFriendModal('${friendName}');"><i class="ph-bold ph-user-minus" style="font-size:1.2rem;"></i> حذف الصديق</button>
-        </div>
-    `;
-
-    if (isMobile) {
-        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "130px", true);
-        const modalHtml = `
-            <div class="profile-modal-content friend-data-card" style="padding: 0; width: 95%;">
-                <button onclick="document.getElementById('dynamic-friend-modal').remove()" style="position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
-                ${emblemHTML}
-                ${actionButtons}
+        const actionButtons = `
+            <div style="padding: 20px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-base);">
+                <button class="friend-btn-action" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendProfile('${friendName}');"><i class="ph-bold ph-user-circle" style="font-size:1.2rem;"></i> عرض الملف الشخصي</button>
+                <button class="friend-btn-action" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendHistory('${friendName}');"><i class="ph-bold ph-clock-counter-clockwise" style="font-size:1.2rem;"></i> سجل المباريات</button>
+                <button class="friend-btn-danger" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.openRemoveFriendModal('${friendName}');"><i class="ph-bold ph-user-minus" style="font-size:1.2rem;"></i> حذف الصديق</button>
             </div>
         `;
-        const modal = document.createElement('div');
-        modal.id = 'dynamic-friend-modal';
-        modal.className = 'friend-data-modal';
-        modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
-        modal.innerHTML = modalHtml;
-        document.body.appendChild(modal);
 
-    } else {
-        const rect = event.currentTarget.getBoundingClientRect();
-        let leftPos = rect.right + 15;
-        if (leftPos + 400 > window.innerWidth) { leftPos = rect.left - 400 - 15; }
-        let topPos = rect.top;
-        if (topPos + 380 > window.innerHeight) { topPos = window.innerHeight - 380; }
+        if (isMobile) {
+            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "130px", true);
+            const modalHtml = `
+                <div class="profile-modal-content friend-data-card" style="padding: 0; width: 95%;">
+                    <button onclick="document.getElementById('dynamic-friend-modal').remove()" style="position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+                    ${emblemHTML}
+                    ${actionButtons}
+                </div>
+            `;
+            const modal = document.createElement('div');
+            modal.id = 'dynamic-friend-modal';
+            modal.className = 'friend-data-modal';
+            modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
+            modal.innerHTML = modalHtml;
+            document.body.appendChild(modal);
 
-        const popover = document.createElement('div');
-        popover.id = 'friend-popover';
-        popover.setAttribute('data-friend', friendName);
-        popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 400px; background: var(--bg-base); border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 100000; overflow: hidden; animation: popoverScaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; border: 1px solid rgba(255,255,255,0.05);`;
-        
-        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "150px", true);
+        } else {
+            const rect = event.currentTarget.getBoundingClientRect();
+            let leftPos = rect.right + 15;
+            if (leftPos + 400 > window.innerWidth) { leftPos = rect.left - 400 - 15; }
+            let topPos = rect.top;
+            if (topPos + 380 > window.innerHeight) { topPos = window.innerHeight - 380; }
 
-        popover.innerHTML = `
-            ${emblemHTML}
-            ${actionButtons}
-        `;
-        document.body.appendChild(popover);
-    }
+            const popover = document.createElement('div');
+            popover.id = 'friend-popover';
+            popover.setAttribute('data-friend', friendName);
+            popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 400px; background: var(--bg-base); border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 100000; overflow: hidden; animation: popoverScaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; border: 1px solid rgba(255,255,255,0.05);`;
+            
+            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "150px", true);
+
+            popover.innerHTML = `
+                ${emblemHTML}
+                ${actionButtons}
+            `;
+            document.body.appendChild(popover);
+        }
+    } catch (err) { console.error("Error in openFriendActionModal:", err); }
 };
 
 window.checkFriendPrivacy = function(friendData, privacyType) {
@@ -233,111 +228,111 @@ window.checkFriendPrivacy = function(friendData, privacyType) {
 };
 
 window.viewFriendProfile = function(fName) {
-    if (!window.UI_COMPONENTS) return;
-    const fData = window.friendsCache[fName];
-    if(!fData) return;
-    const canView = window.checkFriendPrivacy(fData, 'profile');
-    
-    let contentHtml = '';
-    if(!canView) {
-        contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4rem; color:var(--text-dim);"></i><h3>البروفايل خاص</h3><p>هذا المستخدم قام بتقييد من يمكنه رؤية بروفايله.</p></div>`;
-    } else {
-        let lvl = fData.level || 1;
-        let xp = fData.xp || 0;
-        let achievements = 0; 
-        contentHtml = `
-            <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
-                <div style="display: flex; flex-direction: column; align-items: center; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px 15px; box-shadow: var(--shadow-soft);">
-                    <div style="width: 90px; height: 100px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; position: relative; margin-bottom: 10px;">
-                        <div style="position: absolute; inset: 3px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1;"></div>
-                        <span style="position: relative; z-index: 2; font-size: 2.2rem; font-weight: 900; font-family: var(--font-en); background: linear-gradient(135deg, var(--accent-red), #ff8a9f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${lvl}</span>
-                        <span style="position: relative; z-index: 2; font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-top: -5px;">Level</span>
+    try {
+        const fData = window.friendsCache[fName] || { username: fName };
+        const canView = window.checkFriendPrivacy(fData, 'profile');
+        
+        let contentHtml = '';
+        if(!canView) {
+            contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4rem; color:var(--text-dim);"></i><h3>البروفايل خاص</h3><p>هذا المستخدم قام بتقييد من يمكنه رؤية بروفايله.</p></div>`;
+        } else {
+            let lvl = fData.level || 1;
+            let xp = fData.xp || 0;
+            let achievements = 0; 
+            contentHtml = `
+                <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
+                    <div style="display: flex; flex-direction: column; align-items: center; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px 15px; box-shadow: var(--shadow-soft);">
+                        <div style="width: 90px; height: 100px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; position: relative; margin-bottom: 10px;">
+                            <div style="position: absolute; inset: 3px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1;"></div>
+                            <span style="position: relative; z-index: 2; font-size: 2.2rem; font-weight: 900; font-family: var(--font-en); background: linear-gradient(135deg, var(--accent-red), #ff8a9f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${lvl}</span>
+                            <span style="position: relative; z-index: 2; font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-top: -5px;">Level</span>
+                        </div>
+                        <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-dim); font-family: var(--font-en);">XP: ${xp}</div>
                     </div>
-                    <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-dim); font-family: var(--font-en);">XP: ${xp}</div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--surface-panel); padding: 18px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                        <span style="color: var(--text-dim); font-weight: bold;"><i class="ph-fill ph-medal"></i> الإنجازات</span>
+                        <span style="color: var(--text-main); font-weight: 900; font-family: var(--font-en); font-size: 1.2rem;">${achievements}</span>
+                    </div>
                 </div>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--surface-panel); padding: 18px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                    <span style="color: var(--text-dim); font-weight: bold;"><i class="ph-fill ph-medal"></i> الإنجازات</span>
-                    <span style="color: var(--text-main); font-weight: 900; font-family: var(--font-en); font-size: 1.2rem;">${achievements}</span>
-                </div>
+            `;
+        }
+
+        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "160px", true);
+        
+        const modal = document.createElement('div');
+        modal.className = 'friend-data-modal';
+        modal.innerHTML = `
+            <div class="friend-data-card" style="max-width: 500px;">
+                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+                ${emblemHTML}
+                ${contentHtml}
             </div>
         `;
-    }
-
-    const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "160px", true);
-    
-    const modal = document.createElement('div');
-    modal.className = 'friend-data-modal';
-    modal.innerHTML = `
-        <div class="friend-data-card" style="max-width: 500px;">
-            <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
-            ${emblemHTML}
-            ${contentHtml}
-        </div>
-    `;
-    modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
-    document.body.appendChild(modal);
+        modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
+        document.body.appendChild(modal);
+    } catch (e) { console.error("Error viewing profile:", e); }
 };
 
 window.viewFriendHistory = function(fName) {
-    if (!window.UI_COMPONENTS) return;
-    const fData = window.friendsCache[fName];
-    if(!fData) return;
-    const canView = window.checkFriendPrivacy(fData, 'history');
-    
-    let contentHtml = '';
-    if(!canView) {
-        contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4rem; color:var(--text-dim);"></i><h3>السجل خاص</h3><p>هذا المستخدم قام بتقييد من يمكنه رؤية إحصائياته.</p></div>`;
-    } else {
-        let m = fData.matches || 0;
-        let w = fData.wins || 0;
-        let l = m - w;
-        let wr = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
+    try {
+        const fData = window.friendsCache[fName] || { username: fName };
+        const canView = window.checkFriendPrivacy(fData, 'history');
         
-        contentHtml = `
-            <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
-                <h4 style="color: var(--text-main); margin-bottom: -5px; display: flex; align-items: center; gap: 8px;"><i class="ph-fill ph-chart-bar" style="color: var(--accent-red);"></i> الإحصائيات العامة</h4>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-                    <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 1.4rem; font-weight: 900; color: white; font-family: var(--font-en);">${m}</div>
-                        <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">مباريات</div>
+        let contentHtml = '';
+        if(!canView) {
+            contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4rem; color:var(--text-dim);"></i><h3>السجل خاص</h3><p>هذا المستخدم قام بتقييد من يمكنه رؤية إحصائياته.</p></div>`;
+        } else {
+            let m = fData.matches || 0;
+            let w = fData.wins || 0;
+            let l = m - w;
+            let wr = m > 0 ? Math.round((w/m)*100) + '%' : '0%';
+            
+            contentHtml = `
+                <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
+                    <h4 style="color: var(--text-main); margin-bottom: -5px; display: flex; align-items: center; gap: 8px;"><i class="ph-fill ph-chart-bar" style="color: var(--accent-red);"></i> الإحصائيات العامة</h4>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                        <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 1.4rem; font-weight: 900; color: white; font-family: var(--font-en);">${m}</div>
+                            <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">مباريات</div>
+                        </div>
+                        <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 1.4rem; font-weight: 900; color: var(--accent-green); font-family: var(--font-en);">${w}</div>
+                            <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">فوز</div>
+                        </div>
+                        <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 1.4rem; font-weight: 900; color: var(--accent-red); font-family: var(--font-en);">${l}</div>
+                            <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">خسارة</div>
+                        </div>
+                        <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 1.4rem; font-weight: 900; color: gold; font-family: var(--font-en);">${wr}</div>
+                            <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">نسبة</div>
+                        </div>
                     </div>
-                    <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--accent-green); font-family: var(--font-en);">${w}</div>
-                        <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">فوز</div>
+                    
+                    <h4 style="color: var(--text-main); margin-top: 10px; margin-bottom: -5px; display: flex; align-items: center; gap: 8px;"><i class="ph-fill ph-clock-counter-clockwise" style="color: var(--accent-red);"></i> آخر المباريات</h4>
+                    <div style="background: var(--surface-panel); border-radius: 16px; padding: 30px; text-align: center; border: 1px dashed rgba(255,255,255,0.1); color: var(--text-dim);">
+                        لا توجد مباريات مسجلة بعد.
                     </div>
-                    <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--accent-red); font-family: var(--font-en);">${l}</div>
-                        <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">خسارة</div>
-                    </div>
-                    <div style="background: var(--surface-panel); padding: 15px 5px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 1.4rem; font-weight: 900; color: gold; font-family: var(--font-en);">${wr}</div>
-                        <div style="font-size: 0.65rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">نسبة</div>
-                    </div>
+                    <button class="friend-btn-action" style="margin-top: 5px;" onclick="alert('سيتم إظهار آخر 10 مباريات')">عرض المزيد</button>
                 </div>
-                
-                <h4 style="color: var(--text-main); margin-top: 10px; margin-bottom: -5px; display: flex; align-items: center; gap: 8px;"><i class="ph-fill ph-clock-counter-clockwise" style="color: var(--accent-red);"></i> آخر المباريات</h4>
-                <div style="background: var(--surface-panel); border-radius: 16px; padding: 30px; text-align: center; border: 1px dashed rgba(255,255,255,0.1); color: var(--text-dim);">
-                    لا توجد مباريات مسجلة بعد.
-                </div>
-                <button class="friend-btn-action" style="margin-top: 5px;" onclick="alert('سيتم إظهار آخر 10 مباريات')">عرض المزيد</button>
+            `;
+        }
+
+        const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "160px", true);
+        
+        const modal = document.createElement('div');
+        modal.className = 'friend-data-modal';
+        modal.innerHTML = `
+            <div class="friend-data-card" style="max-width: 500px;">
+                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+                ${emblemHTML}
+                ${contentHtml}
             </div>
         `;
-    }
-
-    const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "160px", true);
-    
-    const modal = document.createElement('div');
-    modal.className = 'friend-data-modal';
-    modal.innerHTML = `
-        <div class="friend-data-card" style="max-width: 500px;">
-            <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
-            ${emblemHTML}
-            ${contentHtml}
-        </div>
-    `;
-    modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
-    document.body.appendChild(modal);
+        modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
+        document.body.appendChild(modal);
+    } catch(e) { console.error("Error viewing history", e); }
 };
 
 window.syncUsernameChange = async function(oldName, newName) {
@@ -605,7 +600,7 @@ window.onclick = function(e) {
     if (!e.target.closest('.header-icon-btn') && !e.target.closest('.profile-trigger') && !e.target.closest('.header-dropdown') && !e.target.closest('.modal-card')) { 
         document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show')); document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active')); 
     }
-    if (!e.target.closest('#friend-popover') && !e.target.closest('.friend-avatar') && !e.target.closest('.friend-data-card')) {
+    if (!e.target.closest('#friend-popover') && !e.target.closest('.friend-avatar')) {
         const pop = document.getElementById('friend-popover');
         if (pop) pop.remove();
     }
@@ -670,14 +665,14 @@ window.toggleDropdown = window.toggleDropdown || toggleDropdown;
 
 window.loadFragment = async function(pageName, element) {
     const contentHolder = document.getElementById('content-holder');
-    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'customization': 'advanced_customization' };
+    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile' };
     
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
     
     if (titles[pageName] && window.translations) {
-        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]] || '';
-        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]] || '';
+        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]];
+        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]];
     } else {
         if(pt) pt.innerText = '';
         if(mn) mn.innerText = '';
@@ -725,12 +720,7 @@ window.loadFragment = async function(pageName, element) {
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
         if (pageName === 'friends') {
-            // خط الدفاع الثالث
-            if (window.UI_COMPONENTS) {
-                window.drawFriendsUI();
-            } else {
-                setTimeout(() => { if (window.drawFriendsUI) window.drawFriendsUI(); }, 100);
-            }
+            window.drawFriendsUI();
         }
 
     } catch (error) {
