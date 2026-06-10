@@ -197,19 +197,20 @@
                 </div>
 
                 <div class="privacy-setting" id="privacy-profile-setting">
-                    <span class="privacy-label"><i class="ph-fill ph-user-circle"></i> البروفايل (اللفل والإنجازات)</span>
+                    <span class="privacy-label"><i class="ph-fill ph-user-circle"></i> الملف الشخصي</span>
                     <div class="segmented-control" style="width: 100%;">
                         <button class="segment-btn active" data-val="all" onclick="window.setPrivacy('profile', 'all', this)">الجميع</button>
                         <button class="segment-btn" data-val="friends" onclick="window.setPrivacy('profile', 'friends', this)">الأصدقاء</button>
                         <button class="segment-btn" data-val="nobody" onclick="window.setPrivacy('profile', 'nobody', this)">لا أحد</button>
                     </div>
                 </div>
+                
                 <div class="privacy-setting" id="privacy-history-setting">
                     <span class="privacy-label"><i class="ph-fill ph-chart-bar"></i> السجل والاحصائيات</span>
                     <div class="segmented-control" style="width: 100%;">
                         <button class="segment-btn active" data-val="all" onclick="window.setPrivacy('history', 'all', this)">الجميع</button>
-                        <button class="segment-btn" data-val="friends" onclick="window.setPrivacy('profile', 'friends', this)">الأصدقاء</button>
-                        <button class="segment-btn" data-val="nobody" onclick="window.setPrivacy('profile', 'nobody', this)">لا أحد</button>
+                        <button class="segment-btn" data-val="friends" onclick="window.setPrivacy('history', 'friends', this)">الأصدقاء</button>
+                        <button class="segment-btn" data-val="nobody" onclick="window.setPrivacy('history', 'nobody', this)">لا أحد</button>
                     </div>
                 </div>
 
@@ -289,7 +290,6 @@
         document.getElementById('edit-username-input').value = window.currentUserData.username;
         document.getElementById('edit-email-input').value = window.currentUserData.email;
 
-        // --- تحديث شكل اللقب بناءً على ملف Assets ---
         let titleEl = document.getElementById('emblem-title');
         let userTitle = window.currentUserData.title;
         if(userTitle && userTitle !== 'none' && userTitle.trim() !== '') {
@@ -311,7 +311,6 @@
             titleEl.style.borderColor = '';
         }
 
-        // --- تحديث شكل البادج بناءً على ملف Assets ---
         let badgeEl = document.getElementById('emblem-badge');
         let userBadgeId = window.currentUserData.badge || 'beginner';
         let badgeObj = window.GAME_ASSETS.badges.find(b => b.id === userBadgeId) || window.GAME_ASSETS.badges[0];
@@ -322,12 +321,16 @@
             badgeEl.innerHTML = `<i class="ph-fill ${badgeObj.icon}"></i>`;
         }
 
-        if(window.currentUserData.privacy_profile) {
-            document.querySelectorAll('#privacy-profile-setting .segment-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-val') === window.currentUserData.privacy_profile); });
-        }
-        if(window.currentUserData.privacy_history) {
-            document.querySelectorAll('#privacy-history-setting .segment-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-val') === window.currentUserData.privacy_history); });
-        }
+        // تم إصلاح نظام القراءة لضمان عرض الزر الصحيح عند فتح الصفحة
+        let pProfile = window.currentUserData.privacy_profile || 'all';
+        document.querySelectorAll('#privacy-profile-setting .segment-btn').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-val') === pProfile);
+        });
+
+        let pHistory = window.currentUserData.privacy_history || 'all';
+        document.querySelectorAll('#privacy-history-setting .segment-btn').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-val') === pHistory);
+        });
 
         let lvl = window.currentUserData.level || 1;
         let xp = window.currentUserData.xp || 0;
@@ -411,7 +414,6 @@
         window.closeAvatarModal();
     };
 
-    // الدالة المحدثة التي تحتوي على المزامنة القوية مع الأصدقاء
     window.savePersonalInfo = async function() {
         let newName = document.getElementById('edit-username-input').value.trim();
         let newEmail = document.getElementById('edit-email-input').value.trim();
@@ -436,7 +438,6 @@
             }
             
             if(updates.username) {
-                // مزامنة الاسم الجديد في حسابات الأصدقاء فوراً
                 if(window.syncUsernameChange) {
                     await window.syncUsernameChange(oldName, updates.username);
                 }
