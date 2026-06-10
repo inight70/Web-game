@@ -20,8 +20,8 @@ window.dbInstance = db;
 window.signOutFunc = signOut; 
 window.updateDocFunc = updateDoc; 
 window.docFunc = doc; 
-window.setDocFunc = setDoc;     // مهم جداً لإنشاء الغرف
-window.getDocFunc = getDoc;     // مهم جداً للبحث عن الغرفة
+window.setDocFunc = setDoc; 
+window.getDocFunc = getDoc; 
 window.arrayUnion = arrayUnion; 
 window.arrayRemove = arrayRemove; 
 window.getDocsFunc = getDocs; 
@@ -30,7 +30,6 @@ window.whereFunc = where;
 window.collectionFunc = collection; 
 window.onSnapshotFunc = onSnapshot;
 
-// نظام كشف تواجد اللاعب (Presence)
 document.addEventListener("visibilitychange", async () => {
     if (auth.currentUser && !window.isGuest) {
         const state = document.visibilityState === 'visible' ? 'online' : 'away';
@@ -94,6 +93,41 @@ window.syncUsernameChange = async function(oldName, newName) {
     } catch(e) { console.error("Error syncing username:", e); }
 };
 
+window.renderNotifications = function() {
+    const list = document.getElementById('noti-list'); const dot = document.getElementById('noti-dot');
+    if(!list || !dot) return;
+    
+    const hasFriendReqs = window.currentUserData && window.currentUserData.friendRequests && window.currentUserData.friendRequests.length > 0;
+    const hasGameInvites = window.currentUserData && window.currentUserData.gameInvites && window.currentUserData.gameInvites.length > 0;
+
+    if (window.isGuest || !window.currentUserData || (!hasFriendReqs && !hasGameInvites)) {
+        list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
+        dot.style.display = 'none'; return;
+    }
+    
+    dot.style.display = 'block'; let html = '';
+    
+    if (hasGameInvites) {
+        window.currentUserData.gameInvites.forEach(inv => {
+            html += `<div class="noti-item" onclick="window.joinFirebaseRoom('${inv.roomId}'); window.toggleDropdown('noti-dropdown');">
+                <div class="noti-icon" style="background:var(--accent-red); color:white;"><i class="ph-bold ph-sword"></i></div>
+                <div class="noti-text-content">
+                    <span class="noti-text">دعوة للعب من <strong>${inv.hostName}</strong></span>
+                    <span class="noti-time">انقر للانضمام (${inv.roomId})</span>
+                </div>
+            </div>`;
+        });
+    }
+
+    if (hasFriendReqs) {
+        window.currentUserData.friendRequests.forEach(req => {
+            html += `<div class="noti-item" onclick="window.openReviewRequestModal('${req}')"><div class="noti-icon"><i class="ph-bold ph-user-plus"></i></div><div class="noti-text-content"><span class="noti-text"><span>طلب صداقة جديد من</span> <strong>${req}</strong></span><span class="noti-time">الآن</span></div></div>`;
+        });
+    }
+    
+    list.innerHTML = html;
+};
+
 onAuthStateChanged(auth, async (user) => {
     const nameEl = document.getElementById('header-name'); 
     const fallbackAvatar = document.getElementById('header-avatar-fallback');
@@ -110,10 +144,9 @@ onAuthStateChanged(auth, async (user) => {
         window.unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (userDoc) => {
             if (userDoc.exists()) {
                 window.currentUserData = userDoc.data();
-                window.currentUserData.uid = user.uid; // مهم جداً للغرف
+                window.currentUserData.uid = user.uid;
                 
                 let displayName = window.currentUserData.username || user.email.split('@')[0];
-
                 if(nameEl){ nameEl.removeAttribute('data-i18n'); nameEl.innerText = displayName; }
                 
                 if(fallbackAvatar) {
@@ -136,7 +169,7 @@ onAuthStateChanged(auth, async (user) => {
                 }
 
                 window.setupRealtimeFriends();
-                if(window.renderNotifications) window.renderNotifications();
+                window.renderNotifications();
 
                 if (isInitialLoad && dropdownContent) {
                     dropdownContent.innerHTML = `<button class="dropdown-item" onclick="window.loadFragment('profile', null); window.toggleDropdown('');"><i class="ph ph-user-circle"></i> <span>الملف الشخصي</span></button><button class="dropdown-item logout" onclick="window.handleLogout()"><i class="ph ph-sign-out"></i> <span>تسجيل خروج</span></button>`;
@@ -144,8 +177,26 @@ onAuthStateChanged(auth, async (user) => {
                     document.getElementById('auth-modal').classList.add('hidden'); 
                     document.getElementById('app-shell').classList.add('unlocked');
                     
-                    const currentActive = document.querySelector('.nav-btn.active');
-                    if(currentActive && window.loadFragment) window.loadFragment(['home','play','achievements','store','profile'][Array.from(document.querySelectorAll('.nav-btn')).indexOf(currentActive)] || 'home', currentActive);
+                    // ==========================================
+                    // السحر هنا: استعادة الصفحة الأخيرة والغرفة
+                    // ==========================================
+                    let savedPage = sessionStorage.getItem('lastActivePage') || 'home';
+                    let activeRoom = window.currentUserData.activeRoom;
+
+                    if (activeRoom) {
+                        window.currentRoomId = activeRoom;
+                        savedPage = 'lobby';
+                    }
+
+                    // العثور على الزر المناسب لتفعيله
+                    const pages = ['home', 'play', 'achievements', 'store', 'profile'];
+                    let btnIndex = pages.indexOf(savedPage);
+                    let navBtn = (btnIndex !== -1) ? document.querySelectorAll('.nav-btn')[btnIndex] : null;
+                    if(savedPage === 'lobby') navBtn = document.querySelectorAll('.nav-btn')[1]; // زر اللعب
+
+                    if(window.loadFragment) window.loadFragment(savedPage, navBtn);
+                    if(savedPage === 'lobby' && window.listenToRoom) window.listenToRoom();
+
                     if(window.hideLoader) window.hideLoader(); 
                     isInitialLoad = false;
                 }
@@ -226,12 +277,16 @@ window.handleAuthSubmit = async function(e) {
 
 window.handleLogout = async function() { 
     if(auth.currentUser) {
-        try { await updateDoc(doc(db, "users", auth.currentUser.uid), { status: 'offline' }); } catch(e){}
+        try { 
+            // تسجيل الخروج يخرجك من الغرفة أيضاً
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { status: 'offline', activeRoom: null }); 
+        } catch(e){}
     }
     signOut(auth).then(() => { 
         document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show'));
         document.body.removeAttribute('data-theme'); document.documentElement.className=''; document.body.className='';
         window.currentUserData = null; 
+        sessionStorage.removeItem('lastActivePage');
         if(window.clearAuthInputs) window.clearAuthInputs(); 
         const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
         const fallbackAvatar = document.getElementById('header-avatar-fallback'); if(fallbackAvatar) { fallbackAvatar.innerHTML = "ز"; fallbackAvatar.style.border = ''; }
@@ -285,4 +340,71 @@ window.confirmRemoveFriend = async function() {
         if(window.closeFriendModal) window.closeFriendModal('remove-friend-modal'); 
         window.friendToRemove = null;
     } catch(e) { alert("حدث خطأ أثناء الحذف."); }
+};
+
+// ==========================================
+// تحديث دالة التنقل لحفظ الصفحة النشطة
+// ==========================================
+window.loadFragment = async function(pageName, element) {
+    // حفظ الصفحة في الذاكرة لتذكرها عند التحديث
+    sessionStorage.setItem('lastActivePage', pageName);
+
+    const contentHolder = document.getElementById('content-holder');
+    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'lobby': 'title_play' };
+    
+    const pt = document.getElementById('page-title'); 
+    const mn = document.getElementById('mobile-section-name'); 
+    
+    if (titles[pageName] && window.translations && window.translations[window.currentLang]) {
+        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]] || '';
+        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]] || '';
+    }
+    
+    document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
+        btn.classList.remove('active'); 
+        const icon = btn.querySelector('i'); 
+        if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
+    });
+
+    if(element) {
+        element.classList.add('active'); 
+        const icon = element.querySelector('i'); 
+        if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+        
+        const isNav = element.classList.contains('nav-btn');
+        const tabsList = isNav ? document.querySelectorAll('.nav-btn') : document.querySelectorAll('.bottom-tab');
+        const targetList = isNav ? document.querySelectorAll('.bottom-tab') : document.querySelectorAll('.nav-btn');
+        const index = Array.from(tabsList).indexOf(element);
+        
+        if (pageName === 'store' && isNav) { const mStore = document.querySelectorAll('.bottom-tab')[3]; if(mStore) { mStore.classList.add('active'); mStore.querySelector('i').className = mStore.querySelector('i').className.replace('ph', 'ph-fill'); } }
+        else if (pageName === 'profile' && isNav) { const mProf = document.querySelectorAll('.bottom-tab')[5]; if(mProf) { mProf.classList.add('active'); mProf.querySelector('i').className = mProf.querySelector('i').className.replace('ph', 'ph-fill'); } }
+        else if (pageName !== 'friends' && pageName !== 'lobby') { const matchedTab = targetList[index]; if(matchedTab) { matchedTab.classList.add('active'); matchedTab.querySelector('i').className = matchedTab.querySelector('i').className.replace('ph', 'ph-fill'); } }
+    }
+
+    if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
+
+    try {
+        const response = await fetch(`pages/${pageName}.html`);
+        if (!response.ok) throw new Error('Page not found');
+        
+        const htmlContent = await response.text();
+        if(contentHolder) contentHolder.innerHTML = htmlContent;
+
+        const scripts = contentHolder.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+
+        if(window.setLanguage) window.setLanguage(window.currentLang, true);
+
+        if (pageName === 'friends' && window.drawFriendsUI) {
+            window.drawFriendsUI();
+        }
+
+    } catch (error) {
+        if(contentHolder && window.translations) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على الصفحة...</div>`;
+    }
 };
