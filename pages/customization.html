@@ -73,32 +73,14 @@
 </div>
 
 <script>
-    const gameAssets = {
-        emblems: window.globalStoreEmblems || [
-            { id: 'default', name: 'الافتراضي', src: 'assets/images/default-emblem.png', locked: false, req: '' },
-            { id: 'blue', name: 'افتراضي أزرق', src: 'assets/images/emblem-blue.png', locked: false, req: '' },
-            { id: 'green', name: 'افتراضي أخضر', src: 'assets/images/emblem-green.png', locked: false, req: '' }
-        ],
-        badges: window.globalStoreBadges || [
-            { id: 'beginner', name: 'مبتدئ', icon: 'ph-shield-star', color: '#ff4c6a', locked: false, req: '' }
-        ],
-        titles: window.globalStoreTitles || [
-            { id: 'none', name: 'بدون لقب', locked: false, req: '' }
-        ],
-        maps: window.globalStoreMaps || [
-            { id: 'classic', name: 'الخريطة الكلاسيكية', src: 'assets/images/map-classic.png', locked: false, req: '' },
-            { id: 'dark', name: 'خريطة الظلام', src: 'assets/images/map-dark.png', locked: true, req: 'مستوى 10' }
-        ]
-    };
+    // تم حذف object gameAssets القديم والاعتماد كلياً على window.GAME_ASSETS
 
     function renderEmblems() {
         const renderer = document.getElementById('dynamic-content-renderer'); if(!renderer) return;
-        // هنا نجلب الداتا الطازجة في كل مرة تُستدعى فيها الدالة
         const liveUserData = window.currentUserData || {}; 
         
         let html = '<div class="grid-premium-cards">';
-        gameAssets.emblems.forEach(item => {
-            // التعديل هنا: نستخدم includes لضمان التطابق حتى لو اختلف جزء من الرابط
+        window.GAME_ASSETS.emblems.forEach(item => {
             const isEquipped = (liveUserData.emblem && liveUserData.emblem.includes(item.src)) || (item.id === 'default' && !liveUserData.emblem);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>` : '';
@@ -122,7 +104,7 @@
         const liveUserData = window.currentUserData || {};
         
         let html = '<div class="grid-premium-cards">';
-        gameAssets.maps.forEach(item => {
+        window.GAME_ASSETS.maps.forEach(item => {
             const isEquipped = liveUserData.map === item.id || (item.id === 'classic' && !liveUserData.map);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark"><i class="ph-bold ph-check"></i></div>` : '';
@@ -146,7 +128,7 @@
         const liveUserData = window.currentUserData || {};
         
         let html = '<div class="grid-small-items">';
-        gameAssets.badges.forEach(item => {
+        window.GAME_ASSETS.badges.forEach(item => {
             const isEquipped = liveUserData.badge === item.id || (item.id === 'beginner' && !liveUserData.badge);
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark" style="top:8px; left:8px; width:24px; height:24px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>` : '';
@@ -170,7 +152,7 @@
         const liveUserData = window.currentUserData || {};
         
         let html = '<div class="grid-titles">';
-        gameAssets.titles.forEach(item => {
+        window.GAME_ASSETS.titles.forEach(item => {
             const isEquipped = liveUserData.title === item.name || (item.id === 'none' && (!liveUserData.title || liveUserData.title === 'none'));
             const statusClass = item.locked ? 'locked' : (isEquipped ? 'equipped' : '');
             const checkMark = isEquipped ? `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:28px; height:28px;"><i class="ph-bold ph-check" style="font-size:0.9rem;"></i></div>` : '';
@@ -179,7 +161,7 @@
             html += `
                 <div class="title-card ${statusClass}" data-type="title" data-val="${item.name}" onclick="!${item.locked} && handleSelection(this, 'title', '${item.id === 'none' ? 'none' : item.name}')">
                     <div style="display:flex; flex-direction:column; gap:5px;">
-                        <span class="title-text" style="${item.locked ? 'color:var(--text-dim);' : ''}">${item.name}</span>
+                        <span class="title-text" style="color: ${item.color || 'gold'}; ${item.locked ? 'color:var(--text-dim);' : ''}">${item.name}</span>
                         ${item.locked ? `<span style="font-size:0.8rem; color:var(--text-dim); font-weight:bold;">${item.req}</span>` : ''}
                     </div>
                     ${item.locked ? lockIcon : checkMark}
@@ -214,7 +196,6 @@
 
         element.classList.add('equipped');
         
-        // ضبط ألوان الصح حسب القسم، الأبيض للأمبلمات والخرائط
         let markHTML = `<div class="item-equipped-mark" style="${(type==='emblem' || type==='map') ? 'background:white; color:black;' : ''}"><i class="ph-bold ph-check"></i></div>`;
         if(type === 'badge') markHTML = `<div class="item-equipped-mark" style="top:8px; left:8px; width:24px; height:24px;"><i class="ph-bold ph-check" style="font-size:0.8rem;"></i></div>`;
         if(type === 'title') markHTML = `<div class="item-equipped-mark" style="position:relative; top:0; left:0; width:28px; height:28px;"><i class="ph-bold ph-check" style="font-size:0.9rem;"></i></div>`;
@@ -233,7 +214,7 @@
 
     window.initCustomizationPage = function() {
         const renderer = document.getElementById('dynamic-content-renderer');
-        if(!renderer) {
+        if(!renderer || !window.GAME_ASSETS) {
             setTimeout(window.initCustomizationPage, 50);
             return;
         }
