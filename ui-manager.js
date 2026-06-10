@@ -25,17 +25,17 @@ style.innerHTML = `
         0% { opacity: 0; transform: scale(0.95) translateY(10px); }
         100% { opacity: 1; transform: scale(1) translateY(0); }
     }
-    .modern-action-btn { background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid rgba(255,255,255,0.08); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
-    .modern-action-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    .modern-action-btn { background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
+    .modern-action-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
     .modern-action-btn:active { transform: translateY(0) scale(0.98); }
     
-    .modern-danger-btn { background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; }
+    .modern-danger-btn { background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.15); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; }
     .modern-danger-btn:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.3); border-color: var(--accent-red); }
     .modern-danger-btn:active { transform: translateY(0) scale(0.98); }
     
-    .friend-data-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 1000000; display: flex; justify-content: center; align-items: center; animation: smoothFadeIn 0.2s ease; padding: 20px; }
-    .friend-data-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); overflow: hidden; animation: smoothScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; position: relative; }
-    .locked-view-msg { padding: 50px 20px; text-align: center; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; margin: 20px; border: 1px dashed rgba(255,255,255,0.1); }
+    .friend-data-modal { position: fixed; inset: 0; background: rgba(20, 20, 25, 0.85); backdrop-filter: blur(15px); z-index: 1000000; display: flex; justify-content: center; align-items: center; animation: smoothFadeIn 0.3s ease; padding: 20px; }
+    .friend-data-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); overflow: hidden; animation: smoothScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; position: relative; }
+    .locked-view-msg { padding: 50px 20px; text-align: center; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.15); border-radius: 20px; margin: 20px; border: 1px dashed rgba(255,255,255,0.05); }
 `;
 document.head.appendChild(style);
 
@@ -130,17 +130,17 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
 
         const actionButtons = `
             <div style="padding: 20px; display: flex; flex-direction: column; gap: 12px; background: linear-gradient(180deg, var(--surface-panel) 0%, var(--bg-base) 100%);">
-                <button class="modern-action-btn" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendProfile('${friendName}');"><i class="ph-bold ph-user-circle" style="font-size:1.2rem;"></i> عرض الملف الشخصي</button>
-                <button class="modern-action-btn" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendHistory('${friendName}');"><i class="ph-bold ph-clock-counter-clockwise" style="font-size:1.2rem;"></i> سجل المباريات</button>
-                <button class="modern-danger-btn" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.openRemoveFriendModal('${friendName}');"><i class="ph-bold ph-user-minus" style="font-size:1.2rem;"></i> حذف الصديق</button>
+                <button class="modern-action-btn" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendProfile('${friendName}');"><i class="ph-duotone ph-user-circle" style="font-size:1.4rem;"></i> عرض الملف الشخصي</button>
+                <button class="modern-action-btn" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.viewFriendHistory('${friendName}');"><i class="ph-duotone ph-clock-counter-clockwise" style="font-size:1.4rem;"></i> سجل المباريات</button>
+                <button class="modern-danger-btn" onclick="document.getElementById('${isMobile ? 'dynamic-friend-modal' : 'friend-popover'}').remove(); window.openRemoveFriendModal('${friendName}');"><i class="ph-duotone ph-user-minus" style="font-size:1.4rem;"></i> حذف الصديق</button>
             </div>
         `;
 
         if (isMobile) {
-            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "95px", true);
+            const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "100px", true);
             const modalHtml = `
                 <div class="profile-modal-content friend-data-card" style="padding: 0; width: 95%;">
-                    <button onclick="document.getElementById('dynamic-friend-modal').remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+                    <button class="close-modal-btn" onclick="document.getElementById('dynamic-friend-modal').remove()" style="z-index: 100; top: 15px; right: 15px; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.1);"><i class="ph-bold ph-x"></i></button>
                     ${emblemHTML}
                     ${actionButtons}
                 </div>
@@ -162,7 +162,7 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
             const popover = document.createElement('div');
             popover.id = 'friend-popover';
             popover.setAttribute('data-friend', friendName);
-            popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 360px; background: var(--surface-panel); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); z-index: 100000; overflow: hidden; animation: smoothScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; border: 1px solid rgba(255,255,255,0.08);`;
+            popover.style.cssText = `position: fixed; top: ${topPos}px; left: ${leftPos}px; width: 360px; background: var(--surface-panel); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); z-index: 100000; overflow: hidden; animation: smoothScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; border: 1px solid rgba(255,255,255,0.05);`;
             
             const emblemHTML = window.UI_COMPONENTS.buildEmblemCard(friendData, "100px", true);
 
@@ -194,7 +194,7 @@ window.viewFriendProfile = function(fName) {
         
         let contentHtml = '';
         if(!canView) {
-            contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4.5rem; color:var(--accent-red); margin-bottom: 10px;"></i><h3 style="color:white; font-size:1.4rem;">البروفايل خاص</h3><p style="font-size:0.9rem;">هذا المستخدم قام بتقييد من يمكنه رؤية بروفايله.</p></div>`;
+            contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4.5rem; color:var(--accent-red); margin-bottom: 10px;"></i><h3 style="color:var(--text-main); font-size:1.4rem;">البروفايل خاص</h3><p style="font-size:0.9rem;">هذا المستخدم قام بتقييد من يمكنه رؤية بروفايله.</p></div>`;
         } else {
             let lvl = fData.level || 1;
             let xp = fData.xp || 0;
@@ -211,7 +211,7 @@ window.viewFriendProfile = function(fName) {
                     </div>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; background: var(--surface-panel); padding: 20px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                        <span style="color: var(--text-dim); font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;"><i class="ph-fill ph-medal" style="font-size: 1.4rem; color: gold;"></i> الإنجازات</span>
+                        <span style="color: var(--text-dim); font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;"><i class="ph-duotone ph-medal" style="font-size: 1.6rem; color: var(--accent-red);"></i> الإنجازات</span>
                         <span style="color: var(--text-main); font-weight: 900; font-family: var(--font-en); font-size: 1.5rem;">${achievements}</span>
                     </div>
                 </div>
@@ -223,8 +223,8 @@ window.viewFriendProfile = function(fName) {
         const modal = document.createElement('div');
         modal.className = 'friend-data-modal';
         modal.innerHTML = `
-            <div class="friend-data-card" style="max-width: 500px;">
-                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);"><i class="ph-bold ph-x"></i></button>
+            <div class="friend-data-card" style="max-width: 450px;">
+                <button class="close-modal-btn" onclick="this.parentElement.parentElement.remove()" style="z-index: 100; top: 15px; right: 15px; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.1);"><i class="ph-bold ph-x"></i></button>
                 ${emblemHTML}
                 ${contentHtml}
             </div>
@@ -241,7 +241,7 @@ window.viewFriendHistory = function(fName) {
         
         let contentHtml = '';
         if(!canView) {
-            contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4.5rem; color:var(--accent-red); margin-bottom: 10px;"></i><h3 style="color:white; font-size:1.4rem;">السجل خاص</h3><p style="font-size:0.9rem;">هذا المستخدم قام بتقييد من يمكنه رؤية إحصائياته.</p></div>`;
+            contentHtml = `<div class="locked-view-msg"><i class="ph-duotone ph-lock-key" style="font-size:4.5rem; color:var(--accent-red); margin-bottom: 10px;"></i><h3 style="color:var(--text-main); font-size:1.4rem;">السجل خاص</h3><p style="font-size:0.9rem;">هذا المستخدم قام بتقييد من يمكنه رؤية إحصائياته.</p></div>`;
         } else {
             let m = fData.matches || 0;
             let w = fData.wins || 0;
@@ -250,7 +250,7 @@ window.viewFriendHistory = function(fName) {
             
             contentHtml = `
                 <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
-                    <h4 style="color: var(--text-main); margin-bottom: -5px; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;"><i class="ph-fill ph-chart-bar" style="color: var(--accent-red); font-size: 1.4rem;"></i> الإحصائيات العامة</h4>
+                    <h4 style="color: var(--text-main); margin-bottom: -5px; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;"><i class="ph-duotone ph-chart-bar" style="color: var(--accent-red); font-size: 1.4rem;"></i> الإحصائيات العامة</h4>
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
                         <div style="background: var(--surface-panel); padding: 20px 5px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 15px rgba(0,0,0,0.2);">
                             <div style="font-size: 1.5rem; font-weight: 900; color: white; font-family: var(--font-en);">${m}</div>
@@ -265,12 +265,12 @@ window.viewFriendHistory = function(fName) {
                             <div style="font-size: 0.7rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">خسارة</div>
                         </div>
                         <div style="background: var(--surface-panel); padding: 20px 5px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 15px rgba(0,0,0,0.2);">
-                            <div style="font-size: 1.5rem; font-weight: 900; color: gold; font-family: var(--font-en);">${wr}</div>
+                            <div style="font-size: 1.5rem; font-weight: 900; color: var(--text-main); font-family: var(--font-en);">${wr}</div>
                             <div style="font-size: 0.7rem; color: var(--text-dim); font-weight: bold; margin-top: 5px;">نسبة</div>
                         </div>
                     </div>
                     
-                    <h4 style="color: var(--text-main); margin-top: 15px; margin-bottom: -5px; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;"><i class="ph-fill ph-clock-counter-clockwise" style="color: var(--accent-red); font-size: 1.4rem;"></i> آخر المباريات</h4>
+                    <h4 style="color: var(--text-main); margin-top: 15px; margin-bottom: -5px; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;"><i class="ph-duotone ph-clock-counter-clockwise" style="color: var(--accent-red); font-size: 1.4rem;"></i> آخر المباريات</h4>
                     <div style="background: var(--surface-panel); border-radius: 20px; padding: 40px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.1); color: var(--text-dim); box-shadow: inset 0 0 20px rgba(0,0,0,0.1);">
                         لا توجد مباريات مسجلة بعد.
                     </div>
@@ -284,8 +284,8 @@ window.viewFriendHistory = function(fName) {
         const modal = document.createElement('div');
         modal.className = 'friend-data-modal';
         modal.innerHTML = `
-            <div class="friend-data-card" style="max-width: 550px;">
-                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);"><i class="ph-bold ph-x"></i></button>
+            <div class="friend-data-card" style="max-width: 450px;">
+                <button class="close-modal-btn" onclick="this.parentElement.parentElement.remove()" style="z-index: 100; top: 15px; right: 15px; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.1);"><i class="ph-bold ph-x"></i></button>
                 ${emblemHTML}
                 ${contentHtml}
             </div>
@@ -293,20 +293,6 @@ window.viewFriendHistory = function(fName) {
         modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
         document.body.appendChild(modal);
     } catch(e) { console.error("Error viewing history", e); }
-};
-
-window.renderNotifications = function() {
-    const list = document.getElementById('noti-list'); const dot = document.getElementById('noti-dot');
-    if(!list || !dot) return;
-    if (window.isGuest || !window.currentUserData || !window.currentUserData.friendRequests || window.currentUserData.friendRequests.length === 0) {
-        list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
-        dot.style.display = 'none'; return;
-    }
-    dot.style.display = 'block'; let html = '';
-    window.currentUserData.friendRequests.forEach(req => {
-        html += `<div class="noti-item" onclick="window.openReviewRequestModal('${req}')"><div class="noti-icon"><i class="ph-bold ph-user-plus"></i></div><div class="noti-text-content"><span class="noti-text"><span>طلب صداقة جديد من</span> <strong>${req}</strong></span><span class="noti-time">الآن</span></div></div>`;
-    });
-    list.innerHTML = html;
 };
 
 // ==========================================
@@ -322,7 +308,8 @@ window.setLanguage = async function(lang, skipSave = false) {
             else el.innerText = window.translations[lang][key];
         }
     });
-    window.renderNotifications(); window.drawFriendsUI();
+    if(window.renderNotifications) window.renderNotifications(); 
+    if(window.drawFriendsUI) window.drawFriendsUI();
     
     const activeBtn = document.querySelector('.nav-btn.active');
     if(activeBtn) {
@@ -420,9 +407,8 @@ window.enterAsGuest = function() {
     const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = "غير مسجل"; 
     const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) { avtFall.innerHTML = "ز"; avtFall.style.border = ''; }
     
-    // من هنا نستدعي دالة הפايربيس (والتي ستكون بملف الفايربيس)
     if(window.setupRealtimeFriends) window.setupRealtimeFriends(); 
-    window.renderNotifications();
+    if(window.renderNotifications) window.renderNotifications();
     
     const dropContent = document.getElementById('dropdown-content-area'); if(dropContent) dropContent.innerHTML = `<button class="dropdown-item" onclick="window.openLoginDirectly()"><i class="ph ph-sign-in"></i> <span>تسجيل الدخول</span></button>`;
     window.clearAuthInputs(); 
@@ -496,10 +482,7 @@ window.loadFragment = async function(pageName, element) {
         });
 
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
-
-        if (pageName === 'friends') {
-            window.drawFriendsUI();
-        }
+        if (pageName === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
 
     } catch (error) {
         if(contentHolder && window.translations) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${window.translations[window.currentLang][titles[pageName]] || 'هذه الصفحة'}...</div>`;
@@ -508,8 +491,6 @@ window.loadFragment = async function(pageName, element) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const authForm = document.getElementById('firebase-form');
-    if (authForm) {
-        authForm.setAttribute('novalidate', 'true');
-    }
+    if (authForm) { authForm.setAttribute('novalidate', 'true'); }
     if(window.setFormType) window.setFormType('login');
 });
