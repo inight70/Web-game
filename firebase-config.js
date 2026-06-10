@@ -15,10 +15,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app); 
 const db = getFirestore(app);
 
-window.authInstance = auth; window.dbInstance = db; 
-window.signOutFunc = signOut; window.updateDocFunc = updateDoc; window.docFunc = doc; 
-window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.getDocsFunc = getDocs; 
-window.queryFunc = query; window.whereFunc = where; window.collectionFunc = collection; window.onSnapshotFunc = onSnapshot;
+window.authInstance = auth; 
+window.dbInstance = db; 
+window.signOutFunc = signOut; 
+window.updateDocFunc = updateDoc; 
+window.docFunc = doc; 
+window.setDocFunc = setDoc;     // مهم جداً لإنشاء الغرف
+window.getDocFunc = getDoc;     // مهم جداً للبحث عن الغرفة
+window.arrayUnion = arrayUnion; 
+window.arrayRemove = arrayRemove; 
+window.getDocsFunc = getDocs; 
+window.queryFunc = query; 
+window.whereFunc = where; 
+window.collectionFunc = collection; 
+window.onSnapshotFunc = onSnapshot;
 
 // نظام كشف تواجد اللاعب (Presence)
 document.addEventListener("visibilitychange", async () => {
@@ -100,6 +110,8 @@ onAuthStateChanged(auth, async (user) => {
         window.unsubscribeSnapshot = onSnapshot(doc(db, "users", user.uid), (userDoc) => {
             if (userDoc.exists()) {
                 window.currentUserData = userDoc.data();
+                window.currentUserData.uid = user.uid; // مهم جداً للغرف
+                
                 let displayName = window.currentUserData.username || user.email.split('@')[0];
 
                 if(nameEl){ nameEl.removeAttribute('data-i18n'); nameEl.innerText = displayName; }
