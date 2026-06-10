@@ -69,7 +69,12 @@ window.drawFriendsUI = function() {
     const mobileContainer = document.getElementById('mobile-friends-wrapper');
     const friendsArray = (window.currentUserData && window.currentUserData.friends) ? window.currentUserData.friends : [];
 
-    // ---- رسم واجهة سطح المكتب ----
+    // --- خط الدفاع الأول: التأكد من وجود ملف game-assets.js ---
+    if (!window.UI_COMPONENTS) {
+        console.error("ملف game-assets.js غير مرتبط بشكل صحيح أو لم يتم تحميله بعد!");
+        return; // نوقف الدالة هنا حتى لا تنهار الصفحة
+    }
+
     if (desktopContainer) {
         if (window.isGuest || !window.currentUserData) {
             desktopContainer.innerHTML = `<div class="guest-friends-msg"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لرؤية الأصدقاء</span></div>`;
@@ -88,7 +93,6 @@ window.drawFriendsUI = function() {
         }
     }
 
-    // ---- رسم واجهة الجوال ----
     if (mobileContainer) {
         if (window.isGuest || !window.currentUserData) {
             mobileContainer.innerHTML = `<div class="empty-content-box" style="height: 100%; border:none; justify-content:center;"><i class="ph-duotone ph-lock-key"></i><span>يجب تسجيل الدخول لإضافة الأصدقاء ورؤيتهم.</span></div>`;
@@ -102,7 +106,6 @@ window.drawFriendsUI = function() {
                 let avatarInner = `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">${fName.charAt(0).toUpperCase()}</div>`;
                 if (fData.avatar) avatarInner = `<img src="${fData.avatar}">`;
                 
-                // الاعتماد على الملف الجديد في بناء الأمبلم
                 let emblemHTML = window.UI_COMPONENTS.buildEmblemCard(fData, "85px", true);
                 
                 mHtml += `
@@ -126,7 +129,6 @@ window.renderFriendsList = function(containerId, isFullCard = false) {
     window.setupRealtimeFriends();
 };
 
-// --- أنيميشن مخصص للنوافذ المنبثقة للأصدقاء ---
 const style = document.createElement('style');
 style.innerHTML = `
     @keyframes popoverScaleIn {
@@ -157,6 +159,12 @@ document.head.appendChild(style);
 
 
 window.openFriendActionModal = function(friendName, event, isMobile) {
+    // --- خط الدفاع الثاني ---
+    if (!window.UI_COMPONENTS) {
+        console.error("لا يمكن فتح النافذة، ملف game-assets.js مفقود!");
+        return;
+    }
+
     let existingPopover = document.getElementById('friend-popover');
     if (existingPopover && existingPopover.getAttribute('data-friend') === friendName) { existingPopover.remove(); return; }
 
@@ -225,6 +233,7 @@ window.checkFriendPrivacy = function(friendData, privacyType) {
 };
 
 window.viewFriendProfile = function(fName) {
+    if (!window.UI_COMPONENTS) return;
     const fData = window.friendsCache[fName];
     if(!fData) return;
     const canView = window.checkFriendPrivacy(fData, 'profile');
@@ -271,6 +280,7 @@ window.viewFriendProfile = function(fName) {
 };
 
 window.viewFriendHistory = function(fName) {
+    if (!window.UI_COMPONENTS) return;
     const fData = window.friendsCache[fName];
     if(!fData) return;
     const canView = window.checkFriendPrivacy(fData, 'history');
@@ -595,7 +605,7 @@ window.onclick = function(e) {
     if (!e.target.closest('.header-icon-btn') && !e.target.closest('.profile-trigger') && !e.target.closest('.header-dropdown') && !e.target.closest('.modal-card')) { 
         document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show')); document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active')); 
     }
-    if (!e.target.closest('#friend-popover') && !e.target.closest('.friend-avatar')) {
+    if (!e.target.closest('#friend-popover') && !e.target.closest('.friend-avatar') && !e.target.closest('.friend-data-card')) {
         const pop = document.getElementById('friend-popover');
         if (pop) pop.remove();
     }
@@ -660,14 +670,14 @@ window.toggleDropdown = window.toggleDropdown || toggleDropdown;
 
 window.loadFragment = async function(pageName, element) {
     const contentHolder = document.getElementById('content-holder');
-    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile' };
+    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'customization': 'advanced_customization' };
     
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
     
     if (titles[pageName] && window.translations) {
-        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]];
-        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]];
+        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]] || '';
+        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]] || '';
     } else {
         if(pt) pt.innerText = '';
         if(mn) mn.innerText = '';
@@ -715,7 +725,12 @@ window.loadFragment = async function(pageName, element) {
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
         if (pageName === 'friends') {
-            window.drawFriendsUI();
+            // خط الدفاع الثالث
+            if (window.UI_COMPONENTS) {
+                window.drawFriendsUI();
+            } else {
+                setTimeout(() => { if (window.drawFriendsUI) window.drawFriendsUI(); }, 100);
+            }
         }
 
     } catch (error) {
