@@ -2,11 +2,10 @@
 // محرك إدارة الغرف (Room Engine - Firebase)
 // ==========================================
 
-window.currentRoomId = sessionStorage.getItem('activeRoomId') || null;
+window.currentRoomId = null;
 window.roomUnsubscribe = null;
 window.currentRoomData = null;
 
-// كاش خاص باللاعبين المتواجدين في اللوبي لتحديث بياناتهم لحظياً
 window.lobbyPlayersCache = {};
 window.lobbyPlayerListeners = {};
 
@@ -40,8 +39,10 @@ window.createFirebaseRoom = async function() {
             createdAt: new Date().toISOString()
         });
 
+        // السحر هنا: حفظ الغرفة في بروفايل اللاعب ليعود لها من أي جهاز
+        await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), { activeRoom: roomCode });
+
         window.currentRoomId = roomCode;
-        sessionStorage.setItem('activeRoomId', roomCode); // حفظ الجلسة
         return roomCode;
     } catch (error) {
         console.error("Error creating room:", error);
@@ -67,16 +68,19 @@ window.joinFirebaseRoom = async function(roomCode) {
         }
 
         const userName = window.currentUserData.username_lower;
+        const user = window.authInstance.currentUser;
+
         if (!data.players.includes(userName)) {
             await window.updateDocFunc(roomRef, {
                 players: window.arrayUnion(userName)
             });
         }
+        
+        // حفظ الغرفة في بروفايل اللاعب
+        await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), { activeRoom: roomCode });
 
         window.currentRoomId = roomCode;
-        sessionStorage.setItem('activeRoomId', roomCode); // حفظ الجلسة
         
-        // إذا كان ينضم من إشعار دعوة وهو في صفحة أخرى
         if(window.loadFragment) { window.loadFragment('lobby', document.querySelectorAll('.nav-btn')[1]); }
         return true;
     } catch (error) {
@@ -85,9 +89,7 @@ window.joinFirebaseRoom = async function(roomCode) {
     }
 };
 
-// مراقبة اللاعبين داخل الغرفة لحظياً (Real-time Profile Sync)
 function syncLobbyPlayers(playersArray) {
-    // تنظيف المراقبين للاعبين الذين غادروا
     Object.keys(window.lobbyPlayerListeners).forEach(pName => {
         if (!playersArray.includes(pName)) {
             window.lobbyPlayerListeners[pName]();
@@ -96,7 +98,6 @@ function syncLobbyPlayers(playersArray) {
         }
     });
 
-    // إضافة مراقبين للاعبين الجدد وتحديث البروفايلات لحظياً
     playersArray.forEach(pName => {
         if (!window.lobbyPlayerListeners[pName]) {
             const q = window.queryFunc(window.collectionFunc(window.dbInstance, "users"), window.whereFunc("username_lower", "==", pName));
@@ -104,7 +105,6 @@ function syncLobbyPlayers(playersArray) {
                 if (!snap.empty) {
                     window.lobbyPlayersCache[pName] = snap.docs[0].data();
                 }
-                // إعادة رسم اللوبي فوراً بدون طلب بيانات جديدة (لأنها مكيشة)
                 if (window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers();
             });
         }
@@ -118,14 +118,11 @@ window.listenToRoom = function() {
     
     window.roomUnsubscribe = window.onSnapshotFunc(roomRef, async (snap) => {
         if (!snap.exists()) {
-            alert("تم إغلاق الغرفة.");
+            alert("تم إغلاق الغرفة من قِبل المالك.");
             window.leaveFirebaseRoom(true); 
             return;
         }
-
         window.currentRoomData = snap.data();
-        
-        // تفعيل المزامنة اللحظية للاعبين
         syncLobbyPlayers(window.currentRoomData.players || []);
     });
 };
@@ -135,29 +132,32 @@ window.leaveFirebaseRoom = async function(forced = false) {
     
     if (window.roomUnsubscribe) { window.roomUnsubscribe(); window.roomUnsubscribe = null; }
 
-    // إيقاف مراقبة بيانات اللاعبين لتوفير موارد الجهاز
-    Object.values(window.lobbyPlayerListeners).forEach(unsub => unsubscribe());
+    Object.values(window.lobbyPlayerListeners).forEach(unsub => { if(typeof unsub === 'function') unsub(); });
     window.lobbyPlayerListeners = {};
     window.lobbyPlayersCache = {};
 
-    if (!forced && user && window.currentRoomId && window.currentRoomData) {
+    if (user) {
         try {
-            const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
-            if (window.currentRoomData.hostId === user.uid) {
-                const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                await deleteDoc(roomRef);
-            } else {
-                await window.updateDocFunc(roomRef, {
-                    players: window.arrayRemove(window.currentUserData.username_lower),
-                    readyPlayers: window.arrayRemove(window.currentUserData.username_lower)
-                });
+            // إزالة الغرفة من بروفايل اللاعب
+            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), { activeRoom: null });
+
+            if (!forced && window.currentRoomId && window.currentRoomData) {
+                const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
+                if (window.currentRoomData.hostId === user.uid) {
+                    const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                    await deleteDoc(roomRef);
+                } else {
+                    await window.updateDocFunc(roomRef, {
+                        players: window.arrayRemove(window.currentUserData.username_lower),
+                        readyPlayers: window.arrayRemove(window.currentUserData.username_lower)
+                    });
+                }
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Error leaving room:", e); }
     }
 
     window.currentRoomId = null;
     window.currentRoomData = null;
-    sessionStorage.removeItem('activeRoomId'); // مسح الجلسة
     
     if (window.loadFragment) {
         window.loadFragment('play', document.querySelectorAll('.nav-btn')[1]);
