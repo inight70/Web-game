@@ -293,7 +293,29 @@ window.viewFriendHistory = function(fName) {
 };
 
 // ==========================================
-// 4. دوال التحكم بإعدادات الواجهة (Settings)
+// نافذة إغلاق الغرفة (المالك أنهى الغرفة)
+// ==========================================
+window.showRoomClosedModal = function() {
+    const modal = document.createElement('div');
+    modal.className = 'friend-data-modal';
+    modal.style.zIndex = '10000000';
+    modal.innerHTML = `
+        <div class="friend-data-card" style="max-width: 350px; text-align: center; padding: 35px 25px;">
+            <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,76,106,0.1); color: var(--accent-red); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; margin: 0 auto 20px auto;">
+                <i class="ph-duotone ph-warning-circle"></i>
+            </div>
+            <h3 style="color: white; margin-bottom: 10px; font-size: 1.3rem; font-weight: 800;">تم إنهاء الغرفة</h3>
+            <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 0;">قام المالك بإغلاق الغرفة للتو.</p>
+        </div>
+    `;
+    modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+    setTimeout(() => { if(modal.parentNode) modal.remove(); }, 3500);
+};
+
+// ==========================================
+// 5. دوال الإعدادات والتفاعل العام
 // ==========================================
 window.setLanguage = async function(lang, skipSave = false) {
     window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -305,8 +327,9 @@ window.setLanguage = async function(lang, skipSave = false) {
             else el.innerText = window.translations[lang][key];
         }
     });
-    if(window.renderNotifications) window.renderNotifications(); 
-    window.drawFriendsUI();
+    
+    let currentRoot = sessionStorage.getItem('current_root') || 'home';
+    if(window.updateNavigationHighlight) window.updateNavigationHighlight(currentRoot);
     
     if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) { 
         try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.language": lang }); } catch(e){} 
@@ -338,9 +361,6 @@ window.toggleTheme = async function(mode, skipSave = false) {
     }
 };
 
-// ==========================================
-// 5. دوال التفاعل مع النوافذ (Modals & Menus)
-// ==========================================
 window.openAddFriendModal = function() { document.getElementById('add-friend-modal').classList.remove('hidden'); const err = document.getElementById('friend-error'); if(err) err.style.display='none'; const inp = document.getElementById('search-friend-input'); if(inp) inp.value=''; };
 window.openRemoveFriendModal = function(friendName) { window.friendToRemove = friendName; document.getElementById('remove-friend-name').innerText = friendName; document.getElementById('remove-friend-modal').classList.remove('hidden'); };
 window.closeFriendModal = function(id) { document.getElementById(id).classList.add('hidden'); };
@@ -419,69 +439,11 @@ window.closeAuthModal = function() {
 // =========================================================
 // 6. نظام التنقل والروابط المنيع (Bulletproof Smart Router)
 // =========================================================
-window.loadFragment = async function(requestedPage, element) {
-    
-    // 1. الخريطة الصريحة
-    const ROUTE_MAP = {
-        'home': 'home',
-        'play': 'play',
-        'lobby': 'play',
-        'how-to-play': 'play',
-        'leaderboard': 'play',
-        'achievements': 'achievements',
-        'store': 'store',
-        'friends': 'friends',
-        'profile': 'profile',
-        'customization': 'profile'
-    };
-    
+window.updateNavigationHighlight = function(targetRoot) {
     const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
+    const rootIndex = ROOT_TABS.indexOf(targetRoot);
 
-    let targetPage = requestedPage;
-    let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
-
-    // 2. الحماية الإجبارية للوبي
-    if (targetRoot === 'play' && window.currentRoomId) {
-        targetPage = 'lobby';
-        targetRoot = 'play';
-    } else {
-        // 3. الذكاء الحقيقي לزر التراجع والذاكرة الفرعية
-        let currentRoot = sessionStorage.getItem('current_root');
-        
-        if (ROOT_TABS.includes(requestedPage)) {
-            // هل تم تمرير الـ element؟ (معناه أن الضغطة جاءت من الشريط الرئيسي وليس من زر "تراجع")
-            let isNavClick = element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'));
-            
-            if (isNavClick) {
-                if (currentRoot === requestedPage) {
-                    // المستخدم في البروفايل وضغط "بروفايل" مرة ثانية -> إمسح الذاكرة الفرعية
-                    sessionStorage.removeItem('saved_branch_' + requestedPage);
-                    targetPage = requestedPage;
-                } else {
-                    // المستخدم قادم من قسم آخر -> أرجع له آخر صفحة كان فيها (إن وجدت)
-                    let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
-                    if (savedBranch) {
-                        targetPage = savedBranch;
-                    }
-                }
-            } else {
-                // ضغطة من غير الشريط (مثل زر الرجوع داخل صفحة التخصيص) -> افرض مسح الذاكرة ليتمكن من الخروج!
-                sessionStorage.removeItem('saved_branch_' + requestedPage);
-                targetPage = requestedPage;
-            }
-        }
-    }
-
-    // 4. الحفظ في الذاكرة
-    sessionStorage.setItem('current_root', targetRoot);
-    sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
-    sessionStorage.setItem('lastActivePage', targetPage);
-
-    // ========================================================
-    // 5. إضاءة الأزرار الآمنة 100% (تمنع اختفاء الأيقونات نهائياً)
-    // ========================================================
     document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
-        // تفريغ الزر بأمان تام
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
         if (icon) {
@@ -491,7 +453,6 @@ window.loadFragment = async function(requestedPage, element) {
             }
         }
         
-        // البحث عن الزر الصحيح لإضاءته
         let isMatch = false;
         const onclickAttr = btn.getAttribute('onclick') || '';
         if (onclickAttr.includes(`'${targetRoot}'`) || onclickAttr.includes(`"${targetRoot}"`)) {
@@ -508,8 +469,44 @@ window.loadFragment = async function(requestedPage, element) {
             }
         }
     });
+};
 
-    // 6. تحديث العناوين 
+window.loadFragment = async function(requestedPage, element) {
+    const ROUTE_MAP = {
+        'home': 'home', 'play': 'play', 'lobby': 'play', 'how-to-play': 'play', 'leaderboard': 'play',
+        'achievements': 'achievements', 'store': 'store', 'friends': 'friends', 'profile': 'profile', 'customization': 'profile'
+    };
+    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
+
+    let targetPage = requestedPage;
+    let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
+
+    if (targetRoot === 'play' && window.currentRoomId) {
+        targetPage = 'lobby'; targetRoot = 'play';
+    } else {
+        let currentRoot = sessionStorage.getItem('current_root');
+        let lastActivePage = sessionStorage.getItem('lastActivePage');
+
+        if (ROOT_TABS.includes(requestedPage)) {
+            let isNavClick = element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'));
+            let isGoingUp = (currentRoot === requestedPage && lastActivePage !== requestedPage);
+
+            if ((currentRoot === requestedPage && isNavClick) || isGoingUp) {
+                sessionStorage.removeItem('saved_branch_' + requestedPage);
+                targetPage = requestedPage;
+            } else {
+                let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
+                if (savedBranch) targetPage = savedBranch;
+            }
+        }
+    }
+
+    sessionStorage.setItem('current_root', targetRoot);
+    sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
+    sessionStorage.setItem('lastActivePage', targetPage);
+
+    if(window.updateNavigationHighlight) window.updateNavigationHighlight(targetRoot);
+
     const titles = { 
         'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
         'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
@@ -520,17 +517,18 @@ window.loadFragment = async function(requestedPage, element) {
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
     
+    // [الحل الجذري لمشكلة "الرئيسية" العالقة]
     if (titles[targetPage] && window.translations && window.translations[window.currentLang]) {
         let translatedTitle = window.translations[window.currentLang][titles[targetPage]];
         if (!translatedTitle && titles[targetPage] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
-        if(pt) pt.innerText = translatedTitle || '';
-        if(mn) mn.innerText = translatedTitle || '';
+        
+        if(pt) { pt.setAttribute('data-i18n', titles[targetPage]); pt.innerText = translatedTitle || ''; }
+        if(mn) { mn.setAttribute('data-i18n', titles[targetPage]); mn.innerText = translatedTitle || ''; }
     } else {
-        if(pt) pt.innerText = '';
-        if(mn) mn.innerText = '';
+        if(pt) { pt.removeAttribute('data-i18n'); pt.innerText = ''; }
+        if(mn) { mn.removeAttribute('data-i18n'); mn.innerText = ''; }
     }
     
-    // 7. جلب وعرض محتوى الصفحة
     const contentHolder = document.getElementById('content-holder');
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
@@ -549,14 +547,8 @@ window.loadFragment = async function(requestedPage, element) {
             oldScript.parentNode.replaceChild(newScript, oldScript);
         });
 
-        if(window.setLanguage) window.setLanguage(window.currentLang, true);
-
-        if (targetPage === 'friends' && window.drawFriendsUI) {
-            window.drawFriendsUI();
-        }
-        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) {
-            window.fetchAndRenderLobbyPlayers(); 
-        }
+        if (targetPage === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
+        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
 
     } catch (error) {
         let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
