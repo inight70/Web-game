@@ -424,6 +424,132 @@ window.closeAuthModal = function() {
     if(!window.isGuest) window.enterAsGuest(); 
 };
 
+// ==========================================
+// 6. نظام التنقل والروابط الصريحة (Explicit Smart Router)
+// ==========================================
+window.loadFragment = async function(requestedPage, element) {
+    // 1. خريطة التوجيه الصريحة
+    const ROUTE_MAP = {
+        'home': 'home',
+        'play': 'play',
+        'lobby': 'play',
+        'how-to-play': 'play',
+        'leaderboard': 'play',
+        'achievements': 'achievements',
+        'store': 'store',
+        'friends': 'friends',
+        'profile': 'profile',
+        'customization': 'profile'
+    };
+    
+    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
+
+    let targetPage = requestedPage;
+    let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
+
+    // 2. الحماية الدائمة للوبي
+    if (targetRoot === 'play' && window.currentRoomId) {
+        targetPage = 'lobby';
+        targetRoot = 'play';
+    } else {
+        // 3. استرجاع الذاكرة الذكي
+        let currentRoot = sessionStorage.getItem('current_root');
+
+        if (ROOT_TABS.includes(requestedPage)) {
+            // تفريغ الذاكرة والعودة للجذر عند الضغط عليه مرتين
+            if (currentRoot === requestedPage && element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'))) {
+                sessionStorage.removeItem('saved_branch_' + requestedPage);
+                targetPage = requestedPage;
+            } else {
+                let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
+                if (savedBranch) {
+                    targetPage = savedBranch;
+                }
+            }
+        }
+    }
+
+    // 4. الحفظ الدائم في الجلسة
+    sessionStorage.setItem('current_root', targetRoot);
+    sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
+    sessionStorage.setItem('lastActivePage', targetPage);
+
+    // ===============================================
+    // 5. الحل الجذري والعبقري للإضاءة (Active State)
+    // ===============================================
+    // بدلاً من الاعتماد على الترتيب (Index) الذي يخرب إذا كان عدد أزرار الجوال مختلف عن الكمبيوتر..
+    // جعلنا الكود يقرأ ما يفعله الزر، فإذا كان الزر يفتح القسم (targetRoot) نعطيه الإضاءة فوراً.
+    document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
+        btn.classList.remove('active'); 
+        const icon = btn.querySelector('i'); 
+        if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
+        
+        // استخراج الوظيفة التي ينفذها الزر
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        
+        // إذا كان هذا الزر مبرمجاً لفتح القسم (مثلاً 'profile')، قم بإضاءته!
+        if (onclickAttr.includes(`'${targetRoot}'`) || onclickAttr.includes(`"${targetRoot}"`)) {
+            btn.classList.add('active');
+            if (icon) icon.className = icon.className.replace('ph', 'ph-fill');
+        }
+    });
+
+    // 6. تحديث عناوين الصفحة 
+    const titles = { 
+        'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
+        'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
+        'customization': 'advanced_customization', 'lobby': 'title_play',
+        'how-to-play': 'title_play', 'leaderboard': 'leaderboard_btn'
+    };
+    
+    const pt = document.getElementById('page-title'); 
+    const mn = document.getElementById('mobile-section-name'); 
+    
+    if (titles[targetPage] && window.translations && window.translations[window.currentLang]) {
+        let translatedTitle = window.translations[window.currentLang][titles[targetPage]];
+        if (!translatedTitle && titles[targetPage] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
+        if(pt) pt.innerText = translatedTitle || '';
+        if(mn) mn.innerText = translatedTitle || '';
+    } else {
+        if(pt) pt.innerText = '';
+        if(mn) mn.innerText = '';
+    }
+    
+    // 7. جلب وعرض محتوى الصفحة
+    const contentHolder = document.getElementById('content-holder');
+    if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
+
+    try {
+        const response = await fetch(`pages/${targetPage}.html`);
+        if (!response.ok) throw new Error('Page not found');
+        
+        const htmlContent = await response.text();
+        if(contentHolder) contentHolder.innerHTML = htmlContent;
+
+        const scripts = contentHolder.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+
+        if(window.setLanguage) window.setLanguage(window.currentLang, true);
+
+        if (targetPage === 'friends' && window.drawFriendsUI) {
+            window.drawFriendsUI();
+        }
+        
+        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) {
+            window.fetchAndRenderLobbyPlayers(); 
+        }
+
+    } catch (error) {
+        let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
+        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const authForm = document.getElementById('firebase-form');
     if (authForm) {
