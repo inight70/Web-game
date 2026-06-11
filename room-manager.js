@@ -88,11 +88,13 @@ window.joinFirebaseRoom = async function(roomCode) {
 };
 
 function syncLobbyPlayers(playersArray) {
+    let changed = false;
     Object.keys(window.lobbyPlayerListeners).forEach(pName => {
         if (!playersArray.includes(pName)) {
-            window.lobbyPlayerListeners[pName]();
+            window.lobbyPlayerListeners[pName](); // إيقاف التنصت
             delete window.lobbyPlayerListeners[pName];
             delete window.lobbyPlayersCache[pName];
+            changed = true; // لاعب غادر!
         }
     });
 
@@ -105,8 +107,14 @@ function syncLobbyPlayers(playersArray) {
                 }
                 if (window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers();
             });
+            changed = true;
         }
     });
+    
+    // المزامنة اللحظية لباقي اللاعبين إذا غادر أحدهم
+    if (changed && window.fetchAndRenderLobbyPlayers) {
+        window.fetchAndRenderLobbyPlayers();
+    }
 }
 
 window.listenToRoom = function() {
@@ -116,7 +124,7 @@ window.listenToRoom = function() {
     
     window.roomUnsubscribe = window.onSnapshotFunc(roomRef, async (snap) => {
         if (!snap.exists()) {
-            // تم إزالة الـ alert المزعج من هنا، الخروج سيكون صامتاً وسلساً جداً
+            if(window.showRoomClosedModal) window.showRoomClosedModal();
             window.leaveFirebaseRoom(true); 
             return;
         }
