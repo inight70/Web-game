@@ -309,11 +309,10 @@ window.setLanguage = async function(lang, skipSave = false) {
         }
     });
     
-    const activeBtn = document.querySelector('.nav-btn.active');
-    if(activeBtn) {
-        const pageId = Array.from(document.querySelectorAll('.nav-btn')).indexOf(activeBtn); const pages = ['home', 'play', 'achievements', 'store', 'profile'];
-        if(pages[pageId]) { const pt = document.getElementById('page-title'); if(pt) pt.innerText = window.translations[lang]['title_' + pages[pageId]]; const mn = document.getElementById('mobile-section-name'); if(mn) mn.innerText = window.translations[lang]['title_' + pages[pageId]]; }
-    }
+    // إعادة تطبيق كود الإضاءة لضمان بقائها بعد تغيير اللغة
+    let currentRoot = sessionStorage.getItem('current_root') || 'home';
+    updateNavigationHighlight(currentRoot);
+    
     if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) { 
         try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.language": lang }); } catch(e){} 
     }
@@ -399,31 +398,50 @@ window.openLoginDirectly = function() {
     window.toggleDropdown('');
 };
 
-window.enterAsGuest = function() {
-    window.isGuest = true; window.currentUserData = null;
-    const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
-    const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = "غير مسجل"; 
-    const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) { avtFall.innerHTML = "ز"; avtFall.style.border = ''; }
-    
-    if(window.setupRealtimeFriends) window.setupRealtimeFriends(); 
-    
-    const dropContent = document.getElementById('dropdown-content-area'); if(dropContent) dropContent.innerHTML = `<button class="dropdown-item" onclick="window.openLoginDirectly()"><i class="ph ph-sign-in"></i> <span>تسجيل الدخول</span></button>`;
-    window.clearAuthInputs(); 
-    const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
-    const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
-    if(window.loadFragment) window.loadFragment('home', null);
-};
+// =========================================================
+// 6. نظام التنقل والروابط المتقدم (Smart Router & Auto-Fix)
+// =========================================================
 
-window.closeAuthModal = function() { 
-    window.clearAuthInputs(); 
-    const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
-    const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
-    if(!window.isGuest) window.enterAsGuest(); 
-};
+// دالة مساعدة لتحديث الأزرار في الشاشة بذكاء مطلق (بدون الاعتماد على الكلاسات فقط)
+function updateNavigationHighlight(targetRoot) {
+    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
+    const rootIndex = ROOT_TABS.indexOf(targetRoot);
 
-// ==========================================
-// 6. نظام التنقل والروابط الصريحة (Explicit Smart Router)
-// ==========================================
+    // جمع كل أزرار التنقل سواء في الجوال أو الكمبيوتر
+    const allNavButtons = document.querySelectorAll('.nav-btn, .bottom-tab, .sidebar-btn');
+    
+    allNavButtons.forEach((btn) => {
+        // تفريغ الإضاءة من جميع الأزرار
+        btn.classList.remove('active'); 
+        const icon = btn.querySelector('i'); 
+        if(icon) {
+            icon.classList.remove('ph-fill');
+            if(!icon.className.includes('ph-')) icon.classList.add('ph');
+        }
+
+        let isExactMatch = false;
+
+        // الطريقة الأولى: مطابقة الفهرس (Index) للأزرار المعروفة
+        if (btn.classList.contains('nav-btn') && Array.from(document.querySelectorAll('.nav-btn')).indexOf(btn) === rootIndex) isExactMatch = true;
+        if (btn.classList.contains('bottom-tab') && Array.from(document.querySelectorAll('.bottom-tab')).indexOf(btn) === rootIndex) isExactMatch = true;
+
+        // الطريقة الثانية (الذكية): البحث في كود النقر عن اسم القسم!
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        if (onclickAttr.includes(`'${targetRoot}'`) || onclickAttr.includes(`"${targetRoot}"`)) {
+            isExactMatch = true;
+        }
+
+        // إذا كان هذا هو الزر المطلوب، قم بإضاءته فوراً
+        if (isExactMatch) {
+            btn.classList.add('active');
+            if(icon) {
+                icon.classList.remove('ph');
+                icon.classList.add('ph-fill');
+            }
+        }
+    });
+}
+
 window.loadFragment = async function(requestedPage, element) {
     // 1. خريطة التوجيه الصريحة
     const ROUTE_MAP = {
@@ -449,29 +467,27 @@ window.loadFragment = async function(requestedPage, element) {
         targetPage = 'lobby';
         targetRoot = 'play';
     } else {
-        // 3. استرجاع الذاكرة الذكي والرجوع للخلف
+        // 3. استرجاع الذاكرة الذكي وكسر الحلقة المفرغة (The Bug Fix!)
         let currentRoot = sessionStorage.getItem('current_root');
+        let lastActivePage = sessionStorage.getItem('lastActivePage');
 
         if (ROOT_TABS.includes(requestedPage)) {
-            // [الحل الجذري للمشكلة الأولى]: هل الضغطة قادمة من شريط التنقل الأساسي أم من زر آخر؟
-            const isMenuClick = element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'));
+            // هل المستخدم نقر على أيقونة الشريط السفلي/الجانبي؟
+            let isNavClick = element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'));
             
-            if (isMenuClick) {
-                // إذا ضغطت على زر القسم وأنت داخله أصلاً، نرجّعك للجذر
-                if (currentRoot === requestedPage) {
-                    sessionStorage.removeItem('saved_branch_' + requestedPage);
-                    targetPage = requestedPage;
-                } else {
-                    // إذا فتحت قسماً وكان لديك فرع مسجل فيه (مثل customization)، افتحه
-                    let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
-                    if (savedBranch) {
-                        targetPage = savedBranch;
-                    }
-                }
-            } else {
-                // [المهم هنا]: إذا كان الطلب من زر رجوع صريح داخل الصفحة، لا تفتح الذاكرة، بل ارجع للجذر فوراً
+            // هل المستخدم يضغط على زر رجوع ليصعد من صفحة فرعية للأصل؟
+            let isGoingUp = (currentRoot === requestedPage && lastActivePage !== requestedPage);
+
+            if ((currentRoot === requestedPage && isNavClick) || isGoingUp) {
+                // كسر الذاكرة وإرجاعه للأصل (يحل مشكلة التعليق في الكوستمايزيشن)
                 sessionStorage.removeItem('saved_branch_' + requestedPage);
                 targetPage = requestedPage;
+            } else {
+                // استرجاع الذاكرة 
+                let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
+                if (savedBranch) {
+                    targetPage = savedBranch;
+                }
             }
         }
     }
@@ -481,29 +497,8 @@ window.loadFragment = async function(requestedPage, element) {
     sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
     sessionStorage.setItem('lastActivePage', targetPage);
 
-    // ========================================================
-    // 5. نظام الإضاءة الجبار (الحل الجذري للمشكلة الثانية)
-    // ========================================================
-    document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
-        // أ. تطفئة الزر
-        btn.classList.remove('active'); 
-        const icon = btn.querySelector('i'); 
-        if (icon) {
-            icon.classList.remove('ph-fill');
-            if (!icon.classList.contains('ph')) icon.classList.add('ph');
-        } 
-        
-        // ب. البحث الدقيق داخل كود الزر للتأكد أنه تابع للقسم المطلوب
-        const onclickStr = (btn.getAttribute('onclick') || '').toLowerCase();
-        if (onclickStr.includes(targetRoot.toLowerCase())) {
-            // ج. إضاءة الزر الصحيح بأمان تام
-            btn.classList.add('active');
-            if (icon) {
-                icon.classList.remove('ph');
-                icon.classList.add('ph-fill');
-            }
-        }
-    });
+    // 5. تطبيق إضاءة الأزرار الجبارة
+    updateNavigationHighlight(targetRoot);
 
     // 6. تحديث عناوين الصفحة 
     const titles = { 
@@ -550,7 +545,6 @@ window.loadFragment = async function(requestedPage, element) {
         if (targetPage === 'friends' && window.drawFriendsUI) {
             window.drawFriendsUI();
         }
-        
         if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) {
             window.fetchAndRenderLobbyPlayers(); 
         }
@@ -561,6 +555,9 @@ window.loadFragment = async function(requestedPage, element) {
     }
 };
 
+// ==========================================
+// تأكيد أخير لتنفيذ الكود عند التحميل
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     const authForm = document.getElementById('firebase-form');
     if (authForm) {
