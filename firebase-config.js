@@ -359,48 +359,106 @@ window.confirmRemoveFriend = async function() {
 };
 
 // ==========================================
-// تحديث دالة التنقل لحفظ الصفحة النشطة
+// تحديث دالة التنقل لحفظ الصفحة النشطة والنظام الذكي للفروع
 // ==========================================
-window.loadFragment = async function(pageName, element) {
-    // حفظ الصفحة في الذاكرة لتذكرها عند التحديث
-    sessionStorage.setItem('lastActivePage', pageName);
+window.loadFragment = async function(requestedPage, element) {
+    // الخريطة الصريحة لكل الصفحات وارتباطها بالأقسام الرئيسية
+    const ROUTE_MAP = {
+        'home': 'home',
+        'play': 'play',
+        'lobby': 'play',
+        'how-to-play': 'play',
+        'leaderboard': 'play',
+        'achievements': 'achievements',
+        'store': 'store',
+        'friends': 'friends',
+        'profile': 'profile',
+        'customization': 'profile'
+    };
+    
+    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
 
-    const contentHolder = document.getElementById('content-holder');
-    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'lobby': 'title_play' };
-    
-    const pt = document.getElementById('page-title'); 
-    const mn = document.getElementById('mobile-section-name'); 
-    
-    if (titles[pageName] && window.translations && window.translations[window.currentLang]) {
-        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]] || '';
-        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]] || '';
+    let targetPage = requestedPage;
+    let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
+
+    // إذا كنت في اللوبي ومسجل بالغرفة، لا يسمح لك برؤية صفحة "العب الآن" العادية
+    if (targetRoot === 'play' && window.currentRoomId) {
+        targetPage = 'lobby';
+        targetRoot = 'play';
+    } else {
+        let currentRoot = sessionStorage.getItem('current_root');
+
+        if (ROOT_TABS.includes(requestedPage)) {
+            // إذا ضغطت على زر القسم وأنت داخله أصلاً، نرجّعك للجذر (يمسح الذاكرة الفرعية)
+            if (currentRoot === requestedPage && element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'))) {
+                sessionStorage.removeItem('saved_branch_' + requestedPage);
+                targetPage = requestedPage;
+            } else {
+                // إذا فتحت قسم وكان عندك فرع مسجل فيه سابقاً (مثل customization)، افتحه فوراً
+                let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
+                if (savedBranch) {
+                    targetPage = savedBranch;
+                }
+            }
+        }
     }
-    
+
+    // حفظ مسارك في الجلسة
+    sessionStorage.setItem('current_root', targetRoot);
+    sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
+    sessionStorage.setItem('lastActivePage', targetPage);
+
+    // تحديث إضاءة الأزرار (الجذر يظل مضيء دائماً حتى لو كنت في فرع)
     document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
         if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
     });
 
-    if(element) {
-        element.classList.add('active'); 
-        const icon = element.querySelector('i'); 
-        if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+    const rootIndex = ROOT_TABS.indexOf(targetRoot);
+    if (rootIndex !== -1) {
+        const desktopNavs = document.querySelectorAll('.nav-btn');
+        const mobileNavs = document.querySelectorAll('.bottom-tab');
         
-        const isNav = element.classList.contains('nav-btn');
-        const tabsList = isNav ? document.querySelectorAll('.nav-btn') : document.querySelectorAll('.bottom-tab');
-        const targetList = isNav ? document.querySelectorAll('.bottom-tab') : document.querySelectorAll('.nav-btn');
-        const index = Array.from(tabsList).indexOf(element);
-        
-        if (pageName === 'store' && isNav) { const mStore = document.querySelectorAll('.bottom-tab')[3]; if(mStore) { mStore.classList.add('active'); mStore.querySelector('i').className = mStore.querySelector('i').className.replace('ph', 'ph-fill'); } }
-        else if (pageName === 'profile' && isNav) { const mProf = document.querySelectorAll('.bottom-tab')[5]; if(mProf) { mProf.classList.add('active'); mProf.querySelector('i').className = mProf.querySelector('i').className.replace('ph', 'ph-fill'); } }
-        else if (pageName !== 'friends' && pageName !== 'lobby') { const matchedTab = targetList[index]; if(matchedTab) { matchedTab.classList.add('active'); matchedTab.querySelector('i').className = matchedTab.querySelector('i').className.replace('ph', 'ph-fill'); } }
+        if (desktopNavs[rootIndex]) {
+            desktopNavs[rootIndex].classList.add('active');
+            let icon = desktopNavs[rootIndex].querySelector('i');
+            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+        }
+        if (mobileNavs[rootIndex]) {
+            mobileNavs[rootIndex].classList.add('active');
+            let icon = mobileNavs[rootIndex].querySelector('i');
+            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+        }
     }
 
+    // تحديث العناوين في الأعلى حسب الترجمة
+    const titles = { 
+        'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
+        'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
+        'customization': 'advanced_customization', 'lobby': 'title_play',
+        'how-to-play': 'title_play', 'leaderboard': 'leaderboard_btn'
+    };
+    
+    const pt = document.getElementById('page-title'); 
+    const mn = document.getElementById('mobile-section-name'); 
+    
+    if (titles[targetPage] && window.translations && window.translations[window.currentLang]) {
+        let translatedTitle = window.translations[window.currentLang][titles[targetPage]];
+        if (!translatedTitle && titles[targetPage] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
+        if(pt) pt.innerText = translatedTitle || '';
+        if(mn) mn.innerText = translatedTitle || '';
+    } else {
+        if(pt) pt.innerText = '';
+        if(mn) mn.innerText = '';
+    }
+
+    // جلب وتفريغ المحتوى
+    const contentHolder = document.getElementById('content-holder');
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
     try {
-        const response = await fetch(`pages/${pageName}.html`);
+        const response = await fetch(`pages/${targetPage}.html`);
         if (!response.ok) throw new Error('Page not found');
         
         const htmlContent = await response.text();
@@ -416,11 +474,15 @@ window.loadFragment = async function(pageName, element) {
 
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
-        if (pageName === 'friends' && window.drawFriendsUI) {
+        if (targetPage === 'friends' && window.drawFriendsUI) {
             window.drawFriendsUI();
+        }
+        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) {
+            window.fetchAndRenderLobbyPlayers(); 
         }
 
     } catch (error) {
-        if(contentHolder && window.translations) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على الصفحة...</div>`;
+        let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
+        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
     }
 };
