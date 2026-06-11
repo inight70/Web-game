@@ -93,50 +93,101 @@ window.syncUsernameChange = async function(oldName, newName) {
     } catch(e) { console.error("Error syncing username:", e); }
 };
 
+// ==============================================
+// التنبيهات المحدثة (أرقام، ترتيب، قبول ورفض)
+// ==============================================
 window.renderNotifications = function() {
-    const list = document.getElementById('noti-list'); const dot = document.getElementById('noti-dot');
+    const list = document.getElementById('noti-list'); 
+    const dot = document.getElementById('noti-dot');
     if(!list || !dot) return;
     
-    const hasFriendReqs = window.currentUserData && window.currentUserData.friendRequests && window.currentUserData.friendRequests.length > 0;
-    const hasGameInvites = window.currentUserData && window.currentUserData.gameInvites && window.currentUserData.gameInvites.length > 0;
+    const friendReqs = (window.currentUserData && window.currentUserData.friendRequests) ? window.currentUserData.friendRequests : [];
+    const gameInvites = (window.currentUserData && window.currentUserData.gameInvites) ? window.currentUserData.gameInvites : [];
+    
+    const totalNotis = friendReqs.length + gameInvites.length;
 
-    if (window.isGuest || !window.currentUserData || (!hasFriendReqs && !hasGameInvites)) {
+    if (window.isGuest || !window.currentUserData || totalNotis === 0) {
         list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
-        dot.style.display = 'none'; return;
+        dot.style.display = 'none'; 
+        return;
     }
     
-    dot.style.display = 'block'; let html = '';
+    // تصميم أيقونة التنبيه كـ (شريط أرقام)
+    dot.style.display = 'flex';
+    dot.style.justifyContent = 'center';
+    dot.style.alignItems = 'center';
+    dot.style.width = '18px';
+    dot.style.height = '18px';
+    dot.style.borderRadius = '50%';
+    dot.style.fontSize = '0.65rem';
+    dot.style.fontWeight = '800';
+    dot.style.color = 'white';
+    dot.innerText = totalNotis > 9 ? '+9' : totalNotis;
     
-    if (hasGameInvites) {
-        window.currentUserData.gameInvites.forEach(inv => {
-            html += `<div class="noti-item" onclick="window.handleInviteClick('${inv.roomId}', ${inv.timestamp})">
-                <div class="noti-icon" style="background:var(--accent-red); color:white;"><i class="ph-bold ph-sword"></i></div>
-                <div class="noti-text-content">
+    // دمج التنبيهات للترتيب
+    let allNotis = [];
+    
+    gameInvites.forEach(inv => {
+        allNotis.push({ type: 'invite', timestamp: inv.timestamp || 0, data: inv });
+    });
+
+    friendReqs.forEach(req => {
+        // نضع رقماً عالياً لطلبات الصداقة لتظهر كأنها "الآن"
+        allNotis.push({ type: 'friendReq', timestamp: Date.now() + 1000, data: req });
+    });
+
+    // الترتيب من الأحدث (الرقم الأكبر) إلى الأقدم
+    allNotis.sort((a, b) => b.timestamp - a.timestamp);
+
+    let html = '';
+    
+    allNotis.forEach(noti => {
+        if (noti.type === 'invite') {
+            const inv = noti.data;
+            html += `
+            <div class="noti-item" style="cursor: default; align-items: flex-start;">
+                <div class="noti-icon" style="background: rgba(255, 76, 106, 0.1); color: var(--accent-red); margin-top: 5px;"><i class="ph-bold ph-sword"></i></div>
+                <div class="noti-text-content" style="flex: 1;">
                     <span class="noti-text">دعوة للعب من <strong>${inv.hostName}</strong></span>
-                    <span class="noti-time">انقر للانضمام (${inv.roomId})</span>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button onclick="window.acceptGameInvite('${inv.roomId}', ${inv.timestamp})" style="flex:1; background: var(--accent-green); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">قبول</button>
+                        <button onclick="window.rejectGameInvite(${inv.timestamp})" style="flex:1; background: rgba(255, 255, 255, 0.05); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s;" onmouseover="this.style.color='white'; this.style.background='rgba(255, 76, 106, 0.8)'; this.style.borderColor='transparent';" onmouseout="this.style.color='var(--text-dim)'; this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255,255,255,0.1)';">رفض</button>
+                    </div>
                 </div>
             </div>`;
-        });
-    }
+        } else if (noti.type === 'friendReq') {
+            const req = noti.data;
+            html += `
+            <div class="noti-item" onclick="window.openReviewRequestModal('${req}')">
+                <div class="noti-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;"><i class="ph-bold ph-user-plus"></i></div>
+                <div class="noti-text-content">
+                    <span class="noti-text"><span>طلب صداقة من</span> <strong>${req}</strong></span>
+                    <span class="noti-time">انقر للمراجعة</span>
+                </div>
+            </div>`;
+        }
+    });
 
-    if (hasFriendReqs) {
-        window.currentUserData.friendRequests.forEach(req => {
-            html += `<div class="noti-item" onclick="window.openReviewRequestModal('${req}')"><div class="noti-icon"><i class="ph-bold ph-user-plus"></i></div><div class="noti-text-content"><span class="noti-text"><span>طلب صداقة جديد من</span> <strong>${req}</strong></span><span class="noti-time">الآن</span></div></div>`;
-        });
-    }
-    
     list.innerHTML = html;
 };
 
-window.handleInviteClick = async function(roomId, timestamp) {
-    if(window.toggleDropdown) window.toggleDropdown('');
+// دوال التحكم بالدعوات
+window.acceptGameInvite = async function(roomId, timestamp) {
     if (window.currentUserData && window.currentUserData.gameInvites) {
         const updatedInvites = window.currentUserData.gameInvites.filter(i => i.timestamp !== timestamp);
-        try {
-            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { gameInvites: updatedInvites });
-        } catch(e) { console.error("Error clearing invite:", e); }
+        try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { gameInvites: updatedInvites }); } 
+        catch(e) { console.error(e); }
     }
+    if(window.toggleDropdown) window.toggleDropdown('');
     if(window.joinFirebaseRoom) window.joinFirebaseRoom(roomId);
+};
+
+window.rejectGameInvite = async function(timestamp) {
+    if (window.currentUserData && window.currentUserData.gameInvites) {
+        const updatedInvites = window.currentUserData.gameInvites.filter(i => i.timestamp !== timestamp);
+        try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { gameInvites: updatedInvites }); } 
+        catch(e) { console.error(e); }
+    }
 };
 
 onAuthStateChanged(auth, async (user) => {
@@ -287,7 +338,7 @@ window.handleLogout = async function() {
         document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show'));
         document.body.removeAttribute('data-theme'); document.documentElement.className=''; document.body.className='';
         window.currentUserData = null; 
-        sessionStorage.clear(); // مسح الذاكرة بالكامل عند تسجيل الخروج
+        sessionStorage.clear(); 
         if(window.clearAuthInputs) window.clearAuthInputs(); 
         const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
         const fallbackAvatar = document.getElementById('header-avatar-fallback'); if(fallbackAvatar) { fallbackAvatar.innerHTML = "ز"; fallbackAvatar.style.border = ''; }
