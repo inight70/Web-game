@@ -420,7 +420,7 @@ window.enterAsGuest = function() {
     const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = "غير مسجل"; 
     const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) { avtFall.innerHTML = "ز"; avtFall.style.border = ''; }
     
-    // من هنا نستدعي دالة הפايربيس (والتي ستكون بملف الفايربيس)
+    // من هنا نستدعي دالة الفايربيس 
     if(window.setupRealtimeFriends) window.setupRealtimeFriends(); 
     window.renderNotifications();
     
@@ -442,8 +442,18 @@ window.closeAuthModal = function() {
 // 6. نظام التنقل (Routing/Fragments)
 // ==========================================
 window.loadFragment = async function(pageName, element) {
+    // [ السحر هنا ]: حفظ الصفحة في الذاكرة لتذكرها
+    sessionStorage.setItem('lastActivePage', pageName);
+
+    // إذا كنت داخل غرفة وضغطت على زر "اللعب" من القائمة، لا ترجع للصفحة الرئيسية للعب، بل افتح اللوبي مباشرة!
+    if (pageName === 'play' && window.currentRoomId) {
+        pageName = 'lobby';
+    }
+
     const contentHolder = document.getElementById('content-holder');
-    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'customization': 'advanced_customization' };
+    
+    // أضفنا lobby هنا ليتعرف عليها السيستم ويربطها بعنوان "غرف اللعب"
+    const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'customization': 'advanced_customization', 'lobby': 'title_play' };
     
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
@@ -475,7 +485,7 @@ window.loadFragment = async function(pageName, element) {
         if(pageName === 'friends' && !isNav) {} 
         else if (pageName === 'store' && isNav) { const mStore = document.querySelectorAll('.bottom-tab')[3]; if(mStore) { mStore.classList.add('active'); mStore.querySelector('i').className = mStore.querySelector('i').className.replace('ph', 'ph-fill'); } }
         else if (pageName === 'profile' && isNav) { const mProf = document.querySelectorAll('.bottom-tab')[5]; if(mProf) { mProf.classList.add('active'); mProf.querySelector('i').className = mProf.querySelector('i').className.replace('ph', 'ph-fill'); } }
-        else { const matchedTab = targetList[index]; if(matchedTab) { matchedTab.classList.add('active'); matchedTab.querySelector('i').className = matchedTab.querySelector('i').className.replace('ph', 'ph-fill'); } }
+        else if (pageName !== 'lobby') { const matchedTab = targetList[index]; if(matchedTab) { matchedTab.classList.add('active'); matchedTab.querySelector('i').className = matchedTab.querySelector('i').className.replace('ph', 'ph-fill'); } }
     }
 
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
@@ -497,8 +507,13 @@ window.loadFragment = async function(pageName, element) {
 
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
-        if (pageName === 'friends') {
+        if (pageName === 'friends' && window.drawFriendsUI) {
             window.drawFriendsUI();
+        }
+        
+        // إذا فتحنا اللوبي يتم استدعاء اللاعبين فوراً
+        if (pageName === 'lobby' && window.fetchAndRenderLobbyPlayers) {
+            window.fetchAndRenderLobbyPlayers(); 
         }
 
     } catch (error) {
