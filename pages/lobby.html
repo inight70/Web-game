@@ -4,7 +4,7 @@
     .animate-spin { animation: spinFast 1s linear infinite; display: inline-block; }
 
     /* =========================================
-       1. الهيدر الفخم (توزيع مطلق دقيق)
+       1. الهيدر الفخم 
        ========================================= */
     .premium-lobby-header {
         background-image: url('assets/images/lobby-header-bg.jpg');
@@ -12,54 +12,46 @@
         background-position: center;
         border-radius: 24px; 
         position: relative; 
-        min-height: 220px; /* ارتفاع الكمبيوتر */
-        margin-bottom: 30px;
+        min-height: 220px; 
+        margin-bottom: 25px;
         border: none;
         box-shadow: var(--shadow-soft);
+        overflow: hidden; /* لمنع خروج الصورة عن الحواف */
     }
 
-    /* العنوان في أعلى المنتصف */
-    .header-top-center {
-        position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
-        font-size: 2rem; font-weight: 800; color: white;
-        font-family: var(--font-ar); letter-spacing: 1px;
-        text-shadow: 0 4px 15px rgba(0,0,0,0.6); pointer-events: none;
+    /* صورة الشخصيات في النصف السفلي */
+    .header-characters-img {
+        position: absolute;
+        bottom: -5px; /* لتلتصق بالقاع */
+        left: 50%;
+        transform: translateX(-50%);
+        height: 90%; /* تأخذ 90% من ارتفاع البنر */
+        object-fit: contain;
+        pointer-events: none;
+        z-index: 1;
     }
 
-    /* الانتظار في أقصى اليمين (بدون إطار، أيقونة ثم نص) */
+    /* الانتظار في أقصى اليمين نازل لتحت */
     .header-bottom-right {
-        position: absolute; bottom: 20px; right: 25px;
+        position: absolute; bottom: 12px; right: 25px;
         display: flex; align-items: center; gap: 8px;
         text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        z-index: 2;
     }
     .lobby-status-icon { font-size: 1.2rem; color: white; transition: 0.3s; }
     .lobby-status-text { font-size: 0.85rem; font-weight: 700; color: white; transition: 0.3s; }
     
-    /* فئة الجاهزية للجميع (تُفعل برمجياً فقط) */
     .header-bottom-right.all-ready .lobby-status-icon { color: var(--accent-green); animation: none; }
     .header-bottom-right.all-ready .lobby-status-text { color: var(--accent-green); }
 
-    /* الإعدادات في المنتصف (بإطار زجاجي فخم) */
-    .header-bottom-center {
-        position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-        display: flex; align-items: center; gap: 8px;
-        background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255,255,255,0.15);
-        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        color: white; font-size: 0.85rem; font-weight: 700;
-        padding: 10px 20px; border-radius: var(--radius-pill);
-        cursor: pointer; transition: var(--trans-smooth);
-        -webkit-tap-highlight-color: transparent;
-    }
-    .header-bottom-center:hover { background: rgba(20, 20, 25, 0.8); border-color: rgba(255,255,255,0.3); transform: translateX(-50%) translateY(-3px); }
-    .header-bottom-center i { font-size: 1.2rem; }
-
-    /* الكود في أقصى اليسار (بدون إطار) */
+    /* الكود في أقصى اليسار نازل لتحت */
     .header-bottom-left {
-        position: absolute; bottom: 20px; left: 25px;
+        position: absolute; bottom: 12px; left: 25px;
         display: flex; flex-direction: column; align-items: center;
         cursor: pointer; transition: var(--trans-smooth);
         text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         -webkit-tap-highlight-color: transparent;
+        z-index: 2;
     }
     .header-bottom-left:hover { transform: translateY(-3px); opacity: 0.9; }
     .room-code-label { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
@@ -69,11 +61,25 @@
     .header-bottom-left:hover .room-code-value-row i { color: white; }
 
     /* =========================================
-       2. شبكة اللاعبين
+       2. عنوان القسم وزر الإعدادات
        ========================================= */
-    .lobby-section-title { font-size: 1rem; font-weight: 800; color: var(--text-dim); margin-bottom: 15px; padding: 0 5px; }
-    .emblems-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+    .lobby-section-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 15px; padding: 0 5px;
+    }
+    .lobby-section-title { font-size: 1rem; font-weight: 800; color: var(--text-dim); }
+    .clean-settings-btn {
+        background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1);
+        padding: 8px 16px; border-radius: var(--radius-pill); font-size: 0.85rem; font-weight: 700;
+        display: flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--trans-smooth);
+        -webkit-tap-highlight-color: transparent;
+    }
+    .clean-settings-btn:hover { color: white; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
 
+    /* =========================================
+       3. شبكة اللاعبين وأزرار التحكم
+       ========================================= */
+    .emblems-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
     .player-slot-combo { display: flex; flex-direction: row-reverse; align-items: stretch; gap: 10px; position: relative; transition: var(--trans-smooth); }
     .player-slot-combo:hover { transform: translateY(-3px); }
 
@@ -87,7 +93,6 @@
     .character-select-box:hover i { color: var(--accent-red); transform: scale(1.1); }
 
     .emblem-fluid-wrapper { flex: 1; min-width: 0; position: relative; }
-
     .host-badge-small { 
         position: absolute; top: -6px; right: -6px; z-index: 10; 
         background: var(--accent-red); width: 22px; height: 22px; border-radius: 50%; 
@@ -104,11 +109,7 @@
     .empty-emblem-slot:hover { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.3); color: white; transform: translateY(-3px); }
     .empty-emblem-slot i { font-size: 1.8rem; }
 
-    /* =========================================
-       3. أزرار التحكم السفلية
-       ========================================= */
     .lobby-bottom-actions { display: flex; gap: 15px; margin-top: 10px; }
-    
     .btn-lobby-ready { 
         flex: 1; background: var(--surface-panel); color: var(--text-main); 
         border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); 
@@ -118,55 +119,39 @@
     }
     .btn-lobby-ready:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
     .btn-lobby-ready:active { transform: scale(0.98); }
-    
-    .btn-lobby-ready.is-ready { 
-        background: var(--accent-green); color: white; border-color: var(--accent-green); 
-        box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
-    }
-    
+    .btn-lobby-ready.is-ready { background: var(--accent-green); color: white; border-color: var(--accent-green); box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); }
     .btn-lobby-leave { 
         width: 65px; background: rgba(255, 76, 106, 0.05); color: var(--accent-red); 
         border: 1px solid rgba(255, 76, 106, 0.2); border-radius: var(--radius-pill); 
-        display: flex; justify-content: center; align-items: center; font-size: 1.5rem; 
-        cursor: pointer; transition: var(--trans-smooth); 
+        display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); 
     }
     .btn-lobby-leave:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: var(--shadow-glow); }
     .btn-lobby-leave:active { transform: scale(0.95); }
 
     /* =========================================
-       استجابة الجوال (مستطيل عرضي دقيق)
+       استجابة الجوال
        ========================================= */
     @media (max-width: 768px) {
         .emblems-grid { grid-template-columns: 1fr; }
-        
-        /* تقليص الارتفاع ليصبح مستطيل (Banner) */
         .premium-lobby-header { min-height: 130px; border-radius: 16px; }
-        
-        /* تصغير الخطوط لضمان عدم تداخل العناصر في الجوال */
-        .header-top-center { font-size: 1.3rem; top: 15px; }
-        
-        .header-bottom-right { right: 15px; bottom: 12px; gap: 5px; }
+        .header-characters-img { height: 85%; bottom: -2px; }
+        .header-bottom-right { right: 15px; bottom: 8px; gap: 5px; }
         .lobby-status-text { font-size: 0.65rem; }
         .lobby-status-icon { font-size: 0.9rem; }
-        
-        .header-bottom-center { bottom: 10px; padding: 6px 12px; font-size: 0.7rem; border-radius: 8px; }
-        .header-bottom-center i { font-size: 0.9rem; }
-
-        .header-bottom-left { left: 15px; bottom: 10px; }
+        .header-bottom-left { left: 15px; bottom: 8px; }
         .room-code-label { font-size: 0.55rem; margin-bottom: 0; }
         .room-code-val { font-size: 1.1rem; letter-spacing: 2px; }
         .room-code-value-row i { font-size: 0.8rem; }
-        
+        .clean-settings-btn { padding: 6px 12px; font-size: 0.75rem; }
         .lobby-bottom-actions { flex-direction: row; }
         .btn-lobby-leave { width: 60px; }
     }
 
-    /* النوافذ (Modals) */
+    /* النوافذ */
     .game-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 15px; }
     .game-modal-overlay.show { opacity: 1; visibility: visible; }
     .game-modal-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); box-shadow: var(--shadow-soft); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.95); transition: 0.3s; }
     .game-modal-overlay.show .game-modal-card { transform: scale(1); }
-
     .modal-header { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
     .modal-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; }
     .btn-close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
@@ -194,7 +179,7 @@
 <div class="lobby-master-container">
     
     <div class="premium-lobby-header">
-        <div class="header-top-center">المواجهة</div>
+        <img src="assets/images/characters.png" alt="Characters" class="header-characters-img">
 
         <div class="header-bottom-left" onclick="copyRoomCode()">
             <span class="room-code-label">Code</span>
@@ -204,17 +189,19 @@
             </div>
         </div>
 
-        <button class="header-bottom-center clean-settings-btn" onclick="alert('سيتم فتح نافذة الإعدادات')">
-            <i class="ph-fill ph-gear"></i> إعدادات اللعبة
-        </button>
-
         <div class="header-bottom-right" id="lobby-status-widget">
             <i class="ph-bold ph-spinner animate-spin lobby-status-icon" id="lobby-status-icon"></i>
             <span class="lobby-status-text" id="player-count-text">بانتظار اللاعبين... (1/6)</span>
         </div>
     </div>
 
-    <div class="lobby-section-title">الأعضاء المتواجدون</div>
+    <div class="lobby-section-header">
+        <div class="lobby-section-title">الأعضاء المتواجدون</div>
+        <button class="clean-settings-btn" onclick="alert('سيتم فتح نافذة الإعدادات')">
+            <i class="ph-fill ph-gear"></i> إعدادات اللعبة
+        </button>
+    </div>
+
     <div class="emblems-grid" id="lobby-players-grid">
         <div style="text-align:center; padding: 20px; color:var(--text-dim); width:100%; grid-column: span 2;">
             <i class="ph-bold ph-spinner animate-spin" style="font-size:1.5rem;"></i>
@@ -328,8 +315,6 @@
         
         if (btn.classList.contains('is-ready')) {
             btn.innerHTML = `<i class="ph-bold ph-x-circle" style="font-size: 1.3rem;"></i> <span>إلغاء الجاهزية</span>`;
-            // ملاحظة: اللون الأخضر للنص وعلامة الصح في البنر (الانتظار) ستتم إدارتها عبر السيرفر
-            // عندما يكتمل جاهزية جميع اللاعبين، سيتم إضافة كلاس 'all-ready' للـ lobby-status-widget
         } else {
             btn.innerHTML = `<i class="ph-bold ph-check-circle" style="font-size: 1.3rem;"></i> <span>تأكيد الجاهزية</span>`;
         }
