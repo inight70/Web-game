@@ -439,20 +439,46 @@ window.closeAuthModal = function() {
 };
 
 // ==========================================
-// 6. نظام التنقل (Routing/Fragments)
+// 6. نظام التنقل المحسن (State Preservation Routing)
 // ==========================================
 window.loadFragment = async function(pageName, element) {
-    // [ السحر هنا ]: حفظ الصفحة في الذاكرة لتذكرها
-    sessionStorage.setItem('lastActivePage', pageName);
+    // 1. خريطة الأقسام: معرفة كل صفحة فرعية لأي قسم رئيسي تنتمي
+    const getParentTab = (p) => {
+        const map = { 'customization': 'profile', 'lobby': 'play' };
+        return map[p] || p;
+    };
 
-    // إذا كنت داخل غرفة وضغطت على زر "اللعب" من القائمة، لا ترجع للصفحة الرئيسية للعب، بل افتح اللوبي مباشرة!
-    if (pageName === 'play' && window.currentRoomId) {
+    // 2. معالجة الذاكرة واستعادة الصفحات الفرعية
+    if (element) { // إذا تم النقر بشكل مباشر على أيقونة القسم من شريط التنقل
+        let savedSubPage = sessionStorage.getItem('tabState_' + pageName);
+        let currentActive = sessionStorage.getItem('lastActivePage');
+        let currentActiveParent = getParentTab(currentActive);
+
+        if (savedSubPage && savedSubPage !== pageName) {
+            // الميزة الذكية: إذا كنت داخل القسم وضغطت عليه مرة أخرى، يرجعك للرئيسية (مثل الانستقرام)
+            if (currentActiveParent === pageName) {
+                pageName = pageName; 
+                sessionStorage.setItem('tabState_' + pageName, pageName);
+            } else {
+                // إذا جئت من قسم آخر، يرجعك لآخر صفحة فرعية كنت فيها
+                pageName = savedSubPage;
+            }
+        }
+    }
+
+    // 3. منع الخروج من الغرفة: الأولوية دائماً للوبي إذا كنت مرتبطاً بغرفة
+    if ((pageName === 'play' || pageName === 'lobby') && window.currentRoomId) {
         pageName = 'lobby';
     }
 
+    // 4. حفظ الحالة الجديدة في الجلسة (لتبقى محفوظة طوال مدة فتح الموقع)
+    let newParent = getParentTab(pageName);
+    sessionStorage.setItem('tabState_' + newParent, pageName);
+    sessionStorage.setItem('lastActivePage', pageName);
+
     const contentHolder = document.getElementById('content-holder');
     
-    // أضفنا lobby هنا ليتعرف عليها السيستم ويربطها بعنوان "غرف اللعب"
+    // ربط عناوين الصفحات
     const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'customization': 'advanced_customization', 'lobby': 'title_play' };
     
     const pt = document.getElementById('page-title'); 
@@ -466,28 +492,38 @@ window.loadFragment = async function(pageName, element) {
         if(mn) mn.innerText = '';
     }
     
+    // 5. نظام تظليل الأزرار (Highlighting) المنظف والذكي
     document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
         if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
     });
 
-    if(element) {
-        element.classList.add('active'); 
-        const icon = element.querySelector('i'); 
-        if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
-        
-        const isNav = element.classList.contains('nav-btn');
-        const tabsList = isNav ? document.querySelectorAll('.nav-btn') : document.querySelectorAll('.bottom-tab');
-        const targetList = isNav ? document.querySelectorAll('.bottom-tab') : document.querySelectorAll('.nav-btn');
-        const index = Array.from(tabsList).indexOf(element);
-        
-        if(pageName === 'friends' && !isNav) {} 
-        else if (pageName === 'store' && isNav) { const mStore = document.querySelectorAll('.bottom-tab')[3]; if(mStore) { mStore.classList.add('active'); mStore.querySelector('i').className = mStore.querySelector('i').className.replace('ph', 'ph-fill'); } }
-        else if (pageName === 'profile' && isNav) { const mProf = document.querySelectorAll('.bottom-tab')[5]; if(mProf) { mProf.classList.add('active'); mProf.querySelector('i').className = mProf.querySelector('i').className.replace('ph', 'ph-fill'); } }
-        else if (pageName !== 'lobby') { const matchedTab = targetList[index]; if(matchedTab) { matchedTab.classList.add('active'); matchedTab.querySelector('i').className = matchedTab.querySelector('i').className.replace('ph', 'ph-fill'); } }
+    // التعرف على الفهرس الصحيح لكل شريط (لان الجوال يحتوي على أيقونة أصدقاء والكمبيوتر لا)
+    const bottomIndexes = { 'home': 0, 'play': 1, 'achievements': 2, 'store': 3, 'friends': 4, 'profile': 5 };
+    const navIndexes = { 'home': 0, 'play': 1, 'achievements': 2, 'store': 3, 'profile': 4 };
+    
+    const bIndex = bottomIndexes[newParent];
+    const nIndex = navIndexes[newParent];
+
+    const navTabs = document.querySelectorAll('.nav-btn');
+    const bottomTabs = document.querySelectorAll('.bottom-tab');
+    
+    // تظليل شريط الكمبيوتر
+    if (nIndex !== undefined && navTabs[nIndex]) {
+        navTabs[nIndex].classList.add('active');
+        const i1 = navTabs[nIndex].querySelector('i');
+        if(i1) i1.className = i1.className.replace('ph', 'ph-fill');
+    }
+    
+    // تظليل شريط الجوال
+    if (bIndex !== undefined && bottomTabs[bIndex]) {
+        bottomTabs[bIndex].classList.add('active');
+        const i2 = bottomTabs[bIndex].querySelector('i');
+        if(i2) i2.className = i2.className.replace('ph', 'ph-fill');
     }
 
+    // إظهار اللودر أثناء تحميل الصفحة
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
     try {
@@ -511,7 +547,6 @@ window.loadFragment = async function(pageName, element) {
             window.drawFriendsUI();
         }
         
-        // إذا فتحنا اللوبي يتم استدعاء اللاعبين فوراً
         if (pageName === 'lobby' && window.fetchAndRenderLobbyPlayers) {
             window.fetchAndRenderLobbyPlayers(); 
         }
