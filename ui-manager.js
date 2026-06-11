@@ -438,10 +438,10 @@ window.closeAuthModal = function() {
 };
 
 // ==========================================
-// 6. التوجيه الذكي (Explicit Route Mapper)
+// 6. نظام التنقل والروابط الصريحة (Explicit Smart Router)
 // ==========================================
-window.loadFragment = async function(targetPage, element) {
-    // [خريطة ثابتة وواضحة] تعرف كل صفحة لأي قسم رئيسي تنتمي
+window.loadFragment = async function(requestedPage, element) {
+    // 1. خريطة التوجيه (Route Map): نعرّف كل فرع لمن ينتمي بدقة 100%
     const ROUTE_MAP = {
         'home': 'home',
         'play': 'play',
@@ -454,76 +454,49 @@ window.loadFragment = async function(targetPage, element) {
         'profile': 'profile',
         'customization': 'profile'
     };
-
-    // الأقسام الستة الأساسية الموجودة في الشريط 
+    
     const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
 
-    // استخراج الأصل للصفحة المطلوبة (مثال: إذا targetPage هي customization، الأصل سيكون profile)
-    let requestedRoot = ROUTE_MAP[targetPage] || targetPage;
-    let finalPageToLoad = targetPage;
+    let targetPage = requestedPage;
+    let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
 
-    // استثناء 1: حماية الغرفة (لا يمكن الخروج من اللوبي إلى واجهة اللعب العادية)
-    if (requestedRoot === 'play' && window.currentRoomId) {
-        finalPageToLoad = 'lobby';
-        requestedRoot = 'play';
-    } 
-    // استثناء 2: التعامل مع الضغط على أزرار الأقسام في الشريط (استعادة الذاكرة أو مسحها)
-    else if (ROOT_TABS.includes(targetPage)) {
-        let savedSubPage = sessionStorage.getItem('savedBranch_' + targetPage);
-        let currentActivePage = sessionStorage.getItem('lastActivePage');
-        let currentActiveRoot = ROUTE_MAP[currentActivePage] || currentActivePage;
+    // 2. الحماية الدائمة للوبي: طالما أنك في غرفة، قسم اللعب = لوبي إجبارياً
+    if (targetRoot === 'play' && window.currentRoomId) {
+        targetPage = 'lobby';
+        targetRoot = 'play';
+    } else {
+        // 3. استرجاع الذاكرة الذكي والرجوع للخلف
+        let currentRoot = sessionStorage.getItem('current_root');
 
-        // إذا كنت داخل قسم (مثلاً profile) وضغطت على زر profile مرة أخرى، سيتم مسح الذاكرة والعودة للجذر
-        if (currentActiveRoot === targetPage && element) {
-            sessionStorage.removeItem('savedBranch_' + targetPage);
-            finalPageToLoad = targetPage;
-        } 
-        // أما إذا رجعت من قسم آخر، استعد الصفحة الفرعية التي توقفت عندها (مثلاً customization)
-        else if (savedSubPage) {
-            finalPageToLoad = savedSubPage;
+        // إذا كان المستخدم يضغط على أحد الأقسام الأساسية في الشريط
+        if (ROOT_TABS.includes(requestedPage)) {
+            // هل ضغط على القسم وهو أصلاً فيه؟ (يعني دبل كليك أو محاولة رجوع)
+            if (currentRoot === requestedPage && element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'))) {
+                sessionStorage.removeItem('saved_branch_' + requestedPage); // امسح الذاكرة
+                targetPage = requestedPage; // ارجع للجذر (الرئيسي للقسم)
+            } else {
+                // المستخدم قادم من قسم مختلف، نسترجع ذاكرة القسم الذي ذهب إليه
+                let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
+                if (savedBranch) {
+                    targetPage = savedBranch;
+                }
+            }
         }
     }
 
-    // حفظ مسارك الجديد في الذاكرة
-    sessionStorage.setItem('lastActivePage', finalPageToLoad);
-    sessionStorage.setItem('savedBranch_' + requestedRoot, finalPageToLoad);
+    // 4. حفظ البيانات في الذاكرة لتذكرها لاحقاً
+    sessionStorage.setItem('current_root', targetRoot);
+    sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
+    sessionStorage.setItem('lastActivePage', targetPage);
 
-    // =========================================
-    // التحديثات البصرية للواجهة
-    // =========================================
-    const contentHolder = document.getElementById('content-holder');
-    const titles = { 
-        'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
-        'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
-        'customization': 'advanced_customization', 'lobby': 'title_play',
-        'how-to-play': 'title_play', 'leaderboard': 'leaderboard_btn'
-    };
-    
-    const pt = document.getElementById('page-title'); 
-    const mn = document.getElementById('mobile-section-name'); 
-    
-    // تحديث اسم الصفحة العلوية بدقة
-    if (titles[finalPageToLoad] && window.translations && window.translations[window.currentLang]) {
-        let translatedTitle = window.translations[window.currentLang][titles[finalPageToLoad]];
-        if (!translatedTitle && titles[finalPageToLoad] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
-        if (!translatedTitle && titles[finalPageToLoad] === 'leaderboard_btn') translatedTitle = 'المتصدرون';
-        
-        if(pt) pt.innerText = translatedTitle || '';
-        if(mn) mn.innerText = translatedTitle || '';
-    } else {
-        if(pt) pt.innerText = '';
-        if(mn) mn.innerText = '';
-    }
-
-    // تصفير إضاءة جميع الأزرار
+    // 5. نظام إضاءة الأزرار الثابت (دائماً يضيء الجذر الثابت)
     document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
         if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
     });
 
-    // إضاءة الزر الصحيح الذي ينتمي إليه القسم (حتى لو كنت داخل فرع)
-    const rootIndex = ROOT_TABS.indexOf(requestedRoot);
+    const rootIndex = ROOT_TABS.indexOf(targetRoot);
     if (rootIndex !== -1) {
         const desktopNavs = document.querySelectorAll('.nav-btn');
         const mobileNavs = document.querySelectorAll('.bottom-tab');
@@ -540,13 +513,40 @@ window.loadFragment = async function(targetPage, element) {
         }
     }
 
-    // =========================================
-    // جلب الصفحة الفرعية من الملفات
-    // =========================================
+    // 6. تحديث عناوين الصفحة الديناميكية العلوية
+    const titles = { 
+        'home': 'title_home', 
+        'play': 'title_play', 
+        'achievements': 'title_achievements', 
+        'store': 'title_store', 
+        'friends': 'title_friends', 
+        'profile': 'title_profile', 
+        'customization': 'advanced_customization', 
+        'lobby': 'title_play',
+        'how-to-play': 'title_play', 
+        'leaderboard': 'leaderboard_btn'
+    };
+    
+    const pt = document.getElementById('page-title'); 
+    const mn = document.getElementById('mobile-section-name'); 
+    
+    if (titles[targetPage] && window.translations && window.translations[window.currentLang]) {
+        let translatedTitle = window.translations[window.currentLang][titles[targetPage]];
+        if (!translatedTitle && titles[targetPage] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
+        
+        if(pt) pt.innerText = translatedTitle || '';
+        if(mn) mn.innerText = translatedTitle || '';
+    } else {
+        if(pt) pt.innerText = '';
+        if(mn) mn.innerText = '';
+    }
+    
+    // 7. جلب وعرض محتوى الصفحة
+    const contentHolder = document.getElementById('content-holder');
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
     try {
-        const response = await fetch(`pages/${finalPageToLoad}.html`);
+        const response = await fetch(`pages/${targetPage}.html`);
         if (!response.ok) throw new Error('Page not found');
         
         const htmlContent = await response.text();
@@ -562,12 +562,18 @@ window.loadFragment = async function(targetPage, element) {
 
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
-        // تشغيل الدوال الخاصة بالصفحات فور فتحها
-        if (finalPageToLoad === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
-        if (finalPageToLoad === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
+        // تفعيل الدوال الخاصة ببعض الصفحات عند الدخول إليها
+        if (targetPage === 'friends' && window.drawFriendsUI) {
+            window.drawFriendsUI();
+        }
+        
+        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) {
+            window.fetchAndRenderLobbyPlayers(); 
+        }
 
     } catch (error) {
-        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">حدث خطأ أثناء تحميل الصفحة...</div>`;
+        let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
+        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
     }
 };
 
