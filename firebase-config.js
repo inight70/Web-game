@@ -93,9 +93,6 @@ window.syncUsernameChange = async function(oldName, newName) {
     } catch(e) { console.error("Error syncing username:", e); }
 };
 
-// ==============================================
-// التنبيهات المحدثة (أرقام، ترتيب، قبول ورفض)
-// ==============================================
 window.renderNotifications = function() {
     const list = document.getElementById('noti-list'); 
     const dot = document.getElementById('noti-dot');
@@ -112,19 +109,23 @@ window.renderNotifications = function() {
         return;
     }
     
-    // تصميم أيقونة التنبيه كـ (شريط أرقام)
+    // تصميم أيقونة التنبيه لتبدو كالمواقع العالمية (مرفوعة للزاوية ولها إطار)
     dot.style.display = 'flex';
     dot.style.justifyContent = 'center';
     dot.style.alignItems = 'center';
-    dot.style.width = '18px';
-    dot.style.height = '18px';
+    dot.style.width = '16px'; // تصغير الحجم
+    dot.style.height = '16px';
     dot.style.borderRadius = '50%';
-    dot.style.fontSize = '0.65rem';
-    dot.style.fontWeight = '800';
+    dot.style.fontSize = '0.6rem'; // تصغير الخط
+    dot.style.fontWeight = 'bold';
     dot.style.color = 'white';
+    dot.style.position = 'absolute';
+    dot.style.top = '-3px';
+    dot.style.right = '-3px';
+    dot.style.border = '2px solid var(--bg-base)'; // يعطيها تأثير القطع
+    dot.style.zIndex = '10';
     dot.innerText = totalNotis > 9 ? '+9' : totalNotis;
     
-    // دمج التنبيهات للترتيب
     let allNotis = [];
     
     gameInvites.forEach(inv => {
@@ -132,11 +133,9 @@ window.renderNotifications = function() {
     });
 
     friendReqs.forEach(req => {
-        // نضع رقماً عالياً لطلبات الصداقة لتظهر كأنها "الآن"
         allNotis.push({ type: 'friendReq', timestamp: Date.now() + 1000, data: req });
     });
 
-    // الترتيب من الأحدث (الرقم الأكبر) إلى الأقدم
     allNotis.sort((a, b) => b.timestamp - a.timestamp);
 
     let html = '';
@@ -171,7 +170,6 @@ window.renderNotifications = function() {
     list.innerHTML = html;
 };
 
-// دوال التحكم بالدعوات
 window.acceptGameInvite = async function(roomId, timestamp) {
     if (window.currentUserData && window.currentUserData.gameInvites) {
         const updatedInvites = window.currentUserData.gameInvites.filter(i => i.timestamp !== timestamp);
