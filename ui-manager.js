@@ -11,13 +11,6 @@ window.currentLang = 'ar';
 window.friendsCache = {};
 window.friendListeners = {};
 
-// [الجديد]: الذاكرة المركزية لحالة الأقسام
-window.TAB_STATES = JSON.parse(sessionStorage.getItem('TAB_STATES')) || {
-    'home': 'home', 'play': 'play', 'achievements': 'achievements',
-    'store': 'store', 'friends': 'friends', 'profile': 'profile'
-};
-window.ACTIVE_TAB = sessionStorage.getItem('ACTIVE_TAB') || 'home';
-
 window.hideLoader = () => { 
     const l = document.getElementById('global-loader'); 
     if(l){ l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 400); } 
@@ -302,20 +295,6 @@ window.viewFriendHistory = function(fName) {
     } catch(e) { console.error("Error viewing history", e); }
 };
 
-window.renderNotifications = function() {
-    const list = document.getElementById('noti-list'); const dot = document.getElementById('noti-dot');
-    if(!list || !dot) return;
-    if (window.isGuest || !window.currentUserData || !window.currentUserData.friendRequests || window.currentUserData.friendRequests.length === 0) {
-        list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
-        dot.style.display = 'none'; return;
-    }
-    dot.style.display = 'block'; let html = '';
-    window.currentUserData.friendRequests.forEach(req => {
-        html += `<div class="noti-item" onclick="window.openReviewRequestModal('${req}')"><div class="noti-icon"><i class="ph-bold ph-user-plus"></i></div><div class="noti-text-content"><span class="noti-text"><span>طلب صداقة جديد من</span> <strong>${req}</strong></span><span class="noti-time">الآن</span></div></div>`;
-    });
-    list.innerHTML = html;
-};
-
 // ==========================================
 // 4. دوال التحكم بإعدادات الواجهة (Settings)
 // ==========================================
@@ -329,7 +308,8 @@ window.setLanguage = async function(lang, skipSave = false) {
             else el.innerText = window.translations[lang][key];
         }
     });
-    window.renderNotifications(); window.drawFriendsUI();
+    if(window.renderNotifications) window.renderNotifications(); 
+    window.drawFriendsUI();
     
     const activeBtn = document.querySelector('.nav-btn.active');
     if(activeBtn) {
@@ -428,13 +408,13 @@ window.enterAsGuest = function() {
     const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) { avtFall.innerHTML = "ز"; avtFall.style.border = ''; }
     
     if(window.setupRealtimeFriends) window.setupRealtimeFriends(); 
-    window.renderNotifications();
+    if(window.renderNotifications) window.renderNotifications();
     
     const dropContent = document.getElementById('dropdown-content-area'); if(dropContent) dropContent.innerHTML = `<button class="dropdown-item" onclick="window.openLoginDirectly()"><i class="ph ph-sign-in"></i> <span>تسجيل الدخول</span></button>`;
     window.clearAuthInputs(); 
     const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
     const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
-    window.loadFragment('home', document.querySelector('.nav-btn.active'));
+    if(window.loadFragment) window.loadFragment('home', document.querySelector('.nav-btn.active'));
 };
 
 window.closeAuthModal = function() { 
@@ -442,136 +422,6 @@ window.closeAuthModal = function() {
     const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
     const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
     if(!window.isGuest) window.enterAsGuest(); 
-};
-
-// ==========================================
-// 6. نظام التنقل الذكي المطلق (Ultimate State Machine Router)
-// ==========================================
-window.loadFragment = async function(requestedPage, element) {
-    // 1. خريطة التوجيه الصريحة والنهائية (تتبع الفروع لأصولها)
-    const PAGE_TO_TAB = {
-        'customization': 'profile',
-        'lobby': 'play',
-        'how-to-play': 'play',
-        'leaderboard': 'play'
-    };
-    
-    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
-
-    let page = requestedPage;
-    let parentTab = PAGE_TO_TAB[page] || page;
-
-    // للحماية: إذا كان الأصل غير معروف كجذر رئيسي، اجعله الرئيسية
-    if (!ROOT_TABS.includes(parentTab)) { parentTab = 'home'; }
-
-    // التحقق مما إذا كان الضغط قادم من أحد أزرار الشريط (الكمبيوتر أو الجوال)
-    let isTabClick = element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'));
-    
-    // 2. معالجة حالة الأقسام
-    if (isTabClick && page === parentTab) {
-        if (window.ACTIVE_TAB === parentTab) {
-            // دبل كليك (أو محاولة رجوع): المستخدم ضغط على زر القسم وهو داخله (أو داخل أحد فروعه)
-            // الحل: أعده لجذر القسم
-            page = parentTab;
-        } else {
-            // المستخدم قادم من قسم مختلف، استرجع ذاكرة هذا القسم (إن وجدت)
-            page = window.TAB_STATES[parentTab] || parentTab;
-        }
-    }
-
-    // 3. الحماية القصوى والمطلقة للوبي (Lobby Stickiness)
-    // إذا كنت في غرفة وضغطت على قسم "اللعب" من أي مكان في الكوكب، ستفتح اللوبي!
-    if (parentTab === 'play' && window.currentRoomId) {
-        page = 'lobby';
-    }
-
-    // 4. تحديث الذاكرة المركزية الموثوقة
-    window.TAB_STATES[parentTab] = page;
-    window.ACTIVE_TAB = parentTab;
-
-    sessionStorage.setItem('TAB_STATES', JSON.stringify(window.TAB_STATES));
-    sessionStorage.setItem('ACTIVE_TAB', window.ACTIVE_TAB);
-    sessionStorage.setItem('lastActivePage', page);
-
-    const contentHolder = document.getElementById('content-holder');
-    
-    // 5. إضاءة الزر الصحيح في الشريطين العلوي والسفلي (دائماً يضيء الأصل)
-    document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
-        btn.classList.remove('active'); 
-        const icon = btn.querySelector('i'); 
-        if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
-    });
-
-    const rootIndex = ROOT_TABS.indexOf(parentTab);
-    if (rootIndex !== -1) {
-        const desktopNavs = document.querySelectorAll('.nav-btn');
-        const mobileNavs = document.querySelectorAll('.bottom-tab');
-        
-        if (desktopNavs[rootIndex]) {
-            desktopNavs[rootIndex].classList.add('active');
-            let icon = desktopNavs[rootIndex].querySelector('i');
-            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
-        }
-        if (mobileNavs[rootIndex]) {
-            mobileNavs[rootIndex].classList.add('active');
-            let icon = mobileNavs[rootIndex].querySelector('i');
-            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
-        }
-    }
-
-    // 6. تحديث عناوين الصفحة الديناميكية العلوية
-    const titles = { 
-        'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
-        'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
-        'customization': 'advanced_customization', 'lobby': 'title_play',
-        'how-to-play': 'title_play', 'leaderboard': 'leaderboard_btn'
-    };
-    
-    const pt = document.getElementById('page-title'); 
-    const mn = document.getElementById('mobile-section-name'); 
-    
-    if (titles[page] && window.translations && window.translations[window.currentLang]) {
-        let translatedTitle = window.translations[window.currentLang][titles[page]];
-        if (!translatedTitle && titles[page] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
-        if(pt) pt.innerText = translatedTitle || '';
-        if(mn) mn.innerText = translatedTitle || '';
-    } else {
-        if(pt) pt.innerText = '';
-        if(mn) mn.innerText = '';
-    }
-    
-    // 7. تحميل المحتوى النهائي
-    if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
-
-    try {
-        const response = await fetch(`pages/${page}.html`);
-        if (!response.ok) throw new Error('Page not found');
-        
-        const htmlContent = await response.text();
-        if(contentHolder) contentHolder.innerHTML = htmlContent;
-
-        const scripts = contentHolder.querySelectorAll('script');
-        scripts.forEach(oldScript => {
-            const newScript = document.createElement('script');
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            oldScript.parentNode.replaceChild(newScript, oldScript);
-        });
-
-        if(window.setLanguage) window.setLanguage(window.currentLang, true);
-
-        // تشغيل الدوال الخاصة بالصفحات
-        if (page === 'friends' && window.drawFriendsUI) {
-            window.drawFriendsUI();
-        }
-        if (page === 'lobby' && window.fetchAndRenderLobbyPlayers) {
-            window.fetchAndRenderLobbyPlayers(); 
-        }
-
-    } catch (error) {
-        let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[page]]) || 'هذه الصفحة';
-        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
-    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
