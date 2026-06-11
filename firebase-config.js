@@ -129,18 +129,13 @@ window.renderNotifications = function() {
 };
 
 window.handleInviteClick = async function(roomId, timestamp) {
-    // إغلاق قائمة التنبيهات
     if(window.toggleDropdown) window.toggleDropdown('');
-    
-    // حذف الدعوة من قاعدة البيانات فوراً (حتى لا تظهر مجدداً)
     if (window.currentUserData && window.currentUserData.gameInvites) {
         const updatedInvites = window.currentUserData.gameInvites.filter(i => i.timestamp !== timestamp);
         try {
             await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { gameInvites: updatedInvites });
         } catch(e) { console.error("Error clearing invite:", e); }
     }
-    
-    // الدخول للغرفة
     if(window.joinFirebaseRoom) window.joinFirebaseRoom(roomId);
 };
 
@@ -193,9 +188,6 @@ onAuthStateChanged(auth, async (user) => {
                     document.getElementById('auth-modal').classList.add('hidden'); 
                     document.getElementById('app-shell').classList.add('unlocked');
                     
-                    // ==========================================
-                    // السحر هنا: استعادة الصفحة الأخيرة والغرفة
-                    // ==========================================
                     let savedPage = sessionStorage.getItem('lastActivePage') || 'home';
                     let activeRoom = window.currentUserData.activeRoom;
 
@@ -204,14 +196,8 @@ onAuthStateChanged(auth, async (user) => {
                         savedPage = 'lobby';
                     }
 
-                    // العثور على الزر المناسب لتفعيله
-                    const pages = ['home', 'play', 'achievements', 'store', 'profile'];
-                    let btnIndex = pages.indexOf(savedPage);
-                    let navBtn = (btnIndex !== -1) ? document.querySelectorAll('.nav-btn')[btnIndex] : null;
-                    if(savedPage === 'lobby') navBtn = document.querySelectorAll('.nav-btn')[1]; // زر اللعب
-
-                    if(window.loadFragment) window.loadFragment(savedPage, navBtn);
-                    if(savedPage === 'lobby' && window.listenToRoom) window.listenToRoom();
+                    if(window.loadFragment) window.loadFragment(savedPage, null);
+                    if(window.currentRoomId && window.listenToRoom) window.listenToRoom();
 
                     if(window.hideLoader) window.hideLoader(); 
                     isInitialLoad = false;
@@ -294,7 +280,6 @@ window.handleAuthSubmit = async function(e) {
 window.handleLogout = async function() { 
     if(auth.currentUser) {
         try { 
-            // تسجيل الخروج يخرجك من الغرفة أيضاً
             await updateDoc(doc(db, "users", auth.currentUser.uid), { status: 'offline', activeRoom: null }); 
         } catch(e){}
     }
@@ -302,7 +287,7 @@ window.handleLogout = async function() {
         document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show'));
         document.body.removeAttribute('data-theme'); document.documentElement.className=''; document.body.className='';
         window.currentUserData = null; 
-        sessionStorage.removeItem('lastActivePage');
+        sessionStorage.clear(); // مسح الذاكرة بالكامل عند تسجيل الخروج
         if(window.clearAuthInputs) window.clearAuthInputs(); 
         const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
         const fallbackAvatar = document.getElementById('header-avatar-fallback'); if(fallbackAvatar) { fallbackAvatar.innerHTML = "ز"; fallbackAvatar.style.border = ''; }
@@ -356,133 +341,4 @@ window.confirmRemoveFriend = async function() {
         if(window.closeFriendModal) window.closeFriendModal('remove-friend-modal'); 
         window.friendToRemove = null;
     } catch(e) { alert("حدث خطأ أثناء الحذف."); }
-};
-
-// ==========================================
-// تحديث دالة التنقل لحفظ الصفحة النشطة والنظام الذكي للفروع
-// ==========================================
-window.loadFragment = async function(requestedPage, element) {
-    // الخريطة الصريحة لكل الصفحات وارتباطها بالأقسام الرئيسية
-    const ROUTE_MAP = {
-        'home': 'home',
-        'play': 'play',
-        'lobby': 'play',
-        'how-to-play': 'play',
-        'leaderboard': 'play',
-        'achievements': 'achievements',
-        'store': 'store',
-        'friends': 'friends',
-        'profile': 'profile',
-        'customization': 'profile'
-    };
-    
-    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
-
-    let targetPage = requestedPage;
-    let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
-
-    // إذا كنت في اللوبي ومسجل بالغرفة، لا يسمح لك برؤية صفحة "العب الآن" العادية
-    if (targetRoot === 'play' && window.currentRoomId) {
-        targetPage = 'lobby';
-        targetRoot = 'play';
-    } else {
-        let currentRoot = sessionStorage.getItem('current_root');
-
-        if (ROOT_TABS.includes(requestedPage)) {
-            // إذا ضغطت على زر القسم وأنت داخله أصلاً، نرجّعك للجذر (يمسح الذاكرة الفرعية)
-            if (currentRoot === requestedPage && element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'))) {
-                sessionStorage.removeItem('saved_branch_' + requestedPage);
-                targetPage = requestedPage;
-            } else {
-                // إذا فتحت قسم وكان عندك فرع مسجل فيه سابقاً (مثل customization)، افتحه فوراً
-                let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
-                if (savedBranch) {
-                    targetPage = savedBranch;
-                }
-            }
-        }
-    }
-
-    // حفظ مسارك في الجلسة
-    sessionStorage.setItem('current_root', targetRoot);
-    sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
-    sessionStorage.setItem('lastActivePage', targetPage);
-
-    // تحديث إضاءة الأزرار (الجذر يظل مضيء دائماً حتى لو كنت في فرع)
-    document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
-        btn.classList.remove('active'); 
-        const icon = btn.querySelector('i'); 
-        if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
-    });
-
-    const rootIndex = ROOT_TABS.indexOf(targetRoot);
-    if (rootIndex !== -1) {
-        const desktopNavs = document.querySelectorAll('.nav-btn');
-        const mobileNavs = document.querySelectorAll('.bottom-tab');
-        
-        if (desktopNavs[rootIndex]) {
-            desktopNavs[rootIndex].classList.add('active');
-            let icon = desktopNavs[rootIndex].querySelector('i');
-            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
-        }
-        if (mobileNavs[rootIndex]) {
-            mobileNavs[rootIndex].classList.add('active');
-            let icon = mobileNavs[rootIndex].querySelector('i');
-            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
-        }
-    }
-
-    // تحديث العناوين في الأعلى حسب الترجمة
-    const titles = { 
-        'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
-        'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
-        'customization': 'advanced_customization', 'lobby': 'title_play',
-        'how-to-play': 'title_play', 'leaderboard': 'leaderboard_btn'
-    };
-    
-    const pt = document.getElementById('page-title'); 
-    const mn = document.getElementById('mobile-section-name'); 
-    
-    if (titles[targetPage] && window.translations && window.translations[window.currentLang]) {
-        let translatedTitle = window.translations[window.currentLang][titles[targetPage]];
-        if (!translatedTitle && titles[targetPage] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
-        if(pt) pt.innerText = translatedTitle || '';
-        if(mn) mn.innerText = translatedTitle || '';
-    } else {
-        if(pt) pt.innerText = '';
-        if(mn) mn.innerText = '';
-    }
-
-    // جلب وتفريغ المحتوى
-    const contentHolder = document.getElementById('content-holder');
-    if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
-
-    try {
-        const response = await fetch(`pages/${targetPage}.html`);
-        if (!response.ok) throw new Error('Page not found');
-        
-        const htmlContent = await response.text();
-        if(contentHolder) contentHolder.innerHTML = htmlContent;
-
-        const scripts = contentHolder.querySelectorAll('script');
-        scripts.forEach(oldScript => {
-            const newScript = document.createElement('script');
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            oldScript.parentNode.replaceChild(newScript, oldScript);
-        });
-
-        if(window.setLanguage) window.setLanguage(window.currentLang, true);
-
-        if (targetPage === 'friends' && window.drawFriendsUI) {
-            window.drawFriendsUI();
-        }
-        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) {
-            window.fetchAndRenderLobbyPlayers(); 
-        }
-
-    } catch (error) {
-        let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
-        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
-    }
 };
