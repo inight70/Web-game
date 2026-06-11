@@ -93,6 +93,9 @@ window.syncUsernameChange = async function(oldName, newName) {
     } catch(e) { console.error("Error syncing username:", e); }
 };
 
+// ==============================================
+// التنبيهات المحدثة بالكامل (أرقام احترافية، ترتيب)
+// ==============================================
 window.renderNotifications = function() {
     const list = document.getElementById('noti-list'); 
     const dot = document.getElementById('noti-dot');
@@ -109,20 +112,21 @@ window.renderNotifications = function() {
         return;
     }
     
-    // تصميم أيقونة التنبيه لتبدو كالمواقع العالمية (مرفوعة للزاوية ولها إطار)
+    // تصميم الدائرة الحمراء (Badge) بمستوى Discord
     dot.style.display = 'flex';
     dot.style.justifyContent = 'center';
     dot.style.alignItems = 'center';
-    dot.style.width = '16px'; // تصغير الحجم
+    dot.style.position = 'absolute';
+    dot.style.top = '-2px';
+    dot.style.right = '-2px';
+    dot.style.width = '16px';
     dot.style.height = '16px';
     dot.style.borderRadius = '50%';
-    dot.style.fontSize = '0.6rem'; // تصغير الخط
-    dot.style.fontWeight = 'bold';
+    dot.style.fontSize = '0.6rem';
+    dot.style.fontWeight = '800';
     dot.style.color = 'white';
-    dot.style.position = 'absolute';
-    dot.style.top = '-3px';
-    dot.style.right = '-3px';
-    dot.style.border = '2px solid var(--bg-base)'; // يعطيها تأثير القطع
+    dot.style.backgroundColor = 'var(--accent-red)';
+    dot.style.border = '2px solid var(--surface-panel)'; // الإطار اللي يعطي شكل القص
     dot.style.zIndex = '10';
     dot.innerText = totalNotis > 9 ? '+9' : totalNotis;
     
@@ -136,10 +140,9 @@ window.renderNotifications = function() {
         allNotis.push({ type: 'friendReq', timestamp: Date.now() + 1000, data: req });
     });
 
-    allNotis.sort((a, b) => b.timestamp - a.timestamp);
+    allNotis.sort((a, b) => b.timestamp - a.timestamp); // الأحدث فوق
 
     let html = '';
-    
     allNotis.forEach(noti => {
         if (noti.type === 'invite') {
             const inv = noti.data;
