@@ -438,74 +438,75 @@ window.closeAuthModal = function() {
 };
 
 // ==========================================
-// 6. نظام التنقل الذكي (Smart Dynamic Router)
+// 6. التوجيه الذكي (Explicit Route Mapper)
 // ==========================================
-window.loadFragment = async function(pageName, element) {
-    // 1. تحديد الأقسام الأساسية (Roots)
+window.loadFragment = async function(targetPage, element) {
+    // [خريطة ثابتة وواضحة] تعرف كل صفحة لأي قسم رئيسي تنتمي
+    const ROUTE_MAP = {
+        'home': 'home',
+        'play': 'play',
+        'lobby': 'play',
+        'how-to-play': 'play',
+        'leaderboard': 'play',
+        'achievements': 'achievements',
+        'store': 'store',
+        'friends': 'friends',
+        'profile': 'profile',
+        'customization': 'profile'
+    };
+
+    // الأقسام الستة الأساسية الموجودة في الشريط 
     const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
-    
-    // جلب الجذر النشط حالياً من الذاكرة (أو افتراض الرئيسية)
-    let activeRoot = sessionStorage.getItem('activeRootTab') || 'home';
-    
-    // هل الصفحة المطلوبة هي أحد الأقسام الأساسية؟
-    let isRootSwitch = ROOT_TABS.includes(pageName);
-    
-    if (isRootSwitch) {
-        let clickedRoot = pageName;
-        
-        // [حماية استثنائية]: إذا كان المستخدم داخل غرفة وضغط قسم "اللعب"، لا ترجعه لشاشة اللعب بل وجهه للوبي مباشرة
-        if (clickedRoot === 'play' && window.currentRoomId) {
-            pageName = 'lobby';
-            sessionStorage.setItem('savedPath_play', 'lobby');
-            activeRoot = 'play';
-        } else {
-            // جلب المسار الفرعي المحفوظ لهذا القسم (إن وجد)
-            let savedPath = sessionStorage.getItem('savedPath_' + clickedRoot);
-            
-            // [زر الرجوع الذكي]: إذا ضغطت على زر القسم الذي أنت فيه أصلاً من الشريط (يعني element موجود)
-            if (activeRoot === clickedRoot && element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'))) {
-                sessionStorage.removeItem('savedPath_' + clickedRoot); // احذف الذاكرة الفرعية
-                pageName = clickedRoot; // ارجع للجذر
-            } else {
-                // إذا كان هناك فرع محفوظ (مثل التخصيص)، افتحه!
-                if (savedPath) {
-                    pageName = savedPath; 
-                }
-            }
-            activeRoot = clickedRoot; // تحديث الجذر النشط
+
+    // استخراج الأصل للصفحة المطلوبة (مثال: إذا targetPage هي customization، الأصل سيكون profile)
+    let requestedRoot = ROUTE_MAP[targetPage] || targetPage;
+    let finalPageToLoad = targetPage;
+
+    // استثناء 1: حماية الغرفة (لا يمكن الخروج من اللوبي إلى واجهة اللعب العادية)
+    if (requestedRoot === 'play' && window.currentRoomId) {
+        finalPageToLoad = 'lobby';
+        requestedRoot = 'play';
+    } 
+    // استثناء 2: التعامل مع الضغط على أزرار الأقسام في الشريط (استعادة الذاكرة أو مسحها)
+    else if (ROOT_TABS.includes(targetPage)) {
+        let savedSubPage = sessionStorage.getItem('savedBranch_' + targetPage);
+        let currentActivePage = sessionStorage.getItem('lastActivePage');
+        let currentActiveRoot = ROUTE_MAP[currentActivePage] || currentActivePage;
+
+        // إذا كنت داخل قسم (مثلاً profile) وضغطت على زر profile مرة أخرى، سيتم مسح الذاكرة والعودة للجذر
+        if (currentActiveRoot === targetPage && element) {
+            sessionStorage.removeItem('savedBranch_' + targetPage);
+            finalPageToLoad = targetPage;
+        } 
+        // أما إذا رجعت من قسم آخر، استعد الصفحة الفرعية التي توقفت عندها (مثلاً customization)
+        else if (savedSubPage) {
+            finalPageToLoad = savedSubPage;
         }
-        sessionStorage.setItem('activeRootTab', activeRoot);
-    } else {
-        // إذا كانت الصفحة المطلوبة (تخصيص، لوبي، الخ) ليست جذراً، فهي فرع!
-        // احفظها تحت الجذر النشط حالياً ليتذكرها النظام لاحقاً
-        sessionStorage.setItem('savedPath_' + activeRoot, pageName);
     }
 
-    // حفظ آخر صفحة لأغراض استعادة الجلسة بالكامل (Refresh)
-    sessionStorage.setItem('lastActivePage', pageName);
+    // حفظ مسارك الجديد في الذاكرة
+    sessionStorage.setItem('lastActivePage', finalPageToLoad);
+    sessionStorage.setItem('savedBranch_' + requestedRoot, finalPageToLoad);
 
+    // =========================================
+    // التحديثات البصرية للواجهة
+    // =========================================
     const contentHolder = document.getElementById('content-holder');
-    
-    // 2. تحديث عناوين الصفحة الديناميكية
     const titles = { 
-        'home': 'title_home', 
-        'play': 'title_play', 
-        'achievements': 'title_achievements', 
-        'store': 'title_store', 
-        'friends': 'title_friends', 
-        'profile': 'title_profile', 
-        'customization': 'advanced_customization', 
-        'lobby': 'title_play',
-        'how-to-play': 'title_play', 
-        'leaderboard': 'leaderboard_btn'
+        'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
+        'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
+        'customization': 'advanced_customization', 'lobby': 'title_play',
+        'how-to-play': 'title_play', 'leaderboard': 'leaderboard_btn'
     };
     
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
     
-    if (titles[pageName] && window.translations && window.translations[window.currentLang]) {
-        let translatedTitle = window.translations[window.currentLang][titles[pageName]];
-        if (!translatedTitle && titles[pageName] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
+    // تحديث اسم الصفحة العلوية بدقة
+    if (titles[finalPageToLoad] && window.translations && window.translations[window.currentLang]) {
+        let translatedTitle = window.translations[window.currentLang][titles[finalPageToLoad]];
+        if (!translatedTitle && titles[finalPageToLoad] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
+        if (!translatedTitle && titles[finalPageToLoad] === 'leaderboard_btn') translatedTitle = 'المتصدرون';
         
         if(pt) pt.innerText = translatedTitle || '';
         if(mn) mn.innerText = translatedTitle || '';
@@ -513,15 +514,16 @@ window.loadFragment = async function(pageName, element) {
         if(pt) pt.innerText = '';
         if(mn) mn.innerText = '';
     }
-    
-    // 3. نظام إضاءة الأزرار الذكي (دائماً يضيء الجذر، حتى لو كنت في فرع عميق)
+
+    // تصفير إضاءة جميع الأزرار
     document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
         if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
     });
 
-    const rootIndex = ROOT_TABS.indexOf(activeRoot);
+    // إضاءة الزر الصحيح الذي ينتمي إليه القسم (حتى لو كنت داخل فرع)
+    const rootIndex = ROOT_TABS.indexOf(requestedRoot);
     if (rootIndex !== -1) {
         const desktopNavs = document.querySelectorAll('.nav-btn');
         const mobileNavs = document.querySelectorAll('.bottom-tab');
@@ -538,11 +540,13 @@ window.loadFragment = async function(pageName, element) {
         }
     }
 
-    // 4. جلب وعرض محتوى الصفحة
+    // =========================================
+    // جلب الصفحة الفرعية من الملفات
+    // =========================================
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
     try {
-        const response = await fetch(`pages/${pageName}.html`);
+        const response = await fetch(`pages/${finalPageToLoad}.html`);
         if (!response.ok) throw new Error('Page not found');
         
         const htmlContent = await response.text();
@@ -558,18 +562,12 @@ window.loadFragment = async function(pageName, element) {
 
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
 
-        // تفعيل الدوال الخاصة ببعض الصفحات عند الدخول إليها
-        if (pageName === 'friends' && window.drawFriendsUI) {
-            window.drawFriendsUI();
-        }
-        
-        if (pageName === 'lobby' && window.fetchAndRenderLobbyPlayers) {
-            window.fetchAndRenderLobbyPlayers(); 
-        }
+        // تشغيل الدوال الخاصة بالصفحات فور فتحها
+        if (finalPageToLoad === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
+        if (finalPageToLoad === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
 
     } catch (error) {
-        let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[pageName]]) || 'هذه الصفحة';
-        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
+        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">حدث خطأ أثناء تحميل الصفحة...</div>`;
     }
 };
 
