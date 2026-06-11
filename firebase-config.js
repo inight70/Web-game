@@ -109,7 +109,7 @@ window.renderNotifications = function() {
     
     if (hasGameInvites) {
         window.currentUserData.gameInvites.forEach(inv => {
-            html += `<div class="noti-item" onclick="window.joinFirebaseRoom('${inv.roomId}'); window.toggleDropdown('noti-dropdown');">
+            html += `<div class="noti-item" onclick="window.handleInviteClick('${inv.roomId}', ${inv.timestamp})">
                 <div class="noti-icon" style="background:var(--accent-red); color:white;"><i class="ph-bold ph-sword"></i></div>
                 <div class="noti-text-content">
                     <span class="noti-text">دعوة للعب من <strong>${inv.hostName}</strong></span>
@@ -126,6 +126,22 @@ window.renderNotifications = function() {
     }
     
     list.innerHTML = html;
+};
+
+window.handleInviteClick = async function(roomId, timestamp) {
+    // إغلاق قائمة التنبيهات
+    if(window.toggleDropdown) window.toggleDropdown('');
+    
+    // حذف الدعوة من قاعدة البيانات فوراً (حتى لا تظهر مجدداً)
+    if (window.currentUserData && window.currentUserData.gameInvites) {
+        const updatedInvites = window.currentUserData.gameInvites.filter(i => i.timestamp !== timestamp);
+        try {
+            await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { gameInvites: updatedInvites });
+        } catch(e) { console.error("Error clearing invite:", e); }
+    }
+    
+    // الدخول للغرفة
+    if(window.joinFirebaseRoom) window.joinFirebaseRoom(roomId);
 };
 
 onAuthStateChanged(auth, async (user) => {
