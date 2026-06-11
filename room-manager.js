@@ -39,7 +39,6 @@ window.createFirebaseRoom = async function() {
             createdAt: new Date().toISOString()
         });
 
-        // السحر هنا: حفظ الغرفة في بروفايل اللاعب ليعود لها من أي جهاز
         await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), { activeRoom: roomCode });
 
         window.currentRoomId = roomCode;
@@ -76,7 +75,6 @@ window.joinFirebaseRoom = async function(roomCode) {
             });
         }
         
-        // حفظ الغرفة في بروفايل اللاعب
         await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), { activeRoom: roomCode });
 
         window.currentRoomId = roomCode;
@@ -118,7 +116,7 @@ window.listenToRoom = function() {
     
     window.roomUnsubscribe = window.onSnapshotFunc(roomRef, async (snap) => {
         if (!snap.exists()) {
-            alert("تم إغلاق الغرفة من قِبل المالك.");
+            // تم إزالة الـ alert المزعج من هنا، الخروج سيكون صامتاً وسلساً جداً
             window.leaveFirebaseRoom(true); 
             return;
         }
@@ -138,7 +136,6 @@ window.leaveFirebaseRoom = async function(forced = false) {
 
     if (user) {
         try {
-            // إزالة الغرفة من بروفايل اللاعب
             await window.updateDocFunc(window.docFunc(window.dbInstance, "users", user.uid), { activeRoom: null });
 
             if (!forced && window.currentRoomId && window.currentRoomData) {
