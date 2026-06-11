@@ -21,18 +21,13 @@ window.hideLoader = () => {
 // ==========================================
 const style = document.createElement('style');
 style.innerHTML = `
-    @keyframes smoothScaleIn {
-        0% { opacity: 0; transform: scale(0.95) translateY(10px); }
-        100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
+    @keyframes smoothScaleIn { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
     .modern-action-btn { background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid rgba(255,255,255,0.08); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
     .modern-action-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
     .modern-action-btn:active { transform: translateY(0) scale(0.98); }
-    
     .modern-danger-btn { background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; }
     .modern-danger-btn:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.3); border-color: var(--accent-red); }
     .modern-danger-btn:active { transform: translateY(0) scale(0.98); }
-    
     .friend-data-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 1000000; display: flex; justify-content: center; align-items: center; animation: smoothFadeIn 0.2s ease; padding: 20px; }
     .friend-data-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); overflow: hidden; animation: smoothScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; position: relative; }
     .locked-view-msg { padding: 50px 20px; text-align: center; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; margin: 20px; border: 1px dashed rgba(255,255,255,0.1); }
@@ -151,7 +146,6 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
             modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
             modal.innerHTML = modalHtml;
             document.body.appendChild(modal);
-
         } else {
             const rect = event.currentTarget.getBoundingClientRect();
             let leftPos = rect.right + 15;
@@ -209,7 +203,6 @@ window.viewFriendProfile = function(fName) {
                         </div>
                         <div style="font-size: 0.9rem; font-weight: bold; color: var(--text-dim); font-family: var(--font-en); background: rgba(255,255,255,0.03); padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.05);">XP: ${xp}</div>
                     </div>
-                    
                     <div style="display: flex; justify-content: space-between; align-items: center; background: var(--surface-panel); padding: 20px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
                         <span style="color: var(--text-dim); font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;"><i class="ph-fill ph-medal" style="font-size: 1.4rem; color: gold;"></i> الإنجازات</span>
                         <span style="color: var(--text-main); font-weight: 900; font-family: var(--font-en); font-size: 1.5rem;">${achievements}</span>
@@ -309,7 +302,6 @@ window.setLanguage = async function(lang, skipSave = false) {
         }
     });
     
-    // إعادة تطبيق كود الإضاءة لضمان بقائها بعد تغيير اللغة
     let currentRoot = sessionStorage.getItem('current_root') || 'home';
     updateNavigationHighlight(currentRoot);
     
@@ -398,20 +390,40 @@ window.openLoginDirectly = function() {
     window.toggleDropdown('');
 };
 
+window.enterAsGuest = function() {
+    window.isGuest = true; window.currentUserData = null;
+    const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
+    const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = "غير مسجل"; 
+    const avtFall = document.getElementById('header-avatar-fallback'); if(avtFall) { avtFall.innerHTML = "ز"; avtFall.style.border = ''; }
+    
+    if(window.setupRealtimeFriends) window.setupRealtimeFriends(); 
+    if(window.renderNotifications) window.renderNotifications();
+    
+    const dropContent = document.getElementById('dropdown-content-area'); if(dropContent) dropContent.innerHTML = `<button class="dropdown-item" onclick="window.openLoginDirectly()"><i class="ph ph-sign-in"></i> <span>تسجيل الدخول</span></button>`;
+    window.clearAuthInputs(); 
+    const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
+    const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
+    if(window.loadFragment) window.loadFragment('home', document.querySelector('.nav-btn.active'));
+};
+
+window.closeAuthModal = function() { 
+    window.clearAuthInputs(); 
+    const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
+    const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
+    if(!window.isGuest) window.enterAsGuest(); 
+};
+
 // =========================================================
-// 6. نظام التنقل والروابط المتقدم (Smart Router & Auto-Fix)
+// 6. نظام التنقل والروابط المتقدم (Smart Router)
 // =========================================================
 
-// دالة مساعدة لتحديث الأزرار في الشاشة بذكاء مطلق (بدون الاعتماد على الكلاسات فقط)
 function updateNavigationHighlight(targetRoot) {
     const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
     const rootIndex = ROOT_TABS.indexOf(targetRoot);
 
-    // جمع كل أزرار التنقل سواء في الجوال أو الكمبيوتر
     const allNavButtons = document.querySelectorAll('.nav-btn, .bottom-tab, .sidebar-btn');
     
     allNavButtons.forEach((btn) => {
-        // تفريغ الإضاءة من جميع الأزرار
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
         if(icon) {
@@ -421,17 +433,14 @@ function updateNavigationHighlight(targetRoot) {
 
         let isExactMatch = false;
 
-        // الطريقة الأولى: مطابقة الفهرس (Index) للأزرار المعروفة
         if (btn.classList.contains('nav-btn') && Array.from(document.querySelectorAll('.nav-btn')).indexOf(btn) === rootIndex) isExactMatch = true;
         if (btn.classList.contains('bottom-tab') && Array.from(document.querySelectorAll('.bottom-tab')).indexOf(btn) === rootIndex) isExactMatch = true;
 
-        // الطريقة الثانية (الذكية): البحث في كود النقر عن اسم القسم!
         const onclickAttr = btn.getAttribute('onclick') || '';
         if (onclickAttr.includes(`'${targetRoot}'`) || onclickAttr.includes(`"${targetRoot}"`)) {
             isExactMatch = true;
         }
 
-        // إذا كان هذا هو الزر المطلوب، قم بإضاءته فوراً
         if (isExactMatch) {
             btn.classList.add('active');
             if(icon) {
@@ -443,7 +452,6 @@ function updateNavigationHighlight(targetRoot) {
 }
 
 window.loadFragment = async function(requestedPage, element) {
-    // 1. خريطة التوجيه الصريحة
     const ROUTE_MAP = {
         'home': 'home',
         'play': 'play',
@@ -462,28 +470,21 @@ window.loadFragment = async function(requestedPage, element) {
     let targetPage = requestedPage;
     let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
 
-    // 2. الحماية الدائمة للوبي
     if (targetRoot === 'play' && window.currentRoomId) {
         targetPage = 'lobby';
         targetRoot = 'play';
     } else {
-        // 3. استرجاع الذاكرة الذكي وكسر الحلقة المفرغة (The Bug Fix!)
         let currentRoot = sessionStorage.getItem('current_root');
         let lastActivePage = sessionStorage.getItem('lastActivePage');
 
         if (ROOT_TABS.includes(requestedPage)) {
-            // هل المستخدم نقر على أيقونة الشريط السفلي/الجانبي؟
             let isNavClick = element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'));
-            
-            // هل المستخدم يضغط على زر رجوع ليصعد من صفحة فرعية للأصل؟
             let isGoingUp = (currentRoot === requestedPage && lastActivePage !== requestedPage);
 
             if ((currentRoot === requestedPage && isNavClick) || isGoingUp) {
-                // كسر الذاكرة وإرجاعه للأصل (يحل مشكلة التعليق في الكوستمايزيشن)
                 sessionStorage.removeItem('saved_branch_' + requestedPage);
                 targetPage = requestedPage;
             } else {
-                // استرجاع الذاكرة 
                 let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
                 if (savedBranch) {
                     targetPage = savedBranch;
@@ -492,15 +493,12 @@ window.loadFragment = async function(requestedPage, element) {
         }
     }
 
-    // 4. الحفظ الدائم في الجلسة
     sessionStorage.setItem('current_root', targetRoot);
     sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
     sessionStorage.setItem('lastActivePage', targetPage);
 
-    // 5. تطبيق إضاءة الأزرار الجبارة
     updateNavigationHighlight(targetRoot);
 
-    // 6. تحديث عناوين الصفحة 
     const titles = { 
         'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
         'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
@@ -521,7 +519,6 @@ window.loadFragment = async function(requestedPage, element) {
         if(mn) mn.innerText = '';
     }
     
-    // 7. جلب وعرض محتوى الصفحة
     const contentHolder = document.getElementById('content-holder');
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
@@ -555,9 +552,6 @@ window.loadFragment = async function(requestedPage, element) {
     }
 };
 
-// ==========================================
-// تأكيد أخير لتنفيذ الكود عند التحميل
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     const authForm = document.getElementById('firebase-form');
     if (authForm) {
