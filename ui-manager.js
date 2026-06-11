@@ -439,91 +439,96 @@ window.closeAuthModal = function() {
 };
 
 // ==========================================
-// 6. نظام التنقل المحسن (State Preservation Routing)
+// 6. نظام التنقل الذكي (Smart Routing & State Management)
 // ==========================================
 window.loadFragment = async function(pageName, element) {
-    // 1. خريطة الأقسام: معرفة كل صفحة فرعية لأي قسم رئيسي تنتمي
-    const getParentTab = (p) => {
-        const map = { 'customization': 'profile', 'lobby': 'play' };
-        return map[p] || p;
+    // [1] خريطة الفروع وأصولها: نعرّف كل فرع لأي قسم ينتمي
+    const parentTabs = {
+        'home': 'home',
+        'play': 'play',
+        'lobby': 'play', // اللوبي يتبع لقسم اللعب
+        'achievements': 'achievements',
+        'store': 'store',
+        'friends': 'friends',
+        'profile': 'profile',
+        'customization': 'profile' // التخصيص يتبع للبروفايل
     };
 
-    // 2. معالجة الذاكرة واستعادة الصفحات الفرعية
-    if (element) { // إذا تم النقر بشكل مباشر على أيقونة القسم من شريط التنقل
-        let savedSubPage = sessionStorage.getItem('tabState_' + pageName);
-        let currentActive = sessionStorage.getItem('lastActivePage');
-        let currentActiveParent = getParentTab(currentActive);
+    let parentTab = parentTabs[pageName] || pageName;
 
-        if (savedSubPage && savedSubPage !== pageName) {
-            // الميزة الذكية: إذا كنت داخل القسم وضغطت عليه مرة أخرى، يرجعك للرئيسية (مثل الانستقرام)
-            if (currentActiveParent === pageName) {
-                pageName = pageName; 
-                sessionStorage.setItem('tabState_' + pageName, pageName);
-            } else {
-                // إذا جئت من قسم آخر، يرجعك لآخر صفحة فرعية كنت فيها
-                pageName = savedSubPage;
-            }
+    // [2] استعادة الصفحة الفرعية: إذا ضغطت على زر القسم الرئيسي، هل كنت في فرع معين داخله مسبقاً؟
+    if (Object.values(parentTabs).includes(pageName) && pageName === parentTab) {
+        let savedSub = sessionStorage.getItem('savedTab_' + pageName);
+        let lastPage = sessionStorage.getItem('lastActivePage');
+        
+        if (savedSub && savedSub !== pageName) {
+             // [العودة الذكية للوراء]: إذا كنت داخل التخصيص، وضغطت أيقونة البروفايل مرة أخرى، يمسح الحفظ ويعيدك لجذر البروفايل
+             if (parentTabs[lastPage] === pageName) {
+                 sessionStorage.removeItem('savedTab_' + pageName);
+                 savedSub = null;
+             } else {
+                 // غير ذلك (مثلاً رجعت من الرئيسية)، يعيدك للصفحة الفرعية التي توقفت عندها (التخصيص)
+                 pageName = savedSub;
+                 parentTab = parentTabs[pageName] || pageName;
+             }
         }
     }
 
-    // 3. منع الخروج من الغرفة: الأولوية دائماً للوبي إذا كنت مرتبطاً بغرفة
-    if ((pageName === 'play' || pageName === 'lobby') && window.currentRoomId) {
+    // [3] استثناء أمان للغرفة: إذا كنت تملك غرفة نشطة وضغطت على "اللعب"، لا ترجع للشاشة الرئيسية بل للوبي مباشرة
+    if (parentTab === 'play' && window.currentRoomId) {
         pageName = 'lobby';
+        parentTab = 'play';
     }
 
-    // 4. حفظ الحالة الجديدة في الجلسة (لتبقى محفوظة طوال مدة فتح الموقع)
-    let newParent = getParentTab(pageName);
-    sessionStorage.setItem('tabState_' + newParent, pageName);
+    // [4] حفظ مسارك الحالي في الجلسة ليتم تذكره لاحقاً
     sessionStorage.setItem('lastActivePage', pageName);
+    sessionStorage.setItem('savedTab_' + parentTab, pageName);
 
     const contentHolder = document.getElementById('content-holder');
     
-    // ربط عناوين الصفحات
+    // قائمة العناوين لتحديث عنوان الصفحة فوق
     const titles = { 'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 'customization': 'advanced_customization', 'lobby': 'title_play' };
     
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
     
-    if (titles[pageName] && window.translations) {
-        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]];
-        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]];
+    if (titles[pageName] && window.translations && window.translations[window.currentLang]) {
+        if(pt) pt.innerText = window.translations[window.currentLang][titles[pageName]] || '';
+        if(mn) mn.innerText = window.translations[window.currentLang][titles[pageName]] || '';
     } else {
         if(pt) pt.innerText = '';
         if(mn) mn.innerText = '';
     }
     
-    // 5. نظام تظليل الأزرار (Highlighting) المنظف والذكي
+    // [5] نظام إضاءة الأزرار الذكي: يبحث عن الأصل ويضيئه حتى لو كنت داخل صفحة فرعية!
     document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
         if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
     });
 
-    // التعرف على الفهرس الصحيح لكل شريط (لان الجوال يحتوي على أيقونة أصدقاء والكمبيوتر لا)
-    const bottomIndexes = { 'home': 0, 'play': 1, 'achievements': 2, 'store': 3, 'friends': 4, 'profile': 5 };
-    const navIndexes = { 'home': 0, 'play': 1, 'achievements': 2, 'store': 3, 'profile': 4 };
-    
-    const bIndex = bottomIndexes[newParent];
-    const nIndex = navIndexes[newParent];
+    const mainTabsList = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
+    const tabIndex = mainTabsList.indexOf(parentTab); // يبحث عن رقم الأصل بدلاً من الفرع
 
-    const navTabs = document.querySelectorAll('.nav-btn');
-    const bottomTabs = document.querySelectorAll('.bottom-tab');
-    
-    // تظليل شريط الكمبيوتر
-    if (nIndex !== undefined && navTabs[nIndex]) {
-        navTabs[nIndex].classList.add('active');
-        const i1 = navTabs[nIndex].querySelector('i');
-        if(i1) i1.className = i1.className.replace('ph', 'ph-fill');
-    }
-    
-    // تظليل شريط الجوال
-    if (bIndex !== undefined && bottomTabs[bIndex]) {
-        bottomTabs[bIndex].classList.add('active');
-        const i2 = bottomTabs[bIndex].querySelector('i');
-        if(i2) i2.className = i2.className.replace('ph', 'ph-fill');
+    if (tabIndex !== -1) {
+        // إضاءة أزرار سطح المكتب
+        const desktopNavs = document.querySelectorAll('.nav-btn');
+        if (desktopNavs[tabIndex]) {
+            desktopNavs[tabIndex].classList.add('active');
+            const icon = desktopNavs[tabIndex].querySelector('i');
+            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+        }
+        
+        // إضاءة أزرار الجوال
+        const mobileNavs = document.querySelectorAll('.bottom-tab');
+        if (mobileNavs[tabIndex]) {
+            mobileNavs[tabIndex].classList.add('active');
+            const icon = mobileNavs[tabIndex].querySelector('i');
+            if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+        }
     }
 
-    // إظهار اللودر أثناء تحميل الصفحة
+    // [6] جلب محتوى الصفحة وعرضها بشكل سلس
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
     try {
