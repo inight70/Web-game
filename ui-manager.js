@@ -35,7 +35,61 @@ style.innerHTML = `
 document.head.appendChild(style);
 
 // ==========================================
-// 3. دوال رسم واجهة الأصدقاء والنوافذ
+// 3. نظام التوجيه المعماري (NavSystem)
+// ==========================================
+window.NavSystem = {
+    ROOTS: ['home', 'play', 'achievements', 'store', 'friends', 'profile'],
+    MAP: {
+        'home': 'home', 'play': 'play', 'lobby': 'play', 'how-to-play': 'play', 'leaderboard': 'play',
+        'achievements': 'achievements', 'store': 'store', 'friends': 'friends',
+        'profile': 'profile', 'customization': 'profile'
+    },
+    // اختلاف الأزرار بين الكمبيوتر (5 أزرار) والجوال (6 أزرار)
+    INDEX_DESKTOP: { 'home': 0, 'play': 1, 'achievements': 2, 'store': 3, 'profile': 4 },
+    INDEX_MOBILE:  { 'home': 0, 'play': 1, 'achievements': 2, 'store': 3, 'friends': 4, 'profile': 5 },
+    
+    getMemory: function() {
+        let mem = sessionStorage.getItem('nav_memory');
+        return mem ? JSON.parse(mem) : {};
+    },
+    saveMemory: function(root, page) {
+        let mem = this.getMemory();
+        if (this.ROOTS.includes(page)) { delete mem[root]; } // إذا رجع للجذر الأصلي، امسح الذاكرة الفرعية
+        else { mem[root] = page; } // إذا دخل فرع، احفظه
+        sessionStorage.setItem('nav_memory', JSON.stringify(mem));
+    },
+    updateHighlights: function(root) {
+        let dIdx = this.INDEX_DESKTOP[root];
+        let mIdx = this.INDEX_MOBILE[root];
+
+        // إضاءة الكمبيوتر الثابتة
+        document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+            let icon = btn.querySelector('i');
+            if (i === dIdx) {
+                btn.classList.add('active');
+                if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+            } else {
+                btn.classList.remove('active');
+                if(icon) { icon.classList.remove('ph-fill'); if(!icon.className.includes('ph-')) icon.classList.add('ph'); }
+            }
+        });
+
+        // إضاءة الجوال الثابتة
+        document.querySelectorAll('.bottom-tab').forEach((btn, i) => {
+            let icon = btn.querySelector('i');
+            if (i === mIdx) {
+                btn.classList.add('active');
+                if(icon) icon.className = icon.className.replace('ph', 'ph-fill');
+            } else {
+                btn.classList.remove('active');
+                if(icon) { icon.classList.remove('ph-fill'); if(!icon.className.includes('ph-')) icon.classList.add('ph'); }
+            }
+        });
+    }
+};
+
+// ==========================================
+// 4. دوال رسم واجهة الأصدقاء والنوافذ
 // ==========================================
 window.drawFriendsUI = function() {
     try {
@@ -146,6 +200,7 @@ window.openFriendActionModal = function(friendName, event, isMobile) {
             modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
             modal.innerHTML = modalHtml;
             document.body.appendChild(modal);
+
         } else {
             const rect = event.currentTarget.getBoundingClientRect();
             let leftPos = rect.right + 15;
@@ -203,6 +258,7 @@ window.viewFriendProfile = function(fName) {
                         </div>
                         <div style="font-size: 0.9rem; font-weight: bold; color: var(--text-dim); font-family: var(--font-en); background: rgba(255,255,255,0.03); padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.05);">XP: ${xp}</div>
                     </div>
+                    
                     <div style="display: flex; justify-content: space-between; align-items: center; background: var(--surface-panel); padding: 20px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
                         <span style="color: var(--text-dim); font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;"><i class="ph-fill ph-medal" style="font-size: 1.4rem; color: gold;"></i> الإنجازات</span>
                         <span style="color: var(--text-main); font-weight: 900; font-family: var(--font-en); font-size: 1.5rem;">${achievements}</span>
@@ -289,7 +345,7 @@ window.viewFriendHistory = function(fName) {
 };
 
 // ==========================================
-// 4. دوال التحكم بإعدادات الواجهة (Settings)
+// 5. دوال الإعدادات والتفاعل العام
 // ==========================================
 window.setLanguage = async function(lang, skipSave = false) {
     window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -302,8 +358,8 @@ window.setLanguage = async function(lang, skipSave = false) {
         }
     });
     
-    let currentRoot = sessionStorage.getItem('current_root') || 'home';
-    updateNavigationHighlight(currentRoot);
+    let currentRoot = sessionStorage.getItem('active_root') || 'home';
+    window.NavSystem.updateHighlights(currentRoot);
     
     if (!skipSave && window.authInstance && window.authInstance.currentUser && !window.isGuest) { 
         try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { "settings.language": lang }); } catch(e){} 
@@ -335,9 +391,6 @@ window.toggleTheme = async function(mode, skipSave = false) {
     }
 };
 
-// ==========================================
-// 5. دوال التفاعل مع النوافذ (Modals & Menus)
-// ==========================================
 window.openAddFriendModal = function() { document.getElementById('add-friend-modal').classList.remove('hidden'); const err = document.getElementById('friend-error'); if(err) err.style.display='none'; const inp = document.getElementById('search-friend-input'); if(inp) inp.value=''; };
 window.openRemoveFriendModal = function(friendName) { window.friendToRemove = friendName; document.getElementById('remove-friend-name').innerText = friendName; document.getElementById('remove-friend-modal').classList.remove('hidden'); };
 window.closeFriendModal = function(id) { document.getElementById(id).classList.add('hidden'); };
@@ -403,7 +456,7 @@ window.enterAsGuest = function() {
     window.clearAuthInputs(); 
     const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
     const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
-    if(window.loadFragment) window.loadFragment('home', document.querySelector('.nav-btn.active'));
+    if(window.loadFragment) window.loadFragment('home');
 };
 
 window.closeAuthModal = function() { 
@@ -413,92 +466,46 @@ window.closeAuthModal = function() {
     if(!window.isGuest) window.enterAsGuest(); 
 };
 
-// =========================================================
-// 6. نظام التنقل والروابط المتقدم (Smart Router)
-// =========================================================
-
-function updateNavigationHighlight(targetRoot) {
-    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
-    const rootIndex = ROOT_TABS.indexOf(targetRoot);
-
-    const allNavButtons = document.querySelectorAll('.nav-btn, .bottom-tab, .sidebar-btn');
-    
-    allNavButtons.forEach((btn) => {
-        btn.classList.remove('active'); 
-        const icon = btn.querySelector('i'); 
-        if(icon) {
-            icon.classList.remove('ph-fill');
-            if(!icon.className.includes('ph-')) icon.classList.add('ph');
-        }
-
-        let isExactMatch = false;
-
-        if (btn.classList.contains('nav-btn') && Array.from(document.querySelectorAll('.nav-btn')).indexOf(btn) === rootIndex) isExactMatch = true;
-        if (btn.classList.contains('bottom-tab') && Array.from(document.querySelectorAll('.bottom-tab')).indexOf(btn) === rootIndex) isExactMatch = true;
-
-        const onclickAttr = btn.getAttribute('onclick') || '';
-        if (onclickAttr.includes(`'${targetRoot}'`) || onclickAttr.includes(`"${targetRoot}"`)) {
-            isExactMatch = true;
-        }
-
-        if (isExactMatch) {
-            btn.classList.add('active');
-            if(icon) {
-                icon.classList.remove('ph');
-                icon.classList.add('ph-fill');
-            }
-        }
-    });
-}
-
-window.loadFragment = async function(requestedPage, element) {
-    const ROUTE_MAP = {
-        'home': 'home',
-        'play': 'play',
-        'lobby': 'play',
-        'how-to-play': 'play',
-        'leaderboard': 'play',
-        'achievements': 'achievements',
-        'store': 'store',
-        'friends': 'friends',
-        'profile': 'profile',
-        'customization': 'profile'
-    };
-    
-    const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
-
+// ==========================================
+// 6. المدير الذكي للتوجيه (The Router Engine)
+// ==========================================
+window.loadFragment = async function(requestedPage) {
     let targetPage = requestedPage;
-    let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
+    let targetRoot = window.NavSystem.MAP[targetPage] || targetPage;
 
+    // حماية الغرفة (لا يمكن فتح صفحة اللعب العادية إذا كان مسجلاً في غرفة)
     if (targetRoot === 'play' && window.currentRoomId) {
         targetPage = 'lobby';
         targetRoot = 'play';
-    } else {
-        let currentRoot = sessionStorage.getItem('current_root');
-        let lastActivePage = sessionStorage.getItem('lastActivePage');
-
-        if (ROOT_TABS.includes(requestedPage)) {
-            let isNavClick = element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'));
-            let isGoingUp = (currentRoot === requestedPage && lastActivePage !== requestedPage);
-
-            if ((currentRoot === requestedPage && isNavClick) || isGoingUp) {
-                sessionStorage.removeItem('saved_branch_' + requestedPage);
-                targetPage = requestedPage;
-            } else {
-                let savedBranch = sessionStorage.getItem('saved_branch_' + requestedPage);
-                if (savedBranch) {
-                    targetPage = savedBranch;
-                }
-            }
-        }
     }
 
-    sessionStorage.setItem('current_root', targetRoot);
-    sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
+    let currentRoot = sessionStorage.getItem('active_root');
+
+    if (window.NavSystem.ROOTS.includes(requestedPage)) {
+        // إذا طلب الدخول لصفحة رئيسية (جذر)
+        if (currentRoot === requestedPage) {
+            // المستخدم في نفس القسم وضغط على زر القسم (مثل زر الرجوع في التخصيص) -> نمسح الذاكرة ونرجعه للرئيسية
+            targetPage = requestedPage;
+            window.NavSystem.saveMemory(targetRoot, targetPage);
+        } else {
+            // المستخدم قادم من قسم مختلف -> نستعيد آخر صفحة فرعية كان فيها بهذا القسم إن وجدت
+            let mem = window.NavSystem.getMemory();
+            if (mem[requestedPage]) {
+                targetPage = mem[requestedPage];
+            }
+        }
+    } else {
+        // المستخدم طلب الدخول لصفحة فرعية (مثل customization) -> نحفظها في الذاكرة
+        window.NavSystem.saveMemory(targetRoot, targetPage);
+    }
+
+    sessionStorage.setItem('active_root', targetRoot);
     sessionStorage.setItem('lastActivePage', targetPage);
 
-    updateNavigationHighlight(targetRoot);
+    // تحديث إضاءة الأزرار بدقة مطلقة
+    window.NavSystem.updateHighlights(targetRoot);
 
+    // تحديث النصوص العلوية
     const titles = { 
         'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
         'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
@@ -519,6 +526,7 @@ window.loadFragment = async function(requestedPage, element) {
         if(mn) mn.innerText = '';
     }
     
+    // جلب الصفحة ورسمها
     const contentHolder = document.getElementById('content-holder');
     if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
@@ -538,13 +546,8 @@ window.loadFragment = async function(requestedPage, element) {
         });
 
         if(window.setLanguage) window.setLanguage(window.currentLang, true);
-
-        if (targetPage === 'friends' && window.drawFriendsUI) {
-            window.drawFriendsUI();
-        }
-        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) {
-            window.fetchAndRenderLobbyPlayers(); 
-        }
+        if (targetPage === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
+        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
 
     } catch (error) {
         let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
@@ -554,8 +557,6 @@ window.loadFragment = async function(requestedPage, element) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const authForm = document.getElementById('firebase-form');
-    if (authForm) {
-        authForm.setAttribute('novalidate', 'true');
-    }
+    if (authForm) { authForm.setAttribute('novalidate', 'true'); }
     if(window.setFormType) window.setFormType('login');
 });
