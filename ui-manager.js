@@ -428,7 +428,7 @@ window.closeAuthModal = function() {
 // 6. نظام التنقل والروابط الصريحة (Explicit Smart Router)
 // ==========================================
 window.loadFragment = async function(requestedPage, element) {
-    // 1. خريطة التوجيه الصريحة
+    // 1. خريطة التوجيه الصريحة: النظام الآن يعرف كل صفحة فرعية لأي قسم تنتمي بالظبط
     const ROUTE_MAP = {
         'home': 'home',
         'play': 'play',
@@ -452,11 +452,11 @@ window.loadFragment = async function(requestedPage, element) {
         targetPage = 'lobby';
         targetRoot = 'play';
     } else {
-        // 3. استرجاع الذاكرة الذكي
+        // 3. استرجاع الذاكرة الذكي والرجوع للخلف
         let currentRoot = sessionStorage.getItem('current_root');
 
         if (ROOT_TABS.includes(requestedPage)) {
-            // تفريغ الذاكرة والعودة للجذر عند الضغط عليه مرتين
+            // الرجوع للخلف عن طريق الضغط مرة أخرى على القسم
             if (currentRoot === requestedPage && element && (element.classList.contains('nav-btn') || element.classList.contains('bottom-tab'))) {
                 sessionStorage.removeItem('saved_branch_' + requestedPage);
                 targetPage = requestedPage;
@@ -469,28 +469,35 @@ window.loadFragment = async function(requestedPage, element) {
         }
     }
 
-    // 4. الحفظ الدائم في الجلسة
+    // 4. الحفظ الدائم في الجلسة (Session)
     sessionStorage.setItem('current_root', targetRoot);
     sessionStorage.setItem('saved_branch_' + targetRoot, targetPage);
     sessionStorage.setItem('lastActivePage', targetPage);
 
-    // ===============================================
-    // 5. الحل الجذري والعبقري للإضاءة (Active State)
-    // ===============================================
-    // بدلاً من الاعتماد على الترتيب (Index) الذي يخرب إذا كان عدد أزرار الجوال مختلف عن الكمبيوتر..
-    // جعلنا الكود يقرأ ما يفعله الزر، فإذا كان الزر يفتح القسم (targetRoot) نعطيه الإضاءة فوراً.
+    // ========================================================
+    // 5. نظام إضاءة الأزرار الجبار (البحث الذكي بدون ترتيب)
+    // ========================================================
     document.querySelectorAll('.nav-btn, .bottom-tab').forEach(btn => { 
+        // أ. تطفية كل الأزرار
         btn.classList.remove('active'); 
         const icon = btn.querySelector('i'); 
-        if(icon) icon.className = icon.className.replace('ph-fill', 'ph'); 
+        if (icon) {
+            // إرجاع الأيقونة لشكلها المفرغ بأمان
+            icon.classList.remove('ph-fill');
+            if (!icon.classList.contains('ph') && !icon.classList.contains('ph-bold') && !icon.classList.contains('ph-duotone')) {
+                icon.classList.add('ph');
+            }
+        } 
         
-        // استخراج الوظيفة التي ينفذها الزر
+        // ب. البحث هل هذا الزر مصمم لفتح القسم المطلوب (targetRoot)؟
         const onclickAttr = btn.getAttribute('onclick') || '';
-        
-        // إذا كان هذا الزر مبرمجاً لفتح القسم (مثلاً 'profile')، قم بإضاءته!
         if (onclickAttr.includes(`'${targetRoot}'`) || onclickAttr.includes(`"${targetRoot}"`)) {
+            // وجدنا الزر! أضئه فوراً
             btn.classList.add('active');
-            if (icon) icon.className = icon.className.replace('ph', 'ph-fill');
+            if (icon) {
+                icon.classList.remove('ph');
+                icon.classList.add('ph-fill');
+            }
         }
     });
 
