@@ -93,6 +93,9 @@ window.syncUsernameChange = async function(oldName, newName) {
     } catch(e) { console.error("Error syncing username:", e); }
 };
 
+// ==============================================
+// التنبيهات - تم إرجاع النقطة الحمراء الأنيقة
+// ==============================================
 window.renderNotifications = function() {
     const list = document.getElementById('noti-list'); 
     const dot = document.getElementById('noti-dot');
@@ -105,28 +108,14 @@ window.renderNotifications = function() {
 
     if (window.isGuest || !window.currentUserData || totalNotis === 0) {
         list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
-        dot.style.display = 'none'; 
+        // إخفاء النقطة تماماً
+        dot.style.cssText = 'display: none;'; 
         return;
     }
     
-    dot.style.display = 'flex';
-    dot.style.justifyContent = 'center';
-    dot.style.alignItems = 'center';
-    dot.style.position = 'absolute';
-    dot.style.top = '-4px';
-    dot.style.right = '-4px';
-    dot.style.width = '18px';
-    dot.style.height = '18px';
-    dot.style.borderRadius = '50%';
-    dot.style.fontSize = '0.65rem';
-    dot.style.fontWeight = '900';
-    dot.style.fontFamily = 'sans-serif';
-    dot.style.color = 'white';
-    dot.style.backgroundColor = 'var(--accent-red)';
-    dot.style.border = '2px solid var(--bg-base)'; 
-    dot.style.zIndex = '10';
-    dot.style.pointerEvents = 'none';
-    dot.innerText = totalNotis > 9 ? '+9' : totalNotis;
+    // إرجاع النقطة الصغيرة الكلاسيكية باستخدام الستايل الأساسي لموقعك
+    dot.style.cssText = 'display: block;';
+    dot.innerText = ''; 
     
     let allNotis = [];
     
@@ -348,7 +337,6 @@ window.handleLogout = async function() {
     }); 
 };
 
-// السحر هنا: بناء النافذة المنبثقة بدلاً من رسالة Alert
 window.sendFriendRequest = async function() {
     const targetUsername = document.getElementById('search-friend-input').value.trim().toLowerCase(); 
     const errDiv = document.getElementById('friend-error'); 
@@ -365,10 +353,8 @@ window.sendFriendRequest = async function() {
         
         await updateDoc(doc(db, "users", targetDocId), { friendRequests: arrayUnion(myName) });
         
-        // 1. إغلاق قائمة البحث عن صديق
         if(window.closeFriendModal) window.closeFriendModal('add-friend-modal');
         
-        // 2. إظهار نافذة النجاح الفخمة التي تختفي تلقائياً أو عبر الإغلاق
         const modal = document.createElement('div');
         modal.className = 'friend-data-modal';
         modal.style.zIndex = '10000000';
