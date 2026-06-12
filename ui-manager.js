@@ -11,6 +11,9 @@ window.currentLang = 'ar';
 window.friendsCache = {};
 window.friendListeners = {};
 
+// السحر هنا: ذاكرة الـ HTML لسرعة التنقل
+window.htmlCache = {}; 
+
 window.hideLoader = () => { 
     const l = document.getElementById('global-loader'); 
     if(l){ l.style.opacity = '0'; setTimeout(() => l.style.visibility = 'hidden', 400); } 
@@ -293,28 +296,6 @@ window.viewFriendHistory = function(fName) {
 };
 
 // ==========================================
-// نافذة إغلاق الغرفة (المالك أنهى الغرفة)
-// ==========================================
-window.showRoomClosedModal = function() {
-    const modal = document.createElement('div');
-    modal.className = 'friend-data-modal';
-    modal.style.zIndex = '10000000';
-    modal.innerHTML = `
-        <div class="friend-data-card" style="max-width: 350px; text-align: center; padding: 35px 25px;">
-            <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
-            <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,76,106,0.1); color: var(--accent-red); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; margin: 0 auto 20px auto;">
-                <i class="ph-duotone ph-warning-circle"></i>
-            </div>
-            <h3 style="color: white; margin-bottom: 10px; font-size: 1.3rem; font-weight: 800;">تم إنهاء الغرفة</h3>
-            <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 0;">قام المالك بإغلاق الغرفة للتو.</p>
-        </div>
-    `;
-    modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
-    document.body.appendChild(modal);
-    setTimeout(() => { if(modal.parentNode) modal.remove(); }, 3500);
-};
-
-// ==========================================
 // 5. دوال الإعدادات والتفاعل العام
 // ==========================================
 window.setLanguage = async function(lang, skipSave = false) {
@@ -517,7 +498,6 @@ window.loadFragment = async function(requestedPage, element) {
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
     
-    // [الحل الجذري لمشكلة "الرئيسية" العالقة]
     if (titles[targetPage] && window.translations && window.translations[window.currentLang]) {
         let translatedTitle = window.translations[window.currentLang][titles[targetPage]];
         if (!translatedTitle && titles[targetPage] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
@@ -530,15 +510,25 @@ window.loadFragment = async function(requestedPage, element) {
     }
     
     const contentHolder = document.getElementById('content-holder');
-    if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
+    // السحر هنا: نظام الـ HTML Caching لسرعة خارقة (0ms load time)
+    if (!window.htmlCache) window.htmlCache = {};
+    
     try {
-        const response = await fetch(`pages/${targetPage}.html`);
-        if (!response.ok) throw new Error('Page not found');
-        
-        const htmlContent = await response.text();
+        let htmlContent = '';
+        if (window.htmlCache[targetPage]) {
+            htmlContent = window.htmlCache[targetPage]; // تحميل من الذاكرة اللحظية
+        } else {
+            if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
+            const response = await fetch(`pages/${targetPage}.html`);
+            if (!response.ok) throw new Error('Page not found');
+            htmlContent = await response.text();
+            window.htmlCache[targetPage] = htmlContent; // حفظ في الذاكرة
+        }
+
         if(contentHolder) contentHolder.innerHTML = htmlContent;
 
+        // إعادة تشغيل السكربتات بداخل الصفحة المحملة
         const scripts = contentHolder.querySelectorAll('script');
         scripts.forEach(oldScript => {
             const newScript = document.createElement('script');
