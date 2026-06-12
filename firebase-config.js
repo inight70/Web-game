@@ -94,7 +94,7 @@ window.syncUsernameChange = async function(oldName, newName) {
 };
 
 // ==============================================
-// التنبيهات - تم إرجاع النقطة الحمراء الأنيقة
+// التنبيهات (تم إرجاع النقطة الحمراء الأصلية وحل التكرار)
 // ==============================================
 window.renderNotifications = function() {
     const list = document.getElementById('noti-list'); 
@@ -108,14 +108,15 @@ window.renderNotifications = function() {
 
     if (window.isGuest || !window.currentUserData || totalNotis === 0) {
         list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
-        // إخفاء النقطة تماماً
-        dot.style.cssText = 'display: none;'; 
+        dot.removeAttribute('style'); // تفريغ ستايلات الجافاسكربت
+        dot.style.display = 'none';   // إخفاء النقطة
         return;
     }
     
-    // إرجاع النقطة الصغيرة الكلاسيكية باستخدام الستايل الأساسي لموقعك
-    dot.style.cssText = 'display: block;';
-    dot.innerText = ''; 
+    // إرجاع النقطة الحمراء الكلاسيكية النقية
+    dot.removeAttribute('style');
+    dot.style.display = 'block';
+    dot.innerText = '';
     
     let allNotis = [];
     
@@ -139,8 +140,8 @@ window.renderNotifications = function() {
                 <div class="noti-text-content" style="flex: 1;">
                     <span class="noti-text">دعوة للعب من <strong>${inv.hostName}</strong></span>
                     <div style="display: flex; gap: 8px; margin-top: 10px;">
-                        <button onclick="window.acceptGameInvite('${inv.roomId}', ${inv.timestamp})" style="flex:1; background: var(--accent-green); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">قبول</button>
-                        <button onclick="window.rejectGameInvite(${inv.timestamp})" style="flex:1; background: rgba(255, 255, 255, 0.05); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s;" onmouseover="this.style.color='white'; this.style.background='rgba(255, 76, 106, 0.8)'; this.style.borderColor='transparent';" onmouseout="this.style.color='var(--text-dim)'; this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255,255,255,0.1)';">رفض</button>
+                        <button onclick="window.acceptGameInvite('${inv.roomId}')" style="flex:1; background: var(--accent-green); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">قبول</button>
+                        <button onclick="window.rejectGameInvite('${inv.roomId}')" style="flex:1; background: rgba(255, 255, 255, 0.05); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s;" onmouseover="this.style.color='white'; this.style.background='rgba(255, 76, 106, 0.8)'; this.style.borderColor='transparent';" onmouseout="this.style.color='var(--text-dim)'; this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255,255,255,0.1)';">رفض</button>
                     </div>
                 </div>
             </div>`;
@@ -160,9 +161,10 @@ window.renderNotifications = function() {
     list.innerHTML = html;
 };
 
-window.acceptGameInvite = async function(roomId, timestamp) {
+// حل مشكلة التنبيهات المزدوجة (تمت الفلترة برقم الغرفة)
+window.acceptGameInvite = async function(roomId) {
     if (window.currentUserData && window.currentUserData.gameInvites) {
-        const updatedInvites = window.currentUserData.gameInvites.filter(i => i.timestamp !== timestamp);
+        const updatedInvites = window.currentUserData.gameInvites.filter(i => i.roomId !== roomId);
         try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { gameInvites: updatedInvites }); } 
         catch(e) { console.error(e); }
     }
@@ -170,9 +172,9 @@ window.acceptGameInvite = async function(roomId, timestamp) {
     if(window.joinFirebaseRoom) window.joinFirebaseRoom(roomId);
 };
 
-window.rejectGameInvite = async function(timestamp) {
+window.rejectGameInvite = async function(roomId) {
     if (window.currentUserData && window.currentUserData.gameInvites) {
-        const updatedInvites = window.currentUserData.gameInvites.filter(i => i.timestamp !== timestamp);
+        const updatedInvites = window.currentUserData.gameInvites.filter(i => i.roomId !== roomId);
         try { await window.updateDocFunc(window.docFunc(window.dbInstance, "users", window.authInstance.currentUser.uid), { gameInvites: updatedInvites }); } 
         catch(e) { console.error(e); }
     }
