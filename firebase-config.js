@@ -93,9 +93,6 @@ window.syncUsernameChange = async function(oldName, newName) {
     } catch(e) { console.error("Error syncing username:", e); }
 };
 
-// ==============================================
-// التنبيهات المحدثة بالكامل (أرقام احترافية، ترتيب)
-// ==============================================
 window.renderNotifications = function() {
     const list = document.getElementById('noti-list'); 
     const dot = document.getElementById('noti-dot');
@@ -112,22 +109,23 @@ window.renderNotifications = function() {
         return;
     }
     
-    // تصميم الدائرة الحمراء (Badge) بمستوى Discord
     dot.style.display = 'flex';
     dot.style.justifyContent = 'center';
     dot.style.alignItems = 'center';
     dot.style.position = 'absolute';
-    dot.style.top = '-2px';
-    dot.style.right = '-2px';
-    dot.style.width = '16px';
-    dot.style.height = '16px';
+    dot.style.top = '-4px';
+    dot.style.right = '-4px';
+    dot.style.width = '18px';
+    dot.style.height = '18px';
     dot.style.borderRadius = '50%';
-    dot.style.fontSize = '0.6rem';
-    dot.style.fontWeight = '800';
+    dot.style.fontSize = '0.65rem';
+    dot.style.fontWeight = '900';
+    dot.style.fontFamily = 'sans-serif';
     dot.style.color = 'white';
     dot.style.backgroundColor = 'var(--accent-red)';
-    dot.style.border = '2px solid var(--surface-panel)'; // الإطار اللي يعطي شكل القص
+    dot.style.border = '2px solid var(--bg-base)'; 
     dot.style.zIndex = '10';
+    dot.style.pointerEvents = 'none';
     dot.innerText = totalNotis > 9 ? '+9' : totalNotis;
     
     let allNotis = [];
@@ -140,7 +138,7 @@ window.renderNotifications = function() {
         allNotis.push({ type: 'friendReq', timestamp: Date.now() + 1000, data: req });
     });
 
-    allNotis.sort((a, b) => b.timestamp - a.timestamp); // الأحدث فوق
+    allNotis.sort((a, b) => b.timestamp - a.timestamp);
 
     let html = '';
     allNotis.forEach(noti => {
@@ -350,18 +348,47 @@ window.handleLogout = async function() {
     }); 
 };
 
+// السحر هنا: بناء النافذة المنبثقة بدلاً من رسالة Alert
 window.sendFriendRequest = async function() {
-    const targetUsername = document.getElementById('search-friend-input').value.trim().toLowerCase(); const errDiv = document.getElementById('friend-error'); if(!targetUsername) return;
+    const targetUsername = document.getElementById('search-friend-input').value.trim().toLowerCase(); 
+    const errDiv = document.getElementById('friend-error'); 
+    if(!targetUsername) return;
     if(targetUsername === window.currentUserData.username_lower) { errDiv.innerText="لا يمكنك إضافة نفسك!"; errDiv.style.display='block'; return; }
+    
     try {
         const q = query(collection(db, "users"), where("username_lower", "==", targetUsername));
         const snap = await getDocs(q);
         if(snap.empty) { errDiv.innerText="المستخدم غير موجود."; errDiv.style.display='block'; return; }
-        const targetDocId = snap.docs[0].id; const myName = window.currentUserData.username || auth.currentUser.email.split('@')[0];
+        
+        const targetDocId = snap.docs[0].id; 
+        const myName = window.currentUserData.username || auth.currentUser.email.split('@')[0];
+        
         await updateDoc(doc(db, "users", targetDocId), { friendRequests: arrayUnion(myName) });
-        alert("تم إرسال الطلب بنجاح!"); 
+        
+        // 1. إغلاق قائمة البحث عن صديق
         if(window.closeFriendModal) window.closeFriendModal('add-friend-modal');
-    } catch(e) { errDiv.innerText = "حدث خطأ في الإرسال."; errDiv.style.display='block'; }
+        
+        // 2. إظهار نافذة النجاح الفخمة التي تختفي تلقائياً أو عبر الإغلاق
+        const modal = document.createElement('div');
+        modal.className = 'friend-data-modal';
+        modal.style.zIndex = '10000000';
+        modal.innerHTML = `
+            <div class="friend-data-card" style="max-width: 350px; text-align: center; padding: 35px 25px;">
+                <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(46, 204, 113, 0.1); color: var(--accent-green); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; margin: 0 auto 20px auto;">
+                    <i class="ph-duotone ph-check-circle"></i>
+                </div>
+                <h3 style="color: white; margin-bottom: 10px; font-size: 1.3rem; font-weight: 800;">تم الإرسال!</h3>
+                <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 0;">تم إرسال طلب الصداقة بنجاح.</p>
+            </div>
+        `;
+        modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
+        document.body.appendChild(modal);
+        setTimeout(() => { if(modal.parentNode) modal.remove(); }, 3500);
+
+    } catch(e) { 
+        errDiv.innerText = "حدث خطأ في الإرسال."; errDiv.style.display='block'; 
+    }
 };
 
 window.processFriendRequest = async function(isAccepted) {
