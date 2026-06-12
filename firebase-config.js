@@ -94,7 +94,7 @@ window.syncUsernameChange = async function(oldName, newName) {
 };
 
 // ==============================================
-// التنبيهات (تم إرجاع النقطة الحمراء الأصلية وحل التكرار)
+// التنبيهات اللحظية (النقطة الحمراء الكلاسيكية)
 // ==============================================
 window.renderNotifications = function() {
     const list = document.getElementById('noti-list'); 
@@ -108,14 +108,12 @@ window.renderNotifications = function() {
 
     if (window.isGuest || !window.currentUserData || totalNotis === 0) {
         list.innerHTML = `<div class="empty-state"><i class="ph-duotone ph-bell-slash"></i><span>لا يوجد تنبيهات حالياً</span></div>`;
-        dot.removeAttribute('style'); // تفريغ ستايلات الجافاسكربت
-        dot.style.display = 'none';   // إخفاء النقطة
+        dot.style.display = 'none'; 
         return;
     }
     
-    // إرجاع النقطة الحمراء الكلاسيكية النقية
-    dot.removeAttribute('style');
-    dot.style.display = 'block';
+    // النقطة الحمراء الكلاسيكية الأنيقة مع الظل
+    dot.style.cssText = 'position: absolute; top: 8px; right: 8px; width: 10px; height: 10px; background-color: var(--accent-red); border-radius: 50%; display: block; box-shadow: 0 0 8px rgba(255, 76, 106, 0.8); pointer-events: none;';
     dot.innerText = '';
     
     let allNotis = [];
@@ -161,7 +159,6 @@ window.renderNotifications = function() {
     list.innerHTML = html;
 };
 
-// حل مشكلة التنبيهات المزدوجة (تمت الفلترة برقم الغرفة)
 window.acceptGameInvite = async function(roomId) {
     if (window.currentUserData && window.currentUserData.gameInvites) {
         const updatedInvites = window.currentUserData.gameInvites.filter(i => i.roomId !== roomId);
@@ -221,7 +218,7 @@ onAuthStateChanged(auth, async (user) => {
                 }
 
                 window.setupRealtimeFriends();
-                window.renderNotifications();
+                window.renderNotifications(); // التحديث اللحظي يعمل هنا
 
                 if (isInitialLoad && dropdownContent) {
                     dropdownContent.innerHTML = `<button class="dropdown-item" onclick="window.loadFragment('profile', null); window.toggleDropdown('');"><i class="ph ph-user-circle"></i> <span>الملف الشخصي</span></button><button class="dropdown-item logout" onclick="window.handleLogout()"><i class="ph ph-sign-out"></i> <span>تسجيل خروج</span></button>`;
