@@ -87,14 +87,64 @@ window.joinFirebaseRoom = async function(roomCode) {
     }
 };
 
+// ===========================================
+// نافذة التحكم باللاعبين (طرد / عرض بروفايل)
+// ===========================================
+window.openPlayerRoomOptions = function(playerName) {
+    if (!window.currentRoomData || !window.authInstance || !window.authInstance.currentUser) return;
+    const isHost = window.currentRoomData.hostId === window.authInstance.currentUser.uid;
+    const myName = window.currentUserData.username_lower;
+    
+    // لا يمكنك طرد نفسك أو فتح قائمتك من هنا
+    if (playerName.toLowerCase() === myName) return; 
+
+    const pData = window.lobbyPlayersCache[playerName.toLowerCase()] || window.friendsCache[playerName.toLowerCase()] || { username: playerName };
+    const emblemHTML = window.UI_COMPONENTS && window.UI_COMPONENTS.buildEmblemCard ? window.UI_COMPONENTS.buildEmblemCard(pData, "100px", true) : `<div style="color:white; font-size: 1.5rem; text-align:center;">${playerName}</div>`;
+
+    let actionButtons = `<button onclick="window.viewFriendProfile('${playerName}'); document.getElementById('room-player-modal').remove();" class="modern-action-btn"><i class="ph-bold ph-user-circle"></i> عرض الملف الشخصي</button>`;
+    
+    if (isHost) {
+        actionButtons += `<button onclick="window.kickPlayer('${playerName}'); document.getElementById('room-player-modal').remove();" class="modern-danger-btn" style="margin-top:10px;"><i class="ph-bold ph-user-minus"></i> طرد من الغرفة</button>`;
+    }
+
+    const modalHtml = `
+        <div class="friend-data-card" style="padding: 0; width: 95%; max-width: 380px; position: relative; border-radius: 24px; overflow:hidden;">
+            <button onclick="document.getElementById('room-player-modal').remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+            ${emblemHTML}
+            <div style="padding: 20px; display: flex; flex-direction: column; background: linear-gradient(180deg, var(--surface-panel) 0%, var(--bg-base) 100%);">
+                ${actionButtons}
+            </div>
+        </div>
+    `;
+    
+    const modal = document.createElement('div');
+    modal.id = 'room-player-modal';
+    modal.className = 'friend-data-modal';
+    modal.style.zIndex = '10000000';
+    modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
+    modal.innerHTML = modalHtml;
+    document.body.appendChild(modal);
+};
+
+window.kickPlayer = async function(playerName) {
+    if (!window.currentRoomId || !window.currentRoomData) return;
+    try {
+        const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
+        await window.updateDocFunc(roomRef, {
+            players: window.arrayRemove(playerName.toLowerCase()),
+            readyPlayers: window.arrayRemove(playerName.toLowerCase())
+        });
+    } catch(e) { console.error("Error kicking player", e); }
+};
+
 function syncLobbyPlayers(playersArray) {
     let changed = false;
     Object.keys(window.lobbyPlayerListeners).forEach(pName => {
         if (!playersArray.includes(pName)) {
-            window.lobbyPlayerListeners[pName](); // إيقاف التنصت
+            window.lobbyPlayerListeners[pName](); 
             delete window.lobbyPlayerListeners[pName];
             delete window.lobbyPlayersCache[pName];
-            changed = true; // لاعب غادر!
+            changed = true; // لاعب غادر! سيتم تحديث اللوبي فوراً
         }
     });
 
@@ -111,7 +161,7 @@ function syncLobbyPlayers(playersArray) {
         }
     });
     
-    // المزامنة اللحظية لباقي اللاعبين إذا غادر أحدهم
+    // المزامنة اللحظية
     if (changed && window.fetchAndRenderLobbyPlayers) {
         window.fetchAndRenderLobbyPlayers();
     }
@@ -129,6 +179,15 @@ window.listenToRoom = function() {
             return;
         }
         window.currentRoomData = snap.data();
+        
+        // التحقق اللحظي: هل تم طردي من الغرفة؟
+        const myName = window.currentUserData.username_lower;
+        if (window.currentRoomData && window.currentRoomData.players && !window.currentRoomData.players.includes(myName)) {
+            alert("لقد قام مالك الغرفة بطردك.");
+            window.leaveFirebaseRoom(true);
+            return;
+        }
+
         syncLobbyPlayers(window.currentRoomData.players || []);
     });
 };
