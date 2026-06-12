@@ -18,7 +18,46 @@ window.GAME_ASSETS = {
     maps: [
         { id: 'classic', name: 'الخريطة الكلاسيكية', src: 'assets/images/map-classic.png', locked: false, req: '' },
         { id: 'dark', name: 'خريطة الظلام', src: 'assets/images/map-dark.png', locked: true, req: 'مستوى 10' }
-    ]
+    ],
+    
+    // ==========================================
+    // نظام الشخصيات المتصل بالمتجر الذكي
+    // ==========================================
+    characters: [
+        { id: 'c1', name: 'Lena', src: 'assets/images/characters/c1.png', price: 0 },
+        { id: 'c2', name: 'Light', src: 'assets/images/characters/c2.png', price: 0 },
+        { id: 'c3', name: 'Kira', src: 'assets/images/characters/c3.png', price: 0 },
+        { id: 'c4', name: 'Ray', src: 'assets/images/characters/c4.png', price: 0 },
+        { id: 'c5', name: 'Nova', src: 'assets/images/characters/c5.png', price: 0 },
+        { id: 'c6', name: 'Zane', src: 'assets/images/characters/c6.png', price: 0 },
+        
+        { id: 'c7', name: 'Ciela', src: 'assets/images/characters/c7.png', price: 500 }, // متجر
+        { id: 'c8', name: 'Vane', src: 'assets/images/characters/c8.png', price: 500 },  // متجر
+        { id: 'c9', name: 'Lyra', src: 'assets/images/characters/c9.png', price: 800 },  // متجر
+        
+        { id: 'c10', name: 'Nero', src: 'assets/images/characters/c10.png', price: 0 },
+        { id: 'c11', name: 'Axel', src: 'assets/images/characters/c11.png', price: 0 },
+        { id: 'c12', name: 'Elara', src: 'assets/images/characters/c12.png', price: 0 },
+        
+        { id: 'c13', name: 'Orion', src: 'assets/images/characters/c13.png', price: 1500 } // متجر (شخصية أسطورية)
+    ],
+
+    // دالة الذكاء للتحقق من ملكية العناصر (تفصل بين المجاني والمدفوع)
+    isOwned: function(userData, category, itemId) {
+        if (!this[category]) return false;
+        let item = this[category].find(i => i.id === itemId);
+        if (!item) return false;
+        
+        // إذا كان السعر صفر فهو مجاني للجميع
+        if (item.price === 0) return true;
+        
+        // إذا كان بفلوس، نفحص حقيبة اللاعب في قاعدة البيانات
+        if (userData && userData.inventory && userData.inventory[category]) {
+            return userData.inventory[category].includes(itemId);
+        }
+        
+        return false;
+    }
 };
 
 // ==========================================
