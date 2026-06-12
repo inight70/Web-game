@@ -8,6 +8,7 @@ window.currentRoomData = null;
 
 window.lobbyPlayersCache = {};
 window.lobbyPlayerListeners = {};
+window.isLeavingVoluntarily = false; // حماية ضد "تم الطرد" الوهمية
 
 function generateRoomCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
@@ -144,7 +145,7 @@ function syncLobbyPlayers(playersArray) {
             window.lobbyPlayerListeners[pName](); 
             delete window.lobbyPlayerListeners[pName];
             delete window.lobbyPlayersCache[pName];
-            changed = true; // لاعب غادر! سيتم تحديث اللوبي فوراً
+            changed = true; 
         }
     });
 
@@ -161,7 +162,6 @@ function syncLobbyPlayers(playersArray) {
         }
     });
     
-    // المزامنة اللحظية
     if (changed && window.fetchAndRenderLobbyPlayers) {
         window.fetchAndRenderLobbyPlayers();
     }
@@ -170,20 +170,29 @@ function syncLobbyPlayers(playersArray) {
 window.listenToRoom = function() {
     if (!window.currentRoomId || !window.onSnapshotFunc) return;
 
+    // الحماية الصارمة: مسح أي مستمع قديم لمنع التعارض وتكرار الإشعارات
+    if (window.roomUnsubscribe) {
+        window.roomUnsubscribe();
+    }
+
     const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
     
     window.roomUnsubscribe = window.onSnapshotFunc(roomRef, async (snap) => {
         if (!snap.exists()) {
-            if(window.showRoomClosedModal) window.showRoomClosedModal();
+            if (!window.isLeavingVoluntarily && window.showRoomClosedModal) {
+                window.showRoomClosedModal();
+            }
             window.leaveFirebaseRoom(true); 
             return;
         }
         window.currentRoomData = snap.data();
         
-        // التحقق اللحظي: هل تم طردي من الغرفة؟
+        // التحقق: هل تم طردي أم أني أخرج بنفسي؟
         const myName = window.currentUserData.username_lower;
         if (window.currentRoomData && window.currentRoomData.players && !window.currentRoomData.players.includes(myName)) {
-            alert("لقد قام مالك الغرفة بطردك.");
+            if (!window.isLeavingVoluntarily) {
+                alert("لقد قام مالك الغرفة بطردك.");
+            }
             window.leaveFirebaseRoom(true);
             return;
         }
@@ -193,6 +202,7 @@ window.listenToRoom = function() {
 };
 
 window.leaveFirebaseRoom = async function(forced = false) {
+    window.isLeavingVoluntarily = true; // تفعيل الحماية لمنع رسالة "تم الطرد"
     const user = window.authInstance ? window.authInstance.currentUser : null;
     
     if (window.roomUnsubscribe) { window.roomUnsubscribe(); window.roomUnsubscribe = null; }
@@ -226,4 +236,6 @@ window.leaveFirebaseRoom = async function(forced = false) {
     if (window.loadFragment) {
         window.loadFragment('play', document.querySelectorAll('.nav-btn')[1]);
     }
+    
+    setTimeout(() => { window.isLeavingVoluntarily = false; }, 1000); // إطفاء الحماية بأمان
 };
