@@ -10,7 +10,6 @@ window.unsubscribeSnapshot = null;
 window.currentLang = 'ar';
 window.friendsCache = {};
 window.friendListeners = {};
-window.currentNavFetchId = 0; // لمنع تداخل الصفحات عند النقر السريع
 
 window.hideLoader = () => { 
     const l = document.getElementById('global-loader'); 
@@ -438,7 +437,7 @@ window.closeAuthModal = function() {
 };
 
 // =========================================================
-// 6. نظام التنقل والروابط المنيع والمحسن للسلاسة
+// 6. نظام التنقل والروابط المنيع (Bulletproof Smart Router)
 // =========================================================
 window.updateNavigationHighlight = function(targetRoot) {
     const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
@@ -518,6 +517,7 @@ window.loadFragment = async function(requestedPage, element) {
     const pt = document.getElementById('page-title'); 
     const mn = document.getElementById('mobile-section-name'); 
     
+    // [الحل الجذري لمشكلة "الرئيسية" العالقة]
     if (titles[targetPage] && window.translations && window.translations[window.currentLang]) {
         let translatedTitle = window.translations[window.currentLang][titles[targetPage]];
         if (!translatedTitle && titles[targetPage] === 'advanced_customization') translatedTitle = 'التخصيص المتقدم';
@@ -530,53 +530,29 @@ window.loadFragment = async function(requestedPage, element) {
     }
     
     const contentHolder = document.getElementById('content-holder');
-    
-    window.currentNavFetchId = (window.currentNavFetchId || 0) + 1;
-    const myFetchId = window.currentNavFetchId;
-
-    // بداية الأنيميشن: إخفاء ناعم للمحتوى القديم
-    if(contentHolder) {
-        contentHolder.style.transition = 'opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
-        contentHolder.style.opacity = '0';
-    }
+    if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
 
     try {
         const response = await fetch(`pages/${targetPage}.html`);
         if (!response.ok) throw new Error('Page not found');
+        
         const htmlContent = await response.text();
+        if(contentHolder) contentHolder.innerHTML = htmlContent;
 
-        // ننتظر قليلاً لضمان اكتمال حركة الإخفاء حتى لو كان الإنترنت سريعاً جداً
-        await new Promise(r => setTimeout(r, 150));
+        const scripts = contentHolder.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
 
-        // حماية النقر السريع: إذا ضغط المستخدم على زر آخر أثناء التحميل، نوقف هذه العملية
-        if (myFetchId !== window.currentNavFetchId) return; 
-
-        if(contentHolder) {
-            contentHolder.innerHTML = htmlContent;
-
-            const scripts = contentHolder.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-                const newScript = document.createElement('script');
-                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-            });
-
-            if (window.setLanguage) window.setLanguage(window.currentLang, true);
-            if (targetPage === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
-            if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
-
-            // نهاية الأنيميشن: إظهار ناعم للمحتوى الجديد
-            contentHolder.style.opacity = '1';
-        }
+        if (targetPage === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
+        if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
 
     } catch (error) {
-        if (myFetchId !== window.currentNavFetchId) return;
         let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
-        if(contentHolder) {
-            contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
-            contentHolder.style.opacity = '1';
-        }
+        if(contentHolder) contentHolder.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-dim); font-size:1.2rem; font-weight:bold;">جاري العمل على صفحة ${fallbackTxt}...</div>`;
     }
 };
 
