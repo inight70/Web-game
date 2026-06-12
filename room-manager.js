@@ -8,7 +8,7 @@ window.currentRoomData = null;
 
 window.lobbyPlayersCache = {};
 window.lobbyPlayerListeners = {};
-window.isLeavingVoluntarily = false; // حماية ضد "تم الطرد" الوهمية
+window.isLeavingVoluntarily = false; 
 
 function generateRoomCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
@@ -88,15 +88,11 @@ window.joinFirebaseRoom = async function(roomCode) {
     }
 };
 
-// ===========================================
-// نافذة التحكم باللاعبين (طرد / عرض بروفايل)
-// ===========================================
 window.openPlayerRoomOptions = function(playerName) {
     if (!window.currentRoomData || !window.authInstance || !window.authInstance.currentUser) return;
     const isHost = window.currentRoomData.hostId === window.authInstance.currentUser.uid;
     const myName = window.currentUserData.username_lower;
     
-    // لا يمكنك طرد نفسك أو فتح قائمتك من هنا
     if (playerName.toLowerCase() === myName) return; 
 
     const pData = window.lobbyPlayersCache[playerName.toLowerCase()] || window.friendsCache[playerName.toLowerCase()] || { username: playerName };
@@ -139,13 +135,11 @@ window.kickPlayer = async function(playerName) {
 };
 
 function syncLobbyPlayers(playersArray) {
-    let changed = false;
     Object.keys(window.lobbyPlayerListeners).forEach(pName => {
         if (!playersArray.includes(pName)) {
             window.lobbyPlayerListeners[pName](); 
             delete window.lobbyPlayerListeners[pName];
             delete window.lobbyPlayersCache[pName];
-            changed = true; 
         }
     });
 
@@ -158,19 +152,13 @@ function syncLobbyPlayers(playersArray) {
                 }
                 if (window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers();
             });
-            changed = true;
         }
     });
-    
-    if (changed && window.fetchAndRenderLobbyPlayers) {
-        window.fetchAndRenderLobbyPlayers();
-    }
 }
 
 window.listenToRoom = function() {
     if (!window.currentRoomId || !window.onSnapshotFunc) return;
 
-    // الحماية الصارمة: مسح أي مستمع قديم لمنع التعارض وتكرار الإشعارات
     if (window.roomUnsubscribe) {
         window.roomUnsubscribe();
     }
@@ -187,7 +175,6 @@ window.listenToRoom = function() {
         }
         window.currentRoomData = snap.data();
         
-        // التحقق: هل تم طردي أم أني أخرج بنفسي؟
         const myName = window.currentUserData.username_lower;
         if (window.currentRoomData && window.currentRoomData.players && !window.currentRoomData.players.includes(myName)) {
             if (!window.isLeavingVoluntarily) {
@@ -198,11 +185,16 @@ window.listenToRoom = function() {
         }
 
         syncLobbyPlayers(window.currentRoomData.players || []);
+        
+        // [السحر هنا]: تحديث واجهة اللوبي عند أي تغيير في الغرفة (مثل اختيار شخصية أو تغيير الجاهزية)
+        if (window.fetchAndRenderLobbyPlayers) {
+            window.fetchAndRenderLobbyPlayers();
+        }
     });
 };
 
 window.leaveFirebaseRoom = async function(forced = false) {
-    window.isLeavingVoluntarily = true; // تفعيل الحماية لمنع رسالة "تم الطرد"
+    window.isLeavingVoluntarily = true; 
     const user = window.authInstance ? window.authInstance.currentUser : null;
     
     if (window.roomUnsubscribe) { window.roomUnsubscribe(); window.roomUnsubscribe = null; }
@@ -237,5 +229,20 @@ window.leaveFirebaseRoom = async function(forced = false) {
         window.loadFragment('play', document.querySelectorAll('.nav-btn')[1]);
     }
     
-    setTimeout(() => { window.isLeavingVoluntarily = false; }, 1000); // إطفاء الحماية بأمان
+    setTimeout(() => { window.isLeavingVoluntarily = false; }, 1000); 
+};
+
+window.updatePlayerCharacter = async function(characterId) {
+    if (!window.currentRoomId || !window.authInstance || !window.authInstance.currentUser) return;
+    try {
+        const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
+        const myName = window.currentUserData.username_lower;
+        
+        let updateData = {};
+        updateData[`characterSelections.${myName}`] = characterId;
+        
+        await window.updateDocFunc(roomRef, updateData);
+    } catch (e) {
+        console.error("Error updating character:", e);
+    }
 };
