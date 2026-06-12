@@ -3,56 +3,20 @@
     @keyframes spinFast { 100% { transform: rotate(360deg); } }
     .animate-spin { animation: spinFast 1s linear infinite; display: inline-block; }
 
-    /* =========================================
-       1. الهيدر الفخم 
-       ========================================= */
+    /* الهيدر الفخم */
     .premium-lobby-header {
         background-image: url('assets/images/lobby-header-bg.jpg');
-        background-size: cover; 
-        background-position: center;
-        border-radius: 24px; 
-        position: relative; 
-        min-height: 220px; 
-        margin-bottom: 25px;
-        border: none;
-        box-shadow: var(--shadow-soft);
-        overflow: hidden; /* لمنع خروج الصورة عن الحواف */
+        background-size: cover; background-position: center;
+        border-radius: 24px; position: relative; min-height: 220px; 
+        margin-bottom: 25px; border: none; box-shadow: var(--shadow-soft); overflow: hidden; 
     }
-
-    /* صورة الشخصيات في النصف السفلي */
-    .header-characters-img {
-        position: absolute;
-        bottom: -5px; /* لتلتصق بالقاع */
-        left: 50%;
-        transform: translateX(-50%);
-        height: 90%; /* تأخذ 90% من ارتفاع البنر */
-        object-fit: contain;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    /* الانتظار في أقصى اليمين نازل لتحت */
-    .header-bottom-right {
-        position: absolute; bottom: 12px; right: 25px;
-        display: flex; align-items: center; gap: 8px;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-        z-index: 2;
-    }
+    .header-characters-img { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); height: 90%; object-fit: contain; pointer-events: none; z-index: 1; }
+    .header-bottom-right { position: absolute; bottom: 12px; right: 25px; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 2; }
     .lobby-status-icon { font-size: 1.2rem; color: white; transition: 0.3s; }
     .lobby-status-text { font-size: 0.85rem; font-weight: 700; color: white; transition: 0.3s; }
-    
     .header-bottom-right.all-ready .lobby-status-icon { color: var(--accent-green); animation: none; }
     .header-bottom-right.all-ready .lobby-status-text { color: var(--accent-green); }
-
-    /* الكود في أقصى اليسار نازل لتحت */
-    .header-bottom-left {
-        position: absolute; bottom: 12px; left: 25px;
-        display: flex; flex-direction: column; align-items: center;
-        cursor: pointer; transition: var(--trans-smooth);
-        text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-        -webkit-tap-highlight-color: transparent;
-        z-index: 2;
-    }
+    .header-bottom-left { position: absolute; bottom: 12px; left: 25px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: var(--trans-smooth); text-shadow: 0 2px 10px rgba(0,0,0,0.8); -webkit-tap-highlight-color: transparent; z-index: 2; }
     .header-bottom-left:hover { transform: translateY(-3px); opacity: 0.9; }
     .room-code-label { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
     .room-code-value-row { display: flex; align-items: center; gap: 8px; }
@@ -60,77 +24,51 @@
     .room-code-value-row i { font-size: 1rem; color: rgba(255,255,255,0.6); transition: 0.2s; }
     .header-bottom-left:hover .room-code-value-row i { color: white; }
 
-    /* =========================================
-       2. عنوان القسم وزر الإعدادات
-       ========================================= */
-    .lobby-section-header {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 15px; padding: 0 5px;
-    }
+    /* عنوان القسم وزر الإعدادات */
+    .lobby-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
     .lobby-section-title { font-size: 1rem; font-weight: 800; color: var(--text-dim); }
-    .clean-settings-btn {
-        background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1);
-        padding: 8px 16px; border-radius: var(--radius-pill); font-size: 0.85rem; font-weight: 700;
-        display: flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--trans-smooth);
-        -webkit-tap-highlight-color: transparent;
-    }
+    .clean-settings-btn { background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: var(--radius-pill); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent; }
     .clean-settings-btn:hover { color: white; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
 
-    /* =========================================
-       3. شبكة اللاعبين وأزرار التحكم
-       ========================================= */
+    /* شبكة اللاعبين وأزرار التحكم */
     .emblems-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
     .player-slot-combo { display: flex; flex-direction: row-reverse; align-items: stretch; gap: 10px; position: relative; transition: var(--trans-smooth); }
     .player-slot-combo:hover { transform: translateY(-3px); }
 
-    .character-select-box {
-        width: 80px; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05);
-        border-radius: 20px; display: flex; justify-content: center; align-items: center;
-        cursor: pointer; transition: var(--trans-smooth); flex-shrink: 0; box-shadow: var(--shadow-soft);
-    }
-    .character-select-box:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+    .character-select-box { width: 80px; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: var(--trans-smooth); flex-shrink: 0; box-shadow: var(--shadow-soft); overflow: hidden; position: relative;}
+    .character-select-box.can-edit:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+    .character-select-box.can-edit:hover i { color: var(--accent-red); transform: scale(1.1); }
     .character-select-box i { font-size: 1.8rem; color: var(--text-dim); transition: 0.2s; }
-    .character-select-box:hover i { color: var(--accent-red); transform: scale(1.1); }
 
-    .emblem-fluid-wrapper { flex: 1; min-width: 0; position: relative; }
-    .host-badge-small { 
-        position: absolute; top: -6px; right: -6px; z-index: 10; 
-        background: var(--accent-red); width: 22px; height: 22px; border-radius: 50%; 
-        display: flex; justify-content: center; align-items: center; 
-        border: 2px solid var(--bg-base); box-shadow: 0 4px 10px rgba(255,76,106,0.4);
-    }
+    .emblem-fluid-wrapper { flex: 1; min-width: 0; position: relative; cursor: pointer; }
+    .host-badge-small { position: absolute; top: -6px; right: -6px; z-index: 10; background: var(--accent-red); width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-base); box-shadow: 0 4px 10px rgba(255,76,106,0.4); }
     .host-badge-small i { font-size: 0.75rem; color: white; }
 
-    .empty-emblem-slot {
-        border-radius: 20px; background: transparent; border: 2px dashed rgba(255,255,255,0.1);
-        display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
-        color: var(--text-dim); transition: var(--trans-smooth); cursor: pointer; -webkit-tap-highlight-color: transparent;
-    }
+    .empty-emblem-slot { border-radius: 20px; background: transparent; border: 2px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; color: var(--text-dim); transition: var(--trans-smooth); cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .empty-emblem-slot:hover { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.3); color: white; transform: translateY(-3px); }
     .empty-emblem-slot i { font-size: 1.8rem; }
 
     .lobby-bottom-actions { display: flex; gap: 15px; margin-top: 10px; }
-    .btn-lobby-ready { 
-        flex: 1; background: var(--surface-panel); color: var(--text-main); 
-        border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); 
-        padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; 
-        transition: var(--trans-smooth); box-shadow: var(--shadow-soft);
-        display: flex; justify-content: center; align-items: center; gap: 10px; 
-    }
+    .btn-lobby-ready { flex: 1; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 10px; }
     .btn-lobby-ready:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
     .btn-lobby-ready:active { transform: scale(0.98); }
     .btn-lobby-ready.is-ready { background: var(--accent-green); color: white; border-color: var(--accent-green); box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); }
-    .btn-lobby-leave { 
-        width: 65px; background: rgba(255, 76, 106, 0.05); color: var(--accent-red); 
-        border: 1px solid rgba(255, 76, 106, 0.2); border-radius: var(--radius-pill); 
-        display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); 
-    }
+    .btn-lobby-leave { width: 65px; background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); }
     .btn-lobby-leave:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: var(--shadow-glow); }
     .btn-lobby-leave:active { transform: scale(0.95); }
 
-    /* =========================================
-       استجابة الجوال
-       ========================================= */
+    /* تصميم نافذة الشخصيات (Grid) المتطور */
+    .character-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 10px 0; }
+    .character-card { background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; cursor: pointer; transition: 0.2s; position: relative; aspect-ratio: 1/1; }
+    .character-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+    
+    /* ستايل القفل للشخصيات التي تحتاج شراء */
+    .character-card.locked { opacity: 0.4; filter: grayscale(100%); cursor: not-allowed; }
+    .character-card.locked::after { content: '\\eb10'; font-family: 'Phosphor'; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: white; background: rgba(0,0,0,0.5); font-weight: bold; }
+    
+    .character-card:not(.locked):hover { border-color: var(--accent-red); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,76,106,0.3); }
+    .character-card:not(.locked):hover img { transform: scale(1.1); }
+
     @media (max-width: 768px) {
         .emblems-grid { grid-template-columns: 1fr; }
         .premium-lobby-header { min-height: 130px; border-radius: 16px; }
@@ -179,7 +117,7 @@
 <div class="lobby-master-container">
     
     <div class="premium-lobby-header">
-        <img src="assets/images/characters.png" alt="Characters" class="header-characters-img">
+        <img src="assets/images/characters.png" alt="Characters" class="header-characters-img" onerror="this.style.display='none'">
 
         <div class="header-bottom-left" onclick="copyRoomCode()">
             <span class="room-code-label">Code</span>
@@ -217,6 +155,19 @@
         </button>
     </div>
 
+</div>
+
+<div class="game-modal-overlay" id="character-select-modal" onclick="if(event.target === this) closeCharacterModal()">
+    <div class="game-modal-card">
+        <div class="modal-header">
+            <div class="modal-title"><i class="ph-fill ph-mask-happy"></i> اختر شخصيتك</div>
+            <button class="btn-close-modal" onclick="closeCharacterModal()"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="invite-list-wrapper" style="max-height: 400px; overflow-y: auto;">
+            <div class="character-grid" id="characters-grid-container">
+                </div>
+        </div>
+    </div>
 </div>
 
 <div class="game-modal-overlay" id="custom-leave-modal">
@@ -263,6 +214,8 @@
         grid.innerHTML = ''; 
 
         let emblemHeight = window.innerWidth > 768 ? "105px" : "85px";
+        const myName = window.currentUserData ? window.currentUserData.username_lower : '';
+        const charSelections = window.currentRoomData.characterSelections || {};
 
         playersArray.forEach(pName => {
             let pData = window.lobbyPlayersCache[pName] || window.friendsCache[pName] || { username: pName };
@@ -271,12 +224,22 @@
             let hostMark = (window.currentRoomData.hostId === pData.uid || pName === playersArray[0]) ? 
                 `<div class="host-badge-small"><i class="ph-fill ph-crown"></i></div>` : '';
 
+            // نظام الصلاحيات: يسمح لك بتعديل شخصيتك فقط
+            let isMe = (pName === myName);
+            let boxClass = isMe ? 'character-select-box can-edit' : 'character-select-box';
+            let clickAction = isMe ? `onclick="openCharacterModal()"` : `onclick="alert('لا يمكنك تعديل شخصية لاعب آخر!')"`;
+            
+            // قراءة الشخصية المختارة من قاعدة البيانات وعرضها
+            let selectedCharId = charSelections[pName];
+            let charObj = window.GAME_ASSETS && window.GAME_ASSETS.characters ? window.GAME_ASSETS.characters.find(c => c.id === selectedCharId) : null;
+            let boxContent = charObj ? `<img src="${charObj.src}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="ph-fill ph-user"></i>`;
+
             grid.innerHTML += `
                 <div class="player-slot-combo">
-                    <div class="character-select-box" onclick="alert('سيتم فتح نافذة اختيار الشخصية')">
-                        <i class="ph-fill ph-user"></i>
+                    <div class="${boxClass}" ${clickAction}>
+                        ${boxContent}
                     </div>
-                    <div class="emblem-fluid-wrapper">
+                    <div class="emblem-fluid-wrapper" onclick="if(window.openPlayerRoomOptions) window.openPlayerRoomOptions('${pName}')">
                         ${hostMark}
                         ${emblem}
                     </div>
@@ -293,6 +256,48 @@
             `;
         }
     };
+
+    // دوال نافذة اختيار الشخصية الذكية (المتصلة بالمتجر)
+    function openCharacterModal() {
+        const modal = document.getElementById('character-select-modal');
+        const container = document.getElementById('characters-grid-container');
+        
+        let html = '';
+        if(window.GAME_ASSETS && window.GAME_ASSETS.characters) {
+            window.GAME_ASSETS.characters.forEach(char => {
+                // التحقق من الملكية عبر الدالة الذكية
+                let isOwned = window.GAME_ASSETS.isOwned(window.currentUserData, 'characters', char.id);
+                
+                if (isOwned) {
+                    html += `
+                        <div class="character-card" onclick="selectCharacter('${char.id}')">
+                            <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
+                        </div>
+                    `;
+                } else {
+                    // إذا لم يكن يملكها، تظهر مغلقة بقفل
+                    html += `
+                        <div class="character-card locked" onclick="alert('هذه الشخصية مقفلة! يمكنك الحصول عليها من المتجر لاحقاً.')">
+                            <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
+                        </div>
+                    `;
+                }
+            });
+        }
+        container.innerHTML = html;
+        modal.classList.add('show');
+    }
+
+    function closeCharacterModal() {
+        document.getElementById('character-select-modal').classList.remove('show');
+    }
+
+    async function selectCharacter(charId) {
+        closeCharacterModal();
+        if (window.updatePlayerCharacter) {
+            await window.updatePlayerCharacter(charId);
+        }
+    }
 
     function copyRoomCode() {
         const code = document.getElementById('dynamic-room-code').innerText;
