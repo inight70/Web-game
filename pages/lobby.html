@@ -1,141 +1,655 @@
 <style>
-    .lobby-master-container { max-width: 950px; margin: 0 auto; padding: 20px 10px 90px 10px; animation: smoothFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    @keyframes spinFast { 100% { transform: rotate(360deg); } }
-    .animate-spin { animation: spinFast 1s linear infinite; display: inline-block; }
+    .lobby-master-container { 
+        max-width: 950px; 
+        margin: 0 auto; 
+        padding: 20px 10px 90px 10px; 
+        animation: smoothFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+    }
+    
+    @keyframes spinFast { 
+        100% { transform: rotate(360deg); } 
+    }
+    
+    .animate-spin { 
+        animation: spinFast 1s linear infinite; 
+        display: inline-block; 
+    }
 
-    /* الهيدر الفخم */
+    /* =========================================
+       1. الهيدر الفخم 
+       ========================================= */
     .premium-lobby-header {
         background-image: url('assets/images/lobby-header-bg.jpg');
-        background-size: cover; background-position: center;
-        border-radius: 24px; position: relative; min-height: 220px; 
-        margin-bottom: 25px; border: none; box-shadow: var(--shadow-soft); overflow: hidden; 
+        background-size: cover; 
+        background-position: center;
+        border-radius: 24px; 
+        position: relative; 
+        min-height: 220px; 
+        margin-bottom: 25px; 
+        border: none; 
+        box-shadow: var(--shadow-soft); 
+        overflow: hidden; 
     }
-    .header-characters-img { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); height: 90%; object-fit: contain; pointer-events: none; z-index: 1; }
-    .header-bottom-right { position: absolute; bottom: 12px; right: 25px; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 2; }
-    .lobby-status-icon { font-size: 1.2rem; color: white; transition: 0.3s; }
-    .lobby-status-text { font-size: 0.85rem; font-weight: 700; color: white; transition: 0.3s; }
-    .header-bottom-right.all-ready .lobby-status-icon { color: var(--accent-green); animation: none; }
-    .header-bottom-right.all-ready .lobby-status-text { color: var(--accent-green); }
-    .header-bottom-left { position: absolute; bottom: 12px; left: 25px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: var(--trans-smooth); text-shadow: 0 2px 10px rgba(0,0,0,0.8); -webkit-tap-highlight-color: transparent; z-index: 2; }
-    .header-bottom-left:hover { transform: translateY(-3px); opacity: 0.9; }
-    .room-code-label { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
-    .room-code-value-row { display: flex; align-items: center; gap: 8px; }
-    .room-code-val { font-size: 1.6rem; font-weight: 900; color: white; font-family: var(--font-en); letter-spacing: 3px; line-height: 1; }
-    .room-code-value-row i { font-size: 1rem; color: rgba(255,255,255,0.6); transition: 0.2s; }
-    .header-bottom-left:hover .room-code-value-row i { color: white; }
-
-    /* عنوان القسم */
-    .lobby-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
-    .lobby-section-title { font-size: 1rem; font-weight: 800; color: var(--text-dim); }
-    .clean-settings-btn { background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: var(--radius-pill); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent; }
-    .clean-settings-btn:hover { color: white; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
-
-    /* شبكة اللاعبين */
-    .emblems-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-    .player-slot-combo { display: flex; flex-direction: row-reverse; align-items: stretch; gap: 10px; position: relative; transition: var(--trans-smooth); }
-    .player-slot-combo:hover { transform: translateY(-3px); }
-
-    .character-select-box { width: 80px; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: var(--trans-smooth); flex-shrink: 0; box-shadow: var(--shadow-soft); overflow: hidden; position: relative;}
-    .character-select-box.can-edit:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
-    .character-select-box.can-edit:hover i { color: var(--accent-red); transform: scale(1.1); }
-    .character-select-box i { font-size: 1.8rem; color: var(--text-dim); transition: 0.2s; }
-
-    .emblem-fluid-wrapper { flex: 1; min-width: 0; position: relative; cursor: pointer; }
-    .host-badge-small { position: absolute; top: -6px; right: -6px; z-index: 10; background: var(--accent-red); width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-base); box-shadow: 0 4px 10px rgba(255,76,106,0.4); }
-    .host-badge-small i { font-size: 0.75rem; color: white; }
-
-    .empty-emblem-slot { border-radius: 20px; background: transparent; border: 2px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; color: var(--text-dim); transition: var(--trans-smooth); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    .empty-emblem-slot:hover { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.3); color: white; transform: translateY(-3px); }
-    .empty-emblem-slot i { font-size: 1.8rem; }
-
-    .lobby-bottom-actions { display: flex; gap: 15px; margin-top: 10px; }
-    .btn-lobby-ready { flex: 1; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 10px; }
-    .btn-lobby-ready:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
-    .btn-lobby-ready:active { transform: scale(0.98); }
-    .btn-lobby-ready.is-ready { background: var(--accent-green); color: white; border-color: var(--accent-green); box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); }
-    .btn-lobby-leave { width: 65px; background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); }
-    .btn-lobby-leave:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: var(--shadow-glow); }
-    .btn-lobby-leave:active { transform: scale(0.95); }
+    
+    .header-characters-img { 
+        position: absolute; 
+        bottom: -5px; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        height: 90%; 
+        object-fit: contain; 
+        pointer-events: none; 
+        z-index: 1; 
+    }
+    
+    .header-bottom-right { 
+        position: absolute; 
+        bottom: 12px; 
+        right: 25px; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        text-shadow: 0 2px 10px rgba(0,0,0,0.8); 
+        z-index: 2; 
+    }
+    
+    .lobby-status-icon { 
+        font-size: 1.2rem; 
+        color: white; 
+        transition: 0.3s; 
+    }
+    
+    .lobby-status-text { 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        color: white; 
+        transition: 0.3s; 
+    }
+    
+    .header-bottom-right.all-ready .lobby-status-icon { 
+        color: var(--accent-green); 
+        animation: none; 
+    }
+    
+    .header-bottom-right.all-ready .lobby-status-text { 
+        color: var(--accent-green); 
+    }
+    
+    .header-bottom-left { 
+        position: absolute; 
+        bottom: 12px; 
+        left: 25px; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        cursor: pointer; 
+        transition: var(--trans-smooth); 
+        text-shadow: 0 2px 10px rgba(0,0,0,0.8); 
+        -webkit-tap-highlight-color: transparent; 
+        z-index: 2; 
+    }
+    
+    .header-bottom-left:hover { 
+        transform: translateY(-3px); 
+        opacity: 0.9; 
+    }
+    
+    .room-code-label { 
+        font-size: 0.7rem; 
+        color: rgba(255,255,255,0.8); 
+        font-weight: 800; 
+        letter-spacing: 2px; 
+        text-transform: uppercase; 
+        margin-bottom: 2px; 
+    }
+    
+    .room-code-value-row { 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+    }
+    
+    .room-code-val { 
+        font-size: 1.6rem; 
+        font-weight: 900; 
+        color: white; 
+        font-family: var(--font-en); 
+        letter-spacing: 3px; 
+        line-height: 1; 
+    }
+    
+    .room-code-value-row i { 
+        font-size: 1rem; 
+        color: rgba(255,255,255,0.6); 
+        transition: 0.2s; 
+    }
+    
+    .header-bottom-left:hover .room-code-value-row i { 
+        color: white; 
+    }
 
     /* =========================================
-       تصميم النوافذ (Modals) بمستوى عالمي
+       2. عنوان القسم 
+       ========================================= */
+    .lobby-section-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 15px; 
+        padding: 0 5px; 
+    }
+    
+    .lobby-section-title { 
+        font-size: 1rem; 
+        font-weight: 800; 
+        color: var(--text-dim); 
+    }
+    
+    .clean-settings-btn { 
+        background: transparent; 
+        color: var(--text-dim); 
+        border: 1px solid rgba(255,255,255,0.1); 
+        padding: 8px 16px; 
+        border-radius: var(--radius-pill); 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        cursor: pointer; 
+        transition: var(--trans-smooth); 
+        -webkit-tap-highlight-color: transparent; 
+    }
+    
+    .clean-settings-btn:hover { 
+        color: white; 
+        background: rgba(255,255,255,0.05); 
+        border-color: rgba(255,255,255,0.2); 
+    }
+
+    /* =========================================
+       3. شبكة اللاعبين وأزرار التحكم
+       ========================================= */
+    .emblems-grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px; 
+        margin-bottom: 30px; 
+    }
+    
+    .player-slot-combo { 
+        display: flex; 
+        flex-direction: row-reverse; 
+        align-items: stretch; 
+        gap: 10px; 
+        position: relative; 
+        transition: var(--trans-smooth); 
+    }
+    
+    .player-slot-combo:hover { 
+        transform: translateY(-3px); 
+    }
+
+    .character-select-box { 
+        width: 100px; /* مقاس مخصص للكمبيوتر ليكون أعرض */
+        background: var(--surface-panel); 
+        border: 1px solid rgba(255,255,255,0.05); 
+        border-radius: 20px; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        cursor: pointer; 
+        transition: var(--trans-smooth); 
+        flex-shrink: 0; 
+        box-shadow: var(--shadow-soft); 
+        overflow: hidden; 
+        position: relative;
+    }
+    
+    .character-select-box.can-edit:hover { 
+        border-color: rgba(255,255,255,0.2); 
+        background: rgba(255,255,255,0.05); 
+    }
+    
+    .character-select-box.can-edit:hover i { 
+        color: var(--accent-red); 
+        transform: scale(1.1); 
+    }
+    
+    .character-select-box i { 
+        font-size: 1.8rem; 
+        color: var(--text-dim); 
+        transition: 0.2s; 
+    }
+
+    .emblem-fluid-wrapper { 
+        flex: 1; 
+        min-width: 0; 
+        position: relative; 
+        cursor: pointer; 
+    }
+    
+    .host-badge-small { 
+        position: absolute; 
+        top: -6px; 
+        right: -6px; 
+        z-index: 10; 
+        background: var(--accent-red); 
+        width: 22px; 
+        height: 22px; 
+        border-radius: 50%; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        border: 2px solid var(--bg-base); 
+        box-shadow: 0 4px 10px rgba(255,76,106,0.4); 
+    }
+    
+    .host-badge-small i { 
+        font-size: 0.75rem; 
+        color: white; 
+    }
+
+    .empty-emblem-slot { 
+        border-radius: 20px; 
+        background: transparent; 
+        border: 2px dashed rgba(255,255,255,0.1); 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        gap: 5px; 
+        color: var(--text-dim); 
+        transition: var(--trans-smooth); 
+        cursor: pointer; 
+        -webkit-tap-highlight-color: transparent; 
+    }
+    
+    .empty-emblem-slot:hover { 
+        background: rgba(255,255,255,0.02); 
+        border-color: rgba(255,255,255,0.3); 
+        color: white; 
+        transform: translateY(-3px); 
+    }
+    
+    .empty-emblem-slot i { 
+        font-size: 1.8rem; 
+    }
+
+    .lobby-bottom-actions { 
+        display: flex; 
+        gap: 15px; 
+        margin-top: 10px; 
+    }
+    
+    .btn-lobby-ready { 
+        flex: 1; 
+        background: var(--surface-panel); 
+        color: var(--text-main); 
+        border: 1px solid rgba(255,255,255,0.05); 
+        border-radius: var(--radius-pill); 
+        padding: 16px; 
+        font-weight: 800; 
+        font-size: 1.05rem; 
+        cursor: pointer; 
+        transition: var(--trans-smooth); 
+        box-shadow: var(--shadow-soft); 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        gap: 10px; 
+    }
+    
+    .btn-lobby-ready:hover { 
+        background: rgba(255,255,255,0.05); 
+        border-color: rgba(255,255,255,0.2); 
+        transform: translateY(-2px); 
+    }
+    
+    .btn-lobby-ready:active { 
+        transform: scale(0.98); 
+    }
+    
+    .btn-lobby-ready.is-ready { 
+        background: var(--accent-green); 
+        color: white; 
+        border-color: var(--accent-green); 
+        box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); 
+    }
+    
+    .btn-lobby-leave { 
+        width: 65px; 
+        background: rgba(255, 76, 106, 0.05); 
+        color: var(--accent-red); 
+        border: 1px solid rgba(255, 76, 106, 0.2); 
+        border-radius: var(--radius-pill); 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        font-size: 1.5rem; 
+        cursor: pointer; 
+        transition: var(--trans-smooth); 
+    }
+    
+    .btn-lobby-leave:hover { 
+        background: var(--accent-red); 
+        color: white; 
+        transform: translateY(-2px); 
+        box-shadow: var(--shadow-glow); 
+    }
+    
+    .btn-lobby-leave:active { 
+        transform: scale(0.95); 
+    }
+
+    /* =========================================
+       4. تصميم النوافذ (Modals) 
        ========================================= */
     .game-modal-overlay { 
-        position: fixed; inset: 0; background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        z-index: 100000; display: flex; justify-content: center; align-items: center; 
-        opacity: 0; visibility: hidden; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 15px; 
+        position: fixed; 
+        inset: 0; 
+        background: rgba(15, 15, 20, 0.85); 
+        backdrop-filter: blur(15px); 
+        -webkit-backdrop-filter: blur(15px); 
+        z-index: 100000; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        opacity: 0; 
+        visibility: hidden; 
+        transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        padding: 15px; 
     }
-    .game-modal-overlay.show { opacity: 1; visibility: visible; }
+    
+    .game-modal-overlay.show { 
+        opacity: 1; 
+        visibility: visible; 
+    }
     
     .game-modal-card { 
-        background: var(--surface-panel); width: 100%; max-width: 480px; 
-        border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); 
-        box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: flex; flex-direction: column; 
-        overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        background: var(--surface-panel); 
+        width: 100%; 
+        max-width: 480px; 
+        border-radius: 28px; 
+        border: 1px solid rgba(255,255,255,0.08); 
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
+        display: flex; 
+        flex-direction: column; 
+        overflow: hidden; 
+        transform: scale(0.9) translateY(20px); 
+        transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
     }
-    .game-modal-overlay.show .game-modal-card { transform: scale(1) translateY(0); }
     
-    .modal-header { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-    .modal-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; }
-    .btn-close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
-    .btn-close-modal:hover { color: var(--accent-red); transform: rotate(90deg); }
+    .game-modal-overlay.show .game-modal-card { 
+        transform: scale(1) translateY(0); 
+    }
+    
+    .modal-header { 
+        padding: 25px; 
+        border-bottom: 1px solid rgba(255,255,255,0.05); 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+    }
+    
+    .modal-title { 
+        font-size: 1.2rem; 
+        font-weight: 800; 
+        color: white; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+    }
+    
+    .btn-close-modal { 
+        background: none; 
+        border: none; 
+        color: var(--text-dim); 
+        font-size: 1.4rem; 
+        cursor: pointer; 
+        transition: 0.2s; 
+    }
+    
+    .btn-close-modal:hover { 
+        color: var(--accent-red); 
+        transform: rotate(90deg); 
+    }
 
-    .invite-list-wrapper { padding: 20px; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
-    .invite-list-wrapper::-webkit-scrollbar { display: none; }
+    .invite-list-wrapper { 
+        padding: 20px; 
+        max-height: 450px; 
+        overflow-y: auto; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+        scrollbar-width: none; 
+    }
+    
+    .invite-list-wrapper::-webkit-scrollbar { 
+        display: none; 
+    }
     
     /* =========================================
-       شبكة اختيار الشخصيات (تصميم فخم)
+       5. شبكة اختيار الشخصيات (تصميم فخم)
        ========================================= */
-    .character-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 5px; }
+    .character-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 16px; 
+        padding: 5px; 
+    }
     
     .character-card { 
-        background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); 
-        border-radius: 18px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-        position: relative; aspect-ratio: 3/4; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        background: var(--bg-base); 
+        border: 2px solid rgba(255,255,255,0.05); 
+        border-radius: 18px; 
+        overflow: hidden; 
+        cursor: pointer; 
+        transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        position: relative; 
+        aspect-ratio: 3/4; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
     }
-    .character-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s ease; }
     
-    .character-card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
-    .character-card:hover img { transform: scale(1.08); }
+    .character-card img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        transition: 0.4s ease; 
+    }
     
-    /* شريط الاسم الأنيق المتدرج */
+    .character-card:hover { 
+        border-color: rgba(255,255,255,0.3); 
+        transform: translateY(-5px); 
+        box-shadow: 0 12px 25px rgba(0,0,0,0.4); 
+    }
+    
+    .character-card:hover img { 
+        transform: scale(1.08); 
+    }
+    
     .char-name-badge { 
-        position: absolute; bottom: 0; left: 0; right: 0; 
+        position: absolute; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
         background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%); 
-        color: white; font-size: 0.85rem; font-weight: 800; text-align: center; 
-        padding: 25px 5px 12px 5px; transition: 0.3s; font-family: var(--font-en); letter-spacing: 1px;
+        color: white; 
+        font-size: 0.85rem; 
+        font-weight: 800; 
+        text-align: center; 
+        padding: 25px 5px 12px 5px; 
+        transition: 0.3s; 
+        font-family: var(--font-en); 
+        letter-spacing: 1px; 
     }
     
-    /* حالة الشخصية المحددة حالياً (Selected) */
     .character-card.is-selected {
         border-color: var(--accent-red);
         box-shadow: 0 0 0 3px rgba(255, 76, 106, 0.2), 0 10px 30px rgba(255, 76, 106, 0.4);
         transform: translateY(-5px);
     }
+    
     .character-card.is-selected .char-name-badge {
         background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%);
     }
+    
     .character-card.is-selected::before {
-        content: '\\e144'; /* أيقونة الصح */
-        font-family: 'Phosphor'; position: absolute; top: 10px; right: 10px; z-index: 10;
-        color: white; background: var(--accent-red); width: 28px; height: 28px; border-radius: 50%;
-        display: flex; justify-content: center; align-items: center; font-size: 1.2rem; border: 2px solid var(--surface-panel);
+        content: '\e144'; 
+        font-family: 'Phosphor'; 
+        position: absolute; 
+        top: 10px; 
+        right: 10px; 
+        z-index: 10;
+        color: white; 
+        background: var(--accent-red); 
+        width: 28px; 
+        height: 28px; 
+        border-radius: 50%;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        font-size: 1.2rem; 
+        border: 2px solid var(--surface-panel);
     }
 
-    /* ستايلات أصدقاء ودعوات */
-    .friend-invite-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 16px; transition: var(--trans-smooth); cursor: pointer; }
-    .friend-invite-row:hover { border-color: rgba(255,255,255,0.2); transform: translateX(-3px); }
-    .friend-invite-row.selected { border-color: var(--accent-red); background: rgba(255,76,106,0.05); }
-    .friend-info-mini { display: flex; align-items: center; gap: 15px; }
-    .friend-av-mini { width: 42px; height: 42px; border-radius: 50%; background: var(--bg-base); display: flex; justify-content: center; align-items: center; font-weight: bold; overflow: hidden; color: white; border: 1px solid rgba(255,255,255,0.1); }
-    .friend-av-mini img { width: 100%; height: 100%; object-fit: cover; }
-    .friend-name-mini { font-size: 1rem; font-weight: 800; color: white; font-family: var(--font-en); }
-    .custom-checkbox { width: 24px; height: 24px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; color: transparent; transition: 0.2s; background: transparent; }
-    .custom-checkbox i { font-size: 0.9rem; transform: scale(0.5); transition: 0.2s; }
-    .friend-invite-row.selected .custom-checkbox { background: var(--accent-red); border-color: var(--accent-red); color: white; }
-    .friend-invite-row.selected .custom-checkbox i { transform: scale(1); }
-    .modal-footer { padding: 20px; background: var(--bg-base); display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .character-card.locked { 
+        opacity: 0.5; 
+        filter: grayscale(100%); 
+        cursor: not-allowed; 
+    }
+    
+    .character-card.locked::after { 
+        content: '\eb10'; 
+        font-family: 'Phosphor'; 
+        position: absolute; 
+        inset: 0; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        font-size: 2.5rem; 
+        color: white; 
+        background: rgba(0,0,0,0.3); 
+        font-weight: bold; 
+        pointer-events: none; 
+    }
+    
+    .character-card.locked .char-name-badge { 
+        background: rgba(255, 76, 106, 0.8); 
+    }
+    
+    .character-card:not(.locked):hover { 
+        border-color: var(--accent-red); 
+        transform: translateY(-5px); 
+        box-shadow: 0 12px 25px rgba(0,0,0,0.4); 
+    }
+    
+    .character-card:not(.locked):hover img { 
+        transform: scale(1.08); 
+    }
+    
+    .character-card:not(.locked):hover .char-name-badge { 
+        background: var(--accent-red); 
+    }
 
+    /* =========================================
+       6. ستايلات أصدقاء ودعوات
+       ========================================= */
+    .friend-invite-row { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        background: var(--surface-panel); 
+        border: 1px solid rgba(255,255,255,0.05); 
+        padding: 12px 15px; 
+        border-radius: 16px; 
+        transition: var(--trans-smooth); 
+        cursor: pointer; 
+    }
+    
+    .friend-invite-row:hover { 
+        border-color: rgba(255,255,255,0.2); 
+        transform: translateX(-3px); 
+    }
+    
+    .friend-invite-row.selected { 
+        border-color: var(--accent-red); 
+        background: rgba(255,76,106,0.05); 
+    }
+    
+    .friend-info-mini { 
+        display: flex; 
+        align-items: center; 
+        gap: 15px; 
+    }
+    
+    .friend-av-mini { 
+        width: 42px; 
+        height: 42px; 
+        border-radius: 50%; 
+        background: var(--bg-base); 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        font-weight: bold; 
+        overflow: hidden; 
+        color: white; 
+        border: 1px solid rgba(255,255,255,0.1); 
+    }
+    
+    .friend-av-mini img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+    }
+    
+    .friend-name-mini { 
+        font-size: 1rem; 
+        font-weight: 800; 
+        color: white; 
+        font-family: var(--font-en); 
+    }
+    
+    .custom-checkbox { 
+        width: 24px; 
+        height: 24px; 
+        border-radius: 8px; 
+        border: 2px solid rgba(255,255,255,0.2); 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        color: transparent; 
+        transition: 0.2s; 
+        background: transparent; 
+    }
+    
+    .custom-checkbox i { 
+        font-size: 0.9rem; 
+        transform: scale(0.5); 
+        transition: 0.2s; 
+    }
+    
+    .friend-invite-row.selected .custom-checkbox { 
+        background: var(--accent-red); 
+        border-color: var(--accent-red); 
+        color: white; 
+    }
+    
+    .friend-invite-row.selected .custom-checkbox i { 
+        transform: scale(1); 
+    }
+    
+    .modal-footer { 
+        padding: 20px; 
+        background: var(--bg-base); 
+        display: flex; 
+        gap: 15px; 
+        border-top: 1px solid rgba(255,255,255,0.05); 
+    }
+
+    /* =========================================
+       7. الجوال (شاشات صغيرة)
+       ========================================= */
     @media (max-width: 768px) {
         .emblems-grid { grid-template-columns: 1fr; }
         .premium-lobby-header { min-height: 130px; border-radius: 16px; }
@@ -151,6 +665,7 @@
         .lobby-bottom-actions { flex-direction: row; }
         .btn-lobby-leave { width: 60px; }
         .character-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .character-select-box { width: 75px; border-radius: 16px; } 
     }
 </style>
 
@@ -203,7 +718,7 @@
             <div class="modal-title"><i class="ph-fill ph-mask-happy"></i> اختر شخصيتك</div>
             <button class="btn-close-modal" onclick="closeCharacterModal()"><i class="ph-bold ph-x"></i></button>
         </div>
-        <div class="invite-list-wrapper">
+        <div class="invite-list-wrapper" style="max-height: 400px; overflow-y: auto;">
             <div class="character-grid" id="characters-grid-container">
                 </div>
         </div>
@@ -295,12 +810,10 @@
         }
     };
 
-    // دالة فتح نافذة الشخصيات مع إخفاء المقفل وتحديد الحالي
     function openCharacterModal() {
         const modal = document.getElementById('character-select-modal');
         const container = document.getElementById('characters-grid-container');
         
-        // استخراج معرف الشخصية التي قمت باختيارها مسبقاً (ليتم تحديدها في القائمة)
         const myName = window.currentUserData ? window.currentUserData.username_lower : '';
         const charSelections = window.currentRoomData && window.currentRoomData.characterSelections ? window.currentRoomData.characterSelections : {};
         const mySelectedCharId = charSelections[myName];
@@ -308,12 +821,9 @@
         let html = '';
         if(window.GAME_ASSETS && window.GAME_ASSETS.characters) {
             window.GAME_ASSETS.characters.forEach(char => {
-                // فلترة: هل يملكها اللاعب أم لا؟
                 let isOwned = window.GAME_ASSETS.isOwned(window.currentUserData, 'characters', char.id);
                 
-                // إضافة الشخصيات المفتوحة فقط!
                 if (isOwned) {
-                    // إذا كانت هي نفس الشخصية المختارة حالياً، أضف لها كلاس التحديد (is-selected)
                     let isSelectedClass = (char.id === mySelectedCharId) ? 'is-selected' : '';
                     
                     html += `
@@ -334,11 +844,15 @@
         modal.classList.add('show');
     }
 
-    function closeCharacterModal() { document.getElementById('character-select-modal').classList.remove('show'); }
+    function closeCharacterModal() { 
+        document.getElementById('character-select-modal').classList.remove('show'); 
+    }
 
     async function selectCharacter(charId) {
         closeCharacterModal();
-        if (window.updatePlayerCharacter) { await window.updatePlayerCharacter(charId); }
+        if (window.updatePlayerCharacter) { 
+            await window.updatePlayerCharacter(charId); 
+        }
     }
 
     function copyRoomCode() {
@@ -367,15 +881,26 @@
         }
     }
 
-    function openLeaveModal() { document.getElementById('custom-leave-modal').classList.add('show'); }
-    function closeLeaveModal() { document.getElementById('custom-leave-modal').classList.remove('show'); }
-    function executeLeaveRoom() { closeLeaveModal(); if(window.leaveFirebaseRoom) window.leaveFirebaseRoom(); }
+    function openLeaveModal() { 
+        document.getElementById('custom-leave-modal').classList.add('show'); 
+    }
+    
+    function closeLeaveModal() { 
+        document.getElementById('custom-leave-modal').classList.remove('show'); 
+    }
+    
+    function executeLeaveRoom() { 
+        closeLeaveModal(); 
+        if(window.leaveFirebaseRoom) window.leaveFirebaseRoom(); 
+    }
 
     window.selectedFriendsToInvite = new Set();
     function openInviteModal() {
         const modal = document.getElementById('invite-friends-modal');
         const listContainer = document.getElementById('invite-friends-list');
-        window.selectedFriendsToInvite.clear(); updateSelectAllBtnText();
+        window.selectedFriendsToInvite.clear(); 
+        updateSelectAllBtnText();
+        
         const friendsArray = (window.currentUserData && Array.isArray(window.currentUserData.friends)) ? window.currentUserData.friends : [];
         const currentPlayers = window.currentRoomData ? window.currentRoomData.players : [];
         
@@ -404,7 +929,9 @@
         modal.classList.add('show');
     }
 
-    function closeInviteModal() { document.getElementById('invite-friends-modal').classList.remove('show'); }
+    function closeInviteModal() { 
+        document.getElementById('invite-friends-modal').classList.remove('show'); 
+    }
     
     function toggleFriendSelection(rowElement, friendName) { 
         if (window.selectedFriendsToInvite.has(friendName)) { 
@@ -447,7 +974,8 @@
     async function sendInvitesToSelected() {
         if (window.selectedFriendsToInvite.size === 0) return;
         const btn = document.getElementById('btn-send-inv-submit');
-        btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true;
+        btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>'; 
+        btn.disabled = true;
         try {
             const { getDocs, query, collection, where, updateDoc, doc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
             const friendsArray = Array.from(window.selectedFriendsToInvite).map(f => f.toLowerCase());
@@ -456,7 +984,12 @@
             const inviteData = { roomId: window.currentRoomId, hostName: window.currentUserData.username, timestamp: Date.now() };
             snap.forEach(async (d) => { await updateDoc(doc(window.dbInstance, "users", d.id), { gameInvites: arrayUnion(inviteData) }); });
             closeInviteModal();
-        } catch (e) { alert("حدث خطأ"); } finally { btn.innerHTML = 'إرسال الدعوات'; btn.disabled = false; }
+        } catch (e) { 
+            alert("حدث خطأ"); 
+        } finally { 
+            btn.innerHTML = 'إرسال الدعوات'; 
+            btn.disabled = false; 
+        }
     }
 
     if (window.currentRoomId) { window.listenToRoom(); }
