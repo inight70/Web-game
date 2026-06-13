@@ -10,8 +10,6 @@ window.unsubscribeSnapshot = null;
 window.currentLang = 'ar';
 window.friendsCache = {};
 window.friendListeners = {};
-
-// السحر هنا: ذاكرة الـ HTML لسرعة التنقل
 window.htmlCache = {}; 
 
 window.hideLoader = () => { 
@@ -25,22 +23,143 @@ window.hideLoader = () => {
 const style = document.createElement('style');
 style.innerHTML = `
     @keyframes smoothScaleIn { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-    .modern-action-btn { background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid rgba(255,255,255,0.08); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
+    @keyframes safeClickEnable { 0% { pointer-events: none; } 100% { pointer-events: auto; } }
+    
+    .modern-action-btn { background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid rgba(255,255,255,0.08); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; backdrop-filter: blur(10px); position: relative; overflow: hidden; -webkit-tap-highlight-color: transparent;}
     .modern-action-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
     .modern-action-btn:active { transform: translateY(0) scale(0.98); }
     
-    .modern-danger-btn { background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; }
+    .modern-danger-btn { background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; -webkit-tap-highlight-color: transparent;}
     .modern-danger-btn:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.3); border-color: var(--accent-red); }
     .modern-danger-btn:active { transform: translateY(0) scale(0.98); }
     
     .friend-data-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 1000000; display: flex; justify-content: center; align-items: center; animation: smoothFadeIn 0.2s ease; padding: 20px; }
     .friend-data-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); overflow: hidden; animation: smoothScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; position: relative; }
     .locked-view-msg { padding: 50px 20px; text-align: center; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; margin: 20px; border: 1px dashed rgba(255,255,255,0.1); }
+
+    /* ستايلات النافذة العالمية لاختيار الشخصيات */
+    .global-char-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 5px; }
+    .global-char-card { background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); border-radius: 18px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; aspect-ratio: 3/4; box-shadow: 0 4px 15px rgba(0,0,0,0.2); -webkit-tap-highlight-color: transparent; animation: safeClickEnable 0.4s forwards; }
+    .global-char-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: 0.4s ease; }
+    .global-char-badge { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%); color: white; font-size: 0.85rem; font-weight: 800; text-align: center; padding: 25px 5px 12px 5px; transition: 0.3s; font-family: var(--font-en); letter-spacing: 1px; }
+    
+    .global-char-card:not(.locked):hover { border-color: rgba(255,255,255,0.3); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
+    .global-char-card:not(.locked):hover img { transform: scale(1.05); }
+    .global-char-card:not(.locked):hover .global-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
+
+    .global-char-card.is-selected { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(255, 76, 106, 0.2), 0 10px 30px rgba(255, 76, 106, 0.4); transform: translateY(-3px); }
+    .global-char-card.is-selected .global-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
+    .selected-check-badge { position: absolute; top: 10px; right: 10px; z-index: 10; color: white; background: var(--accent-red); width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; border: 2px solid var(--surface-panel); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+    .global-char-card.locked { opacity: 0.6; filter: grayscale(100%); cursor: not-allowed; }
+    .global-char-card.locked::after { content: '\\eb10'; font-family: 'Phosphor'; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: white; background: rgba(0,0,0,0.4); font-weight: bold; pointer-events: none; }
+    .global-char-card.locked .global-char-badge { background: rgba(255, 76, 106, 0.8); }
+
+    @media (max-width: 768px) {
+        .global-char-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    }
 `;
 document.head.appendChild(style);
 
 // ==========================================
-// 3. دوال رسم واجهة الأصدقاء والنوافذ
+// 3. النوافذ العالمية (Temporary Modals & Character Selector)
+// ==========================================
+
+// دالة النافذة المؤقتة (بديل alert)
+window.showTempModal = function(title, desc, iconClass, colorHex) {
+    const modal = document.createElement('div');
+    modal.className = 'friend-data-modal';
+    modal.style.zIndex = '100000000';
+    modal.innerHTML = `
+        <div class="friend-data-card" style="max-width: 350px; text-align: center; padding: 35px 25px;">
+            <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(8px); transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: ${colorHex}22; color: ${colorHex}; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; margin: 0 auto 20px auto;">
+                <i class="${iconClass}"></i>
+            </div>
+            <h3 style="color: white; margin-bottom: 10px; font-size: 1.3rem; font-weight: 800;">${title}</h3>
+            <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 0;">${desc}</p>
+        </div>
+    `;
+    modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+    setTimeout(() => { if(modal.parentNode) modal.remove(); }, 3500);
+};
+
+// النافذة المعزولة لاختيار الشخصيات (تعمل في كل مكان)
+window.openGlobalCharacterSelector = function(e, currentSelectedId, onSelectCallback) {
+    if(e) { e.preventDefault(); e.stopPropagation(); }
+    
+    let existingModal = document.getElementById('global-character-modal');
+    if(existingModal) existingModal.remove();
+
+    let html = '';
+    if(window.GAME_ASSETS && window.GAME_ASSETS.characters) {
+        window.GAME_ASSETS.characters.forEach(char => {
+            let isOwned = window.GAME_ASSETS.isOwned(window.currentUserData, 'characters', char.id);
+            let isSelectedClass = (char.id === currentSelectedId) ? 'is-selected' : '';
+            let checkIcon = (char.id === currentSelectedId) ? `<div class="selected-check-badge"><i class="ph-bold ph-check"></i></div>` : '';
+            
+            if (isOwned) {
+                html += `
+                    <div class="global-char-card ${isSelectedClass}" onclick="window.handleGlobalCharSelect(event, '${char.id}')">
+                        ${checkIcon}
+                        <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
+                        <div class="global-char-badge">${char.name}</div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="global-char-card locked" onclick="window.showTempModal('شخصية مقفلة', 'يمكنك الحصول على هذه الشخصية من المتجر.', 'ph-bold ph-lock-key', '#ff4c6a'); event.stopPropagation();">
+                        <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
+                        <div class="global-char-badge"><i class="ph-fill ph-lock-key"></i> ${char.name}</div>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    const modalHtml = `
+        <div class="friend-data-card" style="width: 100%; max-width: 480px; display: flex; flex-direction: column; overflow: hidden; transform: scale(1);">
+            <div style="padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px;"><i class="ph-fill ph-mask-happy"></i> اختر شخصيتك</div>
+                <button onclick="document.getElementById('global-character-modal').remove()" style="background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div style="padding: 20px; max-height: 450px; overflow-y: auto; scrollbar-width: none;">
+                <div class="global-char-grid">${html}</div>
+            </div>
+        </div>
+    `;
+    
+    const modal = document.createElement('div');
+    modal.id = 'global-character-modal';
+    modal.className = 'friend-data-modal';
+    modal.style.zIndex = '1000000';
+    modal.onclick = function(ev) { if(ev.target === modal) modal.remove(); };
+    modal.innerHTML = modalHtml;
+    
+    // حفظ الدالة الراجعة (Callback)
+    window._tempCharCallback = onSelectCallback;
+    
+    document.body.appendChild(modal);
+};
+
+window.handleGlobalCharSelect = function(e, charId) {
+    if(e) { e.preventDefault(); e.stopPropagation(); }
+    const card = e.currentTarget;
+    document.querySelectorAll('.global-char-card').forEach(c => c.classList.remove('is-selected'));
+    card.classList.add('is-selected');
+    
+    setTimeout(() => {
+        let modal = document.getElementById('global-character-modal');
+        if(modal) modal.remove();
+        if(typeof window._tempCharCallback === 'function') {
+            window._tempCharCallback(charId);
+        }
+    }, 250);
+};
+
+// ==========================================
+// 4. دوال رسم واجهة الأصدقاء 
 // ==========================================
 window.drawFriendsUI = function() {
     try {
@@ -296,7 +415,7 @@ window.viewFriendHistory = function(fName) {
 };
 
 // ==========================================
-// 5. دوال الإعدادات والتفاعل العام
+// 5. الإعدادات 
 // ==========================================
 window.setLanguage = async function(lang, skipSave = false) {
     window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -417,9 +536,6 @@ window.closeAuthModal = function() {
     if(!window.isGuest) window.enterAsGuest(); 
 };
 
-// =========================================================
-// 6. نظام التنقل والروابط المنيع (Bulletproof Smart Router)
-// =========================================================
 window.updateNavigationHighlight = function(targetRoot) {
     const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
     const rootIndex = ROOT_TABS.indexOf(targetRoot);
@@ -511,24 +627,22 @@ window.loadFragment = async function(requestedPage, element) {
     
     const contentHolder = document.getElementById('content-holder');
 
-    // السحر هنا: نظام الـ HTML Caching لسرعة خارقة (0ms load time)
     if (!window.htmlCache) window.htmlCache = {};
     
     try {
         let htmlContent = '';
         if (window.htmlCache[targetPage]) {
-            htmlContent = window.htmlCache[targetPage]; // تحميل من الذاكرة اللحظية
+            htmlContent = window.htmlCache[targetPage]; 
         } else {
             if(contentHolder) contentHolder.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="spinner" style="width:30px; height:30px;"></div></div>';
             const response = await fetch(`pages/${targetPage}.html`);
             if (!response.ok) throw new Error('Page not found');
             htmlContent = await response.text();
-            window.htmlCache[targetPage] = htmlContent; // حفظ في الذاكرة
+            window.htmlCache[targetPage] = htmlContent; 
         }
 
         if(contentHolder) contentHolder.innerHTML = htmlContent;
 
-        // إعادة تشغيل السكربتات بداخل الصفحة المحملة
         const scripts = contentHolder.querySelectorAll('script');
         scripts.forEach(oldScript => {
             const newScript = document.createElement('script');
