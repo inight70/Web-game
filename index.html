@@ -19,21 +19,17 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* الألوان الجديدة المستخرجة بدقة من Overwatch */
-            --shion-horn: #FF005D;      /* لون القرون في الشعار */
-            --arsenal-top: #F2277B;     /* أعلى مربع ARSENAL */
-            --arsenal-bottom: #C61448;  /* أسفل مربع ARSENAL (أحمر/كرزي عميق) */
+            /* ألوان Overwatch المستخرجة بدقة */
+            --horn-color: #FF0F5E; /* لون قرون شعار SHION */
+            --arsenal-top: #E91463; /* أعلى مربع ARSENAL */
+            --arsenal-bottom: #AD0A43; /* أسفل مربع ARSENAL */
             
-            /* اللون الأساسي للتنبيهات والحدود (أخذ لون القرون) */
-            --accent-red: var(--shion-horn); 
-            --accent-red-dim: rgba(255, 0, 93, 0.15); /* شفافية لون القرون */
+            /* ربط الألوان بالنظام */
+            --accent-primary: var(--horn-color);
+            --accent-primary-dim: rgba(255, 15, 94, 0.15); /* بديل الشفافية القديم */
             
-            /* التدرج اللوني الأساسي (لأزرار التأكيد الكبيرة) */
+            /* تدرج آرسنال */
             --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
-            
-            /* لون شريط التنقل الرئيسي (تم اختيار اللون العميق لاستبعاد الوردي الفاقع) */
-            --nav-active: var(--arsenal-bottom);
-            --nav-active-glow: rgba(198, 20, 72, 0.4);
             
             --accent-green: #2ecc71;
             --text-main: #ffffff;
@@ -44,7 +40,8 @@
             --font-ar: 'IBM Plex Sans Arabic', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.4);
+            /* ظل متوهج جديد بلون القرون */
+            --shadow-glow: 0 8px 25px rgba(255, 15, 94, 0.35);
             --glass-bg: rgba(20, 20, 25, 0.85);
             --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -57,7 +54,7 @@
             --text-dim: #8f929b;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
+            --shadow-glow: 0 8px 25px rgba(255, 15, 94, 0.25);
         }
 
         html { font-size: 16px; }
@@ -78,7 +75,7 @@
         input, textarea { -webkit-user-select: auto; user-select: auto; }
 
         #global-loader { position: fixed; inset: 0; background-color: var(--bg-base); z-index: 999999; display: flex; justify-content: center; align-items: center; transition: 0.5s; }
-        .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .auth-overlay, .modal-overlay { position: fixed; inset: 0; background: var(--glass-bg); backdrop-filter: blur(20px); display: flex; justify-content: center; align-items: center; z-index: 100000; transition: var(--trans-smooth); }
@@ -87,22 +84,14 @@
 
         .close-modal-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; transition: var(--trans-smooth); }
         [dir="ltr"] .close-modal-btn { right: auto; left: 20px; }
-        .close-modal-btn:hover { color: var(--accent-red); transform: rotate(90deg); }
+        .close-modal-btn:hover { color: var(--accent-primary); transform: rotate(90deg); }
 
         .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
-        /* الأزرار الرئيسية تستخدم التدرج اللوني الكامل */
-        .btn-core { 
-            background: var(--cyber-gradient); 
-            color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
-            font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-glow); 
-            transition: var(--trans-smooth); 
-        }
-        .btn-core:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 12px 30px rgba(242, 39, 123, 0.5); 
-        }
+        /* الأزرار الأساسية في الموقع (تأخذ التدرج والظل) */
+        .btn-core { background: var(--cyber-gradient); color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-glow); transition: var(--trans-smooth); }
+        .btn-core:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(173, 10, 67, 0.5); }
         
         .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
         .btn-secondary:hover { background-color: rgba(100,100,100,0.1); }
@@ -112,13 +101,13 @@
         .modal-tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid rgba(100,100,100,0.2); }
         .modal-tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-weight: 700; cursor: pointer; position: relative; transition: var(--trans-smooth); }
         .modal-tab-btn.active { color: var(--text-main); }
-        .modal-tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background-color: var(--accent-red); }
+        .modal-tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background-color: var(--accent-primary); }
 
         .input-wrapper { margin-bottom: 18px; text-align: center; }
         .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
         .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
-        .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
-        .auth-error-msg { background: var(--accent-red-dim); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
+        .premium-input:focus { border-color: var(--accent-primary); background-color: rgba(100,100,100,0.05); }
+        .auth-error-msg { background: var(--accent-primary-dim); color: var(--accent-primary); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
         .app-shell { display: grid; grid-template-columns: 100px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
@@ -130,14 +119,10 @@
 
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
-        .nav-btn:hover { color: var(--nav-active); background-color: var(--surface-hover); }
+        .nav-btn:hover { color: var(--accent-primary); background-color: var(--surface-hover); }
         
-        /* أزرار التنقل الرئيسية تستخدم اللون الكرزي العميق بدلاً من التدرج أو الوردي الفاقع */
-        .nav-btn.active { 
-            color: #fff; 
-            background-color: var(--nav-active); 
-            box-shadow: 0 8px 20px var(--nav-active-glow); 
-        }
+        /* الأزرار الجانبية (لون موحد بدون ثري دي) */
+        .nav-btn.active { color: #fff; background-color: var(--arsenal-top); box-shadow: none; }
 
         .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .theme-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: var(--trans-smooth); }
@@ -149,7 +134,7 @@
         #friends-container-desktop { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
         .friend-avatar { width: 44px; height: 44px; border-radius: 50%; position: relative; cursor: pointer; transition: var(--trans-smooth); padding: 2px; border: 2px solid transparent; }
         .friend-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .friend-avatar:hover { border-color: var(--accent-red); transform: scale(1.1); }
+        .friend-avatar:hover { border-color: var(--accent-primary); transform: scale(1.1); }
         .online-dot { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: var(--accent-green); border: 2px solid var(--bg-base); border-radius: 50%; }
 
         .add-friend-btn { width: 44px; height: 44px; border-radius: 50%; background-color: var(--surface-panel); border: 1px dashed var(--text-dim); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
@@ -187,7 +172,7 @@
         .noti-item { padding: 15px 20px; border-bottom: 1px solid rgba(100,100,100,0.05); display: flex; align-items: center; gap: 15px; text-align: right; cursor: pointer; transition: var(--trans-smooth); }
         [dir="ltr"] .noti-item { text-align: left; }
         .noti-item:hover { background-color: var(--surface-hover); }
-        .noti-icon { background: var(--accent-red-dim); color: var(--accent-red); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; flex-shrink: 0; }
+        .noti-icon { background: var(--accent-primary-dim); color: var(--accent-primary); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; flex-shrink: 0; }
         .noti-text-content { display: flex; flex-direction: column; }
         .noti-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.4; }
         .noti-time { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; }
@@ -201,7 +186,7 @@
 
         .dropdown-item { padding: 16px; color: var(--text-dim); text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 10px; background: transparent; border: none; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: var(--trans-smooth); }
         .dropdown-item:hover { background-color: var(--surface-hover); color: var(--text-main); }
-        .dropdown-item.logout { color: var(--accent-red); border-top: 1px solid rgba(100,100,100,0.1); }
+        .dropdown-item.logout { color: var(--accent-primary); border-top: 1px solid rgba(100,100,100,0.1); }
 
         .dynamic-content { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 0 10px 40px 10px; }
         .dynamic-content::-webkit-scrollbar { display: none; } 
@@ -218,7 +203,7 @@
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
             .brand-name { font-size: 1.3rem; font-weight: 800; color: var(--text-main); font-family: var(--font-en); line-height: 1.1; text-transform: capitalize; }
             .brand-name span { background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
+            .mobile-section-name { font-size: 0.75rem; color: var(--accent-primary); font-weight: 700; }
             
             .mobile-only-theme { display: flex; }
             .dynamic-content { padding: 20px 24px calc(90px + env(safe-area-inset-bottom)) 24px; }
@@ -247,9 +232,9 @@
             }
             .bottom-tab i { font-size: 1.6rem; transition: var(--trans-smooth); }
             
-            /* أزرار التنقل السفلية للموبايل تستخدم اللون الكرزي العميق */
-            .bottom-tab.active { color: var(--nav-active); }
-            .bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--nav-active-glow)); }
+            /* الأزرار السفلية في الجوال مسطحة وبدون توهج */
+            .bottom-tab.active { color: var(--arsenal-top); }
+            .bottom-tab.active i { transform: translateY(-4px); filter: none; }
         }
     </style>
 </head>
@@ -261,7 +246,7 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <i class="ph-duotone ph-shield-check" style="font-size: 3.5rem; color: var(--accent-red); margin-bottom: 20px; display: inline-block;"></i>
+                <i class="ph-duotone ph-shield-check" style="font-size: 3.5rem; color: var(--accent-primary); margin-bottom: 20px; display: inline-block;"></i>
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
                 <button class="btn-core" onclick="window.switchModalMode('forms')" data-i18n="login_btn">تسجيل الدخول</button>
