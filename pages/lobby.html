@@ -41,13 +41,12 @@
     .player-slot-combo { display: flex; flex-direction: row-reverse; align-items: stretch; gap: 10px; position: relative; transition: var(--trans-smooth); }
     .player-slot-combo:hover { transform: translateY(-3px); }
 
-    /* مقاس الكمبيوتر (100px) */
-    .character-select-box { width: 100px; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: var(--trans-smooth); flex-shrink: 0; box-shadow: var(--shadow-soft); overflow: hidden; position: relative;}
-    .character-select-box.can-edit:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
-    .character-select-box.can-edit:hover i { color: var(--accent-red); transform: scale(1.1); }
+    .character-select-box { width: 100px; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); flex-shrink: 0; box-shadow: var(--shadow-soft); overflow: hidden; position: relative; -webkit-tap-highlight-color: transparent;}
+    .character-select-box.can-edit:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); transform: scale(1.02); }
     .character-select-box i { font-size: 1.8rem; color: var(--text-dim); transition: 0.2s; }
+    .character-select-box.can-edit:hover i { color: var(--accent-red); transform: scale(1.1); }
 
-    .emblem-fluid-wrapper { flex: 1; min-width: 0; position: relative; cursor: pointer; }
+    .emblem-fluid-wrapper { flex: 1; min-width: 0; position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent;}
     .host-badge-small { position: absolute; top: -6px; right: -6px; z-index: 10; background: var(--accent-red); width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-base); box-shadow: 0 4px 10px rgba(255,76,106,0.4); }
     .host-badge-small i { font-size: 0.75rem; color: white; }
 
@@ -56,50 +55,60 @@
     .empty-emblem-slot i { font-size: 1.8rem; }
 
     .lobby-bottom-actions { display: flex; gap: 15px; margin-top: 10px; }
-    .btn-lobby-ready { flex: 1; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 10px; }
+    .btn-lobby-ready { flex: 1; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent;}
     .btn-lobby-ready:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
     .btn-lobby-ready:active { transform: scale(0.98); }
     .btn-lobby-ready.is-ready { background: var(--accent-green); color: white; border-color: var(--accent-green); box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); }
-    .btn-lobby-leave { width: 65px; background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); }
+    .btn-lobby-leave { width: 65px; background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent;}
     .btn-lobby-leave:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: var(--shadow-glow); }
     .btn-lobby-leave:active { transform: scale(0.95); }
 
     /* =========================================
        4. تصميم النوافذ (Modals)
        ========================================= */
-    .game-modal-overlay { position: fixed; inset: 0; background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 15px; }
+    .game-modal-overlay { position: fixed; inset: 0; background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 15px; }
     .game-modal-overlay.show { opacity: 1; visibility: visible; }
-    .game-modal-card { background: var(--surface-panel); width: 100%; max-width: 480px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .game-modal-card { background: var(--surface-panel); width: 100%; max-width: 480px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
     .game-modal-overlay.show .game-modal-card { transform: scale(1) translateY(0); }
     .modal-header { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
     .modal-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; }
-    .btn-close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
+    .btn-close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent;}
     .btn-close-modal:hover { color: var(--accent-red); transform: rotate(90deg); }
     .invite-list-wrapper { padding: 20px; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
     .invite-list-wrapper::-webkit-scrollbar { display: none; }
     
-    /* شبكة اختيار الشخصيات */
+    /* =========================================
+       5. شبكة اختيار الشخصيات السلسة جداً
+       ========================================= */
     .character-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 5px; }
-    .character-card { background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); border-radius: 18px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; aspect-ratio: 3/4; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .character-card { background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); border-radius: 18px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; aspect-ratio: 3/4; box-shadow: 0 4px 15px rgba(0,0,0,0.2); -webkit-tap-highlight-color: transparent;}
     .character-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: 0.4s ease; }
-    .character-card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
-    .character-card:hover img { transform: scale(1.08); }
     
     .char-name-badge { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%); color: white; font-size: 0.85rem; font-weight: 800; text-align: center; padding: 25px 5px 12px 5px; transition: 0.3s; font-family: var(--font-en); letter-spacing: 1px; }
     
-    .character-card.is-selected { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(255, 76, 106, 0.2), 0 10px 30px rgba(255, 76, 106, 0.4); transform: translateY(-5px); }
+    .character-card:not(.locked):hover { border-color: rgba(255,255,255,0.3); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
+    .character-card:not(.locked):hover img { transform: scale(1.05); }
+    .character-card:not(.locked):hover .char-name-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
+
+    /* التصميم الصحيح والنقي لعلامة الصح الخاصة بالتحديد */
+    .character-card.is-selected { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(255, 76, 106, 0.2), 0 10px 30px rgba(255, 76, 106, 0.4); transform: translateY(-3px); }
     .character-card.is-selected .char-name-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
-    .character-card.is-selected::before { content: '\e144'; font-family: 'Phosphor'; position: absolute; top: 10px; right: 10px; z-index: 10; color: white; background: var(--accent-red); width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; border: 2px solid var(--surface-panel); }
+    
+    .selected-check-badge {
+        position: absolute; top: 10px; right: 10px; z-index: 10;
+        color: white; background: var(--accent-red); width: 28px; height: 28px; 
+        border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+        font-size: 1.1rem; border: 2px solid var(--surface-panel);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
 
+    /* الشخصيات المقفلة */
     .character-card.locked { opacity: 0.5; filter: grayscale(100%); cursor: not-allowed; }
-    .character-card.locked::after { content: '\eb10'; font-family: 'Phosphor'; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: white; background: rgba(0,0,0,0.3); font-weight: bold; pointer-events: none; }
-    .character-card.locked .char-name-badge { background: rgba(255, 76, 106, 0.8); }
-    .character-card:not(.locked):hover { border-color: var(--accent-red); transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
-    .character-card:not(.locked):hover img { transform: scale(1.08); }
-    .character-card:not(.locked):hover .char-name-badge { background: var(--accent-red); }
-
-    /* ستايلات دعوة الأصدقاء */
-    .friend-invite-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 16px; transition: var(--trans-smooth); cursor: pointer; }
+    
+    /* =========================================
+       6. ستايلات أصدقاء ودعوات
+       ========================================= */
+    .friend-invite-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 16px; transition: var(--trans-smooth); cursor: pointer; -webkit-tap-highlight-color: transparent;}
     .friend-invite-row:hover { border-color: rgba(255,255,255,0.2); transform: translateX(-3px); }
     .friend-invite-row.selected { border-color: var(--accent-red); background: rgba(255,76,106,0.05); }
     .friend-info-mini { display: flex; align-items: center; gap: 15px; }
@@ -112,7 +121,9 @@
     .friend-invite-row.selected .custom-checkbox i { transform: scale(1); }
     .modal-footer { padding: 20px; background: var(--bg-base); display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
 
-    /* استجابة الجوال (75px) */
+    /* =========================================
+       7. الجوال (شاشات صغيرة)
+       ========================================= */
     @media (max-width: 768px) {
         .emblems-grid { grid-template-columns: 1fr; }
         .premium-lobby-header { min-height: 130px; border-radius: 16px; }
@@ -175,11 +186,11 @@
 
 </div>
 
-<div class="game-modal-overlay" id="character-select-modal" onclick="if(event.target === this) closeCharacterModal()">
+<div class="game-modal-overlay" id="character-select-modal" onclick="if(event.target === this) closeCharacterModal(event)">
     <div class="game-modal-card">
         <div class="modal-header">
             <div class="modal-title"><i class="ph-fill ph-mask-happy"></i> اختر شخصيتك</div>
-            <button class="btn-close-modal" onclick="closeCharacterModal()"><i class="ph-bold ph-x"></i></button>
+            <button class="btn-close-modal" onclick="closeCharacterModal(event)"><i class="ph-bold ph-x"></i></button>
         </div>
         <div class="invite-list-wrapper" style="max-height: 400px; overflow-y: auto;">
             <div class="character-grid" id="characters-grid-container">
@@ -244,7 +255,7 @@
 
             let isMe = (pName === myName);
             let boxClass = isMe ? 'character-select-box can-edit' : 'character-select-box';
-            let clickAction = isMe ? `onclick="openCharacterModal()"` : `onclick="alert('لا يمكنك تعديل شخصية لاعب آخر!')"`;
+            let clickAction = isMe ? `onclick="openCharacterModal(event)"` : `onclick="alert('لا يمكنك تعديل شخصية لاعب آخر!')"`;
             
             let selectedCharId = charSelections[pName];
             let charObj = window.GAME_ASSETS && window.GAME_ASSETS.characters ? window.GAME_ASSETS.characters.find(c => c.id === selectedCharId) : null;
@@ -273,7 +284,10 @@
         }
     };
 
-    function openCharacterModal() {
+    // تم إضافة event لمنع اختراق اللمس في الجوال
+    function openCharacterModal(e) {
+        if(e) e.stopPropagation();
+        
         const modal = document.getElementById('character-select-modal');
         const container = document.getElementById('characters-grid-container');
         
@@ -288,17 +302,14 @@
                 
                 if (isOwned) {
                     let isSelectedClass = (char.id === mySelectedCharId) ? 'is-selected' : '';
+                    // استخدام HTML بدلاً من CSS ::before للصح لمنع ظهور الأيقونة الغريبة
+                    let checkIcon = (char.id === mySelectedCharId) ? `<div class="selected-check-badge"><i class="ph-bold ph-check"></i></div>` : '';
+                    
                     html += `
-                        <div class="character-card ${isSelectedClass}" onclick="selectCharacter('${char.id}')">
+                        <div class="character-card ${isSelectedClass}" onclick="selectCharacter(event, '${char.id}')">
+                            ${checkIcon}
                             <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
                             <div class="char-name-badge">${char.name}</div>
-                        </div>
-                    `;
-                } else {
-                    html += `
-                        <div class="character-card locked" onclick="alert('هذه الشخصية مقفلة! يمكنك الحصول عليها من المتجر لاحقاً.')">
-                            <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
-                            <div class="char-name-badge"><i class="ph-fill ph-lock-key"></i> ${char.name}</div>
                         </div>
                     `;
                 }
@@ -313,13 +324,26 @@
         modal.classList.add('show');
     }
 
-    function closeCharacterModal() { 
+    function closeCharacterModal(e) { 
+        if(e) e.stopPropagation();
         document.getElementById('character-select-modal').classList.remove('show'); 
     }
 
-    async function selectCharacter(charId) {
-        closeCharacterModal();
-        if (window.updatePlayerCharacter) { await window.updatePlayerCharacter(charId); }
+    function selectCharacter(e, charId) {
+        if(e) e.stopPropagation();
+        
+        // إعطاء تأثير بصري سريع قبل إغلاق النافذة
+        const card = e.currentTarget;
+        document.querySelectorAll('.character-card').forEach(c => c.classList.remove('is-selected'));
+        card.classList.add('is-selected');
+
+        // تأخير ناعم بمقدار 300ms لكي يرى اللاعب اختياره ولا يعلق الجوال
+        setTimeout(async () => {
+            closeCharacterModal();
+            if (window.updatePlayerCharacter) { 
+                await window.updatePlayerCharacter(charId); 
+            }
+        }, 300);
     }
 
     function copyRoomCode() {
@@ -428,8 +452,7 @@
     async function sendInvitesToSelected() {
         if (window.selectedFriendsToInvite.size === 0) return;
         const btn = document.getElementById('btn-send-inv-submit');
-        btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>'; 
-        btn.disabled = true;
+        btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true;
         try {
             const { getDocs, query, collection, where, updateDoc, doc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
             const friendsArray = Array.from(window.selectedFriendsToInvite).map(f => f.toLowerCase());
