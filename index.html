@@ -19,16 +19,21 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* ألوان مربع ARSENAL المعتمدة أساساً للموقع */
-            --arsenal-top: #F2277B; /* الوردي الفاقع */
-            --arsenal-bottom: #C61448; /* الأحمر الكرزي العميق */
+            /* الألوان الجديدة المستخرجة بدقة من Overwatch */
+            --shion-horn: #FF005D;      /* لون القرون في الشعار */
+            --arsenal-top: #F2277B;     /* أعلى مربع ARSENAL */
+            --arsenal-bottom: #C61448;  /* أسفل مربع ARSENAL (أحمر/كرزي عميق) */
             
-            /* توحيد المتغيرات القديمة مع الألوان الجديدة */
-            --accent-red: var(--arsenal-top); 
-            --accent-red-dim: rgba(242, 39, 123, 0.2); /* درجة شفافة من الوردي الفاقع */
+            /* اللون الأساسي للتنبيهات والحدود (أخذ لون القرون) */
+            --accent-red: var(--shion-horn); 
+            --accent-red-dim: rgba(255, 0, 93, 0.15); /* شفافية لون القرون */
             
-            /* التدرج اللوني الساحر */
+            /* التدرج اللوني الأساسي (لأزرار التأكيد الكبيرة) */
             --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
+            
+            /* لون شريط التنقل الرئيسي (تم اختيار اللون العميق لاستبعاد الوردي الفاقع) */
+            --nav-active: var(--arsenal-bottom);
+            --nav-active-glow: rgba(198, 20, 72, 0.4);
             
             --accent-green: #2ecc71;
             --text-main: #ffffff;
@@ -39,7 +44,6 @@
             --font-ar: 'IBM Plex Sans Arabic', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            /* ظل متوهج مبني على اللون الجديد */
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.4);
             --glass-bg: rgba(20, 20, 25, 0.85);
             --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -88,7 +92,7 @@
         .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
-        /* الأزرار الأساسية بالتدرج اللوني */
+        /* الأزرار الرئيسية تستخدم التدرج اللوني الكامل */
         .btn-core { 
             background: var(--cyber-gradient); 
             color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
@@ -97,7 +101,7 @@
         }
         .btn-core:hover { 
             transform: translateY(-2px); 
-            box-shadow: 0 12px 30px rgba(198, 20, 72, 0.5); /* ظل باستخدام الأحمر الكرزي العميق */
+            box-shadow: 0 12px 30px rgba(242, 39, 123, 0.5); 
         }
         
         .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
@@ -114,9 +118,7 @@
         .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
         .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
         .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
-        
-        /* تم تغيير خلفية الخطأ لتستخدم اللون الجديد */
-        .auth-error-msg { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
+        .auth-error-msg { background: var(--accent-red-dim); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
         .app-shell { display: grid; grid-template-columns: 100px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
@@ -128,10 +130,14 @@
 
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
-        .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
+        .nav-btn:hover { color: var(--nav-active); background-color: var(--surface-hover); }
         
-        /* أزرار القائمة الرئيسية أخذت لوناً واحداً صافياً كما طلبت */
-        .nav-btn.active { color: #fff; background-color: var(--arsenal-top); box-shadow: var(--shadow-glow); }
+        /* أزرار التنقل الرئيسية تستخدم اللون الكرزي العميق بدلاً من التدرج أو الوردي الفاقع */
+        .nav-btn.active { 
+            color: #fff; 
+            background-color: var(--nav-active); 
+            box-shadow: 0 8px 20px var(--nav-active-glow); 
+        }
 
         .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .theme-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: var(--trans-smooth); }
@@ -241,9 +247,9 @@
             }
             .bottom-tab i { font-size: 1.6rem; transition: var(--trans-smooth); }
             
-            /* أزرار الشريط السفلي أخذت لوناً واحداً صافياً */
-            .bottom-tab.active { color: var(--arsenal-top); }
-            .bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--accent-red-dim)); }
+            /* أزرار التنقل السفلية للموبايل تستخدم اللون الكرزي العميق */
+            .bottom-tab.active { color: var(--nav-active); }
+            .bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--nav-active-glow)); }
         }
     </style>
 </head>
