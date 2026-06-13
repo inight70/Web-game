@@ -3,15 +3,7 @@
     @keyframes spinFast { 100% { transform: rotate(360deg); } }
     .animate-spin { animation: spinFast 1s linear infinite; display: inline-block; }
 
-    /* =========================================
-       1. الهيدر الفخم 
-       ========================================= */
-    .premium-lobby-header {
-        background-image: url('assets/images/lobby-header-bg.jpg');
-        background-size: cover; background-position: center;
-        border-radius: 24px; position: relative; min-height: 220px; 
-        margin-bottom: 25px; border: none; box-shadow: var(--shadow-soft); overflow: hidden; 
-    }
+    .premium-lobby-header { background-image: url('assets/images/lobby-header-bg.jpg'); background-size: cover; background-position: center; border-radius: 24px; position: relative; min-height: 220px; margin-bottom: 25px; border: none; box-shadow: var(--shadow-soft); overflow: hidden; }
     .header-characters-img { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); height: 90%; object-fit: contain; pointer-events: none; z-index: 1; }
     .header-bottom-right { position: absolute; bottom: 12px; right: 25px; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 2; }
     .lobby-status-icon { font-size: 1.2rem; color: white; transition: 0.3s; }
@@ -26,22 +18,16 @@
     .room-code-value-row i { font-size: 1rem; color: rgba(255,255,255,0.6); transition: 0.2s; }
     .header-bottom-left:hover .room-code-value-row i { color: white; }
 
-    /* =========================================
-       2. عنوان القسم 
-       ========================================= */
     .lobby-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
     .lobby-section-title { font-size: 1rem; font-weight: 800; color: var(--text-dim); }
     .clean-settings-btn { background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: var(--radius-pill); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent; }
     .clean-settings-btn:hover { color: white; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
 
-    /* =========================================
-       3. شبكة اللاعبين وأزرار التحكم
-       ========================================= */
     .emblems-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
     .player-slot-combo { display: flex; flex-direction: row-reverse; align-items: stretch; gap: 10px; position: relative; transition: var(--trans-smooth); }
     .player-slot-combo:hover { transform: translateY(-3px); }
 
-    .character-select-box { width: 100px; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); flex-shrink: 0; box-shadow: var(--shadow-soft); overflow: hidden; position: relative; -webkit-tap-highlight-color: transparent;}
+    .character-select-box { width: 100px; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; box-shadow: var(--shadow-soft); overflow: hidden; position: relative; -webkit-tap-highlight-color: transparent;}
     .character-select-box.can-edit:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); transform: scale(1.02); }
     .character-select-box i { font-size: 1.8rem; color: var(--text-dim); transition: 0.2s; }
     .character-select-box.can-edit:hover i { color: var(--accent-red); transform: scale(1.1); }
@@ -63,9 +49,6 @@
     .btn-lobby-leave:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: var(--shadow-glow); }
     .btn-lobby-leave:active { transform: scale(0.95); }
 
-    /* =========================================
-       4. تصميم النوافذ (Modals)
-       ========================================= */
     .game-modal-overlay { position: fixed; inset: 0; background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 15px; }
     .game-modal-overlay.show { opacity: 1; visibility: visible; }
     .game-modal-card { background: var(--surface-panel); width: 100%; max-width: 480px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -76,38 +59,7 @@
     .btn-close-modal:hover { color: var(--accent-red); transform: rotate(90deg); }
     .invite-list-wrapper { padding: 20px; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
     .invite-list-wrapper::-webkit-scrollbar { display: none; }
-    
-    /* =========================================
-       5. شبكة اختيار الشخصيات السلسة جداً
-       ========================================= */
-    .character-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 5px; }
-    .character-card { background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); border-radius: 18px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; aspect-ratio: 3/4; box-shadow: 0 4px 15px rgba(0,0,0,0.2); -webkit-tap-highlight-color: transparent;}
-    .character-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: 0.4s ease; }
-    
-    .char-name-badge { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%); color: white; font-size: 0.85rem; font-weight: 800; text-align: center; padding: 25px 5px 12px 5px; transition: 0.3s; font-family: var(--font-en); letter-spacing: 1px; }
-    
-    .character-card:not(.locked):hover { border-color: rgba(255,255,255,0.3); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
-    .character-card:not(.locked):hover img { transform: scale(1.05); }
-    .character-card:not(.locked):hover .char-name-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
 
-    /* التصميم الصحيح والنقي لعلامة الصح الخاصة بالتحديد */
-    .character-card.is-selected { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(255, 76, 106, 0.2), 0 10px 30px rgba(255, 76, 106, 0.4); transform: translateY(-3px); }
-    .character-card.is-selected .char-name-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
-    
-    .selected-check-badge {
-        position: absolute; top: 10px; right: 10px; z-index: 10;
-        color: white; background: var(--accent-red); width: 28px; height: 28px; 
-        border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-        font-size: 1.1rem; border: 2px solid var(--surface-panel);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    }
-
-    /* الشخصيات المقفلة */
-    .character-card.locked { opacity: 0.5; filter: grayscale(100%); cursor: not-allowed; }
-    
-    /* =========================================
-       6. ستايلات أصدقاء ودعوات
-       ========================================= */
     .friend-invite-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 16px; transition: var(--trans-smooth); cursor: pointer; -webkit-tap-highlight-color: transparent;}
     .friend-invite-row:hover { border-color: rgba(255,255,255,0.2); transform: translateX(-3px); }
     .friend-invite-row.selected { border-color: var(--accent-red); background: rgba(255,76,106,0.05); }
@@ -121,9 +73,6 @@
     .friend-invite-row.selected .custom-checkbox i { transform: scale(1); }
     .modal-footer { padding: 20px; background: var(--bg-base); display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
 
-    /* =========================================
-       7. الجوال (شاشات صغيرة)
-       ========================================= */
     @media (max-width: 768px) {
         .emblems-grid { grid-template-columns: 1fr; }
         .premium-lobby-header { min-height: 130px; border-radius: 16px; }
@@ -138,7 +87,6 @@
         .clean-settings-btn { padding: 6px 12px; font-size: 0.75rem; }
         .lobby-bottom-actions { flex-direction: row; }
         .btn-lobby-leave { width: 60px; }
-        .character-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .character-select-box { width: 75px; border-radius: 16px; } 
     }
 </style>
@@ -164,7 +112,7 @@
 
     <div class="lobby-section-header">
         <div class="lobby-section-title">الأعضاء المتواجدون</div>
-        <button class="clean-settings-btn" onclick="alert('سيتم فتح نافذة الإعدادات')">
+        <button class="clean-settings-btn" onclick="window.showTempModal('قريباً', 'إعدادات اللعبة ستكون متاحة قريباً', 'ph-bold ph-gear', '#3498db')">
             <i class="ph-fill ph-gear"></i> إعدادات اللعبة
         </button>
     </div>
@@ -184,19 +132,6 @@
         </button>
     </div>
 
-</div>
-
-<div class="game-modal-overlay" id="character-select-modal" onclick="if(event.target === this) closeCharacterModal(event)">
-    <div class="game-modal-card">
-        <div class="modal-header">
-            <div class="modal-title"><i class="ph-fill ph-mask-happy"></i> اختر شخصيتك</div>
-            <button class="btn-close-modal" onclick="closeCharacterModal(event)"><i class="ph-bold ph-x"></i></button>
-        </div>
-        <div class="invite-list-wrapper" style="max-height: 400px; overflow-y: auto;">
-            <div class="character-grid" id="characters-grid-container">
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="game-modal-overlay" id="custom-leave-modal">
@@ -255,7 +190,9 @@
 
             let isMe = (pName === myName);
             let boxClass = isMe ? 'character-select-box can-edit' : 'character-select-box';
-            let clickAction = isMe ? `onclick="openCharacterModal(event)"` : `onclick="alert('لا يمكنك تعديل شخصية لاعب آخر!')"`;
+            
+            // استخدام الدالة العالمية للنافذة المنيعة!
+            let clickAction = isMe ? `onclick="window.openGlobalCharacterSelector(event, '${charSelections[myName] || ''}', function(id) { window.updatePlayerCharacter(id); })"` : `onclick="window.showTempModal('تنبيه', 'لا يمكنك تعديل شخصية لاعب آخر!', 'ph-bold ph-warning-circle', '#ff4c6a') "`;
             
             let selectedCharId = charSelections[pName];
             let charObj = window.GAME_ASSETS && window.GAME_ASSETS.characters ? window.GAME_ASSETS.characters.find(c => c.id === selectedCharId) : null;
@@ -283,68 +220,6 @@
             `;
         }
     };
-
-    // تم إضافة event لمنع اختراق اللمس في الجوال
-    function openCharacterModal(e) {
-        if(e) e.stopPropagation();
-        
-        const modal = document.getElementById('character-select-modal');
-        const container = document.getElementById('characters-grid-container');
-        
-        const myName = window.currentUserData ? window.currentUserData.username_lower : '';
-        const charSelections = window.currentRoomData && window.currentRoomData.characterSelections ? window.currentRoomData.characterSelections : {};
-        const mySelectedCharId = charSelections[myName];
-
-        let html = '';
-        if(window.GAME_ASSETS && window.GAME_ASSETS.characters) {
-            window.GAME_ASSETS.characters.forEach(char => {
-                let isOwned = window.GAME_ASSETS.isOwned(window.currentUserData, 'characters', char.id);
-                
-                if (isOwned) {
-                    let isSelectedClass = (char.id === mySelectedCharId) ? 'is-selected' : '';
-                    // استخدام HTML بدلاً من CSS ::before للصح لمنع ظهور الأيقونة الغريبة
-                    let checkIcon = (char.id === mySelectedCharId) ? `<div class="selected-check-badge"><i class="ph-bold ph-check"></i></div>` : '';
-                    
-                    html += `
-                        <div class="character-card ${isSelectedClass}" onclick="selectCharacter(event, '${char.id}')">
-                            ${checkIcon}
-                            <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
-                            <div class="char-name-badge">${char.name}</div>
-                        </div>
-                    `;
-                }
-            });
-        }
-        
-        if (html === '') {
-            html = `<div style="grid-column: span 3; text-align: center; color: var(--text-dim); padding: 20px; font-weight: bold;">لا توجد شخصيات متاحة حالياً.</div>`;
-        }
-
-        container.innerHTML = html;
-        modal.classList.add('show');
-    }
-
-    function closeCharacterModal(e) { 
-        if(e) e.stopPropagation();
-        document.getElementById('character-select-modal').classList.remove('show'); 
-    }
-
-    function selectCharacter(e, charId) {
-        if(e) e.stopPropagation();
-        
-        // إعطاء تأثير بصري سريع قبل إغلاق النافذة
-        const card = e.currentTarget;
-        document.querySelectorAll('.character-card').forEach(c => c.classList.remove('is-selected'));
-        card.classList.add('is-selected');
-
-        // تأخير ناعم بمقدار 300ms لكي يرى اللاعب اختياره ولا يعلق الجوال
-        setTimeout(async () => {
-            closeCharacterModal();
-            if (window.updatePlayerCharacter) { 
-                await window.updatePlayerCharacter(charId); 
-            }
-        }, 300);
-    }
 
     function copyRoomCode() {
         const code = document.getElementById('dynamic-room-code').innerText;
