@@ -19,16 +19,17 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* الألوان الجديدة المستوحاة من Overwatch Cyberpunk */
-            --accent-primary: #f90069; /* الوردي الفاقع */
-            --accent-secondary: #8a00e6; /* البنفسجي الساحر */
+            /* الألوان المستخرجة من صورة Overwatch بدقة */
+            --horn-red: #F5323C; /* لون القرنين (أحمر نيون) */
+            --arsenal-top: #F2277B; /* أعلى مربع أرسنال (وردي فاقع) */
+            --arsenal-bottom: #C61448; /* أسفل مربع أرسنال (أحمر كرزي عميق) */
             
-            /* تم تحديث اللون الأساسي ليتماشى مع الثيم الجديد (دون كسر الأكواد القديمة) */
-            --accent-red: #f90069; 
-            --accent-red-dim: rgba(249, 0, 105, 0.2);
+            /* توحيد لون الموقع الأساسي مع لون القرنين */
+            --accent-red: var(--horn-red); 
+            --accent-red-dim: rgba(245, 50, 60, 0.2);
             
-            /* التدرج اللوني الذي سيستخدم في الأزرار الأساسية */
-            --cyber-gradient: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            /* التدرج اللوني الدقيق (من الأعلى للأسفل كما في الصورة) */
+            --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
             
             --accent-green: #2ecc71;
             --text-main: #ffffff;
@@ -39,8 +40,8 @@
             --font-ar: 'IBM Plex Sans Arabic', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            /* ظل متوهج يناسب التدرج اللوني الجديد */
-            --shadow-glow: 0 8px 25px rgba(249, 0, 105, 0.4);
+            /* ظل متوهج يناسب التدرج الجديد */
+            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.4);
             --glass-bg: rgba(20, 20, 25, 0.85);
             --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -53,7 +54,7 @@
             --text-dim: #8f929b;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 8px 25px rgba(249, 0, 105, 0.25);
+            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
 
         html { font-size: 16px; }
@@ -88,7 +89,7 @@
         .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
-        /* تعديل الزر الأساسي ليأخذ التدرج اللوني الساحر */
+        /* الأزرار الأساسية أصبحت تأخذ التدرج اللوني الجديد */
         .btn-core { 
             background: var(--cyber-gradient); 
             color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
@@ -97,7 +98,7 @@
         }
         .btn-core:hover { 
             transform: translateY(-2px); 
-            box-shadow: 0 12px 30px rgba(138, 0, 230, 0.5); /* ظل بنفسجي عند التحويم */
+            box-shadow: 0 12px 30px rgba(198, 20, 72, 0.5); /* ظل كرزي يتناسب مع أسفل التدرج */
         }
         
         .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
@@ -114,14 +115,14 @@
         .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
         .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
         .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
-        .auth-error-msg { background: rgba(255, 76, 106, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
+        .auth-error-msg { background: var(--accent-red-dim); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
         .app-shell { display: grid; grid-template-columns: 100px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        /* تعديل شعار اللعبة الجانبي ليأخذ التدرج اللوني */
+        /* النصوص المتدرجة (Gradient Text) */
         .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; font-family: var(--font-en); font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; color: var(--text-main); cursor: pointer; text-transform: capitalize; }
         .sidebar-logo span { background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.2rem; font-weight: 800; }
 
@@ -154,10 +155,7 @@
         .top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
         .header-page-info { display: flex; align-items: center; }
-        
-        /* تعديل العنوان الرئيسي ליأخذ التدرج */
         .page-title { font-size: 1.5rem; font-weight: 700; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-inline-start: 40px; transition: var(--trans-smooth); }
-        
         .mobile-brand-title { display: none; }
 
         .header-actions { display: flex; align-items: center; gap: 20px; direction: ltr; }
