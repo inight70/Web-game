@@ -19,16 +19,16 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* الألوان المستخرجة من صورة Overwatch بدقة */
+            /* الألوان المستخرجة من صورة Shion Overwatch بدقة */
             --horn-red: #F5323C; /* لون القرنين (أحمر نيون) */
             --arsenal-top: #F2277B; /* أعلى مربع أرسنال (وردي فاقع) */
-            --arsenal-bottom: #C61448; /* أسفل مربع أرسنال (أحمر كرزي عميق) */
+            --arsenal-bottom: #C61448; /* أسفل مربع أرسنال (كرزي عميق) */
             
-            /* توحيد لون الموقع الأساسي مع لون القرنين */
+            /* توحيد الألوان الأساسية للموقع */
             --accent-red: var(--horn-red); 
             --accent-red-dim: rgba(245, 50, 60, 0.2);
             
-            /* التدرج اللوني الدقيق (من الأعلى للأسفل كما في الصورة) */
+            /* التدرج اللوني الدقيق المستخدم في الأزرار والعناوين */
             --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
             
             --accent-green: #2ecc71;
@@ -40,7 +40,7 @@
             --font-ar: 'IBM Plex Sans Arabic', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            /* ظل متوهج يناسب التدرج الجديد */
+            /* ظل متوهج يتماشى مع التدرج الجديد */
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.4);
             --glass-bg: rgba(20, 20, 25, 0.85);
             --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -89,7 +89,7 @@
         .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
-        /* الأزرار الأساسية أصبحت تأخذ التدرج اللوني الجديد */
+        /* الأزرار الأساسية تأخذ التدرج اللوني الجديد */
         .btn-core { 
             background: var(--cyber-gradient); 
             color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
@@ -98,7 +98,7 @@
         }
         .btn-core:hover { 
             transform: translateY(-2px); 
-            box-shadow: 0 12px 30px rgba(198, 20, 72, 0.5); /* ظل كرزي يتناسب مع أسفل التدرج */
+            box-shadow: 0 12px 30px rgba(198, 20, 72, 0.5); /* ظل كرزي عند التحويم */
         }
         
         .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
@@ -115,20 +115,21 @@
         .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
         .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
         .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
-        .auth-error-msg { background: var(--accent-red-dim); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
+        .auth-error-msg { background: rgba(255, 76, 106, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
         .app-shell { display: grid; grid-template-columns: 100px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        /* النصوص المتدرجة (Gradient Text) */
+        /* الشعار يأخذ التدرج اللوني */
         .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; font-family: var(--font-en); font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; color: var(--text-main); cursor: pointer; text-transform: capitalize; }
         .sidebar-logo span { background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.2rem; font-weight: 800; }
 
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
+        /* زر القائمة الجانبية المفعل يأخذ التدرج */
         .nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: var(--shadow-glow); }
 
         .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -155,7 +156,9 @@
         .top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
         .header-page-info { display: flex; align-items: center; }
+        /* عنوان الصفحة الرئيسي يأخذ التدرج */
         .page-title { font-size: 1.5rem; font-weight: 700; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-inline-start: 40px; transition: var(--trans-smooth); }
+        
         .mobile-brand-title { display: none; }
 
         .header-actions { display: flex; align-items: center; gap: 20px; direction: ltr; }
@@ -209,6 +212,7 @@
             
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
             .brand-name { font-size: 1.3rem; font-weight: 800; color: var(--text-main); font-family: var(--font-en); line-height: 1.1; text-transform: capitalize; }
+            /* الشعار في الجوال يأخذ التدرج اللوني */
             .brand-name span { background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
             
