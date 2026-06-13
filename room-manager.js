@@ -21,7 +21,8 @@ function generateRoomCode() {
 
 window.createFirebaseRoom = async function() {
     if (!window.authInstance || !window.authInstance.currentUser) {
-        alert("يجب تسجيل الدخول أولاً."); return false;
+        if(window.showTempModal) window.showTempModal("تنبيه", "يجب تسجيل الدخول أولاً.", "ph-bold ph-lock-key", "#ff4c6a");
+        return false;
     }
     try {
         const user = window.authInstance.currentUser;
@@ -58,13 +59,18 @@ window.joinFirebaseRoom = async function(roomCode) {
         const roomSnap = await window.getDocFunc(roomRef); 
 
         if (!roomSnap.exists()) {
-            alert("الغرفة غير موجودة أو تم إغلاقها."); return false;
+            if(window.showTempModal) window.showTempModal("خطأ", "الغرفة غير موجودة أو تم إغلاقها.", "ph-bold ph-warning-circle", "#ff4c6a");
+            return false;
         }
 
         const data = roomSnap.data();
-        if (data.status !== 'waiting') { alert("اللعبة بدأت بالفعل!"); return false; }
+        if (data.status !== 'waiting') { 
+            if(window.showTempModal) window.showTempModal("عذراً", "اللعبة بدأت بالفعل!", "ph-bold ph-play", "#f1c40f");
+            return false; 
+        }
         if (data.players.length >= data.maxPlayers && !data.players.includes(window.currentUserData.username_lower)) {
-            alert("الغرفة ممتلئة!"); return false;
+            if(window.showTempModal) window.showTempModal("الغرفة ممتلئة", "لا يوجد مكان شاغر في هذه الغرفة.", "ph-bold ph-users-slash", "#ff4c6a");
+            return false;
         }
 
         const userName = window.currentUserData.username_lower;
@@ -167,8 +173,8 @@ window.listenToRoom = function() {
     
     window.roomUnsubscribe = window.onSnapshotFunc(roomRef, async (snap) => {
         if (!snap.exists()) {
-            if (!window.isLeavingVoluntarily && window.showRoomClosedModal) {
-                window.showRoomClosedModal();
+            if (!window.isLeavingVoluntarily && window.showTempModal) {
+                window.showTempModal("تم إنهاء الغرفة", "قام المالك بإغلاق الغرفة للتو.", "ph-duotone ph-door", "#ff4c6a");
             }
             window.leaveFirebaseRoom(true); 
             return;
@@ -177,8 +183,8 @@ window.listenToRoom = function() {
         
         const myName = window.currentUserData.username_lower;
         if (window.currentRoomData && window.currentRoomData.players && !window.currentRoomData.players.includes(myName)) {
-            if (!window.isLeavingVoluntarily) {
-                alert("لقد قام مالك الغرفة بطردك.");
+            if (!window.isLeavingVoluntarily && window.showTempModal) {
+                window.showTempModal("تم طردك!", "لقد قام مالك الغرفة بإزالتك من اللوبي.", "ph-duotone ph-user-minus", "#ff4c6a");
             }
             window.leaveFirebaseRoom(true);
             return;
@@ -186,7 +192,6 @@ window.listenToRoom = function() {
 
         syncLobbyPlayers(window.currentRoomData.players || []);
         
-        // [السحر هنا]: تحديث واجهة اللوبي عند أي تغيير في الغرفة (مثل اختيار شخصية أو تغيير الجاهزية)
         if (window.fetchAndRenderLobbyPlayers) {
             window.fetchAndRenderLobbyPlayers();
         }
