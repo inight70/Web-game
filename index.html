@@ -12,7 +12,7 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
-        /* تم تغيير الخط بالكامل إلى خط Estedad العالمي */
+        /* تم دمج خط Estedad الفخم لكامل الموقع */
         @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&display=swap');
 
         :root {
@@ -33,8 +33,7 @@
             --text-dim: #6c6d76;
             
             --radius-pill: 100px;
-            
-            /* توحيد الخط ليصبح Estedad في جميع أنحاء الموقع */
+            /* تطبيق خط الاستعداد على كل شيء */
             --font-en: 'Estedad', sans-serif;
             --font-ar: 'Estedad', sans-serif;
             
@@ -97,42 +96,32 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           أنيميشن الألوان المتدفق بانسيابية تامة
+           أنيميشن اللون السائل المستمر والمتواصل للأزرار
            ========================================= */
-        @keyframes seamlessFlow {
-            0% { background-position: 200% 0; }
-            100% { background-position: 0% 0; }
+        @keyframes seamlessCyberFlow {
+            0% { background-position: 200% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .btn-core { 
-            /* خلفية بتدرج أفقي لتنساب بنعومة، وتم تكبير حجمها لضمان عدم التقطيع */
-            background: linear-gradient(90deg, var(--arsenal-top), var(--arsenal-bottom), var(--arsenal-top));
-            background-size: 200% 100%;
-            animation: seamlessFlow 4s linear infinite;
-            
-            color: #fff; 
-            border: none; /* إزالة أي إطار تماماً */
-            padding: 15px; 
-            width: 100%; 
-            border-radius: var(--radius-pill); 
-            font-weight: 700; 
-            font-size: 0.95rem; 
-            cursor: pointer; 
-            box-shadow: none; /* إزالة الظلال ليصبح مسطحاً تماماً */
+            background: linear-gradient(135deg, var(--arsenal-top), var(--arsenal-bottom), var(--arsenal-top));
+            background-size: 200% 200%;
+            animation: seamlessCyberFlow 3.5s linear infinite;
+            color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
+            font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: none; 
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         .btn-core:hover { 
             transform: translateY(-3px); 
-            box-shadow: none; /* حماية من ظهور أي ظلال عند المرور */
+            box-shadow: none; 
         }
         .btn-core:active {
             transform: translateY(0) scale(0.98);
         }
+        /* ========================================= */
         
-        /* إزالة الإطار أيضاً من الزر الثانوي ليتماشى مع الطابع المسطح */
-        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
-        .btn-secondary:hover { background-color: rgba(100,100,100,0.15); }
-        
+        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; box-shadow: none; }
+        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); box-shadow: none; }
         .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
         .link-guest:hover { color: var(--text-main); }
 
@@ -327,7 +316,7 @@
             <h2 data-i18n="friend_req_title">طلب صداقة</h2>
             <p><span data-i18n="friend_req_from">لقد أرسل لك</span> <strong id="request-sender-name" style="color: var(--text-main);"></strong> <span data-i18n="friend_req_msg">طلب صداقة، هل توافق؟</span></p>
             <div style="display: flex; gap: 15px; margin-top: 20px;">
-                <button class="btn-core" style="background: var(--accent-green); box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);" onclick="window.processFriendRequest(true)" data-i18n="accept">قبول</button>
+                <button class="btn-core" style="background: var(--accent-green); box-shadow: none;" onclick="window.processFriendRequest(true)" data-i18n="accept">قبول</button>
                 <button class="btn-secondary" style="margin-top: 0;" onclick="window.processFriendRequest(false)" data-i18n="reject">رفض</button>
             </div>
         </div>
