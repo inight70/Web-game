@@ -12,8 +12,8 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
-        /* تم تغيير الخط العربي إلى Estedad مع الحفاظ على خط الأرقام الإنجليزي */
-        @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        /* تم تغيير الخط بالكامل إلى Estedad الجميل */
+        @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&display=swap');
 
         :root {
             --bg-base: #141419;
@@ -33,8 +33,10 @@
             --text-dim: #6c6d76;
             
             --radius-pill: 100px;
-            --font-en: 'Plus Jakarta Sans', sans-serif;
-            --font-ar: 'Estedad', sans-serif; /* تفعيل الخط الجديد هنا */
+            
+            /* توحيد الخط ليصبح استداد في كل مكان */
+            --font-en: 'Estedad', sans-serif;
+            --font-ar: 'Estedad', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
             --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.35);
@@ -53,7 +55,6 @@
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
 
-        /* حماية الآيفون من الزوم الإجباري */
         input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
@@ -94,10 +95,9 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           تصميم الزر الاحترافي (Cyber Glow Button)
-           بدون ظل، بدون إطار، قلب داكن، ووهج مشع
+           ستايل الأزرار الجديد: إطار متحرك، بدون ظل، ولمعة عند الضغط
            ========================================= */
-        @keyframes borderGlow {
+        @keyframes fluidBorder {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
@@ -105,64 +105,64 @@
 
         .btn-core { 
             position: relative;
-            background: transparent; /* خلفية شفافة ليعمل الـ pseudo-elements */
+            background: rgba(242, 39, 123, 0.05); /* خلفية شبه شفافة من الداخل */
             color: #fff; 
-            border: none; /* بدون إطار */
+            border: none; 
             padding: 15px; 
             width: 100%; 
             border-radius: var(--radius-pill); 
             font-weight: 700; 
             font-size: 0.95rem; 
             cursor: pointer; 
-            box-shadow: none; /* بدون ظل منسدل */
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: none; /* بدون أي ظل خارجي كما طلبت */
+            transition: background 0.3s, transform 0.1s; 
             z-index: 1;
+            overflow: hidden;
         }
 
-        /* الطبقة السفلية: الوهج الملون المتحرك */
+        /* الإطار المتحرك بنعومة من الأطراف (CSS Masking) */
         .btn-core::before {
             content: '';
             position: absolute;
-            inset: -3px; /* الامتداد للخارج لعمل الوهج */
-            border-radius: calc(var(--radius-pill) + 3px);
-            background: linear-gradient(90deg, var(--arsenal-top), var(--arsenal-bottom), #FF5E93, var(--arsenal-top));
-            background-size: 300% 100%;
-            animation: borderGlow 3s linear infinite;
-            z-index: -2;
-            filter: blur(6px); /* قوة الوهج */
-            opacity: 0.85;
-            transition: 0.2s ease;
+            inset: 0;
+            border-radius: var(--radius-pill);
+            padding: 2px; /* سماكة الإطار */
+            background: linear-gradient(135deg, var(--arsenal-top), var(--arsenal-bottom), #FF85A2, var(--arsenal-top));
+            background-size: 300% 300%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: fluidBorder 3s ease infinite; /* حركة سريعة وناعمة */
+            z-index: -1;
+            pointer-events: none;
         }
 
-        /* الطبقة العلوية: القلب الداكن للزر */
+        /* اللمعة الضعيفة على الحواف التي تظهر عند الضغط فقط */
         .btn-core::after {
             content: '';
             position: absolute;
-            inset: 0; /* تغطية كاملة لمساحة الزر بدون إطار */
-            background: var(--surface-panel); /* لون أسود/داكن */
+            inset: 0;
             border-radius: var(--radius-pill);
-            z-index: -1;
-            transition: 0.2s ease;
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.4);
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+            pointer-events: none;
         }
 
-        /* تأثير المرور (Hover) */
         .btn-core:hover { 
-            transform: translateY(-2px); 
+            background: rgba(242, 39, 123, 0.15); /* إضاءة خفيفة للداخل عند التحويم */
         }
-        .btn-core:hover::before {
-            filter: blur(9px); /* زيادة الوهج قليلاً */
-            opacity: 1;
+        
+        .btn-core:active {
+            transform: scale(0.97); /* ضغطة ناعمة */
         }
 
-        /* تأثير الضغط (اللمسة أو الكليك) - لمعة حادة وضعيفة */
-        .btn-core:active {
-            transform: translateY(0) scale(0.98);
+        .btn-core:active::after {
+            opacity: 1; /* ظهور لمعة الحواف الداخلية */
         }
         .btn-core:active::before {
-            filter: blur(2px) brightness(1.6); /* تحويل الوهج إلى لمعة حادة */
-        }
-        .btn-core:active::after {
-            background: var(--bg-base); /* تعميق اللون الداكن قليلاً لتبرز اللمعة */
+            filter: brightness(1.4); /* توهج الإطار لحظة الضغط */
         }
         /* ========================================= */
         
@@ -190,6 +190,7 @@
         .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; }
         .sidebar-logo:hover { transform: scale(1.05); }
         
+        /* أزرار الأقسام الجانبية (لم تتغير وظلت بستايلها الأصلي) */
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
