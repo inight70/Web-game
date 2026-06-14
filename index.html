@@ -12,7 +12,7 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
-        /* تم تغيير الخط بالكامل إلى Estedad الجميل */
+        /* تم تغيير الخط بالكامل إلى Estedad الجبار */
         @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&display=swap');
 
         :root {
@@ -20,6 +20,7 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
+            /* ألوان مربع ARSENAL المستخرجة من الصورة */
             --arsenal-top: #F2277B; 
             --arsenal-bottom: #C61448; 
             
@@ -33,8 +34,7 @@
             --text-dim: #6c6d76;
             
             --radius-pill: 100px;
-            
-            /* توحيد الخط ليصبح استداد في كل مكان */
+            /* تعميم الخط على كامل الموقع */
             --font-en: 'Estedad', sans-serif;
             --font-ar: 'Estedad', sans-serif;
             
@@ -55,6 +55,7 @@
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
 
+        /* حماية الآيفون من الزوم الإجباري */
         input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
@@ -79,6 +80,7 @@
         .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* نظام الشعار الذكي (Dark / Light) */
         .logo-light { display: none !important; }
         [data-theme="light"] .logo-dark { display: none !important; }
         [data-theme="light"] .logo-light { display: block !important; }
@@ -95,79 +97,67 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           ستايل الأزرار الجديد: إطار متحرك، بدون ظل، ولمعة عند الضغط
+           حركة تدفق اللون السلسة جداً للأزرار
            ========================================= */
-        @keyframes fluidBorder {
+        @keyframes edgeFlow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
+        /* الزر الأساسي: بدون ظل، بدون إطار، بلون متحرك ناعم وسريع */
         .btn-core { 
-            position: relative;
-            background: rgba(242, 39, 123, 0.05); /* خلفية شبه شفافة من الداخل */
+            background: linear-gradient(120deg, var(--arsenal-top), var(--arsenal-bottom), #8A00E6, #FF005A, var(--arsenal-top));
+            background-size: 300% 300%;
+            animation: edgeFlow 2.5s ease-in-out infinite;
             color: #fff; 
-            border: none; 
+            border: none !important; 
             padding: 15px; 
             width: 100%; 
             border-radius: var(--radius-pill); 
             font-weight: 700; 
             font-size: 0.95rem; 
             cursor: pointer; 
-            box-shadow: none; /* بدون أي ظل خارجي كما طلبت */
-            transition: background 0.3s, transform 0.1s; 
-            z-index: 1;
-            overflow: hidden;
+            box-shadow: none !important; /* إزالة الظل تماماً */
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
         }
-
-        /* الإطار المتحرك بنعومة من الأطراف (CSS Masking) */
-        .btn-core::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-pill);
-            padding: 2px; /* سماكة الإطار */
-            background: linear-gradient(135deg, var(--arsenal-top), var(--arsenal-bottom), #FF85A2, var(--arsenal-top));
-            background-size: 300% 300%;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            animation: fluidBorder 3s ease infinite; /* حركة سريعة وناعمة */
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* اللمعة الضعيفة على الحواف التي تظهر عند الضغط فقط */
-        .btn-core::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-pill);
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.4);
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 2;
-            pointer-events: none;
-        }
-
         .btn-core:hover { 
-            background: rgba(242, 39, 123, 0.15); /* إضاءة خفيفة للداخل عند التحويم */
+            transform: translateY(-2px) scale(1.02); 
+            animation: edgeFlow 1.2s ease-in-out infinite; /* زيادة سرعة تدفق اللون عند التحويم */
+            box-shadow: none !important; 
+        }
+        .btn-core:active {
+            transform: translateY(0) scale(0.98);
         }
         
-        .btn-core:active {
-            transform: scale(0.97); /* ضغطة ناعمة */
+        /* الزر الثانوي: زجاجي بتدرج خفيف جداً ومتحرك، بدون إطارات */
+        .btn-secondary { 
+            background: linear-gradient(120deg, rgba(242, 39, 123, 0.05), rgba(138, 0, 230, 0.1), rgba(242, 39, 123, 0.05));
+            background-size: 300% 300%;
+            animation: edgeFlow 3s ease-in-out infinite;
+            color: var(--text-main); 
+            border: none !important; /* إزالة الإطار تماماً */
+            box-shadow: none !important;
+            padding: 15px; 
+            width: 100%; 
+            border-radius: var(--radius-pill); 
+            font-weight: 700; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            margin-top: 10px; 
         }
-
-        .btn-core:active::after {
-            opacity: 1; /* ظهور لمعة الحواف الداخلية */
+        .btn-secondary:hover { 
+            transform: translateY(-2px) scale(1.02); 
+            background: linear-gradient(120deg, rgba(242, 39, 123, 0.1), rgba(138, 0, 230, 0.15), rgba(242, 39, 123, 0.1));
+            background-size: 300% 300%;
+            animation: edgeFlow 1.5s ease-in-out infinite; 
         }
-        .btn-core:active::before {
-            filter: brightness(1.4); /* توهج الإطار لحظة الضغط */
+        .btn-secondary:active {
+            transform: translateY(0) scale(0.98);
         }
         /* ========================================= */
-        
-        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
-        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); }
+
         .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
         .link-guest:hover { color: var(--text-main); }
 
@@ -190,7 +180,6 @@
         .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; }
         .sidebar-logo:hover { transform: scale(1.05); }
         
-        /* أزرار الأقسام الجانبية (لم تتغير وظلت بستايلها الأصلي) */
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
