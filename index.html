@@ -12,14 +12,14 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+        /* جلب خط Cairo النحيف كبديل احترافي لخط دبي في حال لم يكن موجوداً بجهاز المستخدم */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
 
         :root {
             --bg-base: #141419;
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* ألوان مربع ARSENAL المستخرجة من الصورة */
             --arsenal-top: #F2277B; 
             --arsenal-bottom: #C61448; 
             
@@ -30,14 +30,15 @@
             
             --accent-green: #2ecc71;
             --text-main: #ffffff;
-            --text-dim: #6c6d76;
+            --text-dim: #8b8c9c;
             
             --radius-pill: 100px;
-            --font-en: 'Plus Jakarta Sans', sans-serif;
-            --font-ar: 'IBM Plex Sans Arabic', sans-serif;
             
-            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.35);
+            /* أولوية لخط دبي النحيف، ثم كايرو النحيف */
+            --font-en: 'Dubai Light', 'Dubai', 'Plus Jakarta Sans', sans-serif;
+            --font-ar: 'Dubai Light', 'Dubai', 'Cairo', sans-serif;
+            
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.2);
             --glass-bg: rgba(20, 20, 25, 0.85);
             --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -49,12 +50,11 @@
             --text-main: #141419;
             --text-dim: #8f929b;
             --glass-bg: rgba(255, 255, 255, 0.85);
-            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.05);
         }
 
         /* حماية الآيفون من الزوم الإجباري */
-        input, textarea, select { font-size: 16px !important; }
+        input, textarea, select { font-size: 16px !important; font-family: var(--font-ar); }
         body { touch-action: manipulation; }
 
         html { font-size: 16px; }
@@ -66,16 +66,18 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body, html {
-            background-color: var(--bg-base); color: var(--text-main); font-family: var(--font-ar);
+            background-color: var(--bg-base); color: var(--text-main); 
+            font-family: var(--font-ar); 
+            font-weight: 300; /* جعل الخط الأساسي للموقع نحيفاً */
             height: 100vh; overflow: hidden; 
             transition: background-color 0.4s ease, color 0.4s ease;
             overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; 
         }
 
-        input, textarea { -webkit-user-select: auto; user-select: auto; }
+        input, textarea { -webkit-user-select: auto; user-select: auto; font-weight: 400; }
 
         #global-loader { position: fixed; inset: 0; background-color: var(--bg-base); z-index: 999999; display: flex; justify-content: center; align-items: center; transition: 0.5s; }
-        .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 45px; height: 45px; border: 2px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* نظام الشعار الذكي (Dark / Light) */
@@ -91,166 +93,140 @@
         [dir="ltr"] .close-modal-btn { right: auto; left: 20px; }
         .close-modal-btn:hover { color: var(--accent-red); transform: rotate(90deg); }
 
-        .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
-        .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
+        .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 600; } /* تخفيف وزن العناوين */
+        .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; font-weight: 300; }
 
         /* =========================================
-           تأثير الأزرار المعدنية (Metallic 3D Effect)
+           أزرار Flat متحركة الألوان مع لمعة عند الضغط
            ========================================= */
-        @keyframes metallicShine {
-            0% { left: -100%; }
-            20% { left: 200%; }
-            100% { left: 200%; }
+        @keyframes slowColorPulse {
+            0% { background-color: var(--arsenal-top); }
+            50% { background-color: var(--arsenal-bottom); }
+            100% { background-color: var(--arsenal-top); }
         }
 
         .btn-core { 
-            /* تدرج معتم في الأسفل ولامع في الأعلى للمعدن */
-            background: linear-gradient(to bottom, #ff76a5 0%, var(--arsenal-top) 15%, var(--arsenal-bottom) 85%, #8e0d32 100%);
+            background-color: var(--arsenal-top);
+            animation: slowColorPulse 8s ease-in-out infinite; /* تغيير اللون ببطء شديد */
             color: #fff; 
-            border: 1px solid #6b0825; /* إطار معدني غامق */
+            border: none; 
             padding: 15px; 
             width: 100%; 
             border-radius: var(--radius-pill); 
-            font-weight: 800; 
+            font-weight: 600; /* خط أنحف للزر */
             font-size: 0.95rem; 
             cursor: pointer; 
-            /* ظلال داخلية (Bevel) وخارجية لإعطاء بروز قوي للزر */
-            box-shadow: 
-                inset 0 2px 2px rgba(255, 255, 255, 0.4),  /* لمعة علوية داخلية */
-                inset 0 -3px 4px rgba(0, 0, 0, 0.3),       /* ظل سفلي داخلي */
-                0 8px 15px rgba(0, 0, 0, 0.4),             /* ظل خارجي عميق */
-                0 8px 20px rgba(242, 39, 123, 0.3);        /* توهج أرسنال الخفيف */
-            text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.5);    /* نص محفور */
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
+            box-shadow: none; /* إزالة الظل تماماً */
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s; 
         }
-
-        /* لمعة المعدن التي تمر على الزر كل 4 ثوانٍ */
-        .btn-core::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg);
-            animation: metallicShine 4s infinite;
-            pointer-events: none; /* كي لا تمنع ضغط الزر */
-        }
-
+        
         .btn-core:hover { 
             transform: translateY(-2px); 
-            filter: brightness(1.1); /* تلميع المعدن عند المرور */
-            box-shadow: 
-                inset 0 2px 2px rgba(255, 255, 255, 0.5),
-                inset 0 -3px 4px rgba(0, 0, 0, 0.3),
-                0 12px 20px rgba(0, 0, 0, 0.5),
-                0 12px 30px rgba(242, 39, 123, 0.4); 
+            /* لا يوجد ظل عند المرور، فقط يرتفع قليلاً للأناقة */
         }
-
-        /* تأثير ضغط زر فيزيائي حقيقي (Depress) */
+        
         .btn-core:active {
-            transform: translateY(2px);
-            filter: brightness(0.9);
-            box-shadow: 
-                inset 0 4px 8px rgba(0, 0, 0, 0.6), 
-                0 2px 4px rgba(0, 0, 0, 0.2);
+            transform: translateY(0) scale(0.98);
+            /* إضافة لمعة خفيفة (Gleam) على الحواف عند الضغط فقط */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.4);
         }
         /* ========================================= */
-
-        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
+        
+        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.1); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; box-shadow: none; }
         .btn-secondary:hover { background-color: rgba(100,100,100,0.1); }
-        .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
+        .btn-secondary:active { transform: scale(0.98); box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1); }
+
+        .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 400; transition: var(--trans-smooth); }
         .link-guest:hover { color: var(--text-main); }
 
-        .modal-tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid rgba(100,100,100,0.2); }
-        .modal-tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-weight: 700; cursor: pointer; position: relative; transition: var(--trans-smooth); }
+        .modal-tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid rgba(100,100,100,0.1); }
+        .modal-tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-dim); font-weight: 600; cursor: pointer; position: relative; transition: var(--trans-smooth); }
         .modal-tab-btn.active { color: var(--text-main); }
-        .modal-tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background-color: var(--accent-red); }
+        .modal-tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background-color: var(--accent-red); }
 
         .input-wrapper { margin-bottom: 18px; text-align: center; }
-        .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
-        .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
-        .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
-        .auth-error-msg { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
+        .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 400; }
+        .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: none; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; font-weight: 300; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
+        .premium-input:focus { background-color: rgba(100,100,100,0.08); box-shadow: inset 0 0 0 1px var(--accent-red); }
+        .auth-error-msg { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; font-weight: 400; }
 
         .app-shell { display: grid; grid-template-columns: 100px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; }
-        .sidebar-logo:hover { transform: scale(1.05); }
+        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; opacity: 0.9; }
+        .sidebar-logo:hover { opacity: 1; transform: scale(1.05); }
         
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
-        .nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: var(--shadow-glow); }
+        .nav-btn.active { color: #fff; background-color: var(--accent-red); animation: slowColorPulse 8s ease-in-out infinite; box-shadow: none; }
 
-        .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; border: 1px solid rgba(100,100,100,0.05); }
         .theme-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: var(--trans-smooth); }
-        .theme-btn.active-theme { background-color: #ffffff; color: #141419; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .theme-btn.active-theme { background-color: #ffffff; color: #141419; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         [data-theme="light"] .theme-btn.active-theme { background-color: #141419; color: #ffffff; }
 
         .right-sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
-        .friends-header { font-size: 0.8rem; color: var(--text-dim); font-weight: 700; margin-bottom: 25px; text-align: center; }
+        .friends-header { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; margin-bottom: 25px; text-align: center; }
         #friends-container-desktop { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
-        .friend-avatar { width: 44px; height: 44px; border-radius: 50%; position: relative; cursor: pointer; transition: var(--trans-smooth); padding: 2px; border: 2px solid transparent; }
+        .friend-avatar { width: 44px; height: 44px; border-radius: 50%; position: relative; cursor: pointer; transition: var(--trans-smooth); padding: 2px; border: 1px solid transparent; }
         .friend-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         .friend-avatar:hover { border-color: var(--accent-red); transform: scale(1.1); }
         .online-dot { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: var(--accent-green); border: 2px solid var(--bg-base); border-radius: 50%; }
 
-        .add-friend-btn { width: 44px; height: 44px; border-radius: 50%; background-color: var(--surface-panel); border: 1px dashed var(--text-dim); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
+        .add-friend-btn { width: 44px; height: 44px; border-radius: 50%; background-color: transparent; border: 1px solid rgba(100,100,100,0.2); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
         .add-friend-btn:hover { border-color: var(--text-main); color: var(--text-main); background: var(--surface-hover); transform: rotate(90deg); }
 
         .guest-friends-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; opacity: 0.6; padding: 0 10px; }
         .guest-friends-msg i { font-size: 1.8rem; color: var(--text-dim); }
-        .guest-friends-msg span { font-size: 0.75rem; color: var(--text-dim); line-height: 1.6; }
+        .guest-friends-msg span { font-size: 0.75rem; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
 
         .main-viewport { display: flex; flex-direction: column; height: 100vh; background-color: transparent; }
         .top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
         .header-page-info { display: flex; align-items: center; }
-        .page-title { font-size: 1.5rem; font-weight: 700; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-inline-start: 40px; transition: var(--trans-smooth); }
+        .page-title { font-size: 1.5rem; font-weight: 600; color: var(--accent-red); margin-inline-start: 40px; transition: var(--trans-smooth); }
+        
         .mobile-brand-title { display: none; }
 
         .header-actions { display: flex; align-items: center; gap: 20px; direction: ltr; }
         .header-icon-btn { background: transparent; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; }
         .header-icon-btn:hover, .header-icon-btn.active { color: var(--text-main); background-color: var(--surface-hover); }
 
-        .header-dropdown { position: absolute; top: 65px; left: 0; background-color: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); border-radius: 16px; width: 280px; box-shadow: var(--shadow-soft); display: none; flex-direction: column; z-index: 1000; direction: var(--dir, rtl); text-align: center; }
+        .header-dropdown { position: absolute; top: 65px; left: 0; background-color: var(--surface-panel); border: 1px solid rgba(100,100,100,0.05); border-radius: 16px; width: 280px; box-shadow: var(--shadow-soft); display: none; flex-direction: column; z-index: 1000; direction: var(--dir, rtl); text-align: center; }
         .header-dropdown.show { display: flex; }
-        .dropdown-header { padding: 16px 20px; border-bottom: 1px solid rgba(100,100,100,0.1); font-weight: 700; font-size: 0.9rem; color: var(--text-main); display: flex; justify-content: center; }
+        .dropdown-header { padding: 16px 20px; border-bottom: 1px solid rgba(100,100,100,0.05); font-weight: 600; font-size: 0.9rem; color: var(--text-main); display: flex; justify-content: center; }
 
         .settings-group { padding: 20px; border-bottom: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        .settings-group label { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
-        .segmented-control { display: flex; background: var(--bg-base); border-radius: var(--radius-pill); padding: 4px; border: 1px solid rgba(100,100,100,0.1); width: 100%; direction: ltr; }
-        .segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-family: var(--font-ar); font-weight: 600; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
-        .segment-btn.active { background: var(--surface-panel); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .settings-group label { font-size: 0.8rem; color: var(--text-dim); font-weight: 400; text-transform: uppercase; }
+        .segmented-control { display: flex; background: var(--bg-base); border-radius: var(--radius-pill); padding: 4px; border: 1px solid rgba(100,100,100,0.05); width: 100%; direction: ltr; }
+        .segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-family: var(--font-ar); font-weight: 400; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
+        .segment-btn.active { background: var(--surface-panel); color: var(--text-main); box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: 600; }
         .mobile-only-theme { display: none; } 
 
         .empty-state { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--text-dim); }
         .empty-state i { font-size: 2.5rem; opacity: 0.5; }
-        .empty-state span { font-size: 0.85rem; font-weight: 500; }
+        .empty-state span { font-size: 0.85rem; font-weight: 400; }
         .noti-item { padding: 15px 20px; border-bottom: 1px solid rgba(100,100,100,0.05); display: flex; align-items: center; gap: 15px; text-align: right; cursor: pointer; transition: var(--trans-smooth); }
         [dir="ltr"] .noti-item { text-align: left; }
         .noti-item:hover { background-color: var(--surface-hover); }
-        .noti-icon { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; flex-shrink: 0; }
+        .noti-icon { background: rgba(242, 39, 123, 0.05); color: var(--accent-red); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; flex-shrink: 0; }
         .noti-text-content { display: flex; flex-direction: column; }
-        .noti-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.4; }
-        .noti-time { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; }
+        .noti-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.4; font-weight: 400; }
+        .noti-time { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; font-weight: 300; }
 
-        .profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.2); margin-left: 10px; }
-        .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.1); overflow: hidden; }
+        .profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.1); margin-left: 10px; }
+        .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: transparent; display: flex; justify-content: center; align-items: center; font-weight: 600; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.2); overflow: hidden; }
         .profile-avatar-fallback img { width: 100%; height: 100%; object-fit: cover; }
         .profile-info { display: flex; flex-direction: column; text-align: center; font-family: var(--font-en); }
-        .profile-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
-        .profile-status { font-size: 0.7rem; color: var(--text-dim); }
+        .profile-name { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+        .profile-status { font-size: 0.7rem; color: var(--text-dim); font-weight: 300; }
 
-        .dropdown-item { padding: 16px; color: var(--text-dim); text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 10px; background: transparent; border: none; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: var(--trans-smooth); }
+        .dropdown-item { padding: 16px; color: var(--text-dim); text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 10px; background: transparent; border: none; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 400; transition: var(--trans-smooth); }
         .dropdown-item:hover { background-color: var(--surface-hover); color: var(--text-main); }
-        .dropdown-item.logout { color: var(--accent-red); border-top: 1px solid rgba(100,100,100,0.1); }
+        .dropdown-item.logout { color: var(--accent-red); border-top: 1px solid rgba(100,100,100,0.05); font-weight: 600; }
 
         .dynamic-content { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 0 10px 40px 10px; }
         .dynamic-content::-webkit-scrollbar { display: none; } 
@@ -265,7 +241,7 @@
             .page-title { display: none; }
             
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
-            .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
+            .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 600; }
             
             .mobile-only-theme { display: flex; }
             .dynamic-content { padding: 20px 24px calc(90px + env(safe-area-inset-bottom)) 24px; }
@@ -276,15 +252,16 @@
                 bottom: calc(15px + env(safe-area-inset-bottom));
                 left: 50%; transform: translateX(-50%);
                 width: calc(100% - 40px); max-width: 420px; height: 68px;
-                background: rgba(25, 25, 30, 0.25);
+                background: rgba(25, 25, 30, 0.4); /* شفافية أكبر للتناسب مع التصميم المسطح */
                 backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-                border: none; box-shadow: none;
+                border: 1px solid rgba(255,255,255,0.05); box-shadow: none;
                 border-radius: var(--radius-pill);
                 padding: 0 5px; z-index: 9999;
             }
             
             [data-theme="light"] .bottom-bar {
-                background: rgba(255, 255, 255, 0.45);
+                background: rgba(255, 255, 255, 0.6);
+                border-color: rgba(0,0,0,0.05);
             }
 
             .bottom-tab {
@@ -294,7 +271,7 @@
             }
             .bottom-tab i { font-size: 1.6rem; transition: var(--trans-smooth); }
             .bottom-tab.active { color: var(--accent-red); }
-            .bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--accent-red-dim)); }
+            .bottom-tab.active i { transform: translateY(-4px); } /* أزلنا الظل من هنا أيضاً للتبسيط */
         }
     </style>
 </head>
@@ -306,8 +283,8 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 50px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
-                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 50px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 50px; width: auto; margin-bottom: 20px;">
+                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 50px; width: auto; margin-bottom: 20px;">
                 
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
@@ -355,7 +332,7 @@
             <h2 data-i18n="friend_req_title">طلب صداقة</h2>
             <p><span data-i18n="friend_req_from">لقد أرسل لك</span> <strong id="request-sender-name" style="color: var(--text-main);"></strong> <span data-i18n="friend_req_msg">طلب صداقة، هل توافق؟</span></p>
             <div style="display: flex; gap: 15px; margin-top: 20px;">
-                <button class="btn-core" style="background: var(--accent-green); box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);" onclick="window.processFriendRequest(true)" data-i18n="accept">قبول</button>
+                <button class="btn-core" style="background-color: var(--accent-green); animation: none;" onclick="window.processFriendRequest(true)" data-i18n="accept">قبول</button>
                 <button class="btn-secondary" style="margin-top: 0;" onclick="window.processFriendRequest(false)" data-i18n="reject">رفض</button>
             </div>
         </div>
