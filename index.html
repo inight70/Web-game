@@ -12,7 +12,7 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
-        /* خط الاستعداد الفخم */
+        /* استدعاء خط Estedad الإحترافي لكامل الموقع */
         @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&display=swap');
 
         :root {
@@ -20,29 +20,25 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* ألوان مربع ARSENAL المستخرجة من الصورة */
             --arsenal-top: #F2277B; 
             --arsenal-bottom: #C61448; 
             
             --accent-red: var(--arsenal-top); 
             --accent-red-dim: rgba(242, 39, 123, 0.2); 
             
-            --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
+            --cyber-gradient: linear-gradient(135deg, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
             
             --accent-green: #2ecc71;
             --text-main: #ffffff;
             --text-dim: #6c6d76;
             
             --radius-pill: 100px;
-            
-            /* تطبيق خط الاستعداد على المتغيرات */
-            --font-en: 'Estedad', sans-serif;
-            --font-ar: 'Estedad', sans-serif;
+            --font-main: 'Estedad', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.35);
+            --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.3);
             --glass-bg: rgba(20, 20, 25, 0.85);
-            --trans-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --trans-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         [data-theme="light"] {
@@ -53,10 +49,13 @@
             --text-dim: #8f929b;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
+            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.2);
         }
 
-        /* حماية الآيفون من الزوم الإجباري */
+        /* حماية الآيفون من الزوم الإجباري وإجبار تطبيق الخط على كل العناصر */
+        body, html, input, textarea, select, button { 
+            font-family: var(--font-main) !important; 
+        }
         input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
@@ -68,13 +67,8 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* إجبار خط Estedad على كامل الموقع والنوافذ والأزرار */
-        body, html, input, button, textarea, select, div, span, p, h1, h2, h3, h4, h5, h6, a {
-            font-family: 'Estedad', sans-serif;
-        }
-
         body, html {
-            background-color: var(--bg-base); color: var(--text-main);
+            background-color: var(--bg-base); color: var(--text-main); 
             height: 100vh; overflow: hidden; 
             transition: background-color 0.4s ease, color 0.4s ease;
             overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; 
@@ -86,7 +80,6 @@
         .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* نظام الشعار الذكي (Dark / Light) */
         .logo-light { display: none !important; }
         [data-theme="light"] .logo-dark { display: none !important; }
         [data-theme="light"] .logo-light { display: block !important; }
@@ -103,59 +96,44 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           تأثير الزر الاحترافي (الذي طلبته)
+           التأثير الجديد (Premium LED Shine) الفخم والصامت
            ========================================= */
-        .btn-core {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            background: var(--cyber-gradient);
-            color: #ffffff;
-            border: none;
-            padding: 15px;
-            border-radius: var(--radius-pill);
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1; /* مهم ليبقى النص فوق التأثير الخلفي */
+        @keyframes ledShine {
+            0% { left: -150%; opacity: 0; }
+            10% { opacity: 1; }
+            20% { left: 150%; opacity: 0; }
+            100% { left: 150%; opacity: 0; }
         }
 
-        /* الطبقة الخلفية (Ghost Element) التي تستدير */
-        .btn-core::before {
+        .btn-core { 
+            background: var(--cyber-gradient);
+            color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
+            font-weight: 700; font-size: 0.95rem; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(242, 39, 123, 0.2); 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            position: relative;
+            overflow: hidden; /* ضروري لكي لا تخرج اللمعة خارج الزر */
+            z-index: 1;
+        }
+        
+        /* تأثير اللمعة الأنيقة التي تمر داخل الزر */
+        .btn-core::after {
             content: '';
             position: absolute;
+            top: 0; left: -150%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transform: skewX(-25deg);
             z-index: -1;
-            background: var(--cyber-gradient);
-            border: 2px solid var(--surface-panel); /* يطابق فكرة الإطار الأبيض في كودك */
-            border-radius: var(--radius-pill);
-            width: 102%; 
-            height: 108%;
-            top: -4%; left: -1%;
-            transform: rotate(2deg); /* دوران خفيف ليناسب الأزرار العريضة */
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            opacity: 0.3;
+            animation: ledShine 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .btn-core:hover {
-            filter: brightness(1.15);
-            transform: translateY(-3px); 
+        .btn-core:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(242, 39, 123, 0.4); /* توهج أنيق عند التحويم */
         }
-
-        .btn-core:hover::before {
-            transform: rotate(0deg);
-            width: 100%;
-            height: 100%;
-            top: 0; left: 0;
-            opacity: 0; /* يندمج بنظافة واحترافية */
-        }
-
         .btn-core:active {
-            filter: brightness(1.3);
-            transform: scale(0.97);
+            transform: translateY(0) scale(0.98);
         }
         /* ========================================= */
         
@@ -171,7 +149,7 @@
 
         .input-wrapper { margin-bottom: 18px; text-align: center; }
         .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
-        .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; font-weight: 600; }
+        .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
         .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
         .auth-error-msg { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
@@ -180,7 +158,7 @@
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; }
+        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: var(--trans-smooth); }
         .sidebar-logo:hover { transform: scale(1.05); }
         
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
@@ -226,7 +204,7 @@
         .settings-group { padding: 20px; border-bottom: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .settings-group label { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
         .segmented-control { display: flex; background: var(--bg-base); border-radius: var(--radius-pill); padding: 4px; border: 1px solid rgba(100,100,100,0.1); width: 100%; direction: ltr; }
-        .segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-family: var(--font-ar); font-weight: 600; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
+        .segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
         .segment-btn.active { background: var(--surface-panel); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .mobile-only-theme { display: none; } 
 
@@ -244,7 +222,7 @@
         .profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.2); margin-left: 10px; }
         .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.1); overflow: hidden; }
         .profile-avatar-fallback img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-info { display: flex; flex-direction: column; text-align: center; font-family: var(--font-en); }
+        .profile-info { display: flex; flex-direction: column; text-align: center; }
         .profile-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
         .profile-status { font-size: 0.7rem; color: var(--text-dim); }
 
@@ -266,6 +244,9 @@
             
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
             .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
+            
+            /* تم تكبير الشعار في الجوال ليكون 28px بدلاً من 24px للبروز بشكل أجمل */
+            .mobile-brand-title img { max-height: 28px !important; width: auto; object-fit: contain; }
             
             .mobile-only-theme { display: flex; }
             .dynamic-content { padding: 20px 24px calc(90px + env(safe-area-inset-bottom)) 24px; }
@@ -306,8 +287,8 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 55px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
-                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 55px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
                 
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
@@ -396,8 +377,8 @@
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title" data-i18n="title_home">الرئيسية</h1>
                     <div class="mobile-brand-title">
-                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 28px !important; width: auto; object-fit: contain;">
-                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 28px !important; width: auto; object-fit: contain;">
+                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception">
+                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception">
                         <div class="mobile-section-name" id="mobile-section-name" data-i18n="title_home">الرئيسية</div>
                     </div>
                 </div>
