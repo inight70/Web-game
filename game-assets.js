@@ -75,7 +75,6 @@ window.UI_COMPONENTS = {
         return `<div style="font-size: 0.65rem; font-weight: 700; color: gold; text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px; background: rgba(0,0,0,0.6); border-radius: 6px; backdrop-filter: blur(5px); border: 1px solid rgba(255,215,0,0.5); margin-top: 4px;">${titleStr}</div>`;
     },
 
-    // الارتفاع الافتراضي هنا أصبح 85px ليكون شريطاً مستطيلاً عريضاً بدلاً من مربع
     buildEmblemCard: function(userData, height = "85px", hideAvatar = false) {
         if (!userData) userData = {};
         const safeName = userData.username || 'Unknown';
@@ -108,35 +107,45 @@ window.UI_COMPONENTS = {
 };
 
 // ==========================================
-// 3. نظام التحميل المسبق للصور (Professional Asset Preloader)
+// 3. محرك التحميل المسبق السريع (Asset Preloader)
 // ==========================================
+window.IMAGE_CACHE = []; // مصفوفة الحماية لمنع المتصفح من مسح الصور
+
 window.preloadGameAssets = function() {
-    // 1. جمع مسارات الصور الأساسية للواجهة
-    const imagesToLoad = [
+    // 1. إضافة الصور والواجهات الأساسية
+    let imagesToPreload = [
         'assets/images/logo.png',
         'assets/images/logo2.png',
         'assets/images/lobby-header-bg.jpg',
-        'assets/images/characters.png',
-        'assets/images/default-avatar.png'
+        'assets/images/characters.png'
     ];
 
-    // 2. سحب جميع صور الشخصيات والخلفيات من قاعدة البيانات تلقائياً
-    if (window.GAME_ASSETS) {
-        if (window.GAME_ASSETS.emblems) window.GAME_ASSETS.emblems.forEach(e => { if(e.src) imagesToLoad.push(e.src); });
-        if (window.GAME_ASSETS.characters) window.GAME_ASSETS.characters.forEach(c => { if(c.src) imagesToLoad.push(c.src); });
-        if (window.GAME_ASSETS.maps) window.GAME_ASSETS.maps.forEach(m => { if(m.src) imagesToLoad.push(m.src); });
+    // 2. سحب جميع صور الشخصيات من قاعدة البيانات
+    if(window.GAME_ASSETS && window.GAME_ASSETS.characters) {
+        window.GAME_ASSETS.characters.forEach(c => {
+            if(c.src) imagesToPreload.push(c.src);
+        });
     }
 
-    // 3. تحميل الصور في الخلفية بذكاء دون إيقاف المتصفح أو تقطيع الأنيميشن
-    requestAnimationFrame(() => {
-        imagesToLoad.forEach(src => {
-            const img = new Image();
-            img.src = src;
-        });
+    // 3. سحب جميع صور الخرائط والامبلم
+    if(window.GAME_ASSETS && window.GAME_ASSETS.maps) {
+        window.GAME_ASSETS.maps.forEach(m => { if(m.src) imagesToPreload.push(m.src); });
+    }
+    if(window.GAME_ASSETS && window.GAME_ASSETS.emblems) {
+        window.GAME_ASSETS.emblems.forEach(e => { if(e.src) imagesToPreload.push(e.src); });
+    }
+
+    // 4. تحميلها وحفظها بقوة في الذاكرة المخبئية
+    imagesToPreload.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        window.IMAGE_CACHE.push(img); 
     });
+    
+    console.log("⚡ Assets Preloaded Successfully!");
 };
 
-// تشغيل الدالة فوراً بعد اكتمال تحميل الهيكل الأساسي للموقع
+// تشغيل التحميل المسبق بذكاء: ننتظر حتى تفتح الصفحة بالكامل ثم نحمل الصور بالخلفية
 if (document.readyState === 'complete') {
     window.preloadGameAssets();
 } else {
