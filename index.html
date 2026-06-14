@@ -20,15 +20,14 @@
             --surface-hover: rgba(255, 255, 255, 0.05);
             
             /* ألوان مربع ARSENAL المستخرجة من الصورة */
-            --arsenal-top: #F2277B; /* الوردي الفاقع (أعلى المربع) */
-            --arsenal-bottom: #C61448; /* الأحمر الكرزي (أسفل المربع) */
+            --arsenal-top: #F2277B; 
+            --arsenal-bottom: #C61448; 
             
-            /* تم ربط لون الموقع الأساسي بلون أعلى مربع آرسنال */
+            /* تم ربط لون الموقع الأساسي */
             --accent-red: var(--arsenal-top); 
-            /* الـ RGB للون F2277B هو 242, 39, 123 */
             --accent-red-dim: rgba(242, 39, 123, 0.2); 
             
-            /* التدرج اللوني الذي سيستخدم في الأزرار الأساسية والعناوين */
+            /* التدرج اللوني */
             --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
             
             --accent-green: #2ecc71;
@@ -40,7 +39,6 @@
             --font-ar: 'IBM Plex Sans Arabic', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            /* ظل متوهج يناسب اللون الجديد */
             --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.35);
             --glass-bg: rgba(20, 20, 25, 0.85);
             --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -56,6 +54,10 @@
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
+
+        /* حماية الجوالات (وخاصة الآيفون) من عمل زوم إجباري مزعج */
+        input, textarea, select { font-size: 16px !important; }
+        body { touch-action: manipulation; }
 
         html { font-size: 16px; }
         html.font-small { font-size: 14px; }
@@ -89,14 +91,12 @@
         .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
-        /* الزر الأساسي يأخذ التدرج اللوني لمربع أرسنال */
         .btn-core { 
             background: var(--cyber-gradient); 
             color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
             font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-glow); 
             transition: var(--trans-smooth); 
         }
-        /* ظل الزر عند المرور عليه يأخذ لون أرسنال الغامق (C61448 = 198, 20, 72) */
         .btn-core:hover { 
             transform: translateY(-2px); 
             box-shadow: 0 12px 30px rgba(198, 20, 72, 0.5); 
@@ -123,10 +123,8 @@
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        /* تعديل شعار اللعبة الجانبي ليأخذ التدرج اللوني */
-        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; font-family: var(--font-en); font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; color: var(--text-main); cursor: pointer; text-transform: capitalize; }
-        .sidebar-logo span { background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.2rem; font-weight: 800; }
-
+        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; }
+        
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
@@ -156,8 +154,6 @@
         .top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
         .header-page-info { display: flex; align-items: center; }
-        
-        /* تعديل العنوان الرئيسي ليأخذ التدرج */
         .page-title { font-size: 1.5rem; font-weight: 700; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-inline-start: 40px; transition: var(--trans-smooth); }
         
         .mobile-brand-title { display: none; }
@@ -212,8 +208,6 @@
             .page-title { display: none; }
             
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-            .brand-name { font-size: 1.3rem; font-weight: 800; color: var(--text-main); font-family: var(--font-en); line-height: 1.1; text-transform: capitalize; }
-            .brand-name span { background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
             
             .mobile-only-theme { display: flex; }
@@ -255,7 +249,7 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <i class="ph-duotone ph-shield-check" style="font-size: 3.5rem; color: var(--accent-red); margin-bottom: 20px; display: inline-block;"></i>
+                <img src="assets/images/logo.png" alt="Deception Logo" style="width: 85px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
                 <button class="btn-core" onclick="window.switchModalMode('forms')" data-i18n="login_btn">تسجيل الدخول</button>
@@ -320,7 +314,9 @@
 
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
-            <div class="sidebar-logo">Decep<br><span>tion</span></div>
+            <div class="sidebar-logo" onclick="window.loadFragment('home', document.querySelector('.nav-btn'))">
+                <img src="assets/images/logo.png" alt="Deception Logo" style="width: 100%; max-width: 70px; object-fit: contain;">
+            </div>
             <nav class="nav-menu">
                 <button class="nav-btn active" onclick="window.loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
                 <button class="nav-btn" onclick="window.loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
@@ -338,8 +334,9 @@
             <header class="top-header">
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title" data-i18n="title_home">الرئيسية</h1>
+                    
                     <div class="mobile-brand-title">
-                        <div class="brand-name">Decep<br><span>tion</span></div>
+                        <img src="assets/images/logo.png" alt="Deception Logo" style="height: 35px; object-fit: contain; margin-bottom: 2px;">
                         <div class="mobile-section-name" id="mobile-section-name" data-i18n="title_home">الرئيسية</div>
                     </div>
                 </div>
