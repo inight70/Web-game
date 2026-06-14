@@ -12,7 +12,7 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
-        /* استدعاء خط Estedad الإحترافي لكامل الموقع */
+        /* فرض خط Estedad على كامل الموقع */
         @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&display=swap');
 
         :root {
@@ -26,19 +26,19 @@
             --accent-red: var(--arsenal-top); 
             --accent-red-dim: rgba(242, 39, 123, 0.2); 
             
-            --cyber-gradient: linear-gradient(135deg, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
+            --cyber-gradient: linear-gradient(90deg, var(--arsenal-top), var(--arsenal-bottom), #FF5E93, var(--arsenal-top));
             
             --accent-green: #2ecc71;
             --text-main: #ffffff;
             --text-dim: #6c6d76;
             
             --radius-pill: 100px;
-            --font-main: 'Estedad', sans-serif;
+            --font-en: 'Estedad', sans-serif;
+            --font-ar: 'Estedad', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.3);
             --glass-bg: rgba(20, 20, 25, 0.85);
-            --trans-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         [data-theme="light"] {
@@ -49,14 +49,13 @@
             --text-dim: #8f929b;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.2);
         }
 
-        /* حماية الآيفون من الزوم الإجباري وإجبار تطبيق الخط على كل العناصر */
-        body, html, input, textarea, select, button { 
-            font-family: var(--font-main) !important; 
+        /* حماية الجوالات من الزوم وفرض الخط على كل العناصر */
+        input, textarea, select, button { 
+            font-size: 16px !important; 
+            font-family: var(--font-ar) !important;
         }
-        input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
         html { font-size: 16px; }
@@ -68,7 +67,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body, html {
-            background-color: var(--bg-base); color: var(--text-main); 
+            background-color: var(--bg-base); color: var(--text-main); font-family: var(--font-ar) !important;
             height: 100vh; overflow: hidden; 
             transition: background-color 0.4s ease, color 0.4s ease;
             overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; 
@@ -80,6 +79,7 @@
         .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* نظام الشعار الذكي (Dark / Light) */
         .logo-light { display: none !important; }
         [data-theme="light"] .logo-dark { display: none !important; }
         [data-theme="light"] .logo-light { display: block !important; }
@@ -96,49 +96,62 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           التأثير الجديد (Premium LED Shine) الفخم والصامت
+           تأثير الزر الحديث (Aura Glow Effect)
            ========================================= */
-        @keyframes ledShine {
-            0% { left: -150%; opacity: 0; }
-            10% { opacity: 1; }
-            20% { left: 150%; opacity: 0; }
-            100% { left: 150%; opacity: 0; }
+        @keyframes auraFlow {
+            0% { background-position: 0%; }
+            100% { background-position: 400%; }
         }
 
-        .btn-core { 
+        .btn-core {
+            position: relative; 
             background: var(--cyber-gradient);
-            color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
-            font-weight: 700; font-size: 0.95rem; cursor: pointer; 
-            box-shadow: 0 4px 15px rgba(242, 39, 123, 0.2); 
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            position: relative;
-            overflow: hidden; /* ضروري لكي لا تخرج اللمعة خارج الزر */
-            z-index: 1;
+            background-size: 400%;
+            color: #fff; 
+            border: none; 
+            padding: 15px; 
+            width: 100%; 
+            border-radius: var(--radius-pill); 
+            font-weight: 700; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            z-index: 1; /* إبقاء النص في المقدمة */
+            transition: transform 0.3s ease;
         }
-        
-        /* تأثير اللمعة الأنيقة التي تمر داخل الزر */
-        .btn-core::after {
+
+        /* الهالة المشعة التي تظهر عند التحويم */
+        .btn-core::before {
             content: '';
             position: absolute;
-            top: 0; left: -150%;
-            width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-            transform: skewX(-25deg);
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: var(--cyber-gradient);
+            background-size: 400%;
+            border-radius: var(--radius-pill);
             z-index: -1;
-            animation: ledShine 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            filter: blur(15px);
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
 
-        .btn-core:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 25px rgba(242, 39, 123, 0.4); /* توهج أنيق عند التحويم */
+        .btn-core:hover {
+            transform: scale(1.03);
+            animation: auraFlow 6s linear infinite; /* سرعة ناعمة جداً ومستمرة */
         }
+
+        .btn-core:hover::before {
+            opacity: 1;
+            animation: auraFlow 6s linear infinite;
+        }
+
         .btn-core:active {
-            transform: translateY(0) scale(0.98);
+            transform: scale(0.97);
         }
         /* ========================================= */
         
         .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; box-shadow: none; }
-        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); box-shadow: none; }
+        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); transform: scale(1.02); }
+        .btn-secondary:active { transform: scale(0.97); }
+        
         .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
         .link-guest:hover { color: var(--text-main); }
 
@@ -149,7 +162,7 @@
 
         .input-wrapper { margin-bottom: 18px; text-align: center; }
         .input-wrapper label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; }
-        .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; }
+        .premium-input { width: 100%; padding: 15px 18px; background-color: var(--bg-base); border: 1px solid transparent; border-radius: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; transition: var(--trans-smooth); direction: ltr; text-align: center; font-family: var(--font-en) !important; }
         .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
         .auth-error-msg { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
@@ -158,13 +171,13 @@
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: var(--trans-smooth); }
+        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; }
         .sidebar-logo:hover { transform: scale(1.05); }
         
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
-        .nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: var(--shadow-glow); }
+        .nav-btn.active { color: #fff; background: var(--cyber-gradient); background-size: 200%; }
 
         .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .theme-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: var(--trans-smooth); }
@@ -204,7 +217,7 @@
         .settings-group { padding: 20px; border-bottom: 1px solid rgba(100,100,100,0.05); display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .settings-group label { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
         .segmented-control { display: flex; background: var(--bg-base); border-radius: var(--radius-pill); padding: 4px; border: 1px solid rgba(100,100,100,0.1); width: 100%; direction: ltr; }
-        .segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
+        .segment-btn { flex: 1; border: none; background: transparent; color: var(--text-dim); padding: 8px 0; border-radius: var(--radius-pill); font-size: 0.8rem; font-family: var(--font-ar); font-weight: 600; cursor: pointer; transition: var(--trans-smooth); text-align: center; }
         .segment-btn.active { background: var(--surface-panel); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .mobile-only-theme { display: none; } 
 
@@ -244,9 +257,6 @@
             
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
             .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
-            
-            /* تم تكبير الشعار في الجوال ليكون 28px بدلاً من 24px للبروز بشكل أجمل */
-            .mobile-brand-title img { max-height: 28px !important; width: auto; object-fit: contain; }
             
             .mobile-only-theme { display: flex; }
             .dynamic-content { padding: 20px 24px calc(90px + env(safe-area-inset-bottom)) 24px; }
@@ -377,8 +387,8 @@
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title" data-i18n="title_home">الرئيسية</h1>
                     <div class="mobile-brand-title">
-                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception">
-                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception">
+                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 28px; width: auto; object-fit: contain;">
+                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 28px; width: auto; object-fit: contain;">
                         <div class="mobile-section-name" id="mobile-section-name" data-i18n="title_home">الرئيسية</div>
                     </div>
                 </div>
