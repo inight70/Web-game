@@ -29,15 +29,15 @@ style.innerHTML = `
     .modern-action-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
     .modern-action-btn:active { transform: translateY(0) scale(0.98); }
     
-    .modern-danger-btn { background: rgba(255, 76, 106, 0.05); color: var(--accent-red); border: 1px solid rgba(255, 76, 106, 0.2); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; -webkit-tap-highlight-color: transparent;}
-    .modern-danger-btn:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 76, 106, 0.3); border-color: var(--accent-red); }
+    /* تنظيف الزر الأحمر ليأخذ لون أرسنال الجديد */
+    .modern-danger-btn { background: rgba(242, 39, 123, 0.05); color: var(--accent-red); border: 1px solid rgba(242, 39, 123, 0.2); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; -webkit-tap-highlight-color: transparent;}
+    .modern-danger-btn:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(242, 39, 123, 0.3); border-color: var(--accent-red); }
     .modern-danger-btn:active { transform: translateY(0) scale(0.98); }
     
     .friend-data-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 1000000; display: flex; justify-content: center; align-items: center; animation: smoothFadeIn 0.2s ease; padding: 20px; }
     .friend-data-card { background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); overflow: hidden; animation: smoothScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; position: relative; }
     .locked-view-msg { padding: 50px 20px; text-align: center; color: var(--text-dim); display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; margin: 20px; border: 1px dashed rgba(255,255,255,0.1); }
 
-    /* ستايلات النافذة العالمية لاختيار الشخصيات */
     .global-char-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 5px; }
     .global-char-card { background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); border-radius: 18px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; aspect-ratio: 3/4; box-shadow: 0 4px 15px rgba(0,0,0,0.2); -webkit-tap-highlight-color: transparent; animation: safeClickEnable 0.4s forwards; }
     .global-char-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: 0.4s ease; }
@@ -45,15 +45,17 @@ style.innerHTML = `
     
     .global-char-card:not(.locked):hover { border-color: rgba(255,255,255,0.3); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
     .global-char-card:not(.locked):hover img { transform: scale(1.05); }
-    .global-char-card:not(.locked):hover .global-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
+    
+    /* تحديث التوهج بألوان أرسنال */
+    .global-char-card:not(.locked):hover .global-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(242, 39, 123, 0.5) 60%, transparent 100%); }
 
-    .global-char-card.is-selected { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(255, 76, 106, 0.2), 0 10px 30px rgba(255, 76, 106, 0.4); transform: translateY(-3px); }
-    .global-char-card.is-selected .global-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(255, 76, 106, 0.5) 60%, transparent 100%); }
+    .global-char-card.is-selected { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(242, 39, 123, 0.2), 0 10px 30px rgba(242, 39, 123, 0.4); transform: translateY(-3px); }
+    .global-char-card.is-selected .global-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(242, 39, 123, 0.5) 60%, transparent 100%); }
     .selected-check-badge { position: absolute; top: 10px; right: 10px; z-index: 10; color: white; background: var(--accent-red); width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; border: 2px solid var(--surface-panel); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
     .global-char-card.locked { opacity: 0.6; filter: grayscale(100%); cursor: not-allowed; }
     .global-char-card.locked::after { content: '\\eb10'; font-family: 'Phosphor'; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: white; background: rgba(0,0,0,0.4); font-weight: bold; pointer-events: none; }
-    .global-char-card.locked .global-char-badge { background: rgba(255, 76, 106, 0.8); }
+    .global-char-card.locked .global-char-badge { background: rgba(242, 39, 123, 0.8); }
 
     @media (max-width: 768px) {
         .global-char-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -65,7 +67,6 @@ document.head.appendChild(style);
 // 3. النوافذ العالمية (Temporary Modals & Character Selector)
 // ==========================================
 
-// دالة النافذة المؤقتة (بديل alert)
 window.showTempModal = function(title, desc, iconClass, colorHex) {
     const modal = document.createElement('div');
     modal.className = 'friend-data-modal';
@@ -85,7 +86,6 @@ window.showTempModal = function(title, desc, iconClass, colorHex) {
     setTimeout(() => { if(modal.parentNode) modal.remove(); }, 3500);
 };
 
-// النافذة المعزولة لاختيار الشخصيات (تعمل في كل مكان)
 window.openGlobalCharacterSelector = function(e, currentSelectedId, onSelectCallback) {
     if(e) { e.preventDefault(); e.stopPropagation(); }
     
@@ -109,7 +109,7 @@ window.openGlobalCharacterSelector = function(e, currentSelectedId, onSelectCall
                 `;
             } else {
                 html += `
-                    <div class="global-char-card locked" onclick="window.showTempModal('شخصية مقفلة', 'يمكنك الحصول على هذه الشخصية من المتجر.', 'ph-bold ph-lock-key', '#ff4c6a'); event.stopPropagation();">
+                    <div class="global-char-card locked" onclick="window.showTempModal('شخصية مقفلة', 'يمكنك الحصول على هذه الشخصية من المتجر.', 'ph-bold ph-lock-key', '#F2277B'); event.stopPropagation();">
                         <img src="${char.src}" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="global-char-badge"><i class="ph-fill ph-lock-key"></i> ${char.name}</div>
                     </div>
@@ -137,9 +137,7 @@ window.openGlobalCharacterSelector = function(e, currentSelectedId, onSelectCall
     modal.onclick = function(ev) { if(ev.target === modal) modal.remove(); };
     modal.innerHTML = modalHtml;
     
-    // حفظ الدالة الراجعة (Callback)
     window._tempCharCallback = onSelectCallback;
-    
     document.body.appendChild(modal);
 };
 
@@ -321,9 +319,9 @@ window.viewFriendProfile = function(fName) {
             contentHtml = `
                 <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
                     <div style="display: flex; flex-direction: column; align-items: center; background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 30px 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.2);">
-                        <div style="width: 100px; height: 110px; background: linear-gradient(135deg, var(--accent-red), #ff8a9f); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; position: relative; margin-bottom: 15px; box-shadow: 0 15px 30px rgba(255, 76, 106, 0.3);">
+                        <div style="width: 100px; height: 110px; background: var(--cyber-gradient); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; position: relative; margin-bottom: 15px; box-shadow: var(--shadow-glow);">
                             <div style="position: absolute; inset: 4px; background: var(--surface-panel); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); z-index: 1;"></div>
-                            <span style="position: relative; z-index: 2; font-size: 2.8rem; font-weight: 900; font-family: var(--font-en); background: linear-gradient(135deg, var(--accent-red), #ff8a9f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${lvl}</span>
+                            <span style="position: relative; z-index: 2; font-size: 2.8rem; font-weight: 900; font-family: var(--font-en); background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${lvl}</span>
                             <span style="position: relative; z-index: 2; font-size: 0.75rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-top: -5px; letter-spacing: 1px;">Level</span>
                         </div>
                         <div style="font-size: 0.9rem; font-weight: bold; color: var(--text-dim); font-family: var(--font-en); background: rgba(255,255,255,0.03); padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.05);">XP: ${xp}</div>
