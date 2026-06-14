@@ -12,6 +12,7 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
+        /* استيراد خط Estedad وتطبيقه كلياً */
         @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&display=swap');
 
         :root {
@@ -36,7 +37,6 @@
             --font-ar: 'Estedad', sans-serif;
             
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.35);
             --glass-bg: rgba(20, 20, 25, 0.85);
             --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -49,11 +49,10 @@
             --text-dim: #8f929b;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
 
-        /* حماية الآيفون وتطبيق الخط إجبارياً على كل العناصر */
-        input, textarea, select, button { font-size: 16px !important; font-family: inherit; }
+        /* حماية الآيفون من الزوم الإجباري */
+        input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
         html { font-size: 16px; }
@@ -64,17 +63,25 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+        /* إجبار كل العناصر في الموقع (حتى الأزرار والحقول) على استخدام الخط الجديد */
+        body, html, button, input, textarea, select {
+            font-family: var(--font-ar);
+        }
+
         body, html {
-            background-color: var(--bg-base); color: var(--text-main); font-family: var(--font-ar);
+            background-color: var(--bg-base); color: var(--text-main);
             height: 100vh; overflow: hidden; 
             transition: background-color 0.4s ease, color 0.4s ease;
             overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; 
         }
 
+        input, textarea { -webkit-user-select: auto; user-select: auto; }
+
         #global-loader { position: fixed; inset: 0; background-color: var(--bg-base); z-index: 999999; display: flex; justify-content: center; align-items: center; transition: 0.5s; }
         .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* نظام الشعار الذكي (Dark / Light) */
         .logo-light { display: none !important; }
         [data-theme="light"] .logo-dark { display: none !important; }
         [data-theme="light"] .logo-light { display: block !important; }
@@ -91,17 +98,17 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           أنيميشن الزر الحديث المبني على كودك (بألوانك الخاصة)
+           تأثير الزر الساحر (Aura Glow) المستوحى من طلبك
            ========================================= */
-        @keyframes animateGlowBg {
+        @keyframes animate-gradient {
             0% { background-position: 0% 50%; }
             100% { background-position: 400% 50%; }
         }
 
         .btn-core { 
-            position: relative; /* ضروري لعمل الوهج الخلفي */
+            position: relative;
             background: linear-gradient(90deg, var(--arsenal-top), var(--arsenal-bottom), #FF5E93, var(--arsenal-top));
-            background-size: 400%;
+            background-size: 400% auto;
             color: #fff; 
             border: none; 
             padding: 15px; 
@@ -110,34 +117,36 @@
             font-weight: 700; 
             font-size: 0.95rem; 
             cursor: pointer; 
-            z-index: 1; /* إبقاء النص في الأمام */
-            box-shadow: none; /* إزالة الظل الثابت تماماً */
-            transition: transform 0.3s ease, box-shadow 0.4s ease;
-            animation: animateGlowBg 8s linear infinite; /* حركة ناعمة ومستمرة بدون توقف */
+            z-index: 1; /* مهم ليبقى النص والزر فوق طبقة التوهج */
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            /* حركة الألوان مستمرة وناعمة تماماً */
+            animation: animate-gradient 8s linear infinite;
         }
-        
-        /* هذا الجزء هو الذي يصنع التوهج الخارجي السائل عند تمرير الماوس */
+
+        /* طبقة التوهج الخلفية المستمرة */
         .btn-core::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(90deg, var(--arsenal-top), var(--arsenal-bottom), #FF5E93, var(--arsenal-top));
-            background-size: 400%;
-            border-radius: var(--radius-pill);
+            border-radius: inherit;
+            background: inherit;
+            background-size: inherit;
+            animation: inherit;
             z-index: -1;
-            filter: blur(15px);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            animation: animateGlowBg 8s linear infinite;
+            opacity: 0.6; /* توهج أساسي دائم */
+            filter: blur(12px);
+            transition: opacity 0.4s ease, filter 0.4s ease;
         }
 
+        /* التأثير عند التحويم (Hover) */
         .btn-core:hover { 
-            transform: scale(1.02); /* تكبير ناعم بدلاً من 1.05 المزعجة للعين */
-            box-shadow: 0px 0px 15px rgba(242, 39, 123, 0.6);
+            transform: scale(1.02); /* تكبير ناعم جداً بدون تكسير تصميم الصفحة */
+            animation: animate-gradient 4s linear infinite; /* تسريع حركة اللون بلطف */
         }
         
         .btn-core:hover::before {
-            opacity: 0.85; /* تفعيل التوهج السائل */
+            opacity: 1;
+            filter: blur(20px); /* زيادة هالة التوهج */
         }
 
         .btn-core:active {
@@ -172,7 +181,8 @@
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
-        .nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: var(--shadow-glow); }
+        /* زر القائمة الجانبية يتوهج بهدوء ليدل على الصفحة النشطة */
+        .nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: 0 4px 15px rgba(242, 39, 123, 0.4); }
 
         .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .theme-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: var(--trans-smooth); }
@@ -281,9 +291,6 @@
             .bottom-tab i { font-size: 1.6rem; transition: var(--trans-smooth); }
             .bottom-tab.active { color: var(--accent-red); }
             .bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--accent-red-dim)); }
-            
-            /* تكبير الشعار قليلاً في الجوال ليكون متوازناً */
-            .mobile-brand-title img { max-height: 28px !important; }
         }
     </style>
 </head>
