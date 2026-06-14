@@ -12,7 +12,7 @@
     <script type="module" src="firebase-config.js"></script>
     
     <style>
-        /* تم تغيير الخط بالكامل إلى Estedad الجبار */
+        /* تم تغيير الخط بالكامل إلى خط Estedad العالمي */
         @import url('https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800;900&display=swap');
 
         :root {
@@ -20,7 +20,6 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* ألوان مربع ARSENAL المستخرجة من الصورة */
             --arsenal-top: #F2277B; 
             --arsenal-bottom: #C61448; 
             
@@ -34,7 +33,8 @@
             --text-dim: #6c6d76;
             
             --radius-pill: 100px;
-            /* تعميم الخط على كامل الموقع */
+            
+            /* توحيد الخط ليصبح Estedad في جميع أنحاء الموقع */
             --font-en: 'Estedad', sans-serif;
             --font-ar: 'Estedad', sans-serif;
             
@@ -97,67 +97,42 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           حركة تدفق اللون السلسة جداً للأزرار
+           أنيميشن الألوان المتدفق بانسيابية تامة
            ========================================= */
-        @keyframes edgeFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        @keyframes seamlessFlow {
+            0% { background-position: 200% 0; }
+            100% { background-position: 0% 0; }
         }
 
-        /* الزر الأساسي: بدون ظل، بدون إطار، بلون متحرك ناعم وسريع */
         .btn-core { 
-            background: linear-gradient(120deg, var(--arsenal-top), var(--arsenal-bottom), #8A00E6, #FF005A, var(--arsenal-top));
-            background-size: 300% 300%;
-            animation: edgeFlow 2.5s ease-in-out infinite;
+            /* خلفية بتدرج أفقي لتنساب بنعومة، وتم تكبير حجمها لضمان عدم التقطيع */
+            background: linear-gradient(90deg, var(--arsenal-top), var(--arsenal-bottom), var(--arsenal-top));
+            background-size: 200% 100%;
+            animation: seamlessFlow 4s linear infinite;
+            
             color: #fff; 
-            border: none !important; 
+            border: none; /* إزالة أي إطار تماماً */
             padding: 15px; 
             width: 100%; 
             border-radius: var(--radius-pill); 
             font-weight: 700; 
             font-size: 0.95rem; 
             cursor: pointer; 
-            box-shadow: none !important; /* إزالة الظل تماماً */
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: none; /* إزالة الظلال ليصبح مسطحاً تماماً */
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         .btn-core:hover { 
-            transform: translateY(-2px) scale(1.02); 
-            animation: edgeFlow 1.2s ease-in-out infinite; /* زيادة سرعة تدفق اللون عند التحويم */
-            box-shadow: none !important; 
+            transform: translateY(-3px); 
+            box-shadow: none; /* حماية من ظهور أي ظلال عند المرور */
         }
         .btn-core:active {
             transform: translateY(0) scale(0.98);
         }
         
-        /* الزر الثانوي: زجاجي بتدرج خفيف جداً ومتحرك، بدون إطارات */
-        .btn-secondary { 
-            background: linear-gradient(120deg, rgba(242, 39, 123, 0.05), rgba(138, 0, 230, 0.1), rgba(242, 39, 123, 0.05));
-            background-size: 300% 300%;
-            animation: edgeFlow 3s ease-in-out infinite;
-            color: var(--text-main); 
-            border: none !important; /* إزالة الإطار تماماً */
-            box-shadow: none !important;
-            padding: 15px; 
-            width: 100%; 
-            border-radius: var(--radius-pill); 
-            font-weight: 700; 
-            font-size: 0.95rem; 
-            cursor: pointer; 
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            margin-top: 10px; 
-        }
-        .btn-secondary:hover { 
-            transform: translateY(-2px) scale(1.02); 
-            background: linear-gradient(120deg, rgba(242, 39, 123, 0.1), rgba(138, 0, 230, 0.15), rgba(242, 39, 123, 0.1));
-            background-size: 300% 300%;
-            animation: edgeFlow 1.5s ease-in-out infinite; 
-        }
-        .btn-secondary:active {
-            transform: translateY(0) scale(0.98);
-        }
-        /* ========================================= */
-
+        /* إزالة الإطار أيضاً من الزر الثانوي ليتماشى مع الطابع المسطح */
+        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
+        .btn-secondary:hover { background-color: rgba(100,100,100,0.15); }
+        
         .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
         .link-guest:hover { color: var(--text-main); }
 
@@ -303,8 +278,8 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 50px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
-                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 50px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
                 
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
@@ -393,8 +368,8 @@
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title" data-i18n="title_home">الرئيسية</h1>
                     <div class="mobile-brand-title">
-                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 22px; width: auto; object-fit: contain;">
-                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 22px; width: auto; object-fit: contain;">
+                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 24px; width: auto; object-fit: contain;">
+                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 24px; width: auto; object-fit: contain;">
                         <div class="mobile-section-name" id="mobile-section-name" data-i18n="title_home">الرئيسية</div>
                     </div>
                 </div>
