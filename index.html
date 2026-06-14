@@ -19,13 +19,14 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
+            /* ألوان مربع ARSENAL */
             --arsenal-top: #F2277B; 
             --arsenal-bottom: #C61448; 
             
             --accent-red: var(--arsenal-top); 
             --accent-red-dim: rgba(242, 39, 123, 0.2); 
             
-            --cyber-gradient: linear-gradient(135deg, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
+            --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
             
             --accent-green: #2ecc71;
             --text-main: #ffffff;
@@ -38,7 +39,7 @@
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
             --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.35);
             --glass-bg: rgba(20, 20, 25, 0.85);
-            --trans-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --trans-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         [data-theme="light"] {
@@ -52,7 +53,7 @@
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
 
-        /* حماية الآيفون من الزوم الإجباري */
+        /* حماية الآيفون من الزوم الإجباري (Zoom Fix) */
         input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
@@ -77,7 +78,7 @@
         .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* نظام الشعار الذكي (Dark / Light) */
+        /* نظام الشعار الذكي */
         .logo-light { display: none !important; }
         [data-theme="light"] .logo-dark { display: none !important; }
         [data-theme="light"] .logo-light { display: block !important; }
@@ -94,48 +95,70 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           تأثيرات الأزرار المودرن 2026 (AAA Game UI)
+           أزرار 2026: سائل مشع + توهج + نجوم متفجرة
            ========================================= */
+        @keyframes liquidCyber {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .btn-core { 
-            background: linear-gradient(135deg, var(--arsenal-top) 0%, var(--arsenal-bottom) 50%, #8a00e6 100%);
-            background-size: 200% auto;
+            position: relative;
+            background: linear-gradient(270deg, var(--arsenal-top), #ff6b9a, var(--arsenal-bottom), #b21f5f);
+            background-size: 300% 300%;
+            animation: liquidCyber 4s ease infinite;
             color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
-            font-weight: 800; font-size: 0.95rem; cursor: pointer; 
-            box-shadow: 0 4px 15px rgba(242, 39, 123, 0.2);
-            /* حركة بطيئة وناعمة للحالة العادية */
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-            position: relative; overflow: hidden; z-index: 1;
+            font-weight: 700; font-size: 0.95rem; cursor: pointer; 
+            box-shadow: var(--shadow-glow); 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            z-index: 1;
         }
-        
-        /* وميض ضوئي يمر على الزر (Shine/Shimmer Effect) */
+
+        /* حاوية انفجار النجوم الوهمية */
         .btn-core::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg); transition: all 0.6s ease; z-index: -1;
+            content: '';
+            position: absolute; top: 50%; left: 50%;
+            width: 4px; height: 4px;
+            background: transparent; border-radius: 50%;
+            opacity: 0; pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: -1;
         }
 
-        /* عند مرور الماوس (Hover) */
-        .btn-core:hover { 
-            background-position: right center; /* تغيير التدرج اللوني بانسيابية */
-            transform: translateY(-3px) scale(1.02); /* تكبير وبروز أنيق */
-            box-shadow: 0 15px 35px rgba(138, 0, 230, 0.4), 0 5px 15px rgba(242, 39, 123, 0.4); 
-        }
-        .btn-core:hover::after {
-            left: 200%; /* تحريك الوميض الضوئي */
+        /* تأثير التحويم الأنيق لسطح المكتب (Glow & Scale) */
+        @media (hover: hover) {
+            .btn-core:hover { 
+                transform: translateY(-3px) scale(1.02); 
+                animation: liquidCyber 2s ease infinite; 
+                box-shadow: 0 15px 35px rgba(242, 39, 123, 0.4), inset 0 0 20px rgba(255,255,255,0.3); 
+            }
         }
 
-        /* عند الضغط الفعلي (Click/Active) - فيزياء النوابض (Tactile Spring) */
-        .btn-core:active {
-            transform: translateY(1px) scale(0.96); /* غوص عميق وسريع */
-            box-shadow: 0 2px 8px rgba(242, 39, 123, 0.3); /* تقليص الظل بشكل واقعي */
-            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1); /* سرعة الاستجابة للضغط */
+        /* تأثير انطلاق النجوم عند الضغط (للكل: جوال وكمبيوتر) */
+        .btn-core:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(242, 39, 123, 0.3); }
+        .btn-core:active::after { animation: popStars 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes popStars {
+            0% {
+                opacity: 1;
+                box-shadow: 
+                    0 0 0 0px #fff, 0 0 0 0px var(--arsenal-top), 0 0 0 0px #fff, 
+                    0 0 0 0px var(--arsenal-top), 0 0 0 0px #fff, 0 0 0 0px var(--arsenal-top);
+            }
+            100% {
+                opacity: 0;
+                box-shadow: 
+                    -100px -30px 0 1px #fff, 100px -30px 0 2px var(--arsenal-top), 
+                    -70px 40px 0 1px #fff, 70px 40px 0 2px var(--arsenal-top), 
+                    -15px -50px 0 1.5px #fff, 15px 50px 0 1.5px var(--arsenal-top);
+            }
         }
         /* ========================================= */
         
-        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 10px; }
-        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
-        .btn-secondary:active { transform: scale(0.96); transition: all 0.1s; }
-        
+        .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
+        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); transform: translateY(-2px); }
+        .btn-secondary:active { transform: scale(0.96); }
         .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
         .link-guest:hover { color: var(--text-main); }
 
@@ -155,14 +178,12 @@
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        /* الشعار الجانبي */
-        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .sidebar-logo:hover { transform: scale(1.08) translateY(-2px); filter: drop-shadow(0 5px 15px var(--accent-red-dim)); }
+        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; }
+        .sidebar-logo:hover { transform: scale(1.05); }
         
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
-        .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
-        .nav-btn:hover { color: var(--text-main); background-color: var(--surface-hover); transform: translateY(-3px); }
-        .nav-btn:active { transform: scale(0.9); transition: 0.1s; }
+        .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
+        .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
         .nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: var(--shadow-glow); }
 
         .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -173,14 +194,13 @@
         .right-sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
         .friends-header { font-size: 0.8rem; color: var(--text-dim); font-weight: 700; margin-bottom: 25px; text-align: center; }
         #friends-container-desktop { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
-        .friend-avatar { width: 44px; height: 44px; border-radius: 50%; position: relative; cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 2px; border: 2px solid transparent; }
+        .friend-avatar { width: 44px; height: 44px; border-radius: 50%; position: relative; cursor: pointer; transition: var(--trans-smooth); padding: 2px; border: 2px solid transparent; }
         .friend-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .friend-avatar:hover { border-color: var(--accent-red); transform: scale(1.15) translateY(-2px); box-shadow: 0 5px 15px var(--accent-red-dim); }
+        .friend-avatar:hover { border-color: var(--accent-red); transform: scale(1.1); }
         .online-dot { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background-color: var(--accent-green); border: 2px solid var(--bg-base); border-radius: 50%; }
 
-        .add-friend-btn { width: 44px; height: 44px; border-radius: 50%; background-color: var(--surface-panel); border: 1px dashed var(--text-dim); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 10px; }
-        .add-friend-btn:hover { border-color: var(--text-main); color: var(--text-main); background: var(--surface-hover); transform: rotate(90deg) scale(1.1); }
-        .add-friend-btn:active { transform: scale(0.9); transition: 0.1s; }
+        .add-friend-btn { width: 44px; height: 44px; border-radius: 50%; background-color: var(--surface-panel); border: 1px dashed var(--text-dim); color: var(--text-dim); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
+        .add-friend-btn:hover { border-color: var(--text-main); color: var(--text-main); background: var(--surface-hover); transform: rotate(90deg); }
 
         .guest-friends-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; opacity: 0.6; padding: 0 10px; }
         .guest-friends-msg i { font-size: 1.8rem; color: var(--text-dim); }
@@ -190,14 +210,12 @@
         .top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
         .header-page-info { display: flex; align-items: center; }
-        .page-title { font-size: 1.5rem; font-weight: 800; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-inline-start: 40px; transition: var(--trans-smooth); letter-spacing: 0.5px; }
-        
+        .page-title { font-size: 1.5rem; font-weight: 700; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-inline-start: 40px; transition: var(--trans-smooth); }
         .mobile-brand-title { display: none; }
 
         .header-actions { display: flex; align-items: center; gap: 20px; direction: ltr; }
-        .header-icon-btn { background: transparent; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; }
-        .header-icon-btn:hover, .header-icon-btn.active { color: var(--text-main); background-color: var(--surface-hover); transform: translateY(-2px); }
-        .header-icon-btn:active { transform: scale(0.9); transition: 0.1s; }
+        .header-icon-btn { background: transparent; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; }
+        .header-icon-btn:hover, .header-icon-btn.active { color: var(--text-main); background-color: var(--surface-hover); }
 
         .header-dropdown { position: absolute; top: 65px; left: 0; background-color: var(--surface-panel); border: 1px solid rgba(100,100,100,0.1); border-radius: 16px; width: 280px; box-shadow: var(--shadow-soft); display: none; flex-direction: column; z-index: 1000; direction: var(--dir, rtl); text-align: center; }
         .header-dropdown.show { display: flex; }
@@ -221,8 +239,7 @@
         .noti-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.4; }
         .noti-time { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; }
 
-        .profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.2); margin-left: 10px; transition: 0.3s; }
-        .profile-trigger:hover { opacity: 0.8; }
+        .profile-trigger { display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; padding-left: 15px; border-left: 1px solid rgba(100,100,100,0.2); margin-left: 10px; }
         .profile-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-panel); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-main); font-size: 1rem; border: 1px solid rgba(100,100,100,0.1); overflow: hidden; }
         .profile-avatar-fallback img { width: 100%; height: 100%; object-fit: cover; }
         .profile-info { display: flex; flex-direction: column; text-align: center; font-family: var(--font-en); }
@@ -246,6 +263,10 @@
             .page-title { display: none; }
             
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+            
+            /* إرجاع حجم شعار الجوال ليكون واضحاً وجميلاً (30px بدلاً من 22px) */
+            .mobile-brand-title img { max-height: 30px !important; }
+            
             .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
             
             .mobile-only-theme { display: flex; }
@@ -271,12 +292,11 @@
             .bottom-tab {
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 color: var(--text-dim); background: transparent; border: none;
-                height: 100%; flex: 1; cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                height: 100%; flex: 1; cursor: pointer; transition: var(--trans-smooth);
             }
-            .bottom-tab i { font-size: 1.6rem; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+            .bottom-tab i { font-size: 1.6rem; transition: var(--trans-smooth); }
             .bottom-tab.active { color: var(--accent-red); }
-            .bottom-tab.active i { transform: translateY(-4px) scale(1.1); filter: drop-shadow(0 6px 12px var(--accent-red-dim)); }
-            .bottom-tab:active i { transform: scale(0.85); transition: 0.1s; }
+            .bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--accent-red-dim)); }
         }
     </style>
 </head>
@@ -288,8 +308,8 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
-                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 65px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 65px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
                 
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
@@ -356,8 +376,8 @@
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
             <div class="sidebar-logo" onclick="window.loadFragment('home', document.querySelectorAll('.nav-btn')[0])">
-                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 40px; width: auto; object-fit: contain;">
-                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 40px; width: auto; object-fit: contain;">
+                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 32px; width: auto; object-fit: contain;">
+                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 32px; width: auto; object-fit: contain;">
             </div>
             
             <nav class="nav-menu">
@@ -378,8 +398,8 @@
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title" data-i18n="title_home">الرئيسية</h1>
                     <div class="mobile-brand-title">
-                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 28px; width: auto; object-fit: contain;">
-                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 28px; width: auto; object-fit: contain;">
+                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception">
+                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception">
                         <div class="mobile-section-name" id="mobile-section-name" data-i18n="title_home">الرئيسية</div>
                     </div>
                 </div>
