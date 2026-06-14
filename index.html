@@ -19,7 +19,6 @@
             --surface-panel: #1c1c24;
             --surface-hover: rgba(255, 255, 255, 0.05);
             
-            /* ألوان مربع ARSENAL */
             --arsenal-top: #F2277B; 
             --arsenal-bottom: #C61448; 
             
@@ -39,7 +38,7 @@
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
             --shadow-glow: 0 8px 20px rgba(242, 39, 123, 0.35);
             --glass-bg: rgba(20, 20, 25, 0.85);
-            --trans-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --trans-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         [data-theme="light"] {
@@ -53,7 +52,7 @@
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
 
-        /* حماية الآيفون من الزوم الإجباري (Zoom Fix) */
+        /* حماية الآيفون من الزوم الإجباري */
         input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
@@ -78,7 +77,7 @@
         .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* نظام الشعار الذكي */
+        /* نظام الشعار الذكي (Dark / Light) */
         .logo-light { display: none !important; }
         [data-theme="light"] .logo-dark { display: none !important; }
         [data-theme="light"] .logo-light { display: block !important; }
@@ -95,70 +94,85 @@
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
         /* =========================================
-           أزرار 2026: سائل مشع + توهج + نجوم متفجرة
+           2026 AAA Liquid Button Effect
            ========================================= */
-        @keyframes liquidCyber {
+        @keyframes advancedLiquid {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        .btn-core { 
+        .btn-core {
             position: relative;
-            background: linear-gradient(270deg, var(--arsenal-top), #ff6b9a, var(--arsenal-bottom), #b21f5f);
-            background-size: 300% 300%;
-            animation: liquidCyber 4s ease infinite;
-            color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
-            font-weight: 700; font-size: 0.95rem; cursor: pointer; 
-            box-shadow: var(--shadow-glow); 
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            background: linear-gradient(270deg, var(--arsenal-top), var(--arsenal-bottom), #FF5E93, var(--arsenal-top));
+            background-size: 400% 400%;
+            animation: advancedLiquid 6s ease-in-out infinite;
+            color: #fff;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: var(--radius-pill);
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
             z-index: 1;
+            /* الانتقال فائق النعومة */
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* حاوية انفجار النجوم الوهمية */
-        .btn-core::after {
+        /* الطبقة المشعة (Liquid Aura) */
+        .btn-core::before {
             content: '';
-            position: absolute; top: 50%; left: 50%;
-            width: 4px; height: 4px;
-            background: transparent; border-radius: 50%;
-            opacity: 0; pointer-events: none;
-            transform: translate(-50%, -50%);
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(270deg, var(--arsenal-top), var(--arsenal-bottom), #FF5E93, var(--arsenal-top));
+            background-size: 400% 400%;
             z-index: -1;
+            border-radius: var(--radius-pill);
+            filter: blur(12px);
+            opacity: 0.4;
+            animation: advancedLiquid 6s ease-in-out infinite;
+            transition: opacity 0.4s ease, filter 0.4s ease;
         }
 
-        /* تأثير التحويم الأنيق لسطح المكتب (Glow & Scale) */
+        /* اللمسة المودرن لأجهزة الكمبيوتر (Hover Glass Shine) */
         @media (hover: hover) {
-            .btn-core:hover { 
-                transform: translateY(-3px) scale(1.02); 
-                animation: liquidCyber 2s ease infinite; 
-                box-shadow: 0 15px 35px rgba(242, 39, 123, 0.4), inset 0 0 20px rgba(255,255,255,0.3); 
+            .btn-core:hover {
+                transform: translateY(-3px) scale(1.02);
+                letter-spacing: 0.5px;
+            }
+            .btn-core:hover::before {
+                opacity: 0.8;
+                filter: blur(18px);
+                animation: advancedLiquid 3s ease-in-out infinite; /* تسريع التوهج للحماس */
+            }
+            /* لمعة الزجاج السريعة */
+            .btn-core::after {
+                content: '';
+                position: absolute;
+                top: 0; left: -100%; width: 50%; height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                transform: skewX(-20deg);
+                transition: 0s;
+                border-radius: var(--radius-pill);
+                pointer-events: none;
+            }
+            .btn-core:hover::after {
+                left: 200%;
+                transition: left 0.7s cubic-bezier(0.19, 1, 0.22, 1);
             }
         }
-
-        /* تأثير انطلاق النجوم عند الضغط (للكل: جوال وكمبيوتر) */
-        .btn-core:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(242, 39, 123, 0.3); }
-        .btn-core:active::after { animation: popStars 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        @keyframes popStars {
-            0% {
-                opacity: 1;
-                box-shadow: 
-                    0 0 0 0px #fff, 0 0 0 0px var(--arsenal-top), 0 0 0 0px #fff, 
-                    0 0 0 0px var(--arsenal-top), 0 0 0 0px #fff, 0 0 0 0px var(--arsenal-top);
-            }
-            100% {
-                opacity: 0;
-                box-shadow: 
-                    -100px -30px 0 1px #fff, 100px -30px 0 2px var(--arsenal-top), 
-                    -70px 40px 0 1px #fff, 70px 40px 0 2px var(--arsenal-top), 
-                    -15px -50px 0 1.5px #fff, 15px 50px 0 1.5px var(--arsenal-top);
-            }
+        
+        /* تأثير الضغط الحقيقي للجوال والكمبيوتر */
+        .btn-core:active {
+            transform: translateY(0) scale(0.98);
+            letter-spacing: 0;
+            transition: 0.1s;
         }
         /* ========================================= */
         
         .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; }
-        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); transform: translateY(-2px); }
-        .btn-secondary:active { transform: scale(0.96); }
+        .btn-secondary:hover { background-color: rgba(100,100,100,0.1); }
         .link-guest { display: inline-block; margin-top: 20px; color: var(--text-dim); font-size: 0.9rem; background: none; border: none; cursor: pointer; font-weight: 600; transition: var(--trans-smooth); }
         .link-guest:hover { color: var(--text-main); }
 
@@ -263,10 +277,6 @@
             .page-title { display: none; }
             
             .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
-            
-            /* إرجاع حجم شعار الجوال ليكون واضحاً وجميلاً (30px بدلاً من 22px) */
-            .mobile-brand-title img { max-height: 30px !important; }
-            
             .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
             
             .mobile-only-theme { display: flex; }
@@ -308,8 +318,8 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 65px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
-                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 65px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="height: 60px; width: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
                 
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
@@ -376,8 +386,8 @@
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
             <div class="sidebar-logo" onclick="window.loadFragment('home', document.querySelectorAll('.nav-btn')[0])">
-                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 32px; width: auto; object-fit: contain;">
-                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 32px; width: auto; object-fit: contain;">
+                <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 36px; width: auto; object-fit: contain;">
+                <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 36px; width: auto; object-fit: contain;">
             </div>
             
             <nav class="nav-menu">
@@ -398,8 +408,8 @@
                 <div class="header-page-info">
                     <h1 class="page-title" id="page-title" data-i18n="title_home">الرئيسية</h1>
                     <div class="mobile-brand-title">
-                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception">
-                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception">
+                        <img src="assets/images/logo.png" class="logo-dark" alt="Deception" style="max-height: 28px; width: auto; object-fit: contain;">
+                        <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 28px; width: auto; object-fit: contain;">
                         <div class="mobile-section-name" id="mobile-section-name" data-i18n="title_home">الرئيسية</div>
                     </div>
                 </div>
