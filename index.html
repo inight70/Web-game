@@ -23,11 +23,9 @@
             --arsenal-top: #F2277B; 
             --arsenal-bottom: #C61448; 
             
-            /* تم ربط لون الموقع الأساسي */
             --accent-red: var(--arsenal-top); 
             --accent-red-dim: rgba(242, 39, 123, 0.2); 
             
-            /* التدرج اللوني */
             --cyber-gradient: linear-gradient(to bottom, var(--arsenal-top) 0%, var(--arsenal-bottom) 100%);
             
             --accent-green: #2ecc71;
@@ -55,13 +53,13 @@
             --shadow-glow: 0 8px 25px rgba(242, 39, 123, 0.25);
         }
 
-        /* حماية الجوالات (وخاصة الآيفون) من عمل زوم إجباري مزعج */
-        input, textarea, select { font-size: 16px !important; }
-        body { touch-action: manipulation; }
-
         html { font-size: 16px; }
         html.font-small { font-size: 14px; }
         html.font-large { font-size: 18px; }
+
+        /* منع تقريب الشاشة الإجباري في الجوالات (حل مشكلة الآيفون) */
+        input, textarea, select { font-size: 16px !important; }
+        body { touch-action: manipulation; }
 
         body.no-animations * { transition: none !important; animation: none !important; }
 
@@ -91,6 +89,17 @@
         .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
+        /* =========================================
+           نظام الشعار (الوضع الداكن والفاتح)
+           ========================================= */
+        .brand-logo-img { width: 100%; height: auto; object-fit: contain; transition: var(--trans-smooth); filter: drop-shadow(0 0 10px var(--accent-red-dim)); }
+        
+        .logo-light-mode { display: none; }
+        .logo-dark-mode { display: inline-block; }
+        
+        [data-theme="light"] .logo-dark-mode { display: none; }
+        [data-theme="light"] .logo-light-mode { display: inline-block; }
+
         .btn-core { 
             background: var(--cyber-gradient); 
             color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
@@ -118,13 +127,14 @@
         .premium-input:focus { border-color: var(--accent-red); background-color: rgba(100,100,100,0.05); }
         .auth-error-msg { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none; text-align: center; }
 
-        .app-shell { display: grid; grid-template-columns: 100px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
+        .app-shell { display: grid; grid-template-columns: 120px 1fr 100px; width: 100%; height: 100vh; filter: blur(15px); pointer-events: none; opacity: 0; transition: filter 0.5s, opacity 0.5s; }
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
 
-        .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; }
-        
+        /* حاوية الشعار الجانبي (بحجم كبير ومميز) */
+        .sidebar-logo { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 50px; width: 110px; cursor: pointer; }
+
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
@@ -154,6 +164,7 @@
         .top-header { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
 
         .header-page-info { display: flex; align-items: center; }
+        
         .page-title { font-size: 1.5rem; font-weight: 700; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-inline-start: 40px; transition: var(--trans-smooth); }
         
         .mobile-brand-title { display: none; }
@@ -207,8 +218,10 @@
             
             .page-title { display: none; }
             
-            .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-            .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; }
+            /* شعار الجوال بحجم ممتاز */
+            .mobile-brand-title { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; width: 100px; }
+            
+            .mobile-section-name { font-size: 0.75rem; color: var(--accent-red); font-weight: 700; margin-top: 5px; }
             
             .mobile-only-theme { display: flex; }
             .dynamic-content { padding: 20px 24px calc(90px + env(safe-area-inset-bottom)) 24px; }
@@ -249,7 +262,9 @@
         <div class="auth-card">
             <button class="close-modal-btn" onclick="window.closeAuthModal()"><i class="ph ph-x"></i></button>
             <div id="modal-welcome-view">
-                <img src="assets/images/logo.png" alt="Deception Logo" style="width: 85px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-red-dim));">
+                <img src="assets/images/logo.png" alt="Deception Logo" class="brand-logo-img logo-dark-mode" style="width: 140px; margin-bottom: 20px;">
+                <img src="assets/images/logo2.png" alt="Deception Logo" class="brand-logo-img logo-light-mode" style="width: 140px; margin-bottom: 20px;">
+                
                 <h2 data-i18n="welcome_title">أهلاً بك في اللعبة</h2>
                 <p data-i18n="welcome_desc">سجل دخولك الآن لتتمكن من اللعب، حفظ تقدمك، والتفاعل مع الأصدقاء.</p>
                 <button class="btn-core" onclick="window.switchModalMode('forms')" data-i18n="login_btn">تسجيل الدخول</button>
@@ -314,9 +329,11 @@
 
     <div id="app-shell" class="app-shell">
         <aside class="sidebar">
-            <div class="sidebar-logo" onclick="window.loadFragment('home', document.querySelector('.nav-btn'))">
-                <img src="assets/images/logo.png" alt="Deception Logo" style="width: 100%; max-width: 70px; object-fit: contain;">
+            <div class="sidebar-logo">
+                <img src="assets/images/logo.png" alt="Deception Logo" class="brand-logo-img logo-dark-mode">
+                <img src="assets/images/logo2.png" alt="Deception Logo" class="brand-logo-img logo-light-mode">
             </div>
+            
             <nav class="nav-menu">
                 <button class="nav-btn active" onclick="window.loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
                 <button class="nav-btn" onclick="window.loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
@@ -336,7 +353,8 @@
                     <h1 class="page-title" id="page-title" data-i18n="title_home">الرئيسية</h1>
                     
                     <div class="mobile-brand-title">
-                        <img src="assets/images/logo.png" alt="Deception Logo" style="height: 35px; object-fit: contain; margin-bottom: 2px;">
+                        <img src="assets/images/logo.png" alt="Deception Logo" class="brand-logo-img logo-dark-mode">
+                        <img src="assets/images/logo2.png" alt="Deception Logo" class="brand-logo-img logo-light-mode">
                         <div class="mobile-section-name" id="mobile-section-name" data-i18n="title_home">الرئيسية</div>
                     </div>
                 </div>
