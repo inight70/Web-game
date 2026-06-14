@@ -108,42 +108,37 @@ window.UI_COMPONENTS = {
 };
 
 // ==========================================
-// 3. نظام التحميل المسبق الذكي (Asset Preloading System)
+// 3. نظام التحميل المسبق للصور (Professional Asset Preloader)
 // ==========================================
 window.preloadGameAssets = function() {
-    let imagesToPreload = [];
-    
+    // 1. جمع مسارات الصور الأساسية للواجهة
+    const imagesToLoad = [
+        'assets/images/logo.png',
+        'assets/images/logo2.png',
+        'assets/images/lobby-header-bg.jpg',
+        'assets/images/characters.png',
+        'assets/images/default-avatar.png'
+    ];
+
+    // 2. سحب جميع صور الشخصيات والخلفيات من قاعدة البيانات تلقائياً
     if (window.GAME_ASSETS) {
-        // سحب مسارات الشعارات (Emblems)
-        if (window.GAME_ASSETS.emblems) {
-            window.GAME_ASSETS.emblems.forEach(e => {
-                if (e.src) imagesToPreload.push(e.src);
-            });
-        }
-        
-        // سحب مسارات الخرائط (Maps)
-        if (window.GAME_ASSETS.maps) {
-            window.GAME_ASSETS.maps.forEach(m => {
-                if (m.src) imagesToPreload.push(m.src);
-            });
-        }
-        
-        // سحب مسارات الشخصيات (Characters)
-        if (window.GAME_ASSETS.characters) {
-            window.GAME_ASSETS.characters.forEach(c => {
-                if (c.src) imagesToPreload.push(c.src);
-            });
-        }
+        if (window.GAME_ASSETS.emblems) window.GAME_ASSETS.emblems.forEach(e => { if(e.src) imagesToLoad.push(e.src); });
+        if (window.GAME_ASSETS.characters) window.GAME_ASSETS.characters.forEach(c => { if(c.src) imagesToLoad.push(c.src); });
+        if (window.GAME_ASSETS.maps) window.GAME_ASSETS.maps.forEach(m => { if(m.src) imagesToLoad.push(m.src); });
     }
-    
-    // عملية الحقن والتحميل الصامت في ذاكرة المتصفح
-    imagesToPreload.forEach(src => {
-        const img = new Image();
-        img.src = src;
+
+    // 3. تحميل الصور في الخلفية بذكاء دون إيقاف المتصفح أو تقطيع الأنيميشن
+    requestAnimationFrame(() => {
+        imagesToLoad.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
     });
-    
-    console.log("تم تحميل الموارد البصرية مسبقاً بنجاح.");
 };
 
-// تشغيل دالة التحميل المسبق فور قراءة هذا الملف
-window.preloadGameAssets();
+// تشغيل الدالة فوراً بعد اكتمال تحميل الهيكل الأساسي للموقع
+if (document.readyState === 'complete') {
+    window.preloadGameAssets();
+} else {
+    window.addEventListener('load', window.preloadGameAssets);
+}
