@@ -106,3 +106,44 @@ window.UI_COMPONENTS = {
         `;
     }
 };
+
+// ==========================================
+// 3. نظام التحميل المسبق الذكي (Asset Preloading System)
+// ==========================================
+window.preloadGameAssets = function() {
+    let imagesToPreload = [];
+    
+    if (window.GAME_ASSETS) {
+        // سحب مسارات الشعارات (Emblems)
+        if (window.GAME_ASSETS.emblems) {
+            window.GAME_ASSETS.emblems.forEach(e => {
+                if (e.src) imagesToPreload.push(e.src);
+            });
+        }
+        
+        // سحب مسارات الخرائط (Maps)
+        if (window.GAME_ASSETS.maps) {
+            window.GAME_ASSETS.maps.forEach(m => {
+                if (m.src) imagesToPreload.push(m.src);
+            });
+        }
+        
+        // سحب مسارات الشخصيات (Characters)
+        if (window.GAME_ASSETS.characters) {
+            window.GAME_ASSETS.characters.forEach(c => {
+                if (c.src) imagesToPreload.push(c.src);
+            });
+        }
+    }
+    
+    // عملية الحقن والتحميل الصامت في ذاكرة المتصفح
+    imagesToPreload.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
+    
+    console.log("تم تحميل الموارد البصرية مسبقاً بنجاح.");
+};
+
+// تشغيل دالة التحميل المسبق فور قراءة هذا الملف
+window.preloadGameAssets();
