@@ -36,15 +36,29 @@
     .mode-bg { position: absolute; inset: 0; background: radial-gradient(circle at top, var(--mode-glow) 0%, transparent 70%); opacity: 0.2; transition: 0.4s; z-index: 0; }
     .mode-card:hover .mode-bg { opacity: 0.5; }
 
-    .mode-title { font-family: var(--font-en); font-size: 1.1rem; font-weight: 900; letter-spacing: 6px; color: rgba(255,255,255,0.7); text-transform: uppercase; z-index: 1; transition: 0.3s; margin-right: -6px; }
-    .mode-settings-footer { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.5); z-index: 1; display: flex; align-items: center; gap: 5px; margin-top: 15px; transition: 0.3s; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 100px; }
+    .mode-title { 
+        font-family: var(--font-en); font-size: 1.1rem; font-weight: 900; letter-spacing: 6px; 
+        color: rgba(255,255,255,0.7); text-transform: uppercase; z-index: 1; transition: 0.3s;
+        margin-right: -6px; 
+    }
 
-    .mode-card.active { border-color: var(--mode-color); box-shadow: 0 8px 25px var(--mode-glow), inset 0 0 15px var(--mode-glow); transform: translateY(-3px); }
+    .mode-settings-footer { 
+        font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.5); z-index: 1; 
+        display: flex; align-items: center; gap: 5px; margin-top: 15px; transition: 0.3s;
+        background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 100px;
+    }
+
+    .mode-card.active { 
+        border-color: var(--mode-color); 
+        box-shadow: 0 8px 25px var(--mode-glow), inset 0 0 15px var(--mode-glow); 
+        transform: translateY(-3px);
+    }
     .mode-card.active .mode-bg { opacity: 0.8; }
     .mode-card.active .mode-title { color: white; text-shadow: 0 0 10px var(--mode-color); }
     .mode-card.active .mode-settings-footer { color: white; background: var(--mode-color); }
 
     /* ========================================= */
+
     .lobby-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
     .lobby-section-title { font-size: 1rem; font-weight: 800; color: var(--text-dim); }
 
@@ -66,17 +80,18 @@
     .empty-emblem-slot i { font-size: 1.8rem; }
 
     /* =========================================
-       أزرار أسفل اللوبي (الليدر واللاعبين)
+       الأزرار السفلية الجديدة للوبي
        ========================================= */
     .lobby-bottom-actions { display: flex; gap: 15px; margin-top: 10px; }
+    
     .btn-lobby-ready { flex: 1; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent;}
     .btn-lobby-ready:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
     .btn-lobby-ready:active { transform: scale(0.98); }
     .btn-lobby-ready.is-ready { background: var(--accent-green); color: white; border-color: var(--accent-green); box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); }
     
-    /* زر بدء اللعبة الخاص بالليدر */
-    .btn-lobby-start { flex: 1; background: var(--cyber-gradient); color: white; border: none; border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-glow); display: flex; justify-content: center; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent;}
-    .btn-lobby-start:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(242, 39, 123, 0.4); }
+    /* زر البدء (خاص بالمالك) بتدرج آرسنال */
+    .btn-lobby-start { flex: 1; background: var(--cyber-gradient); color: white; border: none; border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: 0 8px 25px rgba(242, 39, 123, 0.4); justify-content: center; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent; display: none; } /* مخفي افتراضياً */
+    .btn-lobby-start:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(242, 39, 123, 0.6); }
     .btn-lobby-start:active { transform: scale(0.98); }
 
     .btn-lobby-leave { width: 65px; background: rgba(242, 39, 123, 0.05); color: var(--accent-red); border: 1px solid rgba(242, 39, 123, 0.2); border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent;}
@@ -84,13 +99,13 @@
     .btn-lobby-leave:active { transform: scale(0.95); }
 
     /* =========================================
-       نوافذ منبثقة (Modals)
+       النوافذ المنبثقة
        ========================================= */
     .game-modal-overlay { position: fixed; inset: 0; background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 15px; }
     .game-modal-overlay.show { opacity: 1; visibility: visible; }
     .game-modal-card { background: var(--surface-panel); width: 100%; max-width: 480px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
     .game-modal-overlay.show .game-modal-card { transform: scale(1) translateY(0); }
-    .modal-header { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header { padding: 20px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
     .modal-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; }
     .btn-close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent;}
     .btn-close-modal:hover { color: var(--accent-red); transform: rotate(90deg); }
@@ -105,19 +120,24 @@
     .setting-seg-btn.active { background: var(--surface-panel); color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
     .setting-seg-btn:disabled { cursor: not-allowed; opacity: 0.7; }
 
-    /* تصميم نافذة الدعوة المطورة */
-    .invite-list-wrapper { max-height: 400px; overflow-y: auto; padding: 20px; scrollbar-width: none; }
+    /* =========================================
+       تنسيقات نافذة الدعوة الجديدة (بدون أفتار)
+       ========================================= */
+    .invite-list-wrapper { max-height: 350px; overflow-y: auto; padding: 0 25px 20px 25px; scrollbar-width: none; }
     .invite-list-wrapper::-webkit-scrollbar { display: none; }
     
-    .friend-invite-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.2); margin-bottom: 12px; -webkit-tap-highlight-color: transparent;}
+    .friend-invite-row { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 20px; cursor: pointer; transition: 0.3s; border: 1px solid transparent; background: rgba(0,0,0,0.2); margin-bottom: 12px; }
     .friend-invite-row:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
-    .friend-invite-row.selected { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.05); }
+    .friend-invite-row.selected { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.1); }
     
-    .custom-checkbox { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; color: transparent; transition: 0.3s; flex-shrink: 0; background: rgba(0,0,0,0.3); }
-    .friend-invite-row.selected .custom-checkbox { background: var(--accent-green); border-color: var(--accent-green); color: white; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); }
+    .friend-emblem-wrapper { flex: 1; pointer-events: none; } /* منع النقرات على الإمبلم لتفعيل الصندوق فقط */
     
-    /* تعطيل المؤشر للامبلم لكي يتم الضغط على الصف كاملاً بدون تداخل */
-    .emblem-wrapper-invite { flex: 1; pointer-events: none; margin-left: 15px; }
+    .custom-checkbox { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; color: transparent; transition: 0.3s; flex-shrink: 0; margin-left: 5px; }
+    .friend-invite-row.selected .custom-checkbox { background: var(--accent-green); border-color: var(--accent-green); color: white; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4); }
+
+    /* زر التحديد الأنيق المصغر */
+    .btn-mini-select-all { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); font-size: 0.8rem; font-weight: 700; padding: 6px 14px; border-radius: 100px; cursor: pointer; transition: 0.3s; }
+    .btn-mini-select-all:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3); }
 
     @media (max-width: 768px) {
         .emblems-grid { grid-template-columns: 1fr; }
@@ -189,10 +209,10 @@
             <i class="ph-bold ph-check-circle" style="font-size: 1.3rem;"></i> <span>تأكيد الجاهزية</span>
         </button>
         
-        <button class="btn-lobby-start" id="btn-start-action" onclick="if(window.gameEngine) window.gameEngine.startGameAsHost()" style="display: none;">
+        <button class="btn-lobby-start" id="btn-start-action" onclick="if(window.gameEngine) window.gameEngine.startGameAsHost(); else alert('محرك اللعبة غير متصل');">
             <i class="ph-bold ph-play" style="font-size: 1.3rem;"></i> <span>بدء اللعبة</span>
         </button>
-        
+
         <button class="btn-lobby-leave" onclick="openLeaveModal()">
             <i class="ph-bold ph-sign-out"></i>
         </button>
@@ -264,18 +284,19 @@
 
 <div class="game-modal-overlay" id="invite-friends-modal" onclick="if(event.target === this) closeInviteModal()">
     <div class="game-modal-card">
-        <div class="modal-header">
+        <div class="modal-header" style="border-bottom: none; padding-bottom: 10px;">
             <div class="modal-title"><i class="ph-fill ph-users"></i> دعوة الأصدقاء</div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <button id="btn-select-all" onclick="toggleSelectAllFriends()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.05); color: white; padding: 8px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px;"><i class="ph-bold ph-check-square-offset"></i> <span>تحديد الكل</span></button>
-                <button class="btn-close-modal" onclick="closeInviteModal()"><i class="ph-bold ph-x"></i></button>
-            </div>
+            <button class="btn-close-modal" onclick="closeInviteModal()"><i class="ph-bold ph-x"></i></button>
         </div>
         
+        <div style="display: flex; justify-content: flex-end; padding: 0 25px 15px 25px;">
+            <button id="btn-select-all" class="btn-mini-select-all" onclick="toggleSelectAllFriends()">تحديد الكل</button>
+        </div>
+
         <div class="invite-list-wrapper" id="invite-friends-list"></div>
         
-        <div class="modal-footer" style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-            <button class="btn-core" id="btn-send-inv-submit" onclick="sendInvitesToSelected()" style="padding: 16px; font-size: 1rem;">إرسال الدعوات المحددة</button>
+        <div style="padding: 20px 25px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <button class="btn-core" id="btn-send-inv-submit" onclick="sendInvitesToSelected()" style="padding: 16px; font-size: 1rem;">إرسال الدعوات</button>
         </div>
     </div>
 </div>
@@ -330,16 +351,14 @@
         document.getElementById('room-settings-modal').classList.add('show');
     }
 
-    function closeRoomSettings() {
-        document.getElementById('room-settings-modal').classList.remove('show');
-    }
+    function closeRoomSettings() { document.getElementById('room-settings-modal').classList.remove('show'); }
 
     function updateSetting(type, value) {
         let isHost = false;
         if(window.currentRoomData && window.authInstance && window.authInstance.currentUser) {
             isHost = (window.currentRoomData.hostId === window.authInstance.currentUser.uid);
         }
-        if(!isHost) return; 
+        if(!isHost) return;
 
         window.currentRoomSettings[type] = value;
         
@@ -362,10 +381,10 @@
     }
 
     // ==========================================
-    // منطق رسم اللوبي وعرض زر الليدر
+    // تحديث ديناميكي للوبي وأزرار المالك
     // ==========================================
     window.fetchAndRenderLobbyPlayers = function() {
-        if (!window.currentRoomData || !window.UI_COMPONENTS || !window.authInstance || !window.authInstance.currentUser) return;
+        if (!window.currentRoomData || !window.UI_COMPONENTS || !window.authInstance.currentUser) return;
 
         document.getElementById('dynamic-room-code').innerText = window.currentRoomData.id;
         
@@ -375,14 +394,18 @@
         
         statusText.innerText = `بانتظار اللاعبين... (${playersArray.length}/${maxPlayers})`;
 
-        // تحديد ما إذا كان اللاعب الحالي هو الليدر لتبديل الأزرار
+        // تحديد ما إذا كان المستخدم الحالي هو مالك الغرفة
         const isHost = (window.currentRoomData.hostId === window.authInstance.currentUser.uid);
-        if (isHost) {
-            document.getElementById('btn-ready-action').style.display = 'none';
-            document.getElementById('btn-start-action').style.display = 'flex';
+        const btnReady = document.getElementById('btn-ready-action');
+        const btnStart = document.getElementById('btn-start-action');
+
+        // إظهار زر "بدء اللعبة" للمالك فقط وإخفاء زر "الجاهزية"
+        if(isHost) {
+            if(btnReady) btnReady.style.display = 'none';
+            if(btnStart) btnStart.style.display = 'flex';
         } else {
-            document.getElementById('btn-ready-action').style.display = 'flex';
-            document.getElementById('btn-start-action').style.display = 'none';
+            if(btnReady) btnReady.style.display = 'flex';
+            if(btnStart) btnStart.style.display = 'none';
         }
 
         const grid = document.getElementById('lobby-players-grid');
@@ -451,6 +474,7 @@
         
         if (btn.classList.contains('is-ready')) {
             btn.innerHTML = `<i class="ph-bold ph-x-circle" style="font-size: 1.3rem;"></i> <span>إلغاء الجاهزية</span>`;
+            // لاحقا سنرفع حالة الجاهزية للفايربيس هنا
         } else {
             btn.innerHTML = `<i class="ph-bold ph-check-circle" style="font-size: 1.3rem;"></i> <span>تأكيد الجاهزية</span>`;
         }
@@ -460,11 +484,16 @@
     function closeLeaveModal() { document.getElementById('custom-leave-modal').classList.remove('show'); }
     function executeLeaveRoom() { closeLeaveModal(); if(window.leaveFirebaseRoom) window.leaveFirebaseRoom(); }
 
+    // ==========================================
+    // دعوة الأصدقاء - تم التعديل لعرض Emblem فقط
+    // ==========================================
     window.selectedFriendsToInvite = new Set();
+    
     function openInviteModal() {
         const modal = document.getElementById('invite-friends-modal');
         const listContainer = document.getElementById('invite-friends-list');
         window.selectedFriendsToInvite.clear(); updateSelectAllBtnText();
+        
         const friendsArray = (window.currentUserData && Array.isArray(window.currentUserData.friends)) ? window.currentUserData.friends : [];
         const currentPlayers = window.currentRoomData ? window.currentRoomData.players : [];
         
@@ -476,13 +505,13 @@
                 if(currentPlayers.includes(fName.toLowerCase())) return; 
                 const fData = window.friendsCache[fName] || { username: fName };
                 
-                // استخدام دالة الواجهات لرسم الامبلم بدون أفتار
-                let emblemHTML = window.UI_COMPONENTS ? window.UI_COMPONENTS.buildEmblemCard(fData, "75px", true) : `<div style="color:white; font-weight:bold;">${fData.username || fName}</div>`;
+                // هنا السحر: جلب الـ Emblem مع إخفاء الأفتار (القيمة true) ليكون التصميم أنيقاً!
+                const emblemHtml = window.UI_COMPONENTS.buildEmblemCard(fData, "75px", true);
                 
                 html += `
                 <div class="friend-invite-row" onclick="toggleFriendSelection(this, '${fName}')" data-fname="${fName}">
-                    <div class="emblem-wrapper-invite">
-                        ${emblemHTML}
+                    <div class="friend-emblem-wrapper">
+                        ${emblemHtml}
                     </div>
                     <div class="custom-checkbox"><i class="ph-bold ph-check"></i></div>
                 </div>`;
@@ -524,12 +553,12 @@
     
     function updateSelectAllBtnText() { 
         const rows = document.querySelectorAll('.friend-invite-row'); 
-        const btnText = document.querySelector('#btn-select-all span'); 
+        const btn = document.getElementById('btn-select-all'); 
         if(rows.length === 0) return; 
         if (window.selectedFriendsToInvite.size === rows.length) { 
-            btnText.innerText = "إلغاء التحديد"; 
+            btn.innerText = "إلغاء التحديد"; 
         } else { 
-            btnText.innerText = "تحديد الكل"; 
+            btn.innerText = "تحديد الكل"; 
         } 
     }
 
@@ -545,7 +574,7 @@
             const inviteData = { roomId: window.currentRoomId, hostName: window.currentUserData.username, timestamp: Date.now() };
             snap.forEach(async (d) => { await updateDoc(doc(window.dbInstance, "users", d.id), { gameInvites: arrayUnion(inviteData) }); });
             closeInviteModal();
-        } catch (e) { alert("حدث خطأ"); } finally { btn.innerHTML = 'إرسال الدعوات المحددة'; btn.disabled = false; }
+        } catch (e) { alert("حدث خطأ"); } finally { btn.innerHTML = 'إرسال الدعوات'; btn.disabled = false; }
     }
 
     if (window.currentRoomId) { window.listenToRoom(); }
