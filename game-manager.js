@@ -1,5 +1,5 @@
 // ========================================================================
-// DECEPTION - CORE ISOLATED GAME ENGINE LOGIC (100% FIXED & SECURE)
+// DECEPTION - CORE ISOLATED GAME ENGINE LOGIC (100% SECURE & FIXED)
 // ========================================================================
 
 window.GameEngine = {
@@ -9,14 +9,14 @@ window.GameEngine = {
     initiateGameStart: async function() {
         // فحص مبدئي لمنع الفشل الصامت
         if (!window.currentRoomId) {
-            console.error("GameEngine: Missing currentRoomId");
+            alert("خطأ: لم يتم التعرف على رقم الغرفة.");
             return;
         }
         if (!window.currentRoomData) {
-            console.error("GameEngine: Missing currentRoomData");
+            alert("خطأ: بيانات الغرفة غير متوفرة.");
             return;
         }
-        
+
         const currentPlayersArray = window.currentRoomData.players || [];
         
         let dynamicShuffledPlayers = [...currentPlayersArray].sort(() => Math.random() - 0.5);
@@ -43,7 +43,7 @@ window.GameEngine = {
             };
         });
 
-        // تم استخدام دوال Firebase المعرفة في مشروعك حصرياً لضمان عدم تعطل الزر
+        // التحديث المباشر لقاعدة البيانات دون استيراد ديناميكي
         try {
             const currentRoomDocumentRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
             
@@ -57,19 +57,13 @@ window.GameEngine = {
                     { tileName: 'مكان الجريمة الرئيسي', value: 'بانتظار اختيار الطبيب الشرعي...' },
                     { tileName: 'سبب الوفاة المباشر', value: 'بانتظار تشريح الجثة...' }
                 ],
-                actionsHistoryLog: window.arrayUnion ? window.arrayUnion('تم قفل الغرفة بنجاح وبدأت الجولة الأولى.') : ['تم قفل الغرفة بنجاح وبدأت الجولة الأولى.']
+                actionsHistoryLog: ['تم قفل الغرفة بنجاح وبدأت الجولة الأولى.']
             });
             
-            // حقن وضعية اللعب
-            document.body.classList.add('in-game');
-            if (window.loadFragment) {
-                window.loadFragment('game');
-            }
+            // لا نقوم بتغيير الواجهة هنا، بل نترك المستمع اللحظي (Listener) ينقل الجميع معاً
         } catch (firebaseUpdateError) {
             console.error("Game Engine Error:", firebaseUpdateError);
-            if (window.showTempModal) {
-                window.showTempModal("خطأ تقني", "فشل بدء اللعبة. افحص الكونسول.", "ph-bold ph-warning-circle", "#ff4c6a");
-            }
+            alert("خطأ في الاتصال بقاعدة البيانات عند بدء اللعبة: " + firebaseUpdateError.message);
         }
     },
 
@@ -177,9 +171,7 @@ window.GameEngine = {
         const usedAccusationsMap = this.cachedGameStateData.accusationsUsed || {};
         
         if (usedAccusationsMap[myLocalUsernameLower]) {
-            if (window.showTempModal) {
-                window.showTempModal("بلاغ مرفوض", "لقد استنفدت حق الاتهام والمحاكمة الخاص بك لهذه المباراة مسبقاً ولا يمكنك تقديم بلاغ آخر!", "ph-bold ph-x-circle", "#ff4c6a");
-            }
+            if (window.showTempModal) window.showTempModal("بلاغ مرفوض", "لقد استنفدت حق الاتهام والمحاكمة الخاص بك لهذه المباراة مسبقاً ولا يمكنك تقديم بلاغ آخر!", "ph-bold ph-x-circle", "#ff4c6a");
             return;
         }
 
@@ -190,27 +182,16 @@ window.GameEngine = {
 
         const dynamicAccuseModalStructureHtml = `
             <div class="friend-data-card" style="padding: 25px; text-align: center; max-width: 420px; direction: rtl;">
-                <h3 style="color: #ffffff; margin-bottom: 12px; font-weight: 800;">
-                    <i class="ph-fill ph-gavel" style="color: var(--accent-red); margin-left: 5px;"></i> تقديم بلاغ اتهام جنائي رسمي
-                </h3>
-                <p style="color: var(--text-dim); font-size: 0.82rem; margin-bottom: 20px; line-height: 1.6;">
-                    تنبيه: يجب تحديد أداة الجريمة والأثر المادي بدقة مطلقة، إذا أخطأت في عنصر واحد فقط، سيفشل البلاغ بالكامل ويُقفل صامتاً دون أي توضيح للخطأ!
-                </p>
-                
+                <h3 style="color: #ffffff; margin-bottom: 12px; font-weight: 800;"><i class="ph-fill ph-gavel" style="color: var(--accent-red); margin-left: 5px;"></i> تقديم بلاغ اتهام جنائي رسمي</h3>
+                <p style="color: var(--text-dim); font-size: 0.82rem; margin-bottom: 20px; line-height: 1.6;">تنبيه: يجب تحديد أداة الجريمة والأثر المادي بدقة مطلقة، إذا أخطأت في عنصر واحد فقط، سيفشل البلاغ بالكامل ويُقفل صامتاً دون أي توضيح للخطأ!</p>
                 <div class="input-wrapper" style="text-align: right;">
                     <label style="color: var(--text-main); font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; display: block;">أداة الجريمة المحتملة (القتال)</label>
-                    <select id="court-chosen-weapon-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">
-                        ${weaponSelectorOptionsHtml}
-                    </select>
+                    <select id="court-chosen-weapon-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">${weaponSelectorOptionsHtml}</select>
                 </div>
-                
                 <div class="input-wrapper" style="text-align: right; margin-top: 15px;">
                     <label style="color: var(--text-main); font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; display: block;">الدليل أو الأثر الشخصي المرتبط</label>
-                    <select id="court-chosen-evidence-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">
-                        ${evidenceSelectorOptionsHtml}
-                    </select>
+                    <select id="court-chosen-evidence-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">${evidenceSelectorOptionsHtml}</select>
                 </div>
-
                 <div style="display: flex; gap: 12px; margin-top: 25px;">
                     <button class="btn-secondary" style="margin-top: 0; flex: 1; border-radius: 100px;" onclick="document.getElementById('court-accusation-form-modal-overlay').remove()">إلغاء</button>
                     <button class="btn-core" style="flex: 2; border-radius: 100px;" onclick="window.GameEngine.transmitFinalAccusationPayload('${accusedTargetPlayerName}')">إرسال للمختبر الجنائي</button>
@@ -234,25 +215,21 @@ window.GameEngine = {
 
         try {
             const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
-            
             let atomicUpdateData = {};
             atomicUpdateData[`accusationsUsed.${myLocalUsernameLower}`] = true;
-            
             const logMessageString = `قام المحقق [${window.currentUserData.username}] بتقديم بلاغ رسمي ضد [${targetedPlayerKeyName}] متهماً إياه باستخدام (${weaponSelectedValue}) وترك أثر (${evidenceSelectedValue}).`;
             
-            // استخدام دوال النظام الأصلية لتجنب الأعطال
-            const unionFunc = window.arrayUnion || function(val) { return [val]; };
+            // تحديث السيرفر بدون استدعاءات ديناميكية
+            await window.updateDocFunc(roomRef, atomicUpdateData);
             
-            await window.updateDocFunc(roomRef, {
-                ...atomicUpdateData,
-                actionsHistoryLog: unionFunc(logMessageString)
-            });
+            // تسجيل التحديث في التاريخ
+            const { arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            await window.updateDocFunc(roomRef, { actionsHistoryLog: arrayUnion(logMessageString) });
 
-            if (window.showTempModal) {
-                window.showTempModal("تم تقديم البلاغ", "استقبل المختبر الجنائي بلاغك الرسمي، تفقد لوحة سجل الجولات لمعرفة النتائج لاحقاً.", "ph-bold ph-shield-check", "#2ecc71");
-            }
-        } catch (accusationSubmissionError) {
-            console.error("Failed to push accusation payload:", accusationSubmissionError);
+            if (window.showTempModal) window.showTempModal("تم تقديم البلاغ", "استقبل المختبر الجنائي بلاغك الرسمي، تفقد لوحة سجل الجولات لمعرفة النتائج لاحقاً.", "ph-bold ph-shield-check", "#2ecc71");
+        } catch (error) {
+            console.error("Failed to push accusation:", error);
+            alert("حدث خطأ أثناء إرسال البلاغ.");
         }
     },
 
@@ -364,11 +341,7 @@ window.GameEngine = {
             this.roomInGameListenerUnsub();
             this.roomInGameListenerUnsub = null;
         }
-
         document.body.classList.remove('in-game');
-        
-        if (window.leaveFirebaseRoom) {
-            window.leaveFirebaseRoom();
-        }
+        if (window.leaveFirebaseRoom) window.leaveFirebaseRoom();
     }
 };
