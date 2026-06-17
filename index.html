@@ -9,7 +9,6 @@
     <script src="game-assets.js"></script>
     <script src="ui-manager.js"></script>
     <script src="room-manager.js"></script>
-    <script src="room-manager.js"></script>
     <script src="game-manager.js"></script>
     <script type="module" src="firebase-config.js"></script>
     
@@ -53,7 +52,6 @@
             --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        /* حماية الآيفون من الزوم الإجباري */
         input, textarea, select { font-size: 16px !important; }
         body { touch-action: manipulation; }
 
@@ -65,7 +63,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* إجبار كل العناصر في الموقع (حتى الأزرار والحقول) على استخدام الخط الجديد */
         body, html, button, input, textarea, select {
             font-family: var(--font-ar);
         }
@@ -83,7 +80,6 @@
         .spinner { width: 45px; height: 45px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* نظام الشعار الذكي (Dark / Light) */
         .logo-light { display: none !important; }
         [data-theme="light"] .logo-dark { display: none !important; }
         [data-theme="light"] .logo-light { display: block !important; }
@@ -99,62 +95,27 @@
         .auth-card h2, .modal-card h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
         .auth-card p, .modal-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 30px; line-height: 1.6; }
 
-        /* =========================================
-           تأثير الزر الساحر (Aura Glow) المستوحى من طلبك
-           ========================================= */
-        @keyframes animate-gradient {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 400% 50%; }
-        }
+        @keyframes animate-gradient { 0% { background-position: 0% 50%; } 100% { background-position: 400% 50%; } }
 
         .btn-core { 
             position: relative;
             background: linear-gradient(90deg, var(--arsenal-top), var(--arsenal-bottom), #FF5E93, var(--arsenal-top));
             background-size: 400% auto;
-            color: #fff; 
-            border: none; 
-            padding: 15px; 
-            width: 100%; 
-            border-radius: var(--radius-pill); 
-            font-weight: 700; 
-            font-size: 0.95rem; 
-            cursor: pointer; 
-            z-index: 1; /* مهم ليبقى النص والزر فوق طبقة التوهج */
+            color: #fff; border: none; padding: 15px; width: 100%; border-radius: var(--radius-pill); 
+            font-weight: 700; font-size: 0.95rem; cursor: pointer; z-index: 1; 
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            /* حركة الألوان مستمرة وناعمة تماماً */
             animation: animate-gradient 8s linear infinite;
         }
 
-        /* طبقة التوهج الخلفية المستمرة */
         .btn-core::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: inherit;
-            background: inherit;
-            background-size: inherit;
-            animation: inherit;
-            z-index: -1;
-            opacity: 0.6; /* توهج أساسي دائم */
-            filter: blur(12px);
-            transition: opacity 0.4s ease, filter 0.4s ease;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: inherit; background: inherit; background-size: inherit; animation: inherit;
+            z-index: -1; opacity: 0.6; filter: blur(12px); transition: opacity 0.4s ease, filter 0.4s ease;
         }
 
-        /* التأثير عند التحويم (Hover) */
-        .btn-core:hover { 
-            transform: scale(1.02); /* تكبير ناعم جداً بدون تكسير تصميم الصفحة */
-            animation: animate-gradient 4s linear infinite; /* تسريع حركة اللون بلطف */
-        }
-        
-        .btn-core:hover::before {
-            opacity: 1;
-            filter: blur(20px); /* زيادة هالة التوهج */
-        }
-
-        .btn-core:active {
-            transform: scale(0.98);
-        }
-        /* ========================================= */
+        .btn-core:hover { transform: scale(1.02); animation: animate-gradient 4s linear infinite; }
+        .btn-core:hover::before { opacity: 1; filter: blur(20px); }
+        .btn-core:active { transform: scale(0.98); }
         
         .btn-secondary { background-color: var(--surface-hover); color: var(--text-main); border: 1px solid rgba(100,100,100,0.2); padding: 15px; width: 100%; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--trans-smooth); margin-top: 10px; box-shadow: none; }
         .btn-secondary:hover { background-color: rgba(100,100,100,0.1); }
@@ -176,14 +137,12 @@
         .app-shell.unlocked { filter: blur(0); pointer-events: auto; opacity: 1; }
 
         .sidebar { display: flex; flex-direction: column; align-items: center; padding: 35px 0; background-color: transparent; }
-
         .sidebar-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 50px; cursor: pointer; transition: 0.3s; }
         .sidebar-logo:hover { transform: scale(1.05); }
         
         .nav-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
         .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-dim); background: transparent; border: none; font-size: 1.4rem; cursor: pointer; transition: var(--trans-smooth); }
         .nav-btn:hover { color: var(--accent-red); background-color: var(--surface-hover); }
-        /* زر القائمة الجانبية يتوهج بهدوء ليدل على الصفحة النشطة */
         .nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: 0 4px 15px rgba(242, 39, 123, 0.4); }
 
         .theme-wrapper { margin-top: auto; background-color: var(--surface-panel); border-radius: var(--radius-pill); padding: 5px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -255,8 +214,38 @@
 
         .bottom-bar { display: none; }
 
+        /* ==========================================================
+           التغيير الجذري لمعمارية واجهة اللعب (Game Mode Paradigm)
+           ========================================================== */
+        body.in-game #main-desktop-nav, body.in-game #main-bottom-nav { display: none !important; }
+        body.in-game #game-desktop-nav { display: flex !important; }
+        body.in-game #game-bottom-nav { display: flex !important; }
+        body.in-game .right-sidebar { display: none !important; }
+        body.in-game .app-shell { grid-template-columns: 100px 1fr 0px; }
+
+        #game-desktop-nav { display: none; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
+        #game-bottom-nav { display: none; width: 100%; justify-content: space-around; direction: rtl; }
+
+        .game-nav-btn {
+            width: 55px; height: 55px; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: var(--text-dim); background: transparent; border: 1px solid transparent; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent;
+        }
+        .game-nav-btn i { font-size: 1.8rem; }
+        .game-nav-btn:hover { color: var(--text-main); background-color: var(--surface-hover); }
+        .game-nav-btn.active { color: #fff; background: var(--cyber-gradient); box-shadow: 0 4px 15px rgba(242, 39, 123, 0.4); border-color: transparent; }
+
+        .game-bottom-tab {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-dim); background: transparent; border: none;
+            height: 100%; flex: 1; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent;
+        }
+        .game-bottom-tab i { font-size: 1.8rem; transition: var(--trans-smooth); }
+        .game-bottom-tab.active { color: var(--accent-red); }
+        .game-bottom-tab.active i { transform: translateY(-4px); filter: drop-shadow(0 6px 12px var(--accent-red-dim)); }
+
         @media (max-width: 900px) {
             .app-shell { display: flex; flex-direction: column; grid-template-columns: none; }
+            body.in-game .app-shell { grid-template-columns: none; }
             .sidebar, .right-sidebar { display: none; }
             .top-header { padding: 0 24px; height: 85px; border-bottom: 1px solid rgba(100,100,100,0.05); }
             
@@ -376,13 +365,22 @@
                 <img src="assets/images/logo2.png" class="logo-light" alt="Deception" style="max-height: 32px; width: auto; object-fit: contain;">
             </div>
             
-            <nav class="nav-menu">
+            <nav class="nav-menu" id="main-desktop-nav">
                 <button class="nav-btn active" onclick="window.loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
                 <button class="nav-btn" onclick="window.loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
                 <button class="nav-btn" onclick="window.loadFragment('achievements', this)"><i class="ph ph-medal"></i></button>
                 <button class="nav-btn" onclick="window.loadFragment('store', this)"><i class="ph ph-storefront"></i></button>
                 <button class="nav-btn" onclick="window.loadFragment('profile', this)"><i class="ph ph-user"></i></button>
             </nav>
+            
+            <nav id="game-desktop-nav">
+                <button class="game-nav-btn" onclick="window.GameEngine.switchGameTab('settings', this)" title="إعدادات"><i class="ph-bold ph-gear"></i></button>
+                <button class="game-nav-btn active" onclick="window.GameEngine.switchGameTab('info', this)" title="معلومات"><i class="ph-bold ph-fingerprint"></i></button>
+                <button class="game-nav-btn" onclick="window.GameEngine.switchGameTab('court', this)" title="منصة الاتهام"><i class="ph-bold ph-gavel"></i></button>
+                <button class="game-nav-btn" onclick="window.GameEngine.switchGameTab('clues', this)" title="الأدلة"><i class="ph-bold ph-cards"></i></button>
+                <button class="game-nav-btn" onclick="window.GameEngine.switchGameTab('tools', this)" title="الأدوات"><i class="ph-bold ph-magnifying-glass"></i></button>
+            </nav>
+
             <div class="theme-wrapper">
                 <button id="btn-theme-dark" class="theme-btn active-theme" onclick="window.toggleTheme('dark')"><i class="ph-fill ph-moon"></i></button>
                 <button id="btn-theme-light" class="theme-btn" onclick="window.toggleTheme('light')"><i class="ph-fill ph-sun"></i></button>
@@ -472,12 +470,22 @@
         </aside>
 
         <nav class="bottom-bar">
-            <button class="bottom-tab active" onclick="window.loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
-            <button class="bottom-tab" onclick="window.loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
-            <button class="bottom-tab" onclick="window.loadFragment('achievements', this)"><i class="ph ph-medal"></i></button>
-            <button class="bottom-tab" onclick="window.loadFragment('store', this)"><i class="ph ph-storefront"></i></button>
-            <button class="bottom-tab" onclick="window.loadFragment('friends', this)"><i class="ph ph-users"></i></button>
-            <button class="bottom-tab" onclick="window.loadFragment('profile', this)"><i class="ph ph-user"></i></button>
+            <div id="main-bottom-nav" style="display: flex; width: 100%; justify-content: space-around;">
+                <button class="bottom-tab active" onclick="window.loadFragment('home', this)"><i class="ph-fill ph-squares-four"></i></button>
+                <button class="bottom-tab" onclick="window.loadFragment('play', this)"><i class="ph ph-game-controller"></i></button>
+                <button class="bottom-tab" onclick="window.loadFragment('achievements', this)"><i class="ph ph-medal"></i></button>
+                <button class="bottom-tab" onclick="window.loadFragment('store', this)"><i class="ph ph-storefront"></i></button>
+                <button class="bottom-tab" onclick="window.loadFragment('friends', this)"><i class="ph ph-users"></i></button>
+                <button class="bottom-tab" onclick="window.loadFragment('profile', this)"><i class="ph ph-user"></i></button>
+            </div>
+            
+            <div id="game-bottom-nav">
+                <button class="game-bottom-tab" onclick="window.GameEngine.switchGameTab('settings', this)"><i class="ph-bold ph-gear"></i></button>
+                <button class="game-bottom-tab active" onclick="window.GameEngine.switchGameTab('info', this)"><i class="ph-bold ph-fingerprint"></i></button>
+                <button class="game-bottom-tab" onclick="window.GameEngine.switchGameTab('court', this)"><i class="ph-bold ph-gavel"></i></button>
+                <button class="game-bottom-tab" onclick="window.GameEngine.switchGameTab('clues', this)"><i class="ph-bold ph-cards"></i></button>
+                <button class="game-bottom-tab" onclick="window.GameEngine.switchGameTab('tools', this)"><i class="ph-bold ph-magnifying-glass"></i></button>
+            </div>
         </nav>
     </div>
 </body>
