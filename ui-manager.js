@@ -29,7 +29,6 @@ style.innerHTML = `
     .modern-action-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
     .modern-action-btn:active { transform: translateY(0) scale(0.98); }
     
-    /* تنظيف الزر الأحمر ليأخذ لون أرسنال الجديد */
     .modern-danger-btn { background: rgba(242, 39, 123, 0.05); color: var(--accent-red); border: 1px solid rgba(242, 39, 123, 0.2); padding: 14px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; -webkit-tap-highlight-color: transparent;}
     .modern-danger-btn:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(242, 39, 123, 0.3); border-color: var(--accent-red); }
     .modern-danger-btn:active { transform: translateY(0) scale(0.98); }
@@ -46,7 +45,6 @@ style.innerHTML = `
     .global-char-card:not(.locked):hover { border-color: rgba(255,255,255,0.3); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
     .global-char-card:not(.locked):hover img { transform: scale(1.05); }
     
-    /* تحديث التوهج بألوان أرسنال */
     .global-char-card:not(.locked):hover .global-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(242, 39, 123, 0.5) 60%, transparent 100%); }
 
     .global-char-card.is-selected { border-color: var(--accent-red); box-shadow: 0 0 0 3px rgba(242, 39, 123, 0.2), 0 10px 30px rgba(242, 39, 123, 0.4); transform: translateY(-3px); }
@@ -413,7 +411,7 @@ window.viewFriendHistory = function(fName) {
 };
 
 // ==========================================
-// 5. الإعدادات 
+// 5. الإعدادات وطرد الزائر من اللوبي
 // ==========================================
 window.setLanguage = async function(lang, skipSave = false) {
     window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -511,7 +509,12 @@ window.openLoginDirectly = function() {
     window.toggleDropdown('');
 };
 
-window.enterAsGuest = function() {
+window.enterAsGuest = async function() {
+    // طرد مباشر وحقيقي من السيرفر إذا كان اللاعب زائر وتم اكتشاف تواجده في الغرفة
+    if (window.currentRoomId && window.leaveFirebaseRoom) {
+        await window.leaveFirebaseRoom();
+    }
+    
     window.isGuest = true; window.currentUserData = null;
     const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
     const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = "غير مسجل"; 
@@ -651,8 +654,6 @@ window.loadFragment = async function(requestedPage, element) {
 
         if (targetPage === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
         if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
-        
-        // التعديل الخاص ببدء مستمع اللعبة اللحظي (تم إضافته هنا)
         if (targetPage === 'game' && window.GameEngine) window.GameEngine.activateInGameRealtimeListener();
 
     } catch (error) {
