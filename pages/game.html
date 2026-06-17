@@ -1,31 +1,3 @@
-<style>
-    .game-layout-container { max-width: 1200px; margin: 0 auto; padding: 10px; animation: smoothFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; display: flex; flex-direction: column; }
-    .game-tab-panel { display: none; width: 100%; }
-    .game-tab-panel.active { display: block; animation: gamePanelSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    @keyframes gamePanelSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-    .game-premium-card { background-color: var(--surface-panel); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 25px; box-shadow: var(--shadow-soft); }
-    .game-players-court-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 30px; }
-    .court-player-card { background: var(--surface-panel); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 20px; text-align: center; box-shadow: var(--shadow-soft); transition: transform 0.3s; }
-    .court-player-card:hover { transform: translateY(-5px); border-color: var(--accent-red); }
-
-    .items-pool-header-title { font-size: 0.85rem; font-weight: 800; color: var(--text-dim); margin: 15px 5px 8px 5px; text-align: right; }
-    .items-four-squares-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; direction: rtl; }
-    .game-square-box { background: var(--bg-base); border: 1px solid rgba(255, 255, 255, 0.04); aspect-ratio: 1; border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 6px; text-align: center; }
-    .game-square-box.weapon-type { border-bottom: 3px solid #ff4c6a; }
-    .game-square-box.weapon-type i { color: #ff4c6a; font-size: 1.3rem;}
-    .game-square-box.evidence-type { border-bottom: 3px solid #3498db; }
-    .game-square-box.evidence-type i { color: #3498db; font-size: 1.3rem;}
-    .game-square-box span { font-size: 0.7rem; color: white; font-weight: 600; margin-top: 5px; word-break: break-all; }
-
-    .live-rounds-log-container { background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 15px; min-height: 150px; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; text-align: right; }
-    .log-item-row { font-size: 0.85rem; line-height: 1.5; color: #e0e0e0; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; }
-
-    @media (max-width: 900px) {
-        .game-players-court-grid { grid-template-columns: 1fr; }
-    }
-</style>
-
 <div class="game-layout-container">
 
     <div id="game-panel-settings" class="game-tab-panel">
@@ -79,3 +51,7 @@
     </div>
 
 </div>
+
+<script>
+    // تفعيل وظائف السيرفر الخاصة باللعبة إن وُجدت لاحقاً
+</script>
