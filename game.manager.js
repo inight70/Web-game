@@ -1,47 +1,42 @@
 // ========================================================================
-// DECEPTION - CORE ISOLATED GAME ENGINE LOGIC (100% COMPLETE & NO OMISSION)
+// DECEPTION - CORE ISOLATED GAME ENGINE LOGIC (100% COMPLETE & TEST BYPASS)
 // ========================================================================
 
 window.GameEngine = {
     roomInGameListenerUnsub: null,
     cachedGameStateData: null,
 
-    // ١. دالة بدء المباراة وتوزيع الأدوار والأدوات عشوائياً (تستدعى بواسطة الهوست فقط)
     initiateGameStart: async function() {
         if (!window.currentRoomId || !window.currentRoomData) return;
         
         const currentPlayersArray = window.currentRoomData.players || [];
         
-        // التحقق من الحد الأدنى للاعبين لضمان صحة توزيع الأدوار الجنائية
+        // تم إيقاف شرط الـ 3 لاعبين برمجياً لتتمكن من الدخول واختبار اللعبة لوحدك
+        /*
         if (currentPlayersArray.length < 3) {
             if (window.showTempModal) {
                 window.showTempModal("تنبيه أمني", "يجب توفر 3 لاعبين على الأقل لبدء التحقيق الجنائي!", "ph-bold ph-warning-circle", "#ff4c6a");
             }
             return;
         }
+        */
 
-        // خلط مصفوفة اللاعبين بعشوائية مطلقة لضمان النزاهة في توزيع الهويات السرية
         let dynamicShuffledPlayers = [...currentPlayersArray].sort(() => Math.random() - 0.5);
-        
         let allocatedRolesMap = {};
         
-        // توزيع الأدوار برمجياً بناءً على مصفوفة الخلط
-        // المشتبه به الأول: الطبيب الشرعي | المشتبه به الثاني: القاتل | البقية: محققون
-        allocatedRolesMap[dynamicShuffledPlayers[0]] = 'forensic';
-        allocatedRolesMap[dynamicShuffledPlayers[1]] = 'murderer';
+        // توزيع الأدوار بأمان لتجنب الأخطاء البرمجية إذا كان عدد اللاعبين أقل من 3 أثناء الاختبار
+        if (dynamicShuffledPlayers[0]) allocatedRolesMap[dynamicShuffledPlayers[0]] = 'forensic';
+        if (dynamicShuffledPlayers[1]) allocatedRolesMap[dynamicShuffledPlayers[1]] = 'murderer';
         
-        // إذا زاد عدد المشتبه بهم، يمكن إضافة الشريك والشاهد مستقبلاً هنا بكل سهولة
         for (let index = 2; index < dynamicShuffledPlayers.length; index++) {
             allocatedRolesMap[dynamicShuffledPlayers[index]] = 'investigator';
         }
 
-        // مخزن الأصول الثابتة لتوليد المربعات الأربعة (الأدوات المحتملة والآثار)
         const pureWeaponsPool = ['مسدس كاتم', 'سكين حاد', 'سم زئبقي', 'حبل مشنقة', 'فأس صدئ', 'وسادة قطنية', 'سلك كهربائي', 'بندقية صيد', 'خنجر أثري', 'حقنة قاتلة'];
         const pureEvidencePool = ['بقعة دم', 'بصمة إبهام', 'كأس مكسور', 'رسالة تهديد', 'شعر طويل', 'ساعة متوقفة', 'خاتم ذهبي', 'كمامة طبية', 'قلم ملوث', 'حقيبة جلدية'];
 
         let assignedPlayerItemsDatabase = {};
 
-        // تعيين 4 أدوات حمراء و 4 آثار زرقاء عشوائية لكل لاعب بالكامل
         currentPlayersArray.forEach(playerNameKey => {
             let localizedWeapons = [...pureWeaponsPool].sort(() => Math.random() - 0.5).slice(0, 4);
             let localizedEvidence = [...pureEvidencePool].sort(() => Math.random() - 0.5).slice(0, 4);
@@ -55,7 +50,6 @@ window.GameEngine = {
         try {
             const currentRoomDocumentRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
             
-            // حقن وهيكلة البيانات الشاملة للمباراة وتحديث حالة الغرفة في Firestore
             await window.updateDocFunc(currentRoomDocumentRef, {
                 status: 'playing',
                 currentRound: 1,
@@ -69,7 +63,6 @@ window.GameEngine = {
                 actionsHistoryLog: ['تم قفل الغرفة بنجاح وبدأت الجولة الأولى لتجميع الأدلة المادية.']
             });
             
-            // قفل وإخفاء عناصر الموقع وتفعيل الشاشة الكاملة للمباراة الجنائية
             document.body.classList.add('in-game');
             if (window.loadFragment) {
                 window.loadFragment('game');
@@ -79,11 +72,9 @@ window.GameEngine = {
         }
     },
 
-    // ٢. تفعيل مستمع المراقبة اللحظية لغرفة اللعب الحالية (Realtime Game Sync Listener)
     activateInGameRealtimeListener: function() {
         if (!window.currentRoomId || !window.onSnapshotFunc) return;
         
-        // تصفية المستمعين القدامى لتفادي تسريب الذاكرة (Memory Leak)
         if (this.roomInGameListenerUnsub) {
             this.roomInGameListenerUnsub();
             this.roomInGameListenerUnsub = null;
@@ -97,21 +88,18 @@ window.GameEngine = {
             const fetchedData = realtimeSnapshot.data();
             this.cachedGameStateData = fetchedData;
             
-            // إذا تحولت الغرفة للعب ولم يتم تشغيل وضعية الـ in-game عند لاعب معين، يتم إجباره فوراً
             if (fetchedData.status === 'playing' && !document.body.classList.contains('in-game')) {
                 document.body.classList.add('in-game');
                 if (window.loadFragment) window.loadFragment('game');
                 return;
             }
 
-            // تحديث كافة طبقات الألواح المتزامنة تلقائياً عند حدوث أي حركة بالسيرفر
             this.synchronizeRoleIdentityUI();
             this.synchronizeForensicCluesBoard();
             this.synchronizeLiveEventsHistoryLog();
         });
     },
 
-    // ٣. مزامنة شاشة الهوية والبطاقات والوصف السري حسب قاعدة البيانات الموزعة
     synchronizeRoleIdentityUI: function() {
         if (!this.cachedGameStateData || !window.currentUserData) return;
         
@@ -124,7 +112,6 @@ window.GameEngine = {
 
         if (!badgeElement || !descriptionElement || !avatarImageElement) return;
 
-        // استدعاء وعرض صورة الشخصية المعتمدة في التخصيص واللوبي لهذا اللاعب
         const currentSelectionsMap = this.cachedGameStateData.characterSelections || {};
         const activeCharId = currentSelectionsMap[myNameLowerKey];
         if (window.GAME_ASSETS && window.GAME_ASSETS.characters) {
@@ -136,23 +123,21 @@ window.GameEngine = {
             }
         }
 
-        // ضبط واجهة وتلوين البطاقة والوصف التفزيوني حسب طبيعة هويتك السرية في الجولة
         if (assignedRole === 'forensic') {
-            badgeElement.innerText = 'الطبيب الشرعي 🔬';
+            badgeElement.innerText = 'الطبيب الشرعي';
             badgeElement.style.background = '#9b59b6';
             descriptionElement.innerText = 'أنت الوحيد الذي يمتلك خيوط الجريمة وتعرف هوية القاتل والأدلة المادية! يُحظر عليك التحدث نهائياً، وعليك توجيه المحققين إلى الحل الصحيح بذكاء عن طريق اختيار الكلمات التلميحية المناسبة من لوحة الأدلة.';
         } else if (assignedRole === 'murderer') {
-            badgeElement.innerText = 'القاتل السري 🥷';
+            badgeElement.innerText = 'القاتل السري';
             badgeElement.style.background = '#e74c3c';
             descriptionElement.innerText = 'لقد قمت بارتكاب الجريمة بنجاح! سلاح فوزك الوحيد هو التضليل وإبعاد الشبهات عن أدواتك المادية المحيطة بك وحماية نفسك من اتهامات المحققين الأذكياء. حاول إلصاق التهم بالآخرين أثناء النقاش.';
         } else {
-            badgeElement.innerText = 'المحقق الجنائي 🔎';
+            badgeElement.innerText = 'المحقق الجنائي';
             badgeElement.style.background = '#27ae60';
             descriptionElement.innerText = 'أنت حامي العدالة وعين القانون في مسرح الجريمة. حلل بورد التلميحات الخاص بالطبيب الشرعي بدقة متناهية، قارن الأدوات والآثار الموزعة على المشتبه بهم، وعند تيقنك تماماً وجّه الاتهام الرسمي!';
         }
     },
 
-    // ٤. بناء ورسم شاشة منصة الاتهام وتوفير واجهات المحاكمة الفورية
     buildCourtRoomUI: function() {
         if (!this.cachedGameStateData) return;
         
@@ -167,7 +152,6 @@ window.GameEngine = {
         const myLocalUsernameLower = window.currentUserData.username_lower;
 
         gamePlayersList.forEach(playerKeyName => {
-            // قانون اللعبة: لا يمكن للمحقق توجيه بلاغ اتهام رسمي لنفسه
             if (playerKeyName === myLocalUsernameLower) return;
             
             let accountProfileData = window.lobbyPlayersCache[playerKeyName] || { username: playerKeyName };
@@ -187,12 +171,10 @@ window.GameEngine = {
         });
     },
 
-    // ٥. نافذة معالجة وتدفق البلاغات الرسمية للمحكمة الجنائية
     openOfficialAccusationModalForm: function(accusedTargetPlayerName) {
         const myLocalUsernameLower = window.currentUserData.username_lower;
         const usedAccusationsMap = this.cachedGameStateData.accusationsUsed || {};
         
-        // التحقق من صلاحية حق توجيه الاتهام الأحادي للاعب الحالي
         if (usedAccusationsMap[myLocalUsernameLower]) {
             if (window.showTempModal) {
                 window.showTempModal("بلاغ مرفوض", "لقد استنفدت حق الاتهام والمحاكمة الخاص بك لهذه المباراة مسبقاً ولا يمكنك تقديم بلاغ آخر!", "ph-bold ph-x-circle", "#ff4c6a");
@@ -200,7 +182,6 @@ window.GameEngine = {
             return;
         }
 
-        // جلب مصفوفة الأدوات والآثار المحددة والمكشوفة لهذا الهدف لإجراء الاتهام بناءً عليها
         const targetAssignedPool = this.cachedGameStateData.playerItems[accusedTargetPlayerName] || { weapons: [], evidence: [] };
         
         let weaponSelectorOptionsHtml = targetAssignedPool.weapons.map(wep => `<option value="${wep}">${wep}</option>`).join('');
@@ -243,7 +224,6 @@ window.GameEngine = {
         document.body.appendChild(outerModalDivElement);
     },
 
-    // دالة إرسال البلاغ ومعالجة النتيجة في السيرفر
     transmitFinalAccusationPayload: async function(targetedPlayerKeyName) {
         const weaponSelectedValue = document.getElementById('court-chosen-weapon-select').value;
         const evidenceSelectedValue = document.getElementById('court-chosen-evidence-select').value;
@@ -254,11 +234,9 @@ window.GameEngine = {
         try {
             const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
             
-            // قفل وحرق فرصة الاتهام الجنائي للاعب الحالي لمنعه من التكرار نهائياً
             let atomicUpdateData = {};
             atomicUpdateData[`accusationsUsed.${myLocalUsernameLower}`] = true;
             
-            // تسجيل الحدث الجنائي في الأرشيف العام للمباراة
             const logMessageString = `قام المحقق [${window.currentUserData.username}] بتقديم بلاغ رسمي ضد [${targetedPlayerKeyName}] متهماً إياه باستخدام (${weaponSelectedValue}) وترك أثر (${evidenceSelectedValue}).`;
             
             await window.updateDocFunc(roomRef, {
@@ -274,7 +252,6 @@ window.GameEngine = {
         }
     },
 
-    // ٦. مزامنة بورد وتلميحات وقرائن الطبيب الشرعي علانية
     synchronizeForensicCluesBoard: function() {
         const boardContainerElement = document.getElementById('game-forensic-clues-tiles-board');
         if (!boardContainerElement || !this.cachedGameStateData) return;
@@ -292,7 +269,6 @@ window.GameEngine = {
         });
     },
 
-    // ٧. بناء لوحة عرض مسرح الجريمة الشامل (الأدوات والآثار لكل لاعب بالكامل)
     buildToolsAndEvidenceUI: function() {
         if (!this.cachedGameStateData) return;
         
@@ -308,7 +284,6 @@ window.GameEngine = {
             let userProfileCache = window.lobbyPlayersCache[playerNameKey] || { username: playerNameKey };
             let userItemsObject = entirePlayerItemsMap[playerNameKey] || { weapons: [], evidence: [] };
 
-            // توليد الـ HTML الخاص بالأدوات الأربعة (الحمراء)
             let formattedWeaponsSquaresHtml = userItemsObject.weapons.map(weaponName => `
                 <div class="game-square-box weapon-type">
                     <i class="ph-bold ph-knife"></i>
@@ -316,7 +291,6 @@ window.GameEngine = {
                 </div>
             `).join('');
 
-            // توليد الـ HTML الخاص بالآثار الأربعة الشخصية (الزرقاء)
             let formattedEvidenceSquaresHtml = userItemsObject.evidence.map(evidenceName => `
                 <div class="game-square-box evidence-type">
                     <i class="ph-bold ph-mask-happy"></i>
@@ -339,19 +313,16 @@ window.GameEngine = {
         });
     },
 
-    // ٨. رسم وتحديث شاشة الأعضاء المدمجة داخل قائمة خيارات اللعب
     buildSettingsPlayersUI: function() {
         if (!this.cachedGameStateData) return;
         
         const currentActiveMyNameLower = window.currentUserData.username_lower;
         
-        // رسم الامبلم الكلاسيكي الفاخر الخاص بك
         const myPersonalSpace = document.getElementById('game-in-my-personal-emblem');
         if (myPersonalSpace && window.UI_COMPONENTS && typeof window.UI_COMPONENTS.buildEmblemCard === 'function') {
             myPersonalSpace.innerHTML = window.UI_COMPONENTS.buildEmblemCard(window.currentUserData, "90px", false);
         }
 
-        // رسم الامبلمات الفاخرة المتبقية لكافة الخصوم والمشتبه بهم المتواجدين بالجولة
         const othersContainerListSpace = document.getElementById('game-in-others-emblems-list');
         if (!othersContainerListSpace) return;
         
@@ -359,7 +330,7 @@ window.GameEngine = {
         const currentRoomPlayersList = this.cachedGameStateData.players || [];
         
         currentRoomPlayersList.forEach(loopPlayerNameKey => {
-            if (loopPlayerNameKey === currentActiveMyNameLower) return; // قمنا برسمه بالأعلى بشكل منفصل
+            if (loopPlayerNameKey === currentActiveMyNameLower) return; 
             
             let opponentAccountData = window.lobbyPlayersCache[loopPlayerNameKey] || { username: loopPlayerNameKey };
             if (window.UI_COMPONENTS && typeof window.UI_COMPONENTS.buildEmblemCard === 'function') {
@@ -368,7 +339,6 @@ window.GameEngine = {
         });
     },
 
-    // ٩. مزامنة وعرض جولات الأرشيف وتاريخ الحوادث الجنائية لحظة بلحظة
     synchronizeLiveEventsHistoryLog: function() {
         const logBoxContainerElement = document.getElementById('game-rounds-live-events-log');
         if (!logBoxContainerElement || !this.cachedGameStateData) return;
@@ -385,18 +355,14 @@ window.GameEngine = {
         });
     },
 
-    // ١٠. دالة الانسحاب النهائي الكلي من اللعبة وتعطيل واجهات المباراة
     leaveAndCollapseActiveGame: function() {
-        // حرق وإبطال مفعول مستمع Firebase في الخلفية لمنع استخدام الموارد
         if (this.roomInGameListenerUnsub) {
             this.roomInGameListenerUnsub();
             this.roomInGameListenerUnsub = null;
         }
 
-        // مسح وإزالة كلاس قفل الواجهة الكبرى لعودة السايدبار والهيدر الأصلي
         document.body.classList.remove('in-game');
         
-        // استدعاء محرك السيرفر الكلاسيكي لمغادرة الغرفة ومسح البيانات
         if (window.leaveFirebaseRoom) {
             window.leaveFirebaseRoom();
         }
