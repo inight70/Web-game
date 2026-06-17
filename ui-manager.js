@@ -651,6 +651,9 @@ window.loadFragment = async function(requestedPage, element) {
 
         if (targetPage === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
         if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
+        
+        // التعديل الخاص ببدء مستمع اللعبة اللحظي (تم إضافته هنا)
+        if (targetPage === 'game' && window.GameEngine) window.GameEngine.activateInGameRealtimeListener();
 
     } catch (error) {
         let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
