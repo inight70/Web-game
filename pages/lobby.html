@@ -332,18 +332,15 @@
     }
 
     window.fetchAndRenderLobbyPlayers = function() {
-        // حماية دقيقة: إذا كان المستخدم زائراً صريحاً، يتم طرده
-        if (window.isGuest === true) {
-            if (window.leaveFirebaseRoom) window.leaveFirebaseRoom();
-            window.loadFragment('play');
+        // حماية: إخفاء اللوبي إذا أصبح المستخدم زائراً دون طرده من السيرفر
+        if (!window.currentUserData || window.isGuest) {
+            if (window.loadFragment) window.loadFragment('play');
             return;
         }
 
-        // إذا كان يوزراً مسجلاً لكن بياناته لم تتحمل بعد، يتم إيقاف الدالة والانتظار (لا يتم طرده أبداً)
-        if (!window.currentUserData || !window.currentRoomData || !window.UI_COMPONENTS) {
-            return;
-        }
+        if (!window.currentRoomData || !window.UI_COMPONENTS) return;
 
+        // استجابة فورية ونقل اللاعبين لشاشة اللعب إذا ضغط القائد "بدء"
         if (window.currentRoomData.status === 'playing') {
             document.body.classList.add('in-game');
             if(window.loadFragment) window.loadFragment('game');
@@ -376,6 +373,7 @@
 
         const readyArray = window.currentRoomData.readyPlayers || [];
 
+        // تحديث زر الجاهزية الشخصي للمستخدم الحالي بناءً على السيرفر
         if (btnReady) {
             if (readyArray.includes(myName)) {
                 btnReady.classList.add('is-ready');
@@ -393,6 +391,7 @@
             let hostMark = (window.currentRoomData.hostId === pData.uid || pName === playersArray[0]) ? 
                 `<div class="host-badge-small"><i class="ph-fill ph-crown"></i></div>` : '';
 
+            // إظهار علامة صح خضراء لحظية على كروت اللاعبين الجاهزين
             let readyMark = readyArray.includes(pName) ? `<div class="ready-badge-small"><i class="ph-bold ph-check"></i></div>` : '';
 
             let isMe = (pName === myName);
@@ -438,6 +437,7 @@
         }
     }
 
+    // الربط اللحظي لزر الجاهزية مع Firebase
     async function toggleReadyState() {
         const btn = document.getElementById('btn-ready-action');
         const isCurrentlyReady = btn.classList.contains('is-ready');
@@ -447,18 +447,17 @@
         btn.disabled = true;
 
         try {
-            const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
-            const arrayRemoveFunc = window.arrayRemove || function(val) { return val; };
-            const arrayUnionFunc = window.arrayUnion || function(val) { return [val]; };
+            const { doc, updateDoc, arrayUnion, arrayRemove } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            const roomRef = doc(window.dbInstance, "rooms", window.currentRoomId);
             
             if (isCurrentlyReady) {
-                await window.updateDocFunc(roomRef, { readyPlayers: arrayRemoveFunc(myName) });
+                await updateDoc(roomRef, { readyPlayers: arrayRemove(myName) });
             } else {
-                await window.updateDocFunc(roomRef, { readyPlayers: arrayUnionFunc(myName) });
+                await updateDoc(roomRef, { readyPlayers: arrayUnion(myName) });
             }
         } catch (e) {
             console.error(e);
-            if (window.showTempModal) window.showTempModal("خطأ اتصال", "تعذر تحديث حالتك.", "ph-bold ph-wifi-slash", "#ff4c6a");
+            if (window.showTempModal) window.showTempModal("خطأ اتصال", "تعذر تحديث حالتك، تحقق من الاتصال.", "ph-bold ph-wifi-slash", "#ff4c6a");
         }
         btn.disabled = false;
     }
@@ -485,6 +484,7 @@
                 const fData = window.friendsCache[fName] || { username: fName };
                 const safeName = fData.username || fName;
                 
+                // إنشاء شكل الإمبلم البحت الذي يحتوي على الاسم فقط بدون أفاتار
                 let emblemSrc = 'assets/images/default-emblem.png';
                 if (fData.emblem && window.GAME_ASSETS && window.GAME_ASSETS.emblems) {
                     let emObj = window.GAME_ASSETS.emblems.find(e => e.id === fData.emblem);
@@ -556,13 +556,12 @@
         const btn = document.getElementById('btn-send-inv-submit');
         btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>'; btn.disabled = true;
         try {
-            // استخدام دوال النظام الأصلية لمنع التعارض
-            const unionFunc = window.arrayUnion || function(val) { return [val]; };
+            const { getDocs, query, collection, where, updateDoc, doc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
             const friendsArray = Array.from(window.selectedFriendsToInvite).map(f => f.toLowerCase());
-            
-            // تنبيه: إرسال الدعوات يتطلب Query، إذا لم تكن مدعومة سيظهر هذا الـ Alert
-            alert("ميزة إرسال الدعوات جاهزة واجهياً، وتحتاج فقط للربط بقواعد Firebase Queries الخاصة بك.");
-            
+            const q = query(collection(window.dbInstance, "users"), where("username_lower", "in", friendsArray));
+            const snap = await getDocs(q);
+            const inviteData = { roomId: window.currentRoomId, hostName: window.currentUserData.username, timestamp: Date.now() };
+            snap.forEach(async (d) => { await updateDoc(doc(window.dbInstance, "users", d.id), { gameInvites: arrayUnion(inviteData) }); });
             closeInviteModal();
         } catch (e) { alert("حدث خطأ"); } finally { btn.innerHTML = 'إرسال الدعوات'; btn.disabled = false; }
     }
