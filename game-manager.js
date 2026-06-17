@@ -1,22 +1,59 @@
 // ========================================================================
-// DECEPTION - CORE ISOLATED GAME ENGINE LOGIC (100% SECURE & FIXED)
+// DECEPTION - CORE ISOLATED GAME ENGINE (WITH SESSION RECOVERY)
 // ========================================================================
 
 window.GameEngine = {
     roomInGameListenerUnsub: null,
     cachedGameStateData: null,
 
-    initiateGameStart: async function() {
-        // فحص مبدئي لمنع الفشل الصامت
-        if (!window.currentRoomId) {
-            alert("خطأ: لم يتم التعرف على رقم الغرفة.");
-            return;
-        }
-        if (!window.currentRoomData) {
-            alert("خطأ: بيانات الغرفة غير متوفرة.");
-            return;
-        }
+    // دالة إدارة الأزرار في القوائم الأساسية وتبديل الألواح
+    switchGameTab: function(tabId, clickedBtn) {
+        document.querySelectorAll('.game-nav-tab').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.game-tab-panel').forEach(panel => panel.classList.remove('active'));
+        
+        // تفعيل الزر في كلتا القائمتين (سطح المكتب والجوال) لضمان التزامن
+        let deskBtn = document.getElementById('desk-tab-' + tabId);
+        let mobBtn = document.getElementById('mob-tab-' + tabId);
+        if(deskBtn) deskBtn.classList.add('active');
+        if(mobBtn) mobBtn.classList.add('active');
 
+        const targetPanel = document.getElementById(`game-panel-${tabId}`);
+        if (targetPanel) { targetPanel.classList.add('active'); }
+        
+        if (tabId === 'court') this.buildCourtRoomUI();
+        if (tabId === 'tools') this.buildToolsAndEvidenceUI();
+        if (tabId === 'settings') this.buildSettingsPlayersUI();
+    },
+
+    // نظام الاسترداد اللحظي عند تسجيل الدخول
+    recoverGameSession: async function(usernameLower) {
+        try {
+            const { getDocs, query, collection, where } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            // البحث عن اللاعب في أي غرفة نشطة
+            const q = query(collection(window.dbInstance, "rooms"), where("players", "array-contains", usernameLower));
+            const snap = await getDocs(q);
+            
+            if (!snap.empty) {
+                const roomData = snap.docs[0].data();
+                window.currentRoomId = roomData.id;
+                window.currentRoomData = roomData;
+                
+                // إعادة ربط المراقب الأساسي للغرفة
+                if(window.listenToRoom) window.listenToRoom();
+
+                // إذا كانت الغرفة في وضع اللعب، انقله فوراً
+                if (roomData.status === 'playing') {
+                    document.body.classList.add('in-game');
+                    if (window.loadFragment) window.loadFragment('game');
+                } else {
+                    if (window.loadFragment) window.loadFragment('lobby');
+                }
+            }
+        } catch (e) { console.error("Recovery failed:", e); }
+    },
+
+    initiateGameStart: async function() {
+        if (!window.currentRoomId || !window.currentRoomData) return;
         const currentPlayersArray = window.currentRoomData.players || [];
         
         let dynamicShuffledPlayers = [...currentPlayersArray].sort(() => Math.random() - 0.5);
@@ -32,58 +69,40 @@ window.GameEngine = {
         const pureEvidencePool = ['بقعة دم', 'بصمة إبهام', 'كأس مكسور', 'رسالة تهديد', 'شعر طويل', 'ساعة متوقفة', 'خاتم ذهبي', 'كمامة طبية', 'قلم ملوث', 'حقيبة جلدية'];
 
         let assignedPlayerItemsDatabase = {};
-
         currentPlayersArray.forEach(playerNameKey => {
-            let localizedWeapons = [...pureWeaponsPool].sort(() => Math.random() - 0.5).slice(0, 4);
-            let localizedEvidence = [...pureEvidencePool].sort(() => Math.random() - 0.5).slice(0, 4);
-            
             assignedPlayerItemsDatabase[playerNameKey] = {
-                weapons: localizedWeapons,
-                evidence: localizedEvidence
+                weapons: [...pureWeaponsPool].sort(() => Math.random() - 0.5).slice(0, 4),
+                evidence: [...pureEvidencePool].sort(() => Math.random() - 0.5).slice(0, 4)
             };
         });
 
-        // التحديث المباشر لقاعدة البيانات دون استيراد ديناميكي
         try {
-            const currentRoomDocumentRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
-            
-            await window.updateDocFunc(currentRoomDocumentRef, {
-                status: 'playing',
-                currentRound: 1,
-                roles: allocatedRolesMap,
-                playerItems: assignedPlayerItemsDatabase,
-                accusationsUsed: {},
+            const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            await updateDoc(doc(window.dbInstance, "rooms", window.currentRoomId), {
+                status: 'playing', currentRound: 1, roles: allocatedRolesMap,
+                playerItems: assignedPlayerItemsDatabase, accusationsUsed: {},
                 cluesBoard: [
                     { tileName: 'مكان الجريمة الرئيسي', value: 'بانتظار اختيار الطبيب الشرعي...' },
                     { tileName: 'سبب الوفاة المباشر', value: 'بانتظار تشريح الجثة...' }
                 ],
                 actionsHistoryLog: ['تم قفل الغرفة بنجاح وبدأت الجولة الأولى.']
             });
-            
-            // لا نقوم بتغيير الواجهة هنا، بل نترك المستمع اللحظي (Listener) ينقل الجميع معاً
-        } catch (firebaseUpdateError) {
-            console.error("Game Engine Error:", firebaseUpdateError);
-            alert("خطأ في الاتصال بقاعدة البيانات عند بدء اللعبة: " + firebaseUpdateError.message);
-        }
+            document.body.classList.add('in-game');
+            if (window.loadFragment) window.loadFragment('game');
+        } catch (error) { console.error("Game Start Error:", error); }
     },
 
     activateInGameRealtimeListener: function() {
         if (!window.currentRoomId || !window.onSnapshotFunc) return;
-        
-        if (this.roomInGameListenerUnsub) {
-            this.roomInGameListenerUnsub();
-            this.roomInGameListenerUnsub = null;
-        }
+        if (this.roomInGameListenerUnsub) { this.roomInGameListenerUnsub(); this.roomInGameListenerUnsub = null; }
 
-        const roomQueryReference = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
-        
-        this.roomInGameListenerUnsub = window.onSnapshotFunc(roomQueryReference, (realtimeSnapshot) => {
-            if (!realtimeSnapshot.exists()) return;
+        const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
+        this.roomInGameListenerUnsub = window.onSnapshotFunc(roomRef, (snap) => {
+            if (!snap.exists()) return;
+            const data = snap.data();
+            this.cachedGameStateData = data;
             
-            const fetchedData = realtimeSnapshot.data();
-            this.cachedGameStateData = fetchedData;
-            
-            if (fetchedData.status === 'playing' && !document.body.classList.contains('in-game')) {
+            if (data.status === 'playing' && !document.body.classList.contains('in-game')) {
                 document.body.classList.add('in-game');
                 if (window.loadFragment) window.loadFragment('game');
                 return;
@@ -97,251 +116,194 @@ window.GameEngine = {
 
     synchronizeRoleIdentityUI: function() {
         if (!this.cachedGameStateData || !window.currentUserData) return;
+        const myName = window.currentUserData.username_lower;
+        const assignedRole = this.cachedGameStateData.roles ? this.cachedGameStateData.roles[myName] : 'investigator';
         
-        const myNameLowerKey = window.currentUserData.username_lower;
-        const assignedRole = this.cachedGameStateData.roles ? this.cachedGameStateData.roles[myNameLowerKey] : 'investigator';
-        
-        const badgeElement = document.getElementById('game-role-identity-badge');
-        const descriptionElement = document.getElementById('game-role-strategy-description');
-        const avatarImageElement = document.getElementById('game-role-avatar-picture');
+        const badge = document.getElementById('game-role-identity-badge');
+        const desc = document.getElementById('game-role-strategy-description');
+        const avatar = document.getElementById('game-role-avatar-picture');
 
-        if (!badgeElement || !descriptionElement || !avatarImageElement) return;
+        if (!badge || !desc || !avatar) return;
 
-        const currentSelectionsMap = this.cachedGameStateData.characterSelections || {};
-        const activeCharId = currentSelectionsMap[myNameLowerKey];
+        const activeCharId = (this.cachedGameStateData.characterSelections || {})[myName];
         if (window.GAME_ASSETS && window.GAME_ASSETS.characters) {
-            const assetObject = window.GAME_ASSETS.characters.find(item => item.id === activeCharId);
-            if (assetObject) {
-                avatarImageElement.src = assetObject.src;
-            } else {
-                avatarImageElement.src = 'assets/images/default-avatar.png';
-            }
+            const charObj = window.GAME_ASSETS.characters.find(c => c.id === activeCharId);
+            avatar.src = charObj ? charObj.src : 'assets/images/default-avatar.png';
         }
 
         if (assignedRole === 'forensic') {
-            badgeElement.innerText = 'الطبيب الشرعي';
-            badgeElement.style.background = '#9b59b6';
-            descriptionElement.innerText = 'أنت الوحيد الذي يمتلك خيوط الجريمة وتعرف هوية القاتل والأدلة المادية! يُحظر عليك التحدث نهائياً، وعليك توجيه المحققين إلى الحل الصحيح بذكاء عن طريق اختيار الكلمات التلميحية المناسبة من لوحة الأدلة.';
+            badge.innerText = 'الطبيب الشرعي'; badge.style.background = '#9b59b6';
+            desc.innerText = 'أنت تملك الحقيقة ولكن لا يمكنك الكلام. وجه المحققين عبر لوحة الأدلة.';
         } else if (assignedRole === 'murderer') {
-            badgeElement.innerText = 'القاتل السري';
-            badgeElement.style.background = '#e74c3c';
-            descriptionElement.innerText = 'لقد قمت بارتكاب الجريمة بنجاح! سلاح فوزك الوحيد هو التضليل وإبعاد الشبهات عن أدواتك المادية المحيطة بك وحماية نفسك من اتهامات المحققين الأذكياء. حاول إلصاق التهم بالآخرين أثناء النقاش.';
+            badge.innerText = 'القاتل السري'; badge.style.background = '#e74c3c';
+            desc.innerText = 'أنت الجاني! ضلل المحققين وأبعد الشبهات عن أدواتك الشخصية للفوز.';
         } else {
-            badgeElement.innerText = 'المحقق الجنائي';
-            badgeElement.style.background = '#27ae60';
-            descriptionElement.innerText = 'أنت حامي العدالة وعين القانون في مسرح الجريمة. حلل بورد التلميحات الخاص بالطبيب الشرعي بدقة متناهية، قارن الأدوات والآثار الموزعة على المشتبه بهم، وعند تيقنك تماماً وجّه الاتهام الرسمي!';
+            badge.innerText = 'المحقق الجنائي'; badge.style.background = '#27ae60';
+            desc.innerText = 'عين العدالة. حلل الأدلة وقارن الآثار لتقديم بلاغ اتهام صحيح 100%.';
         }
     },
 
     buildCourtRoomUI: function() {
         if (!this.cachedGameStateData) return;
-        
-        const gridContainerElement = document.getElementById('game-court-players-injection-grid');
-        if (!gridContainerElement) return;
+        const grid = document.getElementById('game-court-players-injection-grid');
+        if (!grid) return;
         
         document.getElementById('game-court-current-round-title').innerText = `الجولة الجنائية رقم ${this.cachedGameStateData.currentRound || 1}`;
-        gridContainerElement.innerHTML = '';
+        grid.innerHTML = '';
 
-        const gamePlayersList = this.cachedGameStateData.players || [];
-        const characterSelectionsMap = this.cachedGameStateData.characterSelections || {};
-        const myLocalUsernameLower = window.currentUserData.username_lower;
+        const playersList = this.cachedGameStateData.players || [];
+        const charMap = this.cachedGameStateData.characterSelections || {};
+        const myName = window.currentUserData.username_lower;
 
-        gamePlayersList.forEach(playerKeyName => {
-            if (playerKeyName === myLocalUsernameLower) return;
-            
-            let accountProfileData = window.lobbyPlayersCache[playerKeyName] || { username: playerKeyName };
-            let associatedCharId = characterSelectionsMap[playerKeyName];
-            let matchedAsset = window.GAME_ASSETS.characters.find(char => char.id === associatedCharId);
-            let verifiedAvatarSource = matchedAsset ? matchedAsset.src : 'assets/images/default-avatar.png';
+        playersList.forEach(pName => {
+            if (pName === myName) return;
+            let profile = window.lobbyPlayersCache[pName] || { username: pName };
+            let charObj = window.GAME_ASSETS.characters.find(c => c.id === charMap[pName]);
+            let avatarSrc = charObj ? charObj.src : 'assets/images/default-avatar.png';
 
-            gridContainerElement.innerHTML += `
+            grid.innerHTML += `
                 <div class="court-player-card">
-                    <img src="${verifiedAvatarSource}" style="width: 75px; height: 100px; border-radius: 16px; object-fit: cover; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);">
-                    <div style="font-weight: 700; color: #ffffff; margin-bottom: 15px; font-size: 1.05rem;">${accountProfileData.username}</div>
-                    <button class="btn-core" style="padding: 10px 22px; font-size: 0.85rem;" onclick="window.GameEngine.openOfficialAccusationModalForm('${playerKeyName}')">
-                        <i class="ph-bold ph-gavel"></i> اتهم هذا المشتبه به
-                    </button>
-                </div>
-            `;
+                    <img src="${avatarSrc}" style="width: 75px; height: 100px; border-radius: 16px; object-fit: cover; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                    <div style="font-weight: 700; color: #ffffff; margin-bottom: 15px;">${profile.username}</div>
+                    <button class="btn-core" style="padding: 10px 22px; font-size: 0.85rem;" onclick="window.GameEngine.openOfficialAccusationModalForm('${pName}')"><i class="ph-bold ph-gavel"></i> اتهم هذا المشتبه به</button>
+                </div>`;
         });
     },
 
-    openOfficialAccusationModalForm: function(accusedTargetPlayerName) {
-        const myLocalUsernameLower = window.currentUserData.username_lower;
-        const usedAccusationsMap = this.cachedGameStateData.accusationsUsed || {};
+    openOfficialAccusationModalForm: function(targetName) {
+        const myName = window.currentUserData.username_lower;
+        const usedAccusations = this.cachedGameStateData.accusationsUsed || {};
         
-        if (usedAccusationsMap[myLocalUsernameLower]) {
-            if (window.showTempModal) window.showTempModal("بلاغ مرفوض", "لقد استنفدت حق الاتهام والمحاكمة الخاص بك لهذه المباراة مسبقاً ولا يمكنك تقديم بلاغ آخر!", "ph-bold ph-x-circle", "#ff4c6a");
+        if (usedAccusations[myName]) {
+            if (window.showTempModal) window.showTempModal("بلاغ مرفوض", "استنفدت حق الاتهام لهذه المباراة!", "ph-bold ph-x-circle", "#ff4c6a");
             return;
         }
 
-        const targetAssignedPool = this.cachedGameStateData.playerItems[accusedTargetPlayerName] || { weapons: [], evidence: [] };
-        
-        let weaponSelectorOptionsHtml = targetAssignedPool.weapons.map(wep => `<option value="${wep}">${wep}</option>`).join('');
-        let evidenceSelectorOptionsHtml = targetAssignedPool.evidence.map(evd => `<option value="${evd}">${evd}</option>`).join('');
+        const items = this.cachedGameStateData.playerItems[targetName] || { weapons: [], evidence: [] };
+        let wHtml = items.weapons.map(w => `<option value="${w}">${w}</option>`).join('');
+        let eHtml = items.evidence.map(e => `<option value="${e}">${e}</option>`).join('');
 
-        const dynamicAccuseModalStructureHtml = `
+        const modalHtml = `
             <div class="friend-data-card" style="padding: 25px; text-align: center; max-width: 420px; direction: rtl;">
-                <h3 style="color: #ffffff; margin-bottom: 12px; font-weight: 800;"><i class="ph-fill ph-gavel" style="color: var(--accent-red); margin-left: 5px;"></i> تقديم بلاغ اتهام جنائي رسمي</h3>
-                <p style="color: var(--text-dim); font-size: 0.82rem; margin-bottom: 20px; line-height: 1.6;">تنبيه: يجب تحديد أداة الجريمة والأثر المادي بدقة مطلقة، إذا أخطأت في عنصر واحد فقط، سيفشل البلاغ بالكامل ويُقفل صامتاً دون أي توضيح للخطأ!</p>
+                <h3 style="color: #ffffff; margin-bottom: 12px; font-weight: 800;"><i class="ph-fill ph-gavel" style="color: var(--accent-red); margin-left: 5px;"></i> تقديم بلاغ رسمي</h3>
+                <p style="color: var(--text-dim); font-size: 0.82rem; margin-bottom: 20px;">يجب تحديد الأداة والأثر بدقة لتجنب فشل البلاغ.</p>
                 <div class="input-wrapper" style="text-align: right;">
-                    <label style="color: var(--text-main); font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; display: block;">أداة الجريمة المحتملة (القتال)</label>
-                    <select id="court-chosen-weapon-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">${weaponSelectorOptionsHtml}</select>
+                    <label style="color: var(--text-main); font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; display: block;">أداة الجريمة</label>
+                    <select id="court-chosen-weapon-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">${wHtml}</select>
                 </div>
                 <div class="input-wrapper" style="text-align: right; margin-top: 15px;">
-                    <label style="color: var(--text-main); font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; display: block;">الدليل أو الأثر الشخصي المرتبط</label>
-                    <select id="court-chosen-evidence-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">${evidenceSelectorOptionsHtml}</select>
+                    <label style="color: var(--text-main); font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; display: block;">الدليل / الأثر</label>
+                    <select id="court-chosen-evidence-select" class="premium-input" style="text-align: right; direction: rtl; background: var(--bg-base); font-family: var(--font-ar); font-weight: bold;">${eHtml}</select>
                 </div>
                 <div style="display: flex; gap: 12px; margin-top: 25px;">
-                    <button class="btn-secondary" style="margin-top: 0; flex: 1; border-radius: 100px;" onclick="document.getElementById('court-accusation-form-modal-overlay').remove()">إلغاء</button>
-                    <button class="btn-core" style="flex: 2; border-radius: 100px;" onclick="window.GameEngine.transmitFinalAccusationPayload('${accusedTargetPlayerName}')">إرسال للمختبر الجنائي</button>
+                    <button class="btn-secondary" style="margin-top: 0; flex: 1; border-radius: 100px;" onclick="document.getElementById('court-accusation-modal').remove()">إلغاء</button>
+                    <button class="btn-core" style="flex: 2; border-radius: 100px;" onclick="window.GameEngine.transmitFinalAccusationPayload('${targetName}')">إرسال للمختبر</button>
                 </div>
-            </div>
-        `;
+            </div>`;
 
-        const outerModalDivElement = document.createElement('div');
-        outerModalDivElement.id = 'court-accusation-form-modal-overlay';
-        outerModalDivElement.className = 'friend-data-modal';
-        outerModalDivElement.innerHTML = dynamicAccuseModalStructureHtml;
-        document.body.appendChild(outerModalDivElement);
+        const modal = document.createElement('div');
+        modal.id = 'court-accusation-modal';
+        modal.className = 'friend-data-modal';
+        modal.innerHTML = modalHtml;
+        document.body.appendChild(modal);
     },
 
-    transmitFinalAccusationPayload: async function(targetedPlayerKeyName) {
-        const weaponSelectedValue = document.getElementById('court-chosen-weapon-select').value;
-        const evidenceSelectedValue = document.getElementById('court-chosen-evidence-select').value;
-        const myLocalUsernameLower = window.currentUserData.username_lower;
-
-        document.getElementById('court-accusation-form-modal-overlay').remove();
+    transmitFinalAccusationPayload: async function(targetName) {
+        const weapon = document.getElementById('court-chosen-weapon-select').value;
+        const evidence = document.getElementById('court-chosen-evidence-select').value;
+        const myName = window.currentUserData.username_lower;
+        document.getElementById('court-accusation-modal').remove();
 
         try {
-            const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
-            let atomicUpdateData = {};
-            atomicUpdateData[`accusationsUsed.${myLocalUsernameLower}`] = true;
-            const logMessageString = `قام المحقق [${window.currentUserData.username}] بتقديم بلاغ رسمي ضد [${targetedPlayerKeyName}] متهماً إياه باستخدام (${weaponSelectedValue}) وترك أثر (${evidenceSelectedValue}).`;
+            const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            const roomRef = doc(window.dbInstance, "rooms", window.currentRoomId);
             
-            // تحديث السيرفر بدون استدعاءات ديناميكية
-            await window.updateDocFunc(roomRef, atomicUpdateData);
+            let updates = {}; updates[`accusationsUsed.${myName}`] = true;
+            updates.actionsHistoryLog = arrayUnion(`قدم [${window.currentUserData.username}] بلاغاً ضد [${targetName}] بأداة (${weapon}) وأثر (${evidence}).`);
             
-            // تسجيل التحديث في التاريخ
-            const { arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-            await window.updateDocFunc(roomRef, { actionsHistoryLog: arrayUnion(logMessageString) });
-
-            if (window.showTempModal) window.showTempModal("تم تقديم البلاغ", "استقبل المختبر الجنائي بلاغك الرسمي، تفقد لوحة سجل الجولات لمعرفة النتائج لاحقاً.", "ph-bold ph-shield-check", "#2ecc71");
-        } catch (error) {
-            console.error("Failed to push accusation:", error);
-            alert("حدث خطأ أثناء إرسال البلاغ.");
-        }
+            await updateDoc(roomRef, updates);
+            if (window.showTempModal) window.showTempModal("تم التقديم", "تم إرسال بلاغك الجنائي.", "ph-bold ph-shield-check", "#2ecc71");
+        } catch (e) { console.error("Accusation failed:", e); }
     },
 
     synchronizeForensicCluesBoard: function() {
-        const boardContainerElement = document.getElementById('game-forensic-clues-tiles-board');
-        if (!boardContainerElement || !this.cachedGameStateData) return;
-        
-        const cluesTilesArray = this.cachedGameStateData.cluesBoard || [];
-        boardContainerElement.innerHTML = '';
-
-        cluesTilesArray.forEach(tileItem => {
-            boardContainerElement.innerHTML += `
+        const board = document.getElementById('game-forensic-clues-tiles-board');
+        if (!board || !this.cachedGameStateData) return;
+        board.innerHTML = '';
+        (this.cachedGameStateData.cluesBoard || []).forEach(tile => {
+            board.innerHTML += `
                 <div class="court-player-card" style="text-align: right; padding: 22px; border-right: 4px solid var(--accent-red);">
-                    <div style="font-size: 0.8rem; color: var(--text-dim); font-weight: 800; text-transform: uppercase; margin-bottom: 6px;">${tileItem.tileName}</div>
-                    <div style="font-size: 1.15rem; font-weight: 900; color: #ffffff; font-family: var(--font-ar);">${tileItem.value}</div>
-                </div>
-            `;
+                    <div style="font-size: 0.8rem; color: var(--text-dim); font-weight: 800; margin-bottom: 6px;">${tile.tileName}</div>
+                    <div style="font-size: 1.15rem; font-weight: 900; color: white;">${tile.value}</div>
+                </div>`;
         });
     },
 
     buildToolsAndEvidenceUI: function() {
-        if (!this.cachedGameStateData) return;
+        const grid = document.getElementById('game-scene-investigation-tools-grid');
+        if (!grid || !this.cachedGameStateData) return;
+        grid.innerHTML = '';
         
-        const mainInvestigationToolsGrid = document.getElementById('game-scene-investigation-tools-grid');
-        if (!mainInvestigationToolsGrid) return;
+        const players = this.cachedGameStateData.players || [];
+        const itemsMap = this.cachedGameStateData.playerItems || {};
 
-        mainInvestigationToolsGrid.innerHTML = '';
-        
-        const totalRoomPlayersList = this.cachedGameStateData.players || [];
-        const entirePlayerItemsMap = this.cachedGameStateData.playerItems || {};
+        players.forEach(pName => {
+            let profile = window.lobbyPlayersCache[pName] || { username: pName };
+            let items = itemsMap[pName] || { weapons: [], evidence: [] };
+            
+            let wHtml = items.weapons.map(w => `<div class="game-square-box weapon-type"><i class="ph-bold ph-knife"></i><span>${w}</span></div>`).join('');
+            let eHtml = items.evidence.map(e => `<div class="game-square-box evidence-type"><i class="ph-bold ph-mask-happy"></i><span>${e}</span></div>`).join('');
 
-        totalRoomPlayersList.forEach(playerNameKey => {
-            let userProfileCache = window.lobbyPlayersCache[playerNameKey] || { username: playerNameKey };
-            let userItemsObject = entirePlayerItemsMap[playerNameKey] || { weapons: [], evidence: [] };
-
-            let formattedWeaponsSquaresHtml = userItemsObject.weapons.map(weaponName => `
-                <div class="game-square-box weapon-type">
-                    <i class="ph-bold ph-knife"></i>
-                    <span>${weaponName}</span>
-                </div>
-            `).join('');
-
-            let formattedEvidenceSquaresHtml = userItemsObject.evidence.map(evidenceName => `
-                <div class="game-square-box evidence-type">
-                    <i class="ph-bold ph-mask-happy"></i>
-                    <span>${evidenceName}</span>
-                </div>
-            `).join('');
-
-            mainInvestigationToolsGrid.innerHTML += `
-                <div class="game-premium-card" style="padding-top: 18px; display: flex; flex-direction: column; gap: 4px;">
-                    <div style="font-weight: 900; text-align: right; color: var(--accent-red); font-size: 1.2rem; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 5px;">
-                        ${userProfileCache.username}
-                    </div>
-                    <div class="items-pool-header-title">أدوات الجريمة المحتملة (الأزرار الحمراء)</div>
-                    <div class="items-four-squares-grid">${formattedWeaponsSquaresHtml}</div>
-                    
-                    <div class="items-pool-header-title" style="margin-top: 15px;">الآثار والقرائن المادية (الأزرار الزرقاء)</div>
-                    <div class="items-four-squares-grid">${formattedEvidenceSquaresHtml}</div>
-                </div>
-            `;
+            grid.innerHTML += `
+                <div class="game-premium-card" style="padding-top: 18px;">
+                    <div style="font-weight: 900; text-align: right; color: var(--accent-red); font-size: 1.2rem; margin-bottom: 10px;">${profile.username}</div>
+                    <div class="items-pool-header-title">أدوات محتملة</div><div class="items-four-squares-grid">${wHtml}</div>
+                    <div class="items-pool-header-title" style="margin-top: 15px;">آثار مادية</div><div class="items-four-squares-grid">${eHtml}</div>
+                </div>`;
         });
     },
 
     buildSettingsPlayersUI: function() {
         if (!this.cachedGameStateData) return;
+        const myName = window.currentUserData.username_lower;
         
-        const currentActiveMyNameLower = window.currentUserData.username_lower;
-        
-        const myPersonalSpace = document.getElementById('game-in-my-personal-emblem');
-        if (myPersonalSpace && window.UI_COMPONENTS && typeof window.UI_COMPONENTS.buildEmblemCard === 'function') {
-            myPersonalSpace.innerHTML = window.UI_COMPONENTS.buildEmblemCard(window.currentUserData, "90px", false);
-        }
+        const mySpace = document.getElementById('game-in-my-personal-emblem');
+        if (mySpace && window.UI_COMPONENTS) mySpace.innerHTML = window.UI_COMPONENTS.buildEmblemCard(window.currentUserData, "90px", false);
 
-        const othersContainerListSpace = document.getElementById('game-in-others-emblems-list');
-        if (!othersContainerListSpace) return;
+        const listSpace = document.getElementById('game-in-others-emblems-list');
+        if (!listSpace) return;
+        listSpace.innerHTML = '';
         
-        othersContainerListSpace.innerHTML = '';
-        const currentRoomPlayersList = this.cachedGameStateData.players || [];
-        
-        currentRoomPlayersList.forEach(loopPlayerNameKey => {
-            if (loopPlayerNameKey === currentActiveMyNameLower) return; 
-            
-            let opponentAccountData = window.lobbyPlayersCache[loopPlayerNameKey] || { username: loopPlayerNameKey };
-            if (window.UI_COMPONENTS && typeof window.UI_COMPONENTS.buildEmblemCard === 'function') {
-                othersContainerListSpace.innerHTML += window.UI_COMPONENTS.buildEmblemCard(opponentAccountData, "75px", false);
-            }
+        (this.cachedGameStateData.players || []).forEach(pName => {
+            if (pName === myName) return; 
+            let pData = window.lobbyPlayersCache[pName] || { username: pName };
+            if (window.UI_COMPONENTS) listSpace.innerHTML += window.UI_COMPONENTS.buildEmblemCard(pData, "75px", false);
         });
     },
 
     synchronizeLiveEventsHistoryLog: function() {
-        const logBoxContainerElement = document.getElementById('game-rounds-live-events-log');
-        if (!logBoxContainerElement || !this.cachedGameStateData) return;
-        
-        const dynamicHistoryArray = this.cachedGameStateData.actionsHistoryLog || [];
-        logBoxContainerElement.innerHTML = '';
-
-        dynamicHistoryArray.forEach(logLineString => {
-            logBoxContainerElement.innerHTML += `
-                <div class="log-item-row">
-                    <i class="ph-bold ph-caret-left" style="color: var(--accent-red); margin-left: 5px; font-size: 0.7rem;"></i> ${logLineString}
-                </div>
-            `;
+        const logBox = document.getElementById('game-rounds-live-events-log');
+        if (!logBox || !this.cachedGameStateData) return;
+        logBox.innerHTML = '';
+        (this.cachedGameStateData.actionsHistoryLog || []).forEach(log => {
+            logBox.innerHTML += `<div class="log-item-row"><i class="ph-bold ph-caret-left" style="color: var(--accent-red); margin-left: 5px;"></i> ${log}</div>`;
         });
     },
 
     leaveAndCollapseActiveGame: function() {
-        if (this.roomInGameListenerUnsub) {
-            this.roomInGameListenerUnsub();
-            this.roomInGameListenerUnsub = null;
-        }
+        if (this.roomInGameListenerUnsub) { this.roomInGameListenerUnsub(); this.roomInGameListenerUnsub = null; }
         document.body.classList.remove('in-game');
         if (window.leaveFirebaseRoom) window.leaveFirebaseRoom();
     }
 };
+
+// تفعيل الاسترداد التلقائي بمجرد نجاح تسجيل الدخول
+setTimeout(() => {
+    if(window.authInstance) {
+        window.authInstance.onAuthStateChanged((user) => {
+            if(user && !window.isGuest && window.currentUserData) {
+                window.GameEngine.recoverGameSession(window.currentUserData.username_lower);
+            }
+        });
+    }
+}, 3000);
