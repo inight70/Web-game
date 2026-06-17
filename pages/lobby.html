@@ -30,7 +30,6 @@
         border: 2px solid rgba(255,255,255,0.05); min-height: 110px; -webkit-tap-highlight-color: transparent;
     }
     
-    /* الألوان الخاصة بكل طور */
     .mode-card.normal { --mode-color: #0984e3; --mode-glow: rgba(9, 132, 227, 0.4); }
     .mode-card.heroic { --mode-color: #e84118; --mode-glow: rgba(232, 65, 24, 0.4); }
 
@@ -40,7 +39,7 @@
     .mode-title { 
         font-family: var(--font-en); font-size: 1.1rem; font-weight: 900; letter-spacing: 6px; 
         color: rgba(255,255,255,0.7); text-transform: uppercase; z-index: 1; transition: 0.3s;
-        margin-right: -6px; /* لموازنة تباعد الأحرف */
+        margin-right: -6px;
     }
 
     .mode-settings-footer { 
@@ -49,7 +48,6 @@
         background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 100px;
     }
 
-    /* حالة الطور المختار (Active) */
     .mode-card.active { 
         border-color: var(--mode-color); 
         box-shadow: 0 8px 25px var(--mode-glow), inset 0 0 15px var(--mode-glow); 
@@ -82,10 +80,17 @@
     .empty-emblem-slot i { font-size: 1.8rem; }
 
     .lobby-bottom-actions { display: flex; gap: 15px; margin-top: 10px; }
+    
     .btn-lobby-ready { flex: 1; background: var(--surface-panel); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-soft); display: flex; justify-content: center; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent;}
     .btn-lobby-ready:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
     .btn-lobby-ready:active { transform: scale(0.98); }
     .btn-lobby-ready.is-ready { background: var(--accent-green); color: white; border-color: var(--accent-green); box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); }
+    
+    /* تصميم زر البدء الخاص بالقائد (Host) */
+    .btn-lobby-start { flex: 1; background: var(--cyber-gradient); color: white; border: none; border-radius: var(--radius-pill); padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; transition: var(--trans-smooth); box-shadow: var(--shadow-glow); display: none; justify-content: center; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent; }
+    .btn-lobby-start:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(242, 39, 123, 0.4); }
+    .btn-lobby-start:active { transform: scale(0.98); }
+
     .btn-lobby-leave { width: 65px; background: rgba(242, 39, 123, 0.05); color: var(--accent-red); border: 1px solid rgba(242, 39, 123, 0.2); border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: var(--trans-smooth); -webkit-tap-highlight-color: transparent;}
     .btn-lobby-leave:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: var(--shadow-glow); }
     .btn-lobby-leave:active { transform: scale(0.95); }
@@ -99,7 +104,6 @@
     .btn-close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent;}
     .btn-close-modal:hover { color: var(--accent-red); transform: rotate(90deg); }
 
-    /* تصميم خيارات الإعدادات داخل النافذة */
     .settings-option-row { padding: 20px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
     .settings-option-info { display: flex; flex-direction: column; gap: 5px; }
     .settings-option-name { font-size: 1rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; }
@@ -179,6 +183,11 @@
         <button class="btn-lobby-ready" id="btn-ready-action" onclick="toggleReadyState()">
             <i class="ph-bold ph-check-circle" style="font-size: 1.3rem;"></i> <span>تأكيد الجاهزية</span>
         </button>
+        
+        <button class="btn-lobby-start" id="btn-start-game" onclick="window.GameEngine.initiateGameStart()">
+            <i class="ph-bold ph-play" style="font-size: 1.3rem;"></i> <span>بدء التحقيق</span>
+        </button>
+
         <button class="btn-lobby-leave" onclick="openLeaveModal()">
             <i class="ph-bold ph-sign-out"></i>
         </button>
@@ -270,7 +279,6 @@
     window.currentRoomSettings = { discussion: 60, voting: 45, clues: 2 };
 
     function selectGameMode(mode) {
-        // حماية: المالك فقط هو من يستطيع تغيير الطور والإعدادات
         let isHost = false;
         if(window.currentRoomData && window.authInstance && window.authInstance.currentUser) {
             isHost = (window.currentRoomData.hostId === window.authInstance.currentUser.uid);
@@ -280,13 +288,11 @@
             window.showTempModal('للمشاهدة فقط', 'مالك الغرفة فقط هو من يحدد طور اللعب والإعدادات.', 'ph-bold ph-lock-key', '#f1c40f');
         }
 
-        // إذا كان المود المختار هو نفسه، افتح النافذة
         if (window.currentSelectedMode === mode) {
             openRoomSettings(mode, isHost);
             return;
         }
 
-        // إذا ضغط على مود مختلف، وهو الهوست، قم بتغيير المود وفتح النافذة
         if (isHost) {
             document.getElementById('mode-normal-btn').classList.remove('active');
             document.getElementById('mode-heroic-btn').classList.remove('active');
@@ -294,8 +300,6 @@
             document.getElementById(`mode-${mode}-btn`).classList.add('active');
             window.currentSelectedMode = mode;
             openRoomSettings(mode, isHost);
-            
-            // هنا سيتم لاحقاً إرسال التحديث لـ Firebase ليراه الجميع
         }
     }
 
@@ -303,7 +307,6 @@
         document.getElementById('settings-mode-label').innerText = mode.toUpperCase();
         document.getElementById('settings-mode-label').style.color = mode === 'normal' ? '#0984e3' : '#e84118';
         
-        // إذا لم يكن الهوست، نعطل الأزرار شكلياً
         const allBtns = document.querySelectorAll('.setting-seg-btn');
         allBtns.forEach(btn => {
             if(!isHost) {
@@ -327,11 +330,10 @@
         if(window.currentRoomData && window.authInstance && window.authInstance.currentUser) {
             isHost = (window.currentRoomData.hostId === window.authInstance.currentUser.uid);
         }
-        if(!isHost) return; // حماية
+        if(!isHost) return; 
 
         window.currentRoomSettings[type] = value;
         
-        // تحديث واجهة الأزرار (تفعيل الزر المضغوط وإلغاء البقية في نفس القسم)
         if(type === 'discussion') {
             document.getElementById('st-disc-60').classList.remove('active');
             document.getElementById('st-disc-90').classList.remove('active');
@@ -348,11 +350,10 @@
             document.getElementById('st-clues-3').classList.remove('active');
             document.getElementById(`st-clues-${value}`).classList.add('active');
         }
-        // هنا سيتم لاحقا إرسال التحديث لـ Firebase ليراه الجميع
     }
 
     // ==========================================
-    // بقية دوال اللوبي (تم الحفاظ عليها بالكامل)
+    // بقية دوال اللوبي مع إضافة منطق زر البدء
     // ==========================================
     window.fetchAndRenderLobbyPlayers = function() {
         if (!window.currentRoomData || !window.UI_COMPONENTS) return;
@@ -371,6 +372,21 @@
         let emblemHeight = window.innerWidth > 768 ? "105px" : "85px";
         const myName = window.currentUserData ? window.currentUserData.username_lower : '';
         const charSelections = window.currentRoomData.characterSelections || {};
+
+        let isHost = (window.authInstance && window.authInstance.currentUser && window.currentRoomData.hostId === window.authInstance.currentUser.uid);
+        
+        // إظهار أو إخفاء زر بدء اللعبة بناءً على صلاحيات القائد
+        const btnStart = document.getElementById('btn-start-game');
+        const btnReady = document.getElementById('btn-ready-action');
+        if(btnStart && btnReady) {
+            if(isHost) {
+                btnStart.style.display = 'flex';
+                btnReady.style.display = 'none';
+            } else {
+                btnStart.style.display = 'none';
+                btnReady.style.display = 'flex';
+            }
+        }
 
         playersArray.forEach(pName => {
             let pData = window.lobbyPlayersCache[pName] || window.friendsCache[pName] || { username: pName };
