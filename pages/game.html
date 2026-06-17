@@ -1,57 +1,204 @@
-<div class="game-layout-container">
+<style>
+    /* 1. إخفاء قوائم الموقع الأساسية أثناء اللعب لزيادة الاندماج */
+    body.in-game-mode .sidebar, 
+    body.in-game-mode .right-sidebar, 
+    body.in-game-mode .bottom-bar, 
+    body.in-game-mode .top-header { 
+        display: none !important; 
+    }
+    body.in-game-mode .app-shell { 
+        display: block !important; /* تحرير الشاشة من نظام الـ Grid الخاص بالموقع */
+    }
+    body.in-game-mode .main-viewport { 
+        width: 100vw; height: 100vh; padding: 0; 
+    }
+    body.in-game-mode .dynamic-content { 
+        padding: 0; height: 100vh; overflow: hidden; 
+    }
 
-    <div id="game-panel-settings" class="game-tab-panel">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; direction: rtl;">
-            <div class="game-premium-card" style="display: flex; flex-direction: column; gap: 18px;">
-                <div style="font-weight: 800; font-size: 1.1rem; color: white; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;"><i class="ph-bold ph-sliders" style="color: var(--accent-red); margin-left: 8px;"></i> خيارات المظهر</div>
-                <div class="settings-group" style="display: flex; flex-direction: column; gap: 8px;"><label style="font-size: 0.8rem; color: var(--text-dim); font-weight: 600;">حجم الخط</label><div class="segmented-control"><button class="segment-btn" onclick="window.setFontSize('small')">صغير</button><button class="segment-btn active" onclick="window.setFontSize('default')">افتراضي</button><button class="segment-btn" onclick="window.setFontSize('large')">كبير</button></div></div>
-                <div class="settings-group mobile-only-theme" style="display: flex; flex-direction: column; gap: 8px;"><label style="font-size: 0.8rem; color: var(--text-dim); font-weight: 600;">المظهر</label><div class="segmented-control"><button class="segment-btn" onclick="window.toggleTheme('light')">فاتح</button><button class="segment-btn active" onclick="window.toggleTheme('dark')">داكن</button></div></div>
-            </div>
-            <div class="game-premium-card" style="display: flex; flex-direction: column; gap: 15px;">
-                <div style="font-weight: 800; font-size: 1.1rem; color: white; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;"><i class="ph-bold ph-users-three" style="color: var(--accent-red); margin-left: 8px;"></i> قائمة المتواجدين</div>
-                <div id="game-in-my-personal-emblem" style="width: 100%;"></div>
-                <div id="game-in-others-emblems-list" style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1; overflow-y: auto; max-height: 300px; padding-left: 5px;"></div>
-                <button class="modern-danger-btn" style="width: 100%; padding: 16px; border-radius: 100px; margin-top: auto;" onclick="window.GameEngine.leaveAndCollapseActiveGame()"><i class="ph-bold ph-door-open" style="font-size: 1.2rem;"></i> مغادرة المباراة فوراً</button>
+    /* 2. حاوية اللعبة الرئيسية */
+    .game-board-container { 
+        display: flex; flex-direction: column; height: 100%; 
+        background: var(--bg-base); animation: smoothFadeIn 0.5s ease forwards; 
+    }
+
+    /* 3. شريط التنقل الخاص باللعبة (الأقسام الـ 5) */
+    .game-nav-bar { 
+        display: flex; background: var(--surface-panel); 
+        border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 100;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .game-tab-btn { 
+        flex: 1; padding: 18px 5px; text-align: center; color: var(--text-dim); 
+        font-weight: 800; font-family: var(--font-ar); font-size: 0.9rem;
+        cursor: pointer; transition: var(--trans-smooth); background: transparent; border: none;
+        display: flex; flex-direction: column; align-items: center; gap: 5px; -webkit-tap-highlight-color: transparent;
+    }
+    .game-tab-btn i { font-size: 1.4rem; transition: 0.3s; }
+    
+    .game-tab-btn:hover { color: white; background: var(--surface-hover); }
+    .game-tab-btn.active { 
+        color: var(--accent-red); 
+        border-bottom: 3px solid var(--accent-red); 
+        background: rgba(242, 39, 123, 0.05); 
+    }
+    .game-tab-btn.active i { transform: translateY(-3px); filter: drop-shadow(0 4px 8px var(--accent-red-dim)); }
+
+    /* 4. منطقة عرض المحتوى لكل قسم */
+    .game-content-area { 
+        flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; 
+        position: relative; background: var(--bg-base);
+    }
+    .game-content-area::-webkit-scrollbar { display: none; }
+    
+    .game-tab-content { 
+        display: none; padding: 20px; animation: smoothFadeIn 0.3s ease; 
+        height: 100%; max-width: 1200px; margin: 0 auto;
+    }
+    .game-tab-content.active { display: block; }
+
+    /* 5. تخصيص قسم الإعدادات الداخلي (Settings Tab) */
+    .game-settings-wrapper { display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; padding-top: 20px;}
+    .game-player-card { background: var(--surface-panel); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 15px; }
+    .game-player-card .avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--text-dim); overflow: hidden; }
+    .game-player-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .btn-leave-game { background: rgba(242, 39, 123, 0.1); color: var(--accent-red); border: 1px solid rgba(242, 39, 123, 0.2); padding: 15px; border-radius: 16px; font-weight: 800; font-size: 1rem; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s; margin-top: auto; }
+    .btn-leave-game:hover { background: var(--accent-red); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(242, 39, 123, 0.3); }
+
+    /* 6. استجابة الجوال (نقل الشريط للأسفل) */
+    @media (max-width: 900px) {
+        .game-board-container { flex-direction: column-reverse; } /* هذه الخدعة تقلب الشاشة فتضع الناف بار بالأسفل! */
+        .game-nav-bar { 
+            border-bottom: none; border-top: 1px solid rgba(255,255,255,0.05); 
+            padding-bottom: env(safe-area-inset-bottom); /* دعم هواتف آيفون */
+        }
+        .game-tab-btn.active { border-bottom: none; border-top: 3px solid var(--accent-red); }
+        .game-tab-btn span { font-size: 0.7rem; } /* تصغير النص في الجوال */
+    }
+</style>
+
+<div class="game-board-container" id="game-board-container">
+    
+    <nav class="game-nav-bar">
+        <button class="game-tab-btn active" onclick="switchGameTab('tab-settings', this)">
+            <i class="ph-bold ph-gear"></i><span>إعدادات</span>
+        </button>
+        <button class="game-tab-btn" onclick="switchGameTab('tab-info', this)">
+            <i class="ph-bold ph-identification-badge"></i><span>معلومات</span>
+        </button>
+        <button class="game-tab-btn" onclick="switchGameTab('tab-accusation', this)">
+            <i class="ph-bold ph-gavel"></i><span>الاتهام</span>
+        </button>
+        <button class="game-tab-btn" onclick="switchGameTab('tab-evidence', this)">
+            <i class="ph-bold ph-microscope"></i><span>الأدلة</span>
+        </button>
+        <button class="game-tab-btn" onclick="switchGameTab('tab-items', this)">
+            <i class="ph-bold ph-briefcase"></i><span>الأدوات</span>
+        </button>
+    </nav>
+
+    <div class="game-content-area">
+        
+        <div id="tab-settings" class="game-tab-content active">
+            <div class="game-settings-wrapper">
+                <h3 style="color: white; margin-bottom: 10px;">إعدادات اللعبة</h3>
+                
+                <div class="game-player-card">
+                    <div class="avatar" id="in-game-avatar"><i class="ph-fill ph-user" style="font-size: 2rem; margin:14px;"></i></div>
+                    <div>
+                        <div style="color: white; font-weight: 800; font-size: 1.2rem; font-family: var(--font-en);" id="in-game-username">Player</div>
+                        <div style="color: var(--accent-green); font-size: 0.8rem; font-weight: 700;">متصل باللعبة</div>
+                    </div>
+                </div>
+
+                <div class="settings-group" style="background: var(--surface-panel); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <label>حجم الواجهة (UI)</label>
+                    <div class="segmented-control">
+                        <button class="segment-btn" onclick="window.setFontSize('small')">صغير</button>
+                        <button class="segment-btn active" onclick="window.setFontSize('default')">افتراضي</button>
+                        <button class="segment-btn" onclick="window.setFontSize('large')">كبير</button>
+                    </div>
+                </div>
+
+                <div class="settings-group" style="background: var(--surface-panel); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <label>الموسيقى والأصوات (قريباً)</label>
+                    <div class="segmented-control">
+                        <button class="segment-btn active">تشغيل</button>
+                        <button class="segment-btn">إيقاف</button>
+                    </div>
+                </div>
+
+                <button class="btn-leave-game" onclick="window.gameEngine.requestLeaveGame()">
+                    <i class="ph-bold ph-sign-out"></i> الخروج من اللعبة
+                </button>
             </div>
         </div>
-    </div>
 
-    <div id="game-panel-info" class="game-tab-panel active">
-        <div style="max-width: 650px; margin: 0 auto; direction: rtl; text-align: center; display: flex; flex-direction: column; gap: 25px;">
-            <div class="game-premium-card" style="padding: 40px 20px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--cyber-gradient);"></div>
-                <div id="game-role-identity-badge" style="padding: 12px 35px; border-radius: 100px; font-weight: 900; font-size: 1.5rem; color: #ffffff; margin-bottom: 20px; box-shadow: var(--shadow-glow);">جاري الفحص...</div>
-                <div style="width: 140px; height: 185px; border-radius: 24px; overflow: hidden; border: 2px solid rgba(255,255,255,0.08); margin-bottom: 20px; background-color: #0c0c10; box-shadow: var(--shadow-soft);"><img id="game-role-avatar-picture" src="" style="width: 100%; height: 100%; object-fit: cover; object-position: top center;"></div>
-                <p id="game-role-strategy-description" style="color: var(--text-dim); line-height: 1.8; font-size: 0.98rem; max-width: 500px; margin: 0 auto; text-align: center;"></p>
-            </div>
-            <div class="game-premium-card" style="text-align: right;">
-                <div style="font-weight: 800; font-size: 1.1rem; color: white; margin-bottom: 15px;"><i class="ph-bold ph-clock-counter-clockwise" style="color: var(--accent-red); margin-left: 8px;"></i> السجل اللحظي للمباراة</div>
-                <div id="game-rounds-live-events-log" class="live-rounds-log-container"></div>
+        <div id="tab-info" class="game-tab-content">
+            <div style="text-align: center; margin-top: 30px;">
+                <div style="width: 120px; height: 120px; margin: 0 auto 20px auto; border-radius: 20px; background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; font-size: 3rem; color: var(--text-dim);">
+                    <i class="ph-duotone ph-mask-happy"></i>
+                </div>
+                <h2 style="color: var(--accent-red); font-size: 2rem; font-weight: 900; margin-bottom: 10px;" id="my-role-title">جاري توزيع الأدوار...</h2>
+                <p style="color: var(--text-dim); line-height: 1.6; max-width: 500px; margin: 0 auto;">يتم الآن تجهيز الغرفة وتوزيع الأدوار سرّاً على اللاعبين. يرجى الانتظار.</p>
             </div>
         </div>
-    </div>
 
-    <div id="game-panel-court" class="game-tab-panel">
-        <div style="text-align: center; margin-bottom: 25px; direction: rtl;">
-            <div style="font-size: 1.8rem; font-weight: 900; background: var(--cyber-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" id="game-court-current-round-title">الجولة الأولى</div>
-            <div style="font-size: 0.9rem; color: var(--text-dim); margin-top: 5px; font-weight: 500;">اضغط على كارت المشتبه به لتوجيه اتهام رسمي</div>
+        <div id="tab-accusation" class="game-tab-content">
+            <h2 style="color: white; margin-bottom: 20px;">منصة الاتهام <span style="font-size: 1rem; color: var(--text-dim); font-weight: normal;">(الجولة 1)</span></h2>
+            <div class="empty-state">
+                <i class="ph-duotone ph-gavel"></i>
+                <span>المنصة فارغة حتى يبدأ الطبيب الشرعي.</span>
+            </div>
         </div>
-        <div class="game-players-court-grid" id="game-court-players-injection-grid"></div>
-    </div>
 
-    <div id="game-panel-clues" class="game-tab-panel">
-        <div style="max-width: 850px; margin: 0 auto; direction: rtl;">
-            <div style="font-size: 1.4rem; font-weight: 900; margin-bottom: 20px; text-align: right; color: var(--text-main); display: flex; align-items: center; gap: 10px;"><i class="ph-bold ph-cards" style="color: var(--accent-red); font-size: 1.6rem;"></i> لوحة قرائن الطبيب الشرعي</div>
-            <div class="game-players-court-grid" id="game-forensic-clues-tiles-board"></div>
+        <div id="tab-evidence" class="game-tab-content">
+            <h2 style="color: white; margin-bottom: 20px;">الأدلة الحالية</h2>
+            <div class="empty-state">
+                <i class="ph-duotone ph-microscope"></i>
+                <span>لم يتم طرح أي أدلة بعد.</span>
+            </div>
         </div>
-    </div>
 
-    <div id="game-panel-tools" class="game-tab-panel">
-        <div class="game-players-court-grid" id="game-scene-investigation-tools-grid"></div>
-    </div>
+        <div id="tab-items" class="game-tab-content">
+            <h2 style="color: white; margin-bottom: 20px;">أدوات اللاعبين</h2>
+            <div class="empty-state">
+                <i class="ph-duotone ph-briefcase"></i>
+                <span>جاري تحميل الأسلحة والآثار الخاصة باللاعبين...</span>
+            </div>
+        </div>
 
+    </div>
 </div>
 
 <script>
-    // تفعيل وظائف السيرفر الخاصة باللعبة إن وُجدت لاحقاً
+    // 1. تفعيل وضع اللعب لإخفاء القوائم الجانبية والسفلية للموقع
+    document.body.classList.add('in-game-mode');
+
+    // 2. دالة لقلب بين التابات الـ 5
+    function switchGameTab(tabId, btnElement) {
+        // تفريغ التحديد عن جميع الأزرار والصفحات
+        document.querySelectorAll('.game-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.game-tab-content').forEach(c => c.classList.remove('active'));
+        
+        // تفعيل الزر والصفحة المطلوبة
+        btnElement.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // 3. جلب بيانات اللاعب الحالي لعرضها في الإعدادات
+    if(window.currentUserData) {
+        document.getElementById('in-game-username').innerText = window.currentUserData.username;
+        if(window.currentUserData.avatar) {
+            document.getElementById('in-game-avatar').innerHTML = `<img src="${window.currentUserData.avatar}">`;
+        }
+    }
+
+    // 4. تأمين التنظيف عند مغادرة الصفحة
+    // إذا استخدم اللاعب زر الرجوع في المتصفح، يجب أن نزيل الكلاس لكي تعود القوائم
+    window.addEventListener('popstate', function cleanUpGameMode() {
+        document.body.classList.remove('in-game-mode');
+        window.removeEventListener('popstate', cleanUpGameMode);
+    });
 </script>
