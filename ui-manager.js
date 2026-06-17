@@ -411,7 +411,7 @@ window.viewFriendHistory = function(fName) {
 };
 
 // ==========================================
-// 5. الإعدادات وطرد الزائر من اللوبي
+// 5. الإعدادات وتأمين دخول الزائر
 // ==========================================
 window.setLanguage = async function(lang, skipSave = false) {
     window.currentLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -510,10 +510,8 @@ window.openLoginDirectly = function() {
 };
 
 window.enterAsGuest = async function() {
-    // طرد مباشر وحقيقي من السيرفر إذا كان اللاعب زائر وتم اكتشاف تواجده في الغرفة
-    if (window.currentRoomId && window.leaveFirebaseRoom) {
-        await window.leaveFirebaseRoom();
-    }
+    // تم إلغاء أمر الطرد من السيرفر (leaveFirebaseRoom) هنا كما طلبت
+    // الزائر يحتفظ بمكانه في الغرفة برمجياً، ولكن لا يمكنه رؤية الواجهة
     
     window.isGuest = true; window.currentUserData = null;
     const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
@@ -527,7 +525,9 @@ window.enterAsGuest = async function() {
     window.clearAuthInputs(); 
     const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
     const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
-    if(window.loadFragment) window.loadFragment('home');
+    
+    // توجيه الزائر فوراً إلى صفحة اللعب الأساسية
+    if(window.loadFragment) window.loadFragment('play');
 };
 
 window.closeAuthModal = function() { 
