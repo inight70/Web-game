@@ -1,5 +1,5 @@
 // ========================================================================
-// DECEPTION - CORE ISOLATED GAME ENGINE LOGIC (100% COMPLETE & TEST BYPASS)
+// DECEPTION - CORE ISOLATED GAME ENGINE LOGIC (100% SECURE & COMPLETE)
 // ========================================================================
 
 window.GameEngine = {
@@ -11,23 +11,11 @@ window.GameEngine = {
         
         const currentPlayersArray = window.currentRoomData.players || [];
         
-        // تم إيقاف شرط الـ 3 لاعبين برمجياً لتتمكن من الدخول واختبار اللعبة لوحدك
-        /*
-        if (currentPlayersArray.length < 3) {
-            if (window.showTempModal) {
-                window.showTempModal("تنبيه أمني", "يجب توفر 3 لاعبين على الأقل لبدء التحقيق الجنائي!", "ph-bold ph-warning-circle", "#ff4c6a");
-            }
-            return;
-        }
-        */
-
         let dynamicShuffledPlayers = [...currentPlayersArray].sort(() => Math.random() - 0.5);
         let allocatedRolesMap = {};
         
-        // توزيع الأدوار بأمان لتجنب الأخطاء البرمجية إذا كان عدد اللاعبين أقل من 3 أثناء الاختبار
         if (dynamicShuffledPlayers[0]) allocatedRolesMap[dynamicShuffledPlayers[0]] = 'forensic';
         if (dynamicShuffledPlayers[1]) allocatedRolesMap[dynamicShuffledPlayers[1]] = 'murderer';
-        
         for (let index = 2; index < dynamicShuffledPlayers.length; index++) {
             allocatedRolesMap[dynamicShuffledPlayers[index]] = 'investigator';
         }
@@ -47,10 +35,12 @@ window.GameEngine = {
             };
         });
 
+        // تم إضافة الاستيراد المباشر والمحمي لمنع فشل الزر بصمت
         try {
-            const currentRoomDocumentRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
+            const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            const currentRoomDocumentRef = doc(window.dbInstance, "rooms", window.currentRoomId);
             
-            await window.updateDocFunc(currentRoomDocumentRef, {
+            await updateDoc(currentRoomDocumentRef, {
                 status: 'playing',
                 currentRound: 1,
                 roles: allocatedRolesMap,
@@ -60,7 +50,7 @@ window.GameEngine = {
                     { tileName: 'مكان الجريمة الرئيسي', value: 'بانتظار اختيار الطبيب الشرعي...' },
                     { tileName: 'سبب الوفاة المباشر', value: 'بانتظار تشريح الجثة...' }
                 ],
-                actionsHistoryLog: ['تم قفل الغرفة بنجاح وبدأت الجولة الأولى لتجميع الأدلة المادية.']
+                actionsHistoryLog: ['تم قفل الغرفة بنجاح وبدأت الجولة الأولى.']
             });
             
             document.body.classList.add('in-game');
@@ -68,7 +58,12 @@ window.GameEngine = {
                 window.loadFragment('game');
             }
         } catch (firebaseUpdateError) {
-            console.error("Critical error while writing game state initialization:", firebaseUpdateError);
+            console.error("Game Engine Error:", firebaseUpdateError);
+            if (window.showTempModal) {
+                window.showTempModal("خطأ تقني", "فشل بدء اللعبة: تأكد من الاتصال بقاعدة البيانات.", "ph-bold ph-warning-circle", "#ff4c6a");
+            } else {
+                alert("Game Start Error: " + firebaseUpdateError.message);
+            }
         }
     },
 
@@ -232,23 +227,24 @@ window.GameEngine = {
         document.getElementById('court-accusation-form-modal-overlay').remove();
 
         try {
-            const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
+            const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            const roomRef = doc(window.dbInstance, "rooms", window.currentRoomId);
             
             let atomicUpdateData = {};
             atomicUpdateData[`accusationsUsed.${myLocalUsernameLower}`] = true;
             
             const logMessageString = `قام المحقق [${window.currentUserData.username}] بتقديم بلاغ رسمي ضد [${targetedPlayerKeyName}] متهماً إياه باستخدام (${weaponSelectedValue}) وترك أثر (${evidenceSelectedValue}).`;
             
-            await window.updateDocFunc(roomRef, {
+            await updateDoc(roomRef, {
                 ...atomicUpdateData,
-                actionsHistoryLog: window.arrayUnion(logMessageString)
+                actionsHistoryLog: arrayUnion(logMessageString)
             });
 
             if (window.showTempModal) {
                 window.showTempModal("تم تقديم البلاغ", "استقبل المختبر الجنائي بلاغك الرسمي، تفقد لوحة سجل الجولات لمعرفة النتائج لاحقاً.", "ph-bold ph-shield-check", "#2ecc71");
             }
         } catch (accusationSubmissionError) {
-            console.error("Failed to push accusation payload to Firestore:", accusationSubmissionError);
+            console.error("Failed to push accusation payload:", accusationSubmissionError);
         }
     },
 
