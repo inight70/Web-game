@@ -1,6 +1,6 @@
 <style>
     /* =========================================================================
-       1. الإخفاء الذكي: نخفي قوائم الموقع دون تدمير حاوية الموقع
+       1. الإخفاء الذكي لقوائم الموقع
        ========================================================================= */
     body.in-game-mode .right-sidebar, 
     body.in-game-mode .top-header { display: none !important; }
@@ -8,111 +8,65 @@
     @media (min-width: 901px) {
         body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; }
     }
-    
     body.in-game-mode .app-shell > .bottom-bar { display: none !important; }
-    
-    body.in-game-mode .dynamic-content { 
-        padding: 0 !important; overflow: hidden !important; 
-        height: 100vh !important; height: 100dvh !important;
-    }
+    body.in-game-mode .dynamic-content { padding: 0 !important; overflow: hidden !important; height: 100vh !important; height: 100dvh !important; }
 
     /* =========================================================================
-       2. الشاشة السينمائية المحترفة بتأثير الـ Glitch الفاخر
+       2. الشاشة السينمائية المحترفة (القليتش الخالص بدون وميض الخلفية)
        ========================================================================= */
     .cinematic-intro {
         position: fixed; inset: 0; z-index: 1000000;
-        background: #0b0b0e; /* خلفية داكنة معتمة تماماً للحماس */
+        background: #0b0b0e; /* خلفية داكنة معتمة تماماً وثابتة */
         display: flex; justify-content: center; align-items: center;
-        opacity: 1; visibility: visible;
-        transition: opacity 0.4s ease, visibility 0.4s;
+        opacity: 1; visibility: visible; transition: opacity 0.4s ease, visibility 0.4s;
     }
     
-    /* حاوية الشعار ثلاثية الطبقات لتوليد الانقسام اللوني الرقمي */
     .glitch-container {
-        position: relative;
-        width: 140px; height: 140px;
+        position: relative; width: 140px; height: 140px;
         display: flex; justify-content: center; align-items: center;
     }
     
     .glitch-img {
-        position: absolute;
-        width: 100%; height: auto;
-        object-fit: contain;
+        position: absolute; width: 100%; height: auto; object-fit: contain;
         opacity: 0; transform: scale(0.9);
         transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s;
     }
     
-    /* ظهور الشعار النظيف المبدئي */
-    .cinematic-intro.show-logo .main-img {
-        opacity: 1; transform: scale(1);
-    }
+    .cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1); }
 
-    /* ==========================================
-       تأثير القليتش المعقد (عند تفعيل كلاس start-glitch)
-       ========================================== */
-    .start-glitch {
-        animation: screenNoise 0.2s linear infinite;
-    }
-    
-    .start-glitch .main-img {
-        animation: mainGlitchAnim 0.3s linear infinite;
-    }
-    
-    /* الطبقة الحمراء (Arsenal Red Channel) */
+    /* القليتش المعقد للشعار فقط */
+    .start-glitch .main-img { animation: mainGlitchAnim 0.3s linear infinite; }
     .start-glitch .layer-red {
-        opacity: 0.8;
-        transform: translateX(-6px) scale(1.02);
+        opacity: 0.8; transform: translateX(-6px) scale(1.02);
         filter: drop-shadow(-3px 0 var(--accent-red)) saturate(2);
         animation: glitchSliceTop 0.2s linear infinite;
     }
-    
-    /* الطبقة الزرقاء (Cyber Blue Channel) */
     .start-glitch .layer-blue {
-        opacity: 0.8;
-        transform: translateX(6px) scale(0.98);
+        opacity: 0.8; transform: translateX(6px) scale(0.98);
         filter: drop-shadow(3px 0 #00d2ff) saturate(2);
         animation: glitchSliceBottom 0.25s linear infinite;
     }
 
-    /* أنيميشن تقطيع الطبقات الرقمية السيبرانية */
     @keyframes glitchSliceTop {
-        0% { clip-path: inset(10% 0 60% 0); }
-        20% { clip-path: inset(40% 0 10% 0); }
-        40% { clip-path: inset(25% 0 50% 0); }
-        60% { clip-path: inset(70% 0 5% 0); }
-        80% { clip-path: inset(5% 0 80% 0); }
-        100% { clip-path: inset(50% 0 30% 0); }
+        0% { clip-path: inset(10% 0 60% 0); } 20% { clip-path: inset(40% 0 10% 0); }
+        40% { clip-path: inset(25% 0 50% 0); } 60% { clip-path: inset(70% 0 5% 0); }
+        80% { clip-path: inset(5% 0 80% 0); } 100% { clip-path: inset(50% 0 30% 0); }
     }
-    
     @keyframes glitchSliceBottom {
-        0% { clip-path: inset(60% 0 5% 0); }
-        25% { clip-path: inset(15% 0 70% 0); }
-        50% { clip-path: inset(50% 0 20% 0); }
-        75% { clip-path: inset(5% 0 60% 0); }
+        0% { clip-path: inset(60% 0 5% 0); } 25% { clip-path: inset(15% 0 70% 0); }
+        50% { clip-path: inset(50% 0 20% 0); } 75% { clip-path: inset(5% 0 60% 0); }
         100% { clip-path: inset(30% 0 45% 0); }
     }
-
     @keyframes mainGlitchAnim {
-        0% { transform: translate(2px, 1px) skewX(2deg); }
-        25% { transform: translate(-1px, -2px) skewX(-3deg); }
-        50% { transform: translate(-3px, 1px) skewX(5deg); }
-        75% { transform: translate(1px, 2px) skewX(-1deg); }
+        0% { transform: translate(2px, 1px) skewX(2deg); } 25% { transform: translate(-1px, -2px) skewX(-3deg); }
+        50% { transform: translate(-3px, 1px) skewX(5deg); } 75% { transform: translate(1px, 2px) skewX(-1deg); }
         100% { transform: translate(0px, 0px) skewX(0deg); }
     }
 
-    @keyframes screenNoise {
-        0% { filter: contrast(1) brightness(1); }
-        50% { filter: contrast(1.3) brightness(1.2) hue-rotate(10deg); background-color: #0d0d12; }
-        100% { filter: contrast(1) brightness(1); }
-    }
-
-    /* حالة التلاشي النهائي الخفيف بعد القليتش */
-    .cinematic-intro.fade-out-complete {
-        opacity: 0; visibility: hidden; pointer-events: none;
-    }
+    .cinematic-intro.fade-out-complete { opacity: 0; visibility: hidden; pointer-events: none; }
 
     /* =========================================================================
-       3. حاوية أقسام اللعبة (المعزولة تماماً لراحتك التعديلية)
+       3. حاوية أقسام اللعبة
        ========================================================================= */
     .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; }
 
@@ -124,7 +78,6 @@
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
-    /* تصميم البطاقات الداخلي الفاخر */
     .g-native-card { 
         background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.03); 
         border-radius: 24px; padding: 25px; margin-bottom: 20px; 
@@ -132,21 +85,82 @@
     }
     .g-native-card:hover { border-color: rgba(242, 39, 123, 0.15); box-shadow: var(--shadow-glow); }
     
-    .g-page-title { color: var(--text-main); font-size: 1.8rem; margin-bottom: 25px; font-weight: 900; display: flex; align-items: center; gap: 12px; }
+    .g-page-title { color: var(--text-main); font-size: 1.8rem; margin-bottom: 25px; font-weight: 900; display: flex; align-items: center; gap: 12px; position: relative; z-index: 2; }
     .g-page-title i { color: var(--accent-red); font-size: 2.2rem; }
     
-    .g-badge { 
-        background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); 
-        border-radius: 14px; padding: 10px 14px; font-size: 0.9rem; 
-        color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; 
-    }
+    .g-badge { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 14px; font-size: 0.9rem; color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
 
     .game-mobile-bar { display: none !important; }
 
+    /* =========================================================================
+       4. تصميم منصة الاتهام الخاص (الخلفية وشبكة الشخصيات)
+       ========================================================================= */
+    #tab-game-accuse {
+        /* اسم الصورة التي طلبت إضافتها (ضعها في مجلد الصور) */
+        background-image: url('assets/images/accuse-bg.jpg'); 
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    /* طبقة تعتيم فوق الخلفية لكي تبرز الكروت */
+    #tab-game-accuse::before {
+        content: ''; position: absolute; inset: 0; background: rgba(10, 10, 15, 0.85); z-index: 0;
+    }
+    #tab-game-accuse > div { position: relative; z-index: 2; }
+
+    .accuse-char-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px;
+    }
+    
+    .accuse-char-card {
+        background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05);
+        border-radius: 20px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative; aspect-ratio: 3/4; box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    }
+    .accuse-char-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: 0.4s ease; }
+    .accuse-char-badge {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
+        color: white; font-size: 1rem; font-weight: 900; text-align: center;
+        padding: 30px 10px 15px 10px; font-family: var(--font-ar); transition: 0.3s;
+    }
+    
+    .accuse-char-card:hover { border-color: var(--accent-red); transform: translateY(-5px); box-shadow: 0 12px 30px rgba(242, 39, 123, 0.3); }
+    .accuse-char-card:hover img { transform: scale(1.05); }
+    .accuse-char-card:hover .accuse-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(242, 39, 123, 0.5) 60%, transparent 100%); }
+
+    /* =========================================================================
+       5. نافذة الاتهام المنبثقة (Modal)
+       ========================================================================= */
+    .accuse-modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        z-index: 100000; display: flex; justify-content: center; align-items: center;
+        opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 15px;
+    }
+    .accuse-modal-overlay.show { opacity: 1; visibility: visible; }
+    .accuse-modal-card {
+        background: var(--surface-panel); width: 100%; max-width: 500px;
+        border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        display: flex; flex-direction: column; overflow: hidden;
+        transform: scale(0.9) translateY(20px); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .accuse-modal-overlay.show .accuse-modal-card { transform: scale(1) translateY(0); }
+    
+    .accuse-modal-header { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+    .accuse-modal-title { font-size: 1.3rem; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; }
+    .accuse-modal-close { background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent;}
+    .accuse-modal-close:hover { color: var(--accent-red); transform: rotate(90deg); }
+    
+    .accuse-modal-body { padding: 25px; max-height: 60vh; overflow-y: auto; scrollbar-width: none; }
+    .accuse-items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .accuse-item-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 5px; text-align: center; color: white; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+    .accuse-item-box:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-red); transform: translateY(-2px); }
+    
     @media (max-width: 900px) {
         .g-section-view { padding: 20px 15px 120px 15px; }
         .g-page-title { font-size: 1.5rem; }
         .game-mobile-bar { display: flex !important; z-index: 99999; }
+        .accuse-char-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     }
 </style>
 
@@ -183,8 +197,8 @@
     <div id="tab-game-accuse" class="g-section-view active">
         <div style="max-width: 1200px; margin: 0 auto;">
             <h2 class="g-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
-            <div id="render-game-accuse" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
-                <div class="g-native-card" style="text-align:center; grid-column: 1/-1;"><i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i></div>
+            <div id="render-game-accuse" class="accuse-char-grid">
+                <div style="text-align:center; padding: 50px; grid-column: 1/-1;"><i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i></div>
             </div>
         </div>
     </div>
@@ -217,47 +231,47 @@
         <button class="bottom-tab" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
     </nav>
 
+    <div class="accuse-modal-overlay" id="accuse-player-modal" onclick="if(event.target === this) closeAccuseModal()">
+        <div class="accuse-modal-card">
+            <div class="accuse-modal-header">
+                <div class="accuse-modal-title" id="accuse-modal-title-text"><i class="ph-fill ph-user-focus"></i> أغراض اللاعب</div>
+                <button class="accuse-modal-close" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="accuse-modal-body" id="accuse-modal-content">
+                </div>
+            <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);">
+                <button class="modern-danger-btn" style="width: 100%; font-size:1.1rem; padding:16px;" onclick="submitAccusation()"><i class="ph-bold ph-gavel"></i> توجيه الاتهام</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
     // ========================================================
-    // 1. إدارة دورة حياة الأنيميشن السينمائي وحماية التحديث (Refresh)
+    // 1. الأنيميشن السينمائي (قليتش الشعار النظيف)
     // ========================================================
     (function handleCinematicTimeline() {
         const introOverlay = document.getElementById('cinematic-overlay');
         if (!introOverlay) return;
 
-        // مفتاح فريد لكل غرفة لعب لضمان تشغيله مرة واحدة لكل جيم جديد
         const sessionKey = 'deception_intro_played_' + (window.currentRoomId || 'global');
 
         if (sessionStorage.getItem(sessionKey)) {
-            // إذا كان اللاعب قد شاهد الانترو مسبقاً في هذا الجيم، نحذف الشاشة فوراً بدون أي وميض
             introOverlay.remove();
         } else {
-            // المرة الأولى: نقوم بتسجيل المشاهدة وتفعيل الجدول السينمائي
             sessionStorage.setItem(sessionKey, 'true');
-
-            // أ) ظهور الشعار النظيف بشكل فخم بعد 100 ملي ثانية
-            setTimeout(() => {
-                introOverlay.classList.add('show-logo');
-            }, 100);
-
-            // ب) بدء انفجار القليتش الرقمي الفاخر والمعقد بعد ثانيتين ونصف
-            setTimeout(() => {
-                introOverlay.classList.add('start-glitch');
-            }, 2000);
-
-            // ج) تفعيل التلاشي الكلي والاختفاء التام بعد 3.4 ثانية
-            setTimeout(() => {
+            setTimeout(() => { introOverlay.classList.add('show-logo'); }, 100);
+            setTimeout(() => { introOverlay.classList.add('start-glitch'); }, 2000);
+            setTimeout(() => { 
                 introOverlay.classList.add('fade-out-complete');
-                // حذف العنصر نهائياً من المتصفح لتحرير الذاكرة وتسريع اللعبة
                 setTimeout(() => introOverlay.remove(), 400);
-            }, 3400);
+            }, 3000); // قللنا الوقت ليكون أسرع وأكثر حماساً
         }
     })();
 
     // ========================================================
-    // 2. نظام التحكم بالأشرطة والأزرار (الحقن الآمن لسطح المكتب)
+    // 2. نظام التحكم بالأشرطة
     // ========================================================
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
@@ -301,7 +315,7 @@
     };
 
     // ========================================================
-    // 3. محرك جلب الداتا وعرض بطاقات الأسلحة والآثار
+    // 3. المحرك الواجهي ورسم منصة الاتهام الفاخرة
     // ========================================================
     window.renderGameData = function() {
         try {
@@ -322,6 +336,7 @@
                 }
             }
 
+            // رسم الهوية
             const roleDiv = document.getElementById('render-game-role');
             if(myRole === 'murderer') {
                 roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px; filter: drop-shadow(0 0 15px rgba(242, 39, 123, 0.4));"></i><h2 style="color:white; font-size:2.8rem; font-weight:900; margin-bottom:10px;">أنت القاتل</h2><p style="color:var(--text-dim); font-size:1.1rem; max-width:400px; margin: 0 auto;">اختر سلاحك ودليلك وقم بخداعهم.</p>`;
@@ -331,6 +346,7 @@
                 roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px; filter: drop-shadow(0 0 15px rgba(46, 204, 113, 0.4));"></i><h2 style="color:white; font-size:2.8rem; font-weight:900; margin-bottom:10px;">محقق</h2><p style="color:var(--text-dim); font-size:1.1rem; max-width:400px; margin: 0 auto;">اكتشف القاتل من خلال التلميحات والأدوات.</p>`;
             }
 
+            // رسم أدواتي
             const itemsDiv = document.getElementById('render-game-items');
             if(myItems && myItems.weapons) {
                 let wHtml = myItems.weapons.map(w => `<span class="g-badge"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('');
@@ -345,24 +361,31 @@
                 `;
             }
 
+            // رسم منصة الاتهام (بطاقات الشخصيات)
             const accuseGrid = document.getElementById('render-game-accuse');
             let accuseHtml = '';
+            
+            // جلب اختيارات الشخصيات من الغرفة
+            const charSelections = window.currentRoomData.characterSelections || {};
+
             allPlayers.forEach(p => {
-                let pItems = window.currentRoomData.items ? window.currentRoomData.items[p] : {weapons:[], evidence:[]};
-                let wList = pItems.weapons ? pItems.weapons.map(w => `<span class="g-badge" style="font-size:0.8rem; padding:6px 10px;">${w}</span>`).join('') : '';
-                let eList = pItems.evidence ? pItems.evidence.map(e => `<span class="g-badge" style="font-size:0.8rem; padding:6px 10px;">${e}</span>`).join('') : '';
-                let isMe = (p.toLowerCase() === myName) ? `<span style="color:var(--accent-green); font-size:0.85rem; margin-right:5px;">(أنت)</span>` : '';
+                let isMe = (p.toLowerCase() === myName) ? `<span style="color:var(--accent-green); font-size:0.8rem; display:block;">(أنت)</span>` : '';
                 
+                // جلب صورة الشخصية
+                let charId = charSelections[p];
+                let charImg = 'assets/images/default-avatar.png';
+                if(charId && window.GAME_ASSETS && window.GAME_ASSETS.characters) {
+                    let found = window.GAME_ASSETS.characters.find(c => c.id === charId);
+                    if(found) charImg = found.src;
+                }
+                if(p.startsWith('Bot_')) {
+                    charImg = 'https://api.dicebear.com/9.x/bottts/svg?seed=' + p + '&backgroundColor=transparent';
+                }
+
                 accuseHtml += `
-                    <div class="g-native-card" style="margin-bottom:0; cursor:pointer;" onclick="alert('توجيه اتهام لـ: ${p}')">
-                        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px; border-bottom:1px dashed rgba(255,255,255,0.05); padding-bottom:15px;">
-                            <div style="width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.2rem; color:white;">${p.charAt(0).toUpperCase()}</div>
-                            <div style="font-size:1.2rem; font-weight:800; color:white;">${p} ${isMe}</div>
-                        </div>
-                        <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:8px;">الأسلحة:</div>
-                        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;">${wList}</div>
-                        <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:8px;">الأدلة:</div>
-                        <div style="display:flex; flex-wrap:wrap; gap:6px;">${eList}</div>
+                    <div class="accuse-char-card" onclick="openAccuseModal('${p}')">
+                        <img src="${charImg}" alt="${p}">
+                        <div class="accuse-char-badge">${p} ${isMe}</div>
                     </div>
                 `;
             });
@@ -371,9 +394,43 @@
         } catch(e) { console.error("Error drawing UI", e); }
     };
 
-    // تشغيل نظام الحقن الموحد فوراُ
+    // ========================================================
+    // 4. دوال نافذة الاتهام (Modal)
+    // ========================================================
+    window.openAccuseModal = function(playerName) {
+        document.getElementById('accuse-modal-title-text').innerHTML = `<i class="ph-fill ph-user-focus"></i> أغراض اللاعب: <span style="color:var(--accent-red); margin-right:5px;">${playerName}</span>`;
+        
+        let pItems = window.currentRoomData.items ? window.currentRoomData.items[playerName] : null;
+        let bodyHtml = '';
+
+        if(pItems && pItems.weapons) {
+            let wList = pItems.weapons.map(w => `<div class="accuse-item-box"><i class="ph-fill ph-crosshair" style="color:var(--text-dim); display:block; font-size:1.5rem; margin-bottom:5px;"></i>${w}</div>`).join('');
+            let eList = pItems.evidence.map(e => `<div class="accuse-item-box"><i class="ph-fill ph-fingerprint" style="color:var(--text-dim); display:block; font-size:1.5rem; margin-bottom:5px;"></i>${e}</div>`).join('');
+            
+            bodyHtml = `
+                <h4 style="color:white; margin-bottom:10px; font-size:1rem;">الأسلحة:</h4>
+                <div class="accuse-items-grid">${wList}</div>
+                <h4 style="color:white; margin-bottom:10px; font-size:1rem;">الآثار (الأدلة):</h4>
+                <div class="accuse-items-grid">${eList}</div>
+            `;
+        } else {
+            bodyHtml = `<div style="text-align:center; color:var(--text-dim); padding: 30px;">لا توجد أدوات متاحة.</div>`;
+        }
+
+        document.getElementById('accuse-modal-content').innerHTML = bodyHtml;
+        document.getElementById('accuse-player-modal').classList.add('show');
+    };
+
+    window.closeAccuseModal = function() {
+        document.getElementById('accuse-player-modal').classList.remove('show');
+    };
+
+    window.submitAccusation = function() {
+        alert("سيتم برمجة نظام الاتهام وتحديد السلاح والدليل في الخطوة القادمة!");
+        closeAccuseModal();
+    };
+
     window.initGameUI();
-    
     let retries = 0;
     function safeRender() {
         if(window.currentRoomData && window.currentRoomData.roles) window.renderGameData();
@@ -381,8 +438,4 @@
     }
     safeRender();
 
-    window.addEventListener('popstate', function cleanUp() {
-        if(window.cleanupGameUI) window.cleanupGameUI();
-        window.removeEventListener('popstate', cleanUp);
-    });
 </script>
