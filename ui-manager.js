@@ -483,15 +483,19 @@ window.toggleDropdown = function(dropdownId, triggerElement) {
     if (!isOpen && tgt) { tgt.classList.add('show'); if(triggerElement) triggerElement.classList.add('active'); }
 };
 
-window.onclick = function(e) { 
+// ==========================================
+// التعديل الأول: استخدام addEventListener بدلاً من window.onclick لتجنب التعارض
+// ==========================================
+document.addEventListener('click', function(e) { 
     if (!e.target.closest('.header-icon-btn') && !e.target.closest('.profile-trigger') && !e.target.closest('.header-dropdown') && !e.target.closest('.modal-card')) { 
-        document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show')); document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active')); 
+        document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('show')); 
+        document.querySelectorAll('.header-icon-btn, .profile-trigger').forEach(t => t.classList.remove('active')); 
     }
     if (!e.target.closest('#friend-popover') && !e.target.closest('.friend-avatar')) {
         const pop = document.getElementById('friend-popover');
         if (pop) pop.remove();
     }
-};
+});
 
 window.switchModalMode = function(mode) { 
     if(mode === 'forms'){ 
@@ -510,9 +514,6 @@ window.openLoginDirectly = function() {
 };
 
 window.enterAsGuest = async function() {
-    // تم إلغاء أمر الطرد من السيرفر (leaveFirebaseRoom) هنا كما طلبت
-    // الزائر يحتفظ بمكانه في الغرفة برمجياً، ولكن لا يمكنه رؤية الواجهة
-    
     window.isGuest = true; window.currentUserData = null;
     const nameEl = document.getElementById('header-name'); if(nameEl) { nameEl.setAttribute('data-i18n', 'guest_name'); nameEl.innerText = "زائر"; }
     const dropStat = document.getElementById('dropdown-status-name'); if(dropStat) dropStat.innerText = "غير مسجل"; 
@@ -526,7 +527,6 @@ window.enterAsGuest = async function() {
     const aModal = document.getElementById('auth-modal'); if(aModal) aModal.classList.add('hidden'); 
     const shell = document.getElementById('app-shell'); if(shell) shell.classList.add('unlocked'); 
     
-    // توجيه الزائر فوراً إلى صفحة اللعب الأساسية
     if(window.loadFragment) window.loadFragment('play');
 };
 
@@ -569,9 +569,12 @@ window.updateNavigationHighlight = function(targetRoot) {
     });
 };
 
+// ==========================================
+// التعديل الثاني: الإصلاح الجذري لدالة التنقل لدعم التبديل السلس للعبة
+// ==========================================
 window.loadFragment = async function(requestedPage, element) {
     const ROUTE_MAP = {
-        'home': 'home', 'play': 'play', 'lobby': 'play', 'how-to-play': 'play', 'leaderboard': 'play',
+        'home': 'home', 'play': 'play', 'lobby': 'play', 'game': 'play', 'how-to-play': 'play', 'leaderboard': 'play',
         'achievements': 'achievements', 'store': 'store', 'friends': 'friends', 'profile': 'profile', 'customization': 'profile'
     };
     const ROOT_TABS = ['home', 'play', 'achievements', 'store', 'friends', 'profile'];
@@ -579,8 +582,14 @@ window.loadFragment = async function(requestedPage, element) {
     let targetPage = requestedPage;
     let targetRoot = ROUTE_MAP[targetPage] || targetPage; 
 
+    // --- التوجيه الذكي: لصفحة اللعب أم للوبي؟ بناءً على حالة الغرفة ---
     if (targetRoot === 'play' && window.currentRoomId) {
-        targetPage = 'lobby'; targetRoot = 'play';
+        if (window.currentRoomData && window.currentRoomData.status === 'playing') {
+            targetPage = 'game'; // نقل اللاعب لصفحة اللعب إذا بدأت
+        } else {
+            targetPage = 'lobby'; // بقاء اللاعب في اللوبي إذا كانت الغرفة في الانتظار
+        }
+        targetRoot = 'play';
     } else {
         let currentRoot = sessionStorage.getItem('current_root');
         let lastActivePage = sessionStorage.getItem('lastActivePage');
@@ -608,7 +617,7 @@ window.loadFragment = async function(requestedPage, element) {
     const titles = { 
         'home': 'title_home', 'play': 'title_play', 'achievements': 'title_achievements', 
         'store': 'title_store', 'friends': 'title_friends', 'profile': 'title_profile', 
-        'customization': 'advanced_customization', 'lobby': 'title_play',
+        'customization': 'advanced_customization', 'lobby': 'title_play', 'game': 'title_play',
         'how-to-play': 'title_play', 'leaderboard': 'leaderboard_btn'
     };
     
@@ -654,7 +663,11 @@ window.loadFragment = async function(requestedPage, element) {
 
         if (targetPage === 'friends' && window.drawFriendsUI) window.drawFriendsUI();
         if (targetPage === 'lobby' && window.fetchAndRenderLobbyPlayers) window.fetchAndRenderLobbyPlayers(); 
-        if (targetPage === 'game' && window.GameEngine) window.GameEngine.activateInGameRealtimeListener();
+        
+        // --- التعديل الثالث: استدعاء الدالة الصحيحة لقراءة الدور والأدوات ---
+        if (targetPage === 'game' && window.renderGameData) {
+            window.renderGameData();
+        }
 
     } catch (error) {
         let fallbackTxt = (window.translations && window.translations[window.currentLang] && window.translations[window.currentLang][titles[targetPage]]) || 'هذه الصفحة';
