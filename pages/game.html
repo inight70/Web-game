@@ -17,60 +17,102 @@
     }
 
     /* =========================================================================
-       2. الشاشة السينمائية المحسنة (Pure Black Dark Intro)
+       2. الشاشة السينمائية المحترفة بتأثير الـ Glitch الفاخر
        ========================================================================= */
     .cinematic-intro {
-        position: absolute; inset: 0; z-index: 1000000;
-        background: #0b0b10; /* خلفية داكنة صافية تماماً بدون إضاءات خلفية */
+        position: fixed; inset: 0; z-index: 1000000;
+        background: #0b0b0e; /* خلفية داكنة معتمة تماماً للحماس */
         display: flex; justify-content: center; align-items: center;
-        animation: cinematicFadeOut 0.4s 3.6s forwards ease-out;
+        opacity: 1; visibility: visible;
+        transition: opacity 0.4s ease, visibility 0.4s;
     }
     
-    .cinematic-logo-wrap {
+    /* حاوية الشعار ثلاثية الطبقات لتوليد الانقسام اللوني الرقمي */
+    .glitch-container {
         position: relative;
         width: 140px; height: 140px;
         display: flex; justify-content: center; align-items: center;
     }
+    
+    .glitch-img {
+        position: absolute;
+        width: 100%; height: auto;
+        object-fit: contain;
+        opacity: 0; transform: scale(0.9);
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s;
+    }
+    
+    /* ظهور الشعار النظيف المبدئي */
+    .cinematic-intro.show-logo .main-img {
+        opacity: 1; transform: scale(1);
+    }
 
-    /* الشعار الأساسي مع أنيميشن الدخول الخفيف والتجهيز للقليتش المدمر */
-    .cinematic-logo-wrap img {
-        width: 100%; height: 100%; object-fit: contain;
-        opacity: 0;
-        animation: 
-            logoEntrance 0.5s 0.3s forwards ease-out,
-            superGlitchEffect 1.2s 2.3s infinite linear; /* يبدأ القليتش المعقد بعد ثانيتين ونصف */
+    /* ==========================================
+       تأثير القليتش المعقد (عند تفعيل كلاس start-glitch)
+       ========================================== */
+    .start-glitch {
+        animation: screenNoise 0.2s linear infinite;
+    }
+    
+    .start-glitch .main-img {
+        animation: mainGlitchAnim 0.3s linear infinite;
+    }
+    
+    /* الطبقة الحمراء (Arsenal Red Channel) */
+    .start-glitch .layer-red {
+        opacity: 0.8;
+        transform: translateX(-6px) scale(1.02);
+        filter: drop-shadow(-3px 0 var(--accent-red)) saturate(2);
+        animation: glitchSliceTop 0.2s linear infinite;
+    }
+    
+    /* الطبقة الزرقاء (Cyber Blue Channel) */
+    .start-glitch .layer-blue {
+        opacity: 0.8;
+        transform: translateX(6px) scale(0.98);
+        filter: drop-shadow(3px 0 #00d2ff) saturate(2);
+        animation: glitchSliceBottom 0.25s linear infinite;
+    }
+
+    /* أنيميشن تقطيع الطبقات الرقمية السيبرانية */
+    @keyframes glitchSliceTop {
+        0% { clip-path: inset(10% 0 60% 0); }
+        20% { clip-path: inset(40% 0 10% 0); }
+        40% { clip-path: inset(25% 0 50% 0); }
+        60% { clip-path: inset(70% 0 5% 0); }
+        80% { clip-path: inset(5% 0 80% 0); }
+        100% { clip-path: inset(50% 0 30% 0); }
+    }
+    
+    @keyframes glitchSliceBottom {
+        0% { clip-path: inset(60% 0 5% 0); }
+        25% { clip-path: inset(15% 0 70% 0); }
+        50% { clip-path: inset(50% 0 20% 0); }
+        75% { clip-path: inset(5% 0 60% 0); }
+        100% { clip-path: inset(30% 0 45% 0); }
+    }
+
+    @keyframes mainGlitchAnim {
+        0% { transform: translate(2px, 1px) skewX(2deg); }
+        25% { transform: translate(-1px, -2px) skewX(-3deg); }
+        50% { transform: translate(-3px, 1px) skewX(5deg); }
+        75% { transform: translate(1px, 2px) skewX(-1deg); }
+        100% { transform: translate(0px, 0px) skewX(0deg); }
+    }
+
+    @keyframes screenNoise {
+        0% { filter: contrast(1) brightness(1); }
+        50% { filter: contrast(1.3) brightness(1.2) hue-rotate(10deg); background-color: #0d0d12; }
+        100% { filter: contrast(1) brightness(1); }
+    }
+
+    /* حالة التلاشي النهائي الخفيف بعد القليتش */
+    .cinematic-intro.fade-out-complete {
+        opacity: 0; visibility: hidden; pointer-events: none;
     }
 
     /* =========================================================================
-       🔥 تأثير القليتش الفاخر والمعقد (Advanced Chromatic & Clip Glitch)
-       ========================================================================= */
-    @keyframes logoEntrance {
-        0% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(5px); }
-        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
-    }
-
-    @keyframes superGlitchEffect {
-        0% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: hue-rotate(0deg); }
-        7% { clip-path: inset(30% 0 50% 0); transform: translate(-8px, 4px) skew(5deg); filter: hue-rotate(90deg) contrast(1.5); }
-        10% { clip-path: inset(15% 0 80% 0); transform: translate(6px, -6px) skew(-10deg); filter: hue-rotate(180deg) saturate(2); }
-        13% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: none; }
-        45% { clip-path: inset(70% 0 10% 0); transform: translate(-4px, -2px) skew(3deg); filter: invert(0.1); }
-        48% { clip-path: inset(40% 0 40% 0); transform: translate(8px, 8px) skew(-5deg); transform: scaleY(1.2); }
-        50% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: none; }
-        88% { clip-path: inset(85% 0 2% 0); transform: translate(-10px, 0px) skew(15deg); filter: hue-rotate(270deg); }
-        90% { clip-path: inset(5% 0 90% 0); transform: translate(10px, -4px) skew(-15deg); }
-        93% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: none; }
-        97% { transform: scale(1.1) rotate(1deg); opacity: 0.8; }
-        100% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); }
-    }
-
-    @keyframes cinematicFadeOut {
-        0% { opacity: 1; pointer-events: auto; }
-        100% { opacity: 0; pointer-events: none; visibility: hidden; }
-    }
-
-    /* =========================================================================
-       3. حاوية أقسام اللعبة المعزولة كلياً 
+       3. حاوية أقسام اللعبة (المعزولة تماماً لراحتك التعديلية)
        ========================================================================= */
     .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; }
 
@@ -82,7 +124,7 @@
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
-    /* تصميم البطاقات الداخلي (مطابق لموقعك) */
+    /* تصميم البطاقات الداخلي الفاخر */
     .g-native-card { 
         background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.03); 
         border-radius: 24px; padding: 25px; margin-bottom: 20px; 
@@ -105,21 +147,22 @@
         .g-section-view { padding: 20px 15px 120px 15px; }
         .g-page-title { font-size: 1.5rem; }
         .game-mobile-bar { display: flex !important; z-index: 99999; }
-        .cinematic-logo-wrap { width: 100px; height: 100px; }
     }
 </style>
 
 <div class="g-master-container" id="game-master-root">
     
     <div class="cinematic-intro" id="cinematic-overlay">
-        <div class="cinematic-logo-wrap">
-            <img src="assets/images/logo.png" alt="Deception Logo">
+        <div class="glitch-container">
+            <img src="assets/images/logo.png" class="glitch-img main-img" alt="Deception">
+            <img src="assets/images/logo.png" class="glitch-img layer-red" alt="Deception Glitch R">
+            <img src="assets/images/logo.png" class="glitch-img layer-blue" alt="Deception Glitch B">
         </div>
     </div>
 
     <div id="tab-game-settings" class="g-section-view">
         <div style="max-width: 600px; margin: 0 auto;">
-            <h2 class="game-page-title"><i class="ph-fill ph-gear"></i> الإعدادات</h2>
+            <h2 class="g-page-title"><i class="ph-fill ph-gear"></i> الإعدادات</h2>
             <div class="g-native-card">
                 <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem;" onclick="window.gameEngine.requestLeaveGame()">
                     <i class="ph-bold ph-sign-out"></i> الخروج من اللعبة الحالية
@@ -130,7 +173,7 @@
 
     <div id="tab-game-info" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="game-page-title"><i class="ph-fill ph-identification-card"></i> هويتي السرية</h2>
+            <h2 class="g-page-title"><i class="ph-fill ph-identification-card"></i> هويتي السرية</h2>
             <div id="render-game-role" class="g-native-card" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
@@ -139,7 +182,7 @@
 
     <div id="tab-game-accuse" class="g-section-view active">
         <div style="max-width: 1200px; margin: 0 auto;">
-            <h2 class="game-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
+            <h2 class="g-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
             <div id="render-game-accuse" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
                 <div class="g-native-card" style="text-align:center; grid-column: 1/-1;"><i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i></div>
             </div>
@@ -148,7 +191,7 @@
 
     <div id="tab-game-evidence" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="game-page-title"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</h2>
+            <h2 class="g-page-title"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</h2>
             <div class="g-native-card" style="text-align:center; padding: 80px 20px;">
                 <i class="ph-duotone ph-file-magnifying-glass" style="font-size:4rem; color:var(--text-dim); margin-bottom:15px; opacity:0.5;"></i>
                 <h3 style="color:var(--text-main); margin-bottom:10px;">لا توجد أدلة بعد</h3>
@@ -159,7 +202,7 @@
 
     <div id="tab-game-items" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="game-page-title"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</h2>
+            <h2 class="g-page-title"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</h2>
             <div id="render-game-items" class="g-native-card" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
@@ -178,21 +221,43 @@
 
 <script>
     // ========================================================
-    // نظام التحكم بقفل الشاشة السينمائية (Refresh Lock)
+    // 1. إدارة دورة حياة الأنيميشن السينمائي وحماية التحديث (Refresh)
     // ========================================================
-    const roomSessionKey = 'intro_played_for_' + (window.currentRoomId || 'global');
-    
-    if (sessionStorage.getItem(roomSessionKey)) {
-        // إذا تم تشغيل الانترو مسبقاً في هذه المباراة، احذفه فوراً بدون عرض
-        const overlay = document.getElementById('cinematic-overlay');
-        if (overlay) overlay.remove();
-    } else {
-        // إذا كانت أول مرة يدخل الغرفة، نسجل الإشارة لكي لا يظهر عند التحديث
-        sessionStorage.setItem(roomSessionKey, 'true');
-    }
+    (function handleCinematicTimeline() {
+        const introOverlay = document.getElementById('cinematic-overlay');
+        if (!introOverlay) return;
+
+        // مفتاح فريد لكل غرفة لعب لضمان تشغيله مرة واحدة لكل جيم جديد
+        const sessionKey = 'deception_intro_played_' + (window.currentRoomId || 'global');
+
+        if (sessionStorage.getItem(sessionKey)) {
+            // إذا كان اللاعب قد شاهد الانترو مسبقاً في هذا الجيم، نحذف الشاشة فوراً بدون أي وميض
+            introOverlay.remove();
+        } else {
+            // المرة الأولى: نقوم بتسجيل المشاهدة وتفعيل الجدول السينمائي
+            sessionStorage.setItem(sessionKey, 'true');
+
+            // أ) ظهور الشعار النظيف بشكل فخم بعد 100 ملي ثانية
+            setTimeout(() => {
+                introOverlay.classList.add('show-logo');
+            }, 100);
+
+            // ب) بدء انفجار القليتش الرقمي الفاخر والمعقد بعد ثانيتين ونصف
+            setTimeout(() => {
+                introOverlay.classList.add('start-glitch');
+            }, 2000);
+
+            // ج) تفعيل التلاشي الكلي والاختفاء التام بعد 3.4 ثانية
+            setTimeout(() => {
+                introOverlay.classList.add('fade-out-complete');
+                // حذف العنصر نهائياً من المتصفح لتحرير الذاكرة وتسريع اللعبة
+                setTimeout(() => introOverlay.remove(), 400);
+            }, 3400);
+        }
+    })();
 
     // ========================================================
-    // نظام التحكم المعماري الخاص بالأشرطة والأزرار
+    // 2. نظام التحكم بالأشرطة والأزرار (الحقن الآمن لسطح المكتب)
     // ========================================================
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
@@ -235,6 +300,9 @@
         });
     };
 
+    // ========================================================
+    // 3. محرك جلب الداتا وعرض بطاقات الأسلحة والآثار
+    // ========================================================
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
@@ -303,6 +371,7 @@
         } catch(e) { console.error("Error drawing UI", e); }
     };
 
+    // تشغيل نظام الحقن الموحد فوراُ
     window.initGameUI();
     
     let retries = 0;
