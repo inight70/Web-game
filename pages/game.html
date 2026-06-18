@@ -1,198 +1,169 @@
 <style>
     /* =========================================================================
-       1. إخفاء الواجهات الأساسية بذكاء
+       1. الإخفاء الآمن: نخفي القوائم القديمة دون تدمير حاوية الموقع الأساسية
        ========================================================================= */
     body.in-game-mode .app-shell > .sidebar, 
     body.in-game-mode .app-shell > .right-sidebar, 
     body.in-game-mode .app-shell > .main-viewport > .top-header { display: none !important; }
+    
+    /* إخفاء الشريط السفلي القديم فقط */
     body.in-game-mode .bottom-bar:not(.game-mobile-bar) { display: none !important; }
     
-    body.in-game-mode .app-shell { padding: 0 !important; margin: 0 !important; display: block !important; }
-    body.in-game-mode .main-viewport { padding: 0 !important; width: 100vw; height: 100vh; overflow: hidden; margin: 0 !important; max-width: 100%; }
-    body.in-game-mode .dynamic-content { padding: 0 !important; max-width: 100%; height: 100vh; overflow: hidden; }
-
-    /* =========================================================================
-       2. هيكل اللعبة (واجهة عائمة وأنيقة للكمبيوتر)
-       ========================================================================= */
-    .game-native-layout { 
-        display: flex; height: 100vh; width: 100vw; background: var(--bg-base); 
-        padding: 20px; /* إبعاد التصميم عن حواف الشاشة بالكامل */
-        gap: 20px; /* مسافة أنيقة بين الشريط الجانبي ومنطقة المحتوى */
-        box-sizing: border-box;
+    /* جعل الحاوية الديناميكية تملأ المساحة المتاحة بداخل حدود موقعك الأنيقة */
+    body.in-game-mode .dynamic-content { 
+        padding: 0 !important; 
+        display: flex; 
+        flex-direction: row; 
+        height: 100vh; /* لتعبئة الشاشة رأسياً */
+        overflow: hidden; 
     }
 
     /* =========================================================================
-       3. الشريط الجانبي (نسخة احترافية عائمة - Floating Sidebar)
+       2. الشريط الجانبي (نسخة طبق الأصل من الـ Sidebar الخاص بك)
        ========================================================================= */
-    .game-in-sidebar {
-        width: 90px;
+    .game-specific-sidebar {
+        position: relative !important; /* ليلتصق بالحاوية وليس بالشاشة */
+        height: 100% !important;
+        border-radius: 0 !important;
         background: var(--surface-panel);
-        border: 1px solid rgba(255,255,255,0.05);
-        border-radius: 24px; /* حواف دائرية فخمة */
-        box-shadow: var(--shadow-soft);
-        display: flex; flex-direction: column; align-items: center;
-        padding-top: 25px; gap: 15px;
-        z-index: 100;
-        flex-shrink: 0;
+        border-left: 1px solid rgba(255,255,255,0.05);
+        z-index: 10;
+        /* بقية خصائصه يأخذها تلقائياً من كلاس .sidebar الموجود في style.css */
     }
 
-    .game-in-sidebar .logo {
-        width: 100%; display: flex; justify-content: center; align-items: center;
-        margin-bottom: 15px; padding-bottom: 15px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .game-in-sidebar .logo img { width: 45px; height: auto; object-fit: contain; }
-
-    /* أزرار الشريط (بدون أي نصوص، أيقونات فقط) */
-    .game-nav-btn {
-        background: transparent; border: none; color: var(--text-dim);
-        width: 55px; height: 55px; border-radius: 16px; font-size: 1.6rem;
-        display: flex; justify-content: center; align-items: center; 
-        cursor: pointer; transition: var(--trans-smooth);
-        -webkit-tap-highlight-color: transparent;
-    }
-    .game-nav-btn:hover { color: var(--text-main); background: var(--surface-hover); }
-    .game-nav-btn.active { color: var(--text-main); background: var(--cyber-gradient); box-shadow: var(--shadow-glow); }
-
-    /* =========================================================================
-       4. منطقة العرض (واجهة المحتوى)
-       ========================================================================= */
+    /* منطقة المحتوى الداخلية (الأقسام) */
     .game-views-container { 
-        flex: 1; position: relative; overflow: hidden; 
-        background: transparent; border-radius: 30px;
+        flex: 1; position: relative; overflow: hidden; background: var(--bg-base); 
     }
     
     .g-section-view { 
-        position: absolute; inset: 0; padding: 20px 40px 100px 40px; 
-        opacity: 0; visibility: hidden; transition: 0.3s ease; 
+        position: absolute; inset: 0; padding: 40px; padding-bottom: 120px; 
+        opacity: 0; visibility: hidden; transition: 0.2s ease-in-out; 
         overflow-y: auto; scrollbar-width: none; 
     }
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
     /* =========================================================================
-       5. تصميم البطاقات الداخلي
+       3. بطاقات اللعبة الداخلية (متناسقة مع أسلوبك)
        ========================================================================= */
     .g-native-card { 
         background: var(--surface-panel); 
         border: 1px solid rgba(255,255,255,0.03); 
-        border-radius: 24px; padding: 30px; margin-bottom: 20px; 
+        border-radius: 20px; padding: 25px; margin-bottom: 20px; 
         box-shadow: var(--shadow-soft); transition: var(--trans-smooth); 
     }
     .g-native-card:hover { border-color: rgba(242, 39, 123, 0.15); box-shadow: var(--shadow-glow); }
     
-    .g-page-title { color: var(--text-main); font-size: 1.8rem; margin-bottom: 30px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
-    .g-page-title i { color: var(--accent-red); font-size: 2.2rem; background: rgba(242, 39, 123, 0.1); padding: 10px; border-radius: 16px;}
+    .g-page-title { color: var(--text-main); font-size: 1.6rem; margin-bottom: 25px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+    .g-page-title i { color: var(--accent-red); font-size: 2rem;}
     
     .g-badge { 
         background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); 
-        border-radius: 12px; padding: 10px 15px; font-size: 0.9rem; 
+        border-radius: 12px; padding: 8px 12px; font-size: 0.85rem; 
         color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; 
     }
 
     /* =========================================================================
-       6. استجابة الجوال (مطابقة لموقعك الأصلي)
+       4. شريط الجوال (يظهر فقط للشاشات الصغيرة)
        ========================================================================= */
     .game-mobile-bar { display: none; }
 
     @media (max-width: 900px) {
-        .game-native-layout { padding: 0; gap: 0; } /* تصفير المسافات في الجوال لملء الشاشة */
-        .game-in-sidebar { display: none !important; }
-        .game-views-container { border-radius: 0; }
+        body.in-game-mode .dynamic-content { flex-direction: column; }
+        .game-specific-sidebar { display: none !important; }
         .g-section-view { padding: 20px 15px 120px 15px; }
+        
+        /* هذا الشريط يقرأ كلاس .bottom-bar من style.css تماماً! */
         .game-mobile-bar { display: flex !important; z-index: 99999; }
     }
 </style>
 
-<div class="game-native-layout">
+<aside class="sidebar game-specific-sidebar">
+    <div class="logo" style="display: flex; justify-content: center; padding: 25px 0 20px 0; margin-bottom: 10px;">
+        <img src="assets/images/logo.png" alt="Deception Logo" style="width: 45px; height: auto; object-fit: contain;">
+    </div>
     
-    <aside class="game-in-sidebar">
-        <div class="logo">
-            <img src="assets/images/logo.png" alt="Deception Logo">
-        </div>
-        
-        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center;">
-            <button class="game-nav-btn active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
-            <button class="game-nav-btn" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph-fill ph-identification-card"></i></button>
-            <button class="game-nav-btn" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph-fill ph-gavel"></i></button>
-            <button class="game-nav-btn" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph-fill ph-microscope"></i></button>
-            <button class="game-nav-btn" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph-fill ph-briefcase"></i></button>
-        </div>
-    </aside>
-
-    <main class="game-views-container">
-        
-        <div id="tab-game-settings" class="g-section-view active">
-            <div style="max-width: 600px; margin: 0 auto;">
-                <h2 class="g-page-title"><i class="ph-fill ph-gear"></i> الإعدادات</h2>
-                <div class="g-native-card">
-                    <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem;" onclick="window.gameEngine.requestLeaveGame()">
-                        <i class="ph-bold ph-sign-out"></i> الخروج من الغرفة
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-game-info" class="g-section-view">
-            <div style="max-width: 800px; margin: 0 auto;">
-                <h2 class="g-page-title"><i class="ph-fill ph-identification-card"></i> هويتي السرية</h2>
-                <div id="render-game-role" class="g-native-card" style="text-align: center; padding: 60px 20px;">
-                    <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-game-accuse" class="g-section-view">
-            <div style="max-width: 1000px; margin: 0 auto;">
-                <h2 class="g-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
-                <div id="render-game-accuse" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                    <div class="g-native-card" style="text-align:center; grid-column: 1/-1;"><i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-game-evidence" class="g-section-view">
-            <div style="max-width: 800px; margin: 0 auto;">
-                <h2 class="g-page-title"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</h2>
-                <div class="g-native-card" style="text-align:center; padding: 80px 20px;">
-                    <i class="ph-duotone ph-file-magnifying-glass" style="font-size:5rem; color:var(--text-dim); margin-bottom:15px; opacity:0.3;"></i>
-                    <h3 style="color:var(--text-main); margin-bottom:10px; font-size:1.5rem;">لا توجد تلميحات بعد</h3>
-                    <p style="color:var(--text-dim);">يرجى انتظار الطبيب الشرعي لطرح الأدلة.</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-game-items" class="g-section-view">
-            <div style="max-width: 800px; margin: 0 auto;">
-                <h2 class="g-page-title"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</h2>
-                <div id="render-game-items" class="g-native-card" style="text-align: center; padding: 60px 20px;">
-                    <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <nav class="bottom-bar game-mobile-bar">
-        <button class="bottom-tab active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph ph-gavel"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
+    <nav class="nav-menu">
+        <button class="nav-btn active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
+        <button class="nav-btn" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
+        <button class="nav-btn" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph ph-gavel"></i></button>
+        <button class="nav-btn" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
+        <button class="nav-btn" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
     </nav>
+</aside>
 
-</div>
+<main class="game-views-container">
+    
+    <div id="tab-game-settings" class="g-section-view active">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h2 class="g-page-title"><i class="ph-fill ph-gear"></i> الإعدادات</h2>
+            <div class="g-native-card">
+                <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem;" onclick="window.gameEngine.requestLeaveGame()">
+                    <i class="ph-bold ph-sign-out"></i> الخروج من اللعبة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-game-info" class="g-section-view">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2 class="g-page-title"><i class="ph-fill ph-identification-card"></i> هويتي السرية</h2>
+            <div id="render-game-role" class="g-native-card" style="text-align: center; padding: 60px 20px;">
+                <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-game-accuse" class="g-section-view">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <h2 class="g-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
+            <div id="render-game-accuse" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                <div class="g-native-card" style="text-align:center; grid-column: 1/-1;"><i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-game-evidence" class="g-section-view">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2 class="g-page-title"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</h2>
+            <div class="g-native-card" style="text-align:center; padding: 80px 20px;">
+                <i class="ph-duotone ph-file-magnifying-glass" style="font-size:4rem; color:var(--text-dim); margin-bottom:15px; opacity:0.5;"></i>
+                <h3 style="color:var(--text-main); margin-bottom:10px;">لا توجد أدلة بعد</h3>
+                <p style="color:var(--text-dim);">تلميحات الطبيب الشرعي ستظهر هنا.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-game-items" class="g-section-view">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2 class="g-page-title"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</h2>
+            <div id="render-game-items" class="g-native-card" style="text-align: center; padding: 60px 20px;">
+                <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<nav class="bottom-bar game-mobile-bar">
+    <button class="bottom-tab active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
+    <button class="bottom-tab" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
+    <button class="bottom-tab" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph ph-gavel"></i></button>
+    <button class="bottom-tab" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
+    <button class="bottom-tab" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
+</nav>
 
 <script>
     document.body.classList.add('in-game-mode');
 
-    // نظام التنقل الموحد
+    // 1. نظام التنقل الموحد (يُحدث شريط الكمبيوتر والجوال معاً)
     window.switchGameTab = function(tabId, index) {
         document.querySelectorAll('.g-section-view').forEach(s => s.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
 
-        // تحديث أزرار الكمبيوتر
-        const desktopBtns = document.querySelectorAll('.game-in-sidebar .game-nav-btn');
+        // تحديث أزرار الكمبيوتر الأصلية
+        const desktopBtns = document.querySelectorAll('.game-specific-sidebar .nav-btn');
         desktopBtns.forEach(b => {
             b.classList.remove('active');
             b.querySelector('i').classList.remove('ph-fill');
@@ -204,7 +175,7 @@
             desktopBtns[index].querySelector('i').classList.add('ph-fill');
         }
 
-        // تحديث أزرار الجوال
+        // تحديث أزرار الجوال الأصلية
         const mobileBtns = document.querySelectorAll('.game-mobile-bar .bottom-tab');
         mobileBtns.forEach(b => {
             b.classList.remove('active');
@@ -218,7 +189,7 @@
         }
     };
 
-    // المحرك السلس لعرض البيانات 
+    // 2. المحرك السلس لعرض البيانات (بدون تعليق)
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
@@ -238,47 +209,51 @@
                 }
             }
 
+            // رسم الهوية
             const roleDiv = document.getElementById('render-game-role');
             if(myRole === 'murderer') {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:5rem; color:var(--accent-red); margin-bottom:15px;"></i><h2 style="color:var(--text-main); font-size:2.5rem; margin-bottom:10px;">أنت القاتل</h2><p style="color:var(--text-dim); font-size:1.1rem;">اختر سلاحك ودليلك بحكمة لتضليل الجميع.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:5rem; color:var(--accent-red); margin-bottom:15px;"></i><h2 style="color:var(--text-main); font-size:2.5rem; margin-bottom:10px;">أنت القاتل</h2><p style="color:var(--text-dim); font-size:1.1rem;">اختر سلاحك ودليلك وقم بخداعهم.</p>`;
             } else if(myRole === 'forensic') {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:5rem; color:#3498db; margin-bottom:15px;"></i><h2 style="color:var(--text-main); font-size:2.5rem; margin-bottom:10px;">الطبيب الشرعي</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت تعرف القاتل، وجه فريقك عبر التلميحات.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:5rem; color:#3498db; margin-bottom:15px;"></i><h2 style="color:var(--text-main); font-size:2.5rem; margin-bottom:10px;">الطبيب الشرعي</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت تعرف القاتل. وجه المحققين عبر التلميحات.</p>`;
             } else {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:5rem; color:var(--accent-green); margin-bottom:15px;"></i><h2 style="color:var(--text-main); font-size:2.5rem; margin-bottom:10px;">محقق</h2><p style="color:var(--text-dim); font-size:1.1rem;">راقب الأدلة وحلل تلميحات الطبيب لاكتشاف المجرم.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:5rem; color:var(--accent-green); margin-bottom:15px;"></i><h2 style="color:var(--text-main); font-size:2.5rem; margin-bottom:10px;">محقق</h2><p style="color:var(--text-dim); font-size:1.1rem;">اكتشف القاتل من خلال التلميحات والأدوات.</p>`;
             }
 
+            // رسم أدواتي
             const itemsDiv = document.getElementById('render-game-items');
             if(myItems && myItems.weapons) {
-                let wHtml = myItems.weapons.map(w => `<span class="g-badge"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('');
-                let eHtml = myItems.evidence.map(e => `<span class="g-badge"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('');
+                let wHtml = myItems.weapons.map(w => `<span class="g-badge"><i class="ph-fill ph-crosshair" style="color:var(--accent-red); margin-left:5px;"></i>${w}</span>`).join('');
+                let eHtml = myItems.evidence.map(e => `<span class="g-badge"><i class="ph-fill ph-fingerprint" style="color:#3498db; margin-left:5px;"></i>${e}</span>`).join('');
+                
                 itemsDiv.innerHTML = `
                     <div style="text-align:right;">
-                        <h3 style="color:white; margin-bottom:15px; font-size:1.1rem;">الأسلحة المتاحة:</h3>
+                        <h3 style="color:var(--text-main); margin-bottom:15px;">الأسلحة المتاحة لك:</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:30px;">${wHtml}</div>
-                        <h3 style="color:white; margin-bottom:15px; font-size:1.1rem;">الآثار والأدلة:</h3>
+                        <h3 style="color:var(--text-main); margin-bottom:15px;">الآثار (الأدلة):</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:10px;">${eHtml}</div>
                     </div>
                 `;
             }
 
+            // رسم منصة الاتهام
             const accuseGrid = document.getElementById('render-game-accuse');
             let accuseHtml = '';
             allPlayers.forEach(p => {
                 let pItems = window.currentRoomData.items ? window.currentRoomData.items[p] : {weapons:[], evidence:[]};
-                let wList = pItems.weapons ? pItems.weapons.map(w => `<span class="g-badge" style="font-size:0.8rem; padding:6px 10px;">${w}</span>`).join('') : '';
-                let eList = pItems.evidence ? pItems.evidence.map(e => `<span class="g-badge" style="font-size:0.8rem; padding:6px 10px;">${e}</span>`).join('') : '';
-                let isMe = (p.toLowerCase() === myName) ? `<span style="color:var(--accent-green); font-size:0.8rem; font-weight:bold; margin-right:5px;">(أنت)</span>` : '';
+                let wList = pItems.weapons ? pItems.weapons.map(w => `<span class="g-badge" style="font-size:0.75rem; padding:5px 8px;">${w}</span>`).join('') : '';
+                let eList = pItems.evidence ? pItems.evidence.map(e => `<span class="g-badge" style="font-size:0.75rem; padding:5px 8px;">${e}</span>`).join('') : '';
+                let isMe = (p.toLowerCase() === myName) ? `<span style="color:var(--accent-green); font-size:0.8rem; margin-right:5px;">(أنت)</span>` : '';
                 
                 accuseHtml += `
-                    <div class="g-native-card" style="margin-bottom:0; cursor:pointer; padding:20px;" onclick="alert('توجيه اتهام لـ: ${p}')">
-                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:15px;">
-                            <div style="width:45px; height:45px; border-radius:50%; background:var(--surface-hover); display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; font-size:1.2rem;">${p.charAt(0).toUpperCase()}</div>
-                            <div style="font-size:1.1rem; font-weight:800; color:white;">${p} ${isMe}</div>
+                    <div class="g-native-card" style="margin-bottom:0; cursor:pointer;" onclick="alert('توجيه اتهام لـ: ${p}')">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:15px;">
+                            <div style="width:45px; height:45px; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-weight:bold; color:var(--text-main);">${p.charAt(0).toUpperCase()}</div>
+                            <div style="font-size:1.1rem; font-weight:800; color:var(--text-main);">${p} ${isMe}</div>
                         </div>
-                        <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:8px; font-weight:bold;">الأسلحة:</div>
-                        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;">${wList}</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:8px; font-weight:bold;">الأدلة:</div>
-                        <div style="display:flex; flex-wrap:wrap; gap:6px;">${eList}</div>
+                        <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:8px;">الأسلحة:</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px;">${wList}</div>
+                        <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:8px;">الأدلة:</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:5px;">${eList}</div>
                     </div>
                 `;
             });
