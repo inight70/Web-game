@@ -17,18 +17,18 @@
     }
 
     /* =========================================================================
-       2. الشاشة السينمائية الفاخرة (قليتش رقمي داكن بدون وميض)
+       2. الشاشة السينمائية الفاخرة (قليتش رقمي داكن بدون وميض وبشعارك الصحيح)
        ========================================================================= */
     .cinematic-intro {
         position: fixed; inset: 0; z-index: 1000000;
-        background: #060608; /* خلفية داكنة ثابتة ومريحة للعين */
+        background: #08080a; /* خلفية داكنة ثابتة ومريحة للعين */
         display: flex; justify-content: center; align-items: center;
         opacity: 1; visibility: visible;
         transition: opacity 0.5s ease, visibility 0.5s;
     }
     
     .glitch-container {
-        position: relative; width: 150px; height: 150px;
+        position: relative; width: 160px; height: 160px;
         display: flex; justify-content: center; align-items: center;
     }
     
@@ -40,7 +40,6 @@
     
     .cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1); }
 
-    /* تأثير القليتش (فقط انقسام RGB مع اهتزاز خفيف) */
     .start-glitch .main-img { animation: mainGlitchAnim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; }
     
     .start-glitch .layer-red {
@@ -95,88 +94,110 @@
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
-    /* تصميم البطاقات لبقية الأقسام */
+    /* تصميم البطاقات العادية لبقية الأقسام */
     .g-native-card { background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.03); border-radius: 24px; padding: 25px; margin-bottom: 20px; box-shadow: var(--shadow-soft); transition: var(--trans-smooth); }
     .g-page-title { color: var(--text-main); font-size: 1.8rem; margin-bottom: 25px; font-weight: 900; display: flex; align-items: center; gap: 12px; }
     .g-page-title i { color: var(--accent-red); font-size: 2.2rem; }
     .g-badge { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 14px; font-size: 0.9rem; color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
 
     /* =========================================================================
-       4. منصة الاتهام (Valorant Style)
+       4. منصة الاتهام (Valorant Style Layout - خفيفة الظلال)
        ========================================================================= */
     #tab-game-accuse {
         padding: 0 !important; overflow: hidden; background: #0b0b0e;
     }
 
-    /* الخلفية الديناميكية التي تتغير عند الوقوف على اللاعب */
+    /* الخلفية المتفاعلة (مخففة الظلال وتظهر بوضوح) */
     .val-bg-container {
         position: absolute; inset: 0; background-size: cover; background-position: top center;
-        transition: background-image 0.5s ease-in-out, opacity 0.5s; opacity: 0.3;
-        /* تدرج لوني لتظليل أسفل الصورة وجعلها مدمجة مع الواجهة */
-        mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+        transition: background-image 0.5s ease-in-out; opacity: 0.85; z-index: 0;
+    }
+    
+    /* تدرج لوني ذكي: أسود خفيف يسار (للقائمة) وأسفل (للاعبين)، وشفاف بالمنتصف لتتألق الصورة */
+    .val-bg-overlay {
+        position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background: 
+            linear-gradient(to right, rgba(11,11,14,0.95) 0%, rgba(11,11,14,0.3) 40%, transparent 100%),
+            linear-gradient(to top, rgba(11,11,14,0.95) 0%, transparent 35%);
     }
 
-    /* القائمة الجانبية اليسرى (شعار + أزرار) */
+    /* الغلاف الهندسي (Flexbox للحفاظ على الترتيب) */
+    .val-layout-wrapper {
+        position: relative; z-index: 10; width: 100%; height: 100%;
+        display: flex; flex-direction: column; justify-content: space-between;
+        padding: 50px;
+    }
+
+    /* القائمة الجانبية اليسرى (نفس Valorant) */
     .val-left-menu {
-        position: absolute; top: 50px; left: 50px; z-index: 10;
         display: flex; flex-direction: column; gap: 20px;
-        direction: ltr; /* للحفاظ على ترتيب Valorant */
+        direction: ltr; /* للحفاظ على ترتيب الأيقونات يساراً */
     }
     
-    .val-logo { width: 140px; height: auto; object-fit: contain; margin-bottom: 5px; }
-    .val-round-info { color: var(--text-dim); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; }
+    .val-logo { width: 130px; height: auto; object-fit: contain; margin-bottom: 5px; }
+    .val-round-info { color: var(--text-dim); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; width: max-content; }
     
-    .val-menu-items { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
+    .val-menu-items { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
     .val-item {
-        color: rgba(255,255,255,0.5); font-size: 1rem; font-weight: 800; font-family: var(--font-ar);
-        cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s;
+        color: rgba(255,255,255,0.6); font-size: 1.05rem; font-weight: 800; font-family: var(--font-ar);
+        cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; width: max-content;
     }
-    .val-item i { font-size: 1.4rem; transition: 0.3s; }
+    .val-item i { font-size: 1.5rem; transition: 0.3s; }
     .val-item:hover, .val-item.active { color: white; transform: translateX(5px); }
     .val-item:hover i, .val-item.active i { color: var(--accent-red); }
 
-    /* المربعات السفلية للاعبين (Roster) */
-    .val-bottom-roster {
-        position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-        display: flex; justify-content: center; gap: 15px; z-index: 10; width: max-content;
+    /* حاوية مربعات اللاعبين (بالأسفل والمنتصف) */
+    .val-roster-container {
+        align-self: center; width: 100%; max-width: 900px;
+        display: flex; flex-direction: column; align-items: center;
     }
 
+    /* الشبكة: صفين و 3 أعمدة (متناسقة جداً) */
+    .val-roster-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px; width: 100%;
+    }
+
+    /* تصميم مربع اللاعب (مطابق لصور DUSK و MIRAGE) */
     .val-char-box {
-        width: 190px; height: 80px;
-        background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.05); border-top: 3px solid transparent;
-        position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 15px;
+        background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.08); 
+        border-top: 4px solid rgba(255,255,255,0.2); /* الخط العلوي */
+        border-radius: 6px; /* حواف شبه حادة كالصور */
+        padding: 12px; display: flex; align-items: center; gap: 15px;
         cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        direction: ltr;
+        direction: ltr; /* لضمان الصورة يسار والنص يمين */
     }
     
-    /* خط الديكور الأيسر */
-    .val-char-box::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: rgba(255,255,255,0.1); transition: 0.3s; z-index: 3; }
-    
-    /* تأثير الوقوف (Hover) */
     .val-char-box:hover {
-        border-color: rgba(255,255,255,0.3); border-top-color: var(--accent-red);
-        background: rgba(25, 25, 30, 0.95); transform: translateY(-8px);
+        background: rgba(30, 30, 35, 0.9);
+        border-top-color: var(--accent-red); /* التوهج عند الوقوف */
+        transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);
     }
-    .val-char-box:hover::before { background: var(--accent-red); }
 
-    /* صورة الشخصية كخلفية للمربع */
-    .val-char-box img.bg-img {
-        position: absolute; right: -20px; top: -10px; height: 130%; width: auto;
-        opacity: 0.3; transition: 0.4s ease; z-index: 1;
-        mask-image: linear-gradient(to right, transparent 10%, black 80%);
-        -webkit-mask-image: linear-gradient(to right, transparent 10%, black 80%);
+    /* الصورة المصغرة داخل المربع */
+    .val-char-avatar {
+        width: 50px; height: 50px; border-radius: 4px;
+        object-fit: cover; object-position: top center;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: var(--surface-panel); flex-shrink: 0;
     }
-    .val-char-box:hover img.bg-img { opacity: 0.8; transform: scale(1.1) translateX(-5px); }
 
-    /* النصوص داخل المربع */
-    .val-char-info { position: relative; z-index: 2; display: flex; flex-direction: column; width: 100%; text-align: left; }
-    .val-char-name { font-size: 1.1rem; font-weight: 900; color: white; letter-spacing: 1px; font-family: var(--font-en); text-transform: uppercase; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-    .val-char-role { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-family: var(--font-ar); font-weight: 700; margin-top: 2px; }
+    /* نصوص المربع */
+    .val-char-info { display: flex; flex-direction: column; text-align: left; overflow: hidden; }
+    .val-char-name {
+        font-size: 1.1rem; font-family: var(--font-en); font-weight: 900;
+        color: white; letter-spacing: 1px; text-transform: uppercase;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .val-char-role {
+        font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700;
+        margin-top: 2px; font-family: var(--font-ar);
+    }
 
     /* =========================================================================
-       5. النافذة المنبثقة (Modal) للاتهام
+       5. النافذة المنبثقة (Modal) للتصويت والأدلة
        ========================================================================= */
     .accuse-modal-overlay {
         position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -194,14 +215,14 @@
     .accuse-modal-overlay.show .accuse-modal-card { transform: scale(1) translateY(0); }
 
     .a-modal-header { height: 200px; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 25px; background: #000; }
-    .a-modal-header img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);}
+    .a-modal-header img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);}
     .a-modal-header h3 { position: relative; z-index: 2; font-size: 2rem; font-weight: 900; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9); font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase;}
     
     .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; transition: 0.2s;}
     .btn-close-modal:hover { background: var(--accent-red); border-color: var(--accent-red); transform: rotate(90deg); }
 
     /* =========================================================================
-       6. استجابة الجوال (Mobile)
+       6. استجابة الجوال (Mobile) - واضحة وممتازة
        ========================================================================= */
     .game-mobile-bar { display: none !important; }
 
@@ -210,15 +231,19 @@
         .g-page-title { font-size: 1.5rem; }
         .game-mobile-bar { display: flex !important; z-index: 99999; }
         
-        /* تعديلات Valorant للجوال */
-        .val-left-menu { top: 20px; left: 20px; gap: 10px; }
+        /* تعديلات منصة الاتهام للجوال */
+        .val-layout-wrapper { padding: 30px 20px 100px 20px; } /* مسافة للشريط السفلي */
+        .val-left-menu { gap: 10px; }
         .val-logo { width: 100px; }
-        .val-round-info { font-size: 0.65rem; padding-bottom: 10px; }
-        .val-item { font-size: 0.85rem; gap: 8px; }
-        .val-bottom-roster { bottom: 90px; width: 100%; flex-wrap: wrap; justify-content: center; gap: 10px; }
-        .val-char-box { width: 140px; height: 60px; padding: 0 10px; }
+        .val-round-info { font-size: 0.7rem; padding-bottom: 10px; }
+        .val-item { font-size: 0.9rem; gap: 8px; }
+        
+        /* جعل الشبكة في الجوال عمودين (2 أعمدة مرتبة) ليكون حجمها واضح وسهل الضغط */
+        .val-roster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .val-char-box { padding: 8px; gap: 10px; }
+        .val-char-avatar { width: 40px; height: 40px; }
         .val-char-name { font-size: 0.9rem; }
-        .val-char-role { font-size: 0.6rem; }
+        .val-char-role { font-size: 0.65rem; }
     }
 </style>
 
@@ -226,9 +251,9 @@
     
     <div class="cinematic-intro" id="cinematic-overlay">
         <div class="glitch-container">
-            <img src="assets/images/logo2.png" class="glitch-img main-img" alt="Deception">
-            <img src="assets/images/logo2.png" class="glitch-img layer-red" alt="Deception Glitch R">
-            <img src="assets/images/logo2.png" class="glitch-img layer-blue" alt="Deception Glitch B">
+            <img src="assets/images/logo.png" class="glitch-img main-img" alt="Deception">
+            <img src="assets/images/logo.png" class="glitch-img layer-red" alt="Glitch R">
+            <img src="assets/images/logo.png" class="glitch-img layer-blue" alt="Glitch B">
         </div>
     </div>
 
@@ -277,19 +302,22 @@
 
     <div id="tab-game-accuse" class="g-section-view active">
         <div class="val-bg-container" id="val-dynamic-bg" style="background-image: url('assets/images/accuse-bg.jpg');"></div>
-        
-        <div class="val-left-menu">
-            <img src="assets/images/logo2.png" class="val-logo" alt="Logo">
-            <div class="val-round-info">ROUND 01 // DECEPTION</div>
-            <div class="val-menu-items">
-                <div class="val-item active"><i class="ph-fill ph-gavel"></i> حق الاتهام المتبقي: 1</div>
-                <div class="val-item"><i class="ph-fill ph-clock-counter-clockwise"></i> السجل</div>
-                <div class="val-item"><i class="ph-fill ph-broadcast"></i> آخر التحديثات</div>
+        <div class="val-bg-overlay"></div> <div class="val-layout-wrapper">
+            <div class="val-left-menu">
+                <img src="assets/images/logo.png" class="val-logo" alt="Logo">
+                <div class="val-round-info">ROUND 01 // DECEPTION</div>
+                <div class="val-menu-items">
+                    <div class="val-item active"><i class="ph-fill ph-gavel"></i> حق الاتهام المتبقي: 1</div>
+                    <div class="val-item"><i class="ph-fill ph-clock-counter-clockwise"></i> السجل</div>
+                    <div class="val-item"><i class="ph-fill ph-broadcast"></i> آخر التحديثات</div>
+                </div>
             </div>
-        </div>
 
-        <div class="val-bottom-roster" id="render-game-accuse">
-            <div style="color:var(--text-dim); padding: 20px;"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i></div>
+            <div class="val-roster-container">
+                <div class="val-roster-grid" id="render-game-accuse">
+                    <div style="color:var(--text-dim); text-align: center; grid-column: 1/-1;"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -325,7 +353,7 @@
 
 <script>
     // ========================================================
-    // 1. الأنيميشن السينمائي المعالج (يظهر مرة واحدة بدون وميض)
+    // 1. الأنيميشن السينمائي
     // ========================================================
     (function handleCinematicTimeline() {
         const introOverlay = document.getElementById('cinematic-overlay');
@@ -343,8 +371,8 @@
             
             setTimeout(() => {
                 introOverlay.classList.add('fade-out-complete');
-                setTimeout(() => introOverlay.remove(), 500);
-            }, 2500); // سريع وحماسي
+                setTimeout(() => introOverlay.remove(), 600);
+            }, 2500); 
         }
     })();
 
@@ -393,7 +421,7 @@
     };
 
     // ========================================================
-    // 3. النافذة المنبثقة للاتهام
+    // 3. التحكم بالنافذة المنبثقة (Modal) للاتهام
     // ========================================================
     window.gameAccuseDataCache = {}; 
 
@@ -424,7 +452,7 @@
     };
 
     // ========================================================
-    // 4. محرك الداتا ورسم منصة الاتهام الفاخرة (بدون تكرار صور)
+    // 4. محرك الداتا ورسم المنصة (بدون تكرار صور)
     // ========================================================
     window.renderGameData = function() {
         try {
@@ -433,7 +461,7 @@
             const myName = window.currentUserData ? window.currentUserData.username_lower : 'unknown';
             const allPlayers = window.currentRoomData.players || [];
             
-            // رسم منصة الاتهام (Valorant Style)
+            // 🎯 رسم منصة الاتهام (Valorant Style - 2 Rows)
             const accuseGrid = document.getElementById('render-game-accuse');
             let accuseHtml = '';
             
@@ -459,13 +487,13 @@
                 }
 
                 let isMe = (p.toLowerCase() === myName);
-                let roleText = isMe ? 'أنت (محقق)' : 'مشتبه به';
+                let roleText = isMe ? 'YOU (INVESTIGATOR)' : 'SUSPECT';
                 
                 accuseHtml += `
                     <div class="val-char-box" 
                          onmouseenter="document.getElementById('val-dynamic-bg').style.backgroundImage = 'url(${charImgSrc})'"
                          onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
-                        <img src="${charImgSrc}" class="bg-img" onerror="this.src='assets/images/default-avatar.png';">
+                        <img src="${charImgSrc}" class="val-char-avatar" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="val-char-info">
                             <div class="val-char-name">${p}</div>
                             <div class="val-char-role">${roleText}</div>
@@ -475,7 +503,7 @@
             });
             accuseGrid.innerHTML = accuseHtml;
 
-            // رسم باقي البيانات (نفس الكود السابق للحفاظ على الاستقرار)
+            // رسم باقي البيانات
             let myRole = 'investigator';
             for (const [k, v] of Object.entries(window.currentRoomData.roles)) {
                 if (k.toLowerCase() === myName) { myRole = v; break; }
