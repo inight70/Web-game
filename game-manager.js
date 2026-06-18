@@ -1,5 +1,5 @@
 // ==========================================
-// محرك اللعبة (Game Engine) - نسخة آمنة تماماً
+// محرك اللعبة (Game Engine) - النسخة المنيعة والسريعة
 // ==========================================
 
 window.gameEngine = {
@@ -60,9 +60,7 @@ window.gameEngine = {
 
     requestLeaveGame: function() {
         if(confirm("هل أنت متأكد أنك تريد مغادرة اللعبة؟")) {
-            // تنظيف الأزرار بأمان قبل الخروج
-            if(window.cleanupGameUI) window.cleanupGameUI();
-            
+            if(window.cleanupGameUI) window.cleanupGameUI(); // تنظيف الأزرار فوراً
             if(window.leaveFirebaseRoom) window.leaveFirebaseRoom();
             else window.loadFragment('home'); 
         }
@@ -70,26 +68,31 @@ window.gameEngine = {
 };
 
 // ==========================================
-// الرادار المنيع
+// الرادار النبضي السريع (يستشعر بدء الغرفة بلمح البصر وبدون ثقل)
 // ==========================================
 const originalRoomListener = window.listenToRoom;
 window.listenToRoom = function() {
     if(originalRoomListener) originalRoomListener();
     
     if(window._masterGameRadar) clearInterval(window._masterGameRadar);
+    
+    // النبضة كل 300 جزء من الثانية (سريعة جداً ولا تستهلك الذاكرة إطلاقاً)
     window._masterGameRadar = setInterval(() => {
         if(!window.currentRoomData) return;
         const currentPath = sessionStorage.getItem('saved_branch_play');
         
+        // عند بدء اللعبة
         if(window.currentRoomData.status === 'playing' && currentPath !== 'game') {
+            if(window.initGameUI) window.initGameUI(); // تركيب الواجهة
             if(window.loadFragment) window.loadFragment('game', null);
         }
         
+        // عند العودة للوبي
         if(window.currentRoomData.status === 'waiting' && currentPath === 'game') {
-            if(window.cleanupGameUI) window.cleanupGameUI(); // تنظيف الأزرار عند العودة للوبي
+            if(window.cleanupGameUI) window.cleanupGameUI(); // تنظيف الواجهة والعودة لانديكس
             if(window.loadFragment) window.loadFragment('lobby', null);
         }
-    }, 1000);
+    }, 300);
 };
 
 window.executeStartGame = function() {
