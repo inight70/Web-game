@@ -17,80 +17,60 @@
     }
 
     /* =========================================================================
-       2. الانتقالية السينمائية الفاخرة (الشعار + القليتش)
+       2. الشاشة السينمائية المحسنة (Pure Black Dark Intro)
        ========================================================================= */
     .cinematic-intro {
         position: absolute; inset: 0; z-index: 1000000;
-        background: var(--bg-base);
-        display: flex; justify-content: center; align-items: center; flex-direction: column;
-        animation: cinematicFadeOut 0.5s 3.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        background: #0b0b10; /* خلفية داكنة صافية تماماً بدون إضاءات خلفية */
+        display: flex; justify-content: center; align-items: center;
+        animation: cinematicFadeOut 0.4s 3.6s forwards ease-out;
     }
     
-    /* خلفية متوهجة خفيفة تزيد من الفخامة */
-    .cinematic-intro::before {
-        content: ''; position: absolute; inset: 0;
-        background: radial-gradient(circle at center, rgba(242, 39, 123, 0.05) 0%, transparent 70%);
-    }
-
-    .cinematic-logo-wrapper {
+    .cinematic-logo-wrap {
         position: relative;
+        width: 140px; height: 140px;
         display: flex; justify-content: center; align-items: center;
-        margin-bottom: 25px;
     }
 
-    /* الشعار يتفاعل مع الدارك واللايت مود */
-    body[data-theme="light"] .cinematic-logo-wrapper .logo-dark { display: none !important; }
-    body:not([data-theme="light"]) .cinematic-logo-wrapper .logo-light { display: none !important; }
-
-    .cinematic-logo-wrapper img {
-        height: 85px; width: auto; object-fit: contain;
-        /* الأنيميشن: زوم دخول -> ثبات -> قليتش فاخر وتلاشي */
-        animation: 
-            cineLogoEntry 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-            luxGlitch 0.4s 2.6s forwards;
-    }
-
-    .cinematic-subtitle {
-        font-size: 1.2rem; color: var(--text-dim); font-weight: 800; letter-spacing: 2px;
+    /* الشعار الأساسي مع أنيميشن الدخول الخفيف والتجهيز للقليتش المدمر */
+    .cinematic-logo-wrap img {
+        width: 100%; height: 100%; object-fit: contain;
         opacity: 0;
-        animation: cineTextEntry 1s 0.8s forwards, luxGlitchText 0.3s 2.7s forwards;
+        animation: 
+            logoEntrance 0.5s 0.3s forwards ease-out,
+            superGlitchEffect 1.2s 2.3s infinite linear; /* يبدأ القليتش المعقد بعد ثانيتين ونصف */
     }
 
-    /* تأثير دخول الشعار (Zoom In مع توهج نيون) */
-    @keyframes cineLogoEntry {
-        0% { transform: scale(0.6); opacity: 0; filter: blur(15px); }
-        100% { transform: scale(1.6); opacity: 1; filter: blur(0) drop-shadow(0 0 25px rgba(242, 39, 123, 0.3)); }
+    /* =========================================================================
+       🔥 تأثير القليتش الفاخر والمعقد (Advanced Chromatic & Clip Glitch)
+       ========================================================================= */
+    @keyframes logoEntrance {
+        0% { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(5px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
     }
 
-    /* تأثير القليتش الفاخر (انقسام RGB + اهتزاز + بلور) */
-    @keyframes luxGlitch {
-        0% { transform: scale(1.6) translate(0) skew(0deg); opacity: 1; filter: drop-shadow(0 0 25px rgba(242, 39, 123, 0.3)); }
-        20% { transform: scale(1.6) translate(-8px, 4px) skew(-5deg); filter: drop-shadow(-5px 0 0 #0984e3) drop-shadow(5px 0 0 #e84118); opacity: 0.9; }
-        40% { transform: scale(1.6) translate(8px, -4px) skew(5deg); filter: drop-shadow(5px 0 0 #0984e3) drop-shadow(-5px 0 0 #e84118); opacity: 0.9; }
-        60% { transform: scale(1.6) translate(-3px, -2px) skew(-2deg); opacity: 0.6; filter: blur(2px); }
-        80% { transform: scale(1.7) translate(3px, 2px) skew(2deg); opacity: 0.8; filter: blur(0); }
-        100% { transform: scale(2.2); opacity: 0; filter: blur(15px); }
+    @keyframes superGlitchEffect {
+        0% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: hue-rotate(0deg); }
+        7% { clip-path: inset(30% 0 50% 0); transform: translate(-8px, 4px) skew(5deg); filter: hue-rotate(90deg) contrast(1.5); }
+        10% { clip-path: inset(15% 0 80% 0); transform: translate(6px, -6px) skew(-10deg); filter: hue-rotate(180deg) saturate(2); }
+        13% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: none; }
+        45% { clip-path: inset(70% 0 10% 0); transform: translate(-4px, -2px) skew(3deg); filter: invert(0.1); }
+        48% { clip-path: inset(40% 0 40% 0); transform: translate(8px, 8px) skew(-5deg); transform: scaleY(1.2); }
+        50% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: none; }
+        88% { clip-path: inset(85% 0 2% 0); transform: translate(-10px, 0px) skew(15deg); filter: hue-rotate(270deg); }
+        90% { clip-path: inset(5% 0 90% 0); transform: translate(10px, -4px) skew(-15deg); }
+        93% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); filter: none; }
+        97% { transform: scale(1.1) rotate(1deg); opacity: 0.8; }
+        100% { clip-path: inset(0 0 0 0); transform: translate(0) skew(0deg); }
     }
 
-    /* تأثير النص */
-    @keyframes cineTextEntry {
-        0% { opacity: 0; transform: translateY(20px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes luxGlitchText {
-        0% { opacity: 1; transform: translate(0); }
-        50% { opacity: 0.5; transform: translate(-5px, 0); letter-spacing: 5px; }
-        100% { opacity: 0; transform: translate(5px, 0); filter: blur(5px); }
-    }
-
-    /* اختفاء الشاشة السينمائية كلياً */
     @keyframes cinematicFadeOut {
         0% { opacity: 1; pointer-events: auto; }
         100% { opacity: 0; pointer-events: none; visibility: hidden; }
     }
 
     /* =========================================================================
-       3. حاوية أقسام اللعبة (تضمن العزل التام للتصميم والتعديل المريح)
+       3. حاوية أقسام اللعبة المعزولة كلياً 
        ========================================================================= */
     .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; }
 
@@ -125,25 +105,21 @@
         .g-section-view { padding: 20px 15px 120px 15px; }
         .g-page-title { font-size: 1.5rem; }
         .game-mobile-bar { display: flex !important; z-index: 99999; }
-        
-        .cinematic-logo-wrapper img { height: 60px; }
-        .cinematic-subtitle { font-size: 1rem; }
+        .cinematic-logo-wrap { width: 100px; height: 100px; }
     }
 </style>
 
 <div class="g-master-container" id="game-master-root">
     
     <div class="cinematic-intro" id="cinematic-overlay">
-        <div class="cinematic-logo-wrapper">
-            <img src="assets/images/logo.png" class="logo-dark" alt="Deception Logo">
-            <img src="assets/images/logo2.png" class="logo-light" alt="Deception Logo">
+        <div class="cinematic-logo-wrap">
+            <img src="assets/images/logo.png" alt="Deception Logo">
         </div>
-        <div class="cinematic-subtitle">الليل يخيم.. والقاتل بيننا..</div>
     </div>
 
     <div id="tab-game-settings" class="g-section-view">
         <div style="max-width: 600px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-gear"></i> الإعدادات</h2>
+            <h2 class="game-page-title"><i class="ph-fill ph-gear"></i> الإعدادات</h2>
             <div class="g-native-card">
                 <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem;" onclick="window.gameEngine.requestLeaveGame()">
                     <i class="ph-bold ph-sign-out"></i> الخروج من اللعبة الحالية
@@ -154,7 +130,7 @@
 
     <div id="tab-game-info" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-identification-card"></i> هويتي السرية</h2>
+            <h2 class="game-page-title"><i class="ph-fill ph-identification-card"></i> هويتي السرية</h2>
             <div id="render-game-role" class="g-native-card" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
@@ -163,7 +139,7 @@
 
     <div id="tab-game-accuse" class="g-section-view active">
         <div style="max-width: 1200px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
+            <h2 class="game-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
             <div id="render-game-accuse" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
                 <div class="g-native-card" style="text-align:center; grid-column: 1/-1;"><i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i></div>
             </div>
@@ -172,7 +148,7 @@
 
     <div id="tab-game-evidence" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</h2>
+            <h2 class="game-page-title"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</h2>
             <div class="g-native-card" style="text-align:center; padding: 80px 20px;">
                 <i class="ph-duotone ph-file-magnifying-glass" style="font-size:4rem; color:var(--text-dim); margin-bottom:15px; opacity:0.5;"></i>
                 <h3 style="color:var(--text-main); margin-bottom:10px;">لا توجد أدلة بعد</h3>
@@ -183,7 +159,7 @@
 
     <div id="tab-game-items" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</h2>
+            <h2 class="game-page-title"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</h2>
             <div id="render-game-items" class="g-native-card" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
@@ -201,13 +177,28 @@
 </div>
 
 <script>
-    // نظام التنظيف يحذف كل شيء يخص اللعبة لإعادة الموقع لأصله
+    // ========================================================
+    // نظام التحكم بقفل الشاشة السينمائية (Refresh Lock)
+    // ========================================================
+    const roomSessionKey = 'intro_played_for_' + (window.currentRoomId || 'global');
+    
+    if (sessionStorage.getItem(roomSessionKey)) {
+        // إذا تم تشغيل الانترو مسبقاً في هذه المباراة، احذفه فوراً بدون عرض
+        const overlay = document.getElementById('cinematic-overlay');
+        if (overlay) overlay.remove();
+    } else {
+        // إذا كانت أول مرة يدخل الغرفة، نسجل الإشارة لكي لا يظهر عند التحديث
+        sessionStorage.setItem(roomSessionKey, 'true');
+    }
+
+    // ========================================================
+    // نظام التحكم المعماري الخاص بالأشرطة والأزرار
+    // ========================================================
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
         document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
     };
 
-    // نظام الحقن الآمن (مع جعل زر "منصة الاتهام" هو المفعل رقم 2)
     window.initGameUI = function() {
         window.cleanupGameUI();
         document.body.classList.add('in-game-mode');
@@ -224,7 +215,6 @@
         }
     };
 
-    // نظام التنقل (يربط الكمبيوتر والجوال ويغير حالة التفعيل)
     window.switchGameTab = function(tabId, index) {
         document.querySelectorAll('.g-section-view').forEach(s => s.classList.remove('active'));
         const targetSec = document.getElementById(tabId);
@@ -245,7 +235,6 @@
         });
     };
 
-    // المحرك السحري لقراءة البيانات (محمي من الأخطاء الصامتة)
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
@@ -314,7 +303,6 @@
         } catch(e) { console.error("Error drawing UI", e); }
     };
 
-    // التشغيل التلقائي عند دخول الغرفة
     window.initGameUI();
     
     let retries = 0;
@@ -324,4 +312,8 @@
     }
     safeRender();
 
+    window.addEventListener('popstate', function cleanUp() {
+        if(window.cleanupGameUI) window.cleanupGameUI();
+        window.removeEventListener('popstate', cleanUp);
+    });
 </script>
