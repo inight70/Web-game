@@ -1,5 +1,5 @@
 // ==========================================
-// محرك اللعبة (Game Engine) - آمن 100% ضد الكاش والتعليق
+// محرك اللعبة (Game Engine) - نسخة آمنة تماماً
 // ==========================================
 
 window.gameEngine = {
@@ -58,15 +58,11 @@ window.gameEngine = {
         }
     },
 
-    // دالة التنظيف الصارمة (تمسح آثار اللعبة عند الخروج)
-    cleanUpGameUI: function() {
-        document.body.classList.remove('in-game-mode');
-        document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
-    },
-
     requestLeaveGame: function() {
         if(confirm("هل أنت متأكد أنك تريد مغادرة اللعبة؟")) {
-            window.gameEngine.cleanUpGameUI();
+            // تنظيف الأزرار بأمان قبل الخروج
+            if(window.cleanupGameUI) window.cleanupGameUI();
+            
             if(window.leaveFirebaseRoom) window.leaveFirebaseRoom();
             else window.loadFragment('home'); 
         }
@@ -74,7 +70,7 @@ window.gameEngine = {
 };
 
 // ==========================================
-// الرادار المنيع (يراقب حالة الغرفة باستمرار)
+// الرادار المنيع
 // ==========================================
 const originalRoomListener = window.listenToRoom;
 window.listenToRoom = function() {
@@ -90,7 +86,7 @@ window.listenToRoom = function() {
         }
         
         if(window.currentRoomData.status === 'waiting' && currentPath === 'game') {
-            window.gameEngine.cleanUpGameUI(); // تنظيف الواجهة فور انتهاء اللعبة!
+            if(window.cleanupGameUI) window.cleanupGameUI(); // تنظيف الأزرار عند العودة للوبي
             if(window.loadFragment) window.loadFragment('lobby', null);
         }
     }, 1000);
