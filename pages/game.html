@@ -1,17 +1,22 @@
 <style>
-    /* 1. إخفاء قوائم الموقع التي لا نحتاجها (نبقي الشريط الجانبي والسفلي فقط) */
+    /* =========================================================================
+       1. الإخفاء الذكي: نخفي ما لا نحتاجه دون تدمير حاوية الموقع
+       ========================================================================= */
     body.in-game-mode .right-sidebar, 
     body.in-game-mode .top-header { display: none !important; }
     
-    /* إخفاء الأزرار الأصلية للموقع داخل الأشرطة لتركيب أزرار اللعبة مكانها */
-    body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn),
-    body.in-game-mode .bottom-bar > button:not(.game-injected-btn) { display: none !important; }
+    /* سطح المكتب: إخفاء أزرار الموقع الأصلية لإظهار أزرار اللعبة المحقونة */
+    body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; }
     
-    /* 2. تمديد مساحة اللعب لملء الحاوية الأساسية تماماً */
+    /* الجوال: إخفاء شريط الموقع الأصلي تماماً (لأننا سنضع شريطاً سحرياً بديلاً) */
+    body.in-game-mode .app-shell > .bottom-bar { display: none !important; }
+    
+    /* 2. تمديد مساحة اللعب لملء الشاشة بشكل آمن جداً */
     body.in-game-mode .dynamic-content { 
         padding: 0 !important; 
         overflow: hidden !important; 
         height: 100vh !important;
+        height: 100dvh !important; /* لدعم متصفحات الجوال والآيفون بدقة */
     }
 
     /* 3. حاوية أقسام اللعبة */
@@ -20,7 +25,7 @@
     }
 
     .g-section-view {
-        position: absolute; inset: 0; padding: 40px; padding-bottom: 120px;
+        position: absolute; inset: 0; padding: 40px; padding-bottom: 40px;
         opacity: 0; visibility: hidden; transition: 0.2s ease-in-out;
         overflow-y: auto; scrollbar-width: none;
     }
@@ -45,9 +50,16 @@
         color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; 
     }
 
+    /* 5. شريط الجوال البديل والمستقل (يعتمد على تصميم موقعك) */
+    .game-mobile-bar { display: none !important; }
+
+    /* استجابة الجوال */
     @media (max-width: 900px) {
-        .g-section-view { padding: 20px 15px 120px 15px; }
+        .g-section-view { padding: 20px 15px 120px 15px; } /* مساحة إضافية بالأسفل للشريط */
         .g-page-title { font-size: 1.5rem; }
+        
+        /* إظهار الشريط في الجوال فقط ليكون في الأسفل بكل أناقة */
+        .game-mobile-bar { display: flex !important; z-index: 99999; }
     }
 </style>
 
@@ -102,16 +114,23 @@
         </div>
     </div>
 
+    <nav class="bottom-bar game-mobile-bar">
+        <button class="bottom-tab active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
+        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
+        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph ph-gavel"></i></button>
+        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
+        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
+    </nav>
+
 </div>
 
 <script>
-    // 1. تفعيل الكلاس لإخفاء العناصر الجانبية
     document.body.classList.add('in-game-mode');
 
-    // 2. تنظيف أي أزرار محقونة مسبقاً (لحماية المتصفح من التكرار)
+    // 1. تنظيف أي أزرار محقونة مسبقاً في الكمبيوتر (لحماية المتصفح)
     document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
 
-    // 3. الحقن السحري: إضافة أزرار اللعبة داخل شريط الكمبيوتر الأصلي
+    // 2. الحقن السحري: إضافة أزرار اللعبة داخل شريط الكمبيوتر الأصلي فقط!
     const desktopMenu = document.querySelector('.sidebar .nav-menu');
     if(desktopMenu) {
         desktopMenu.insertAdjacentHTML('beforeend', `
@@ -123,25 +142,13 @@
         `);
     }
 
-    // 4. الحقن السحري: إضافة أزرار اللعبة داخل شريط الجوال الأصلي
-    const mobileMenu = document.querySelector('.bottom-bar');
-    if(mobileMenu) {
-        mobileMenu.insertAdjacentHTML('beforeend', `
-            <button class="bottom-tab game-injected-btn active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
-            <button class="bottom-tab game-injected-btn" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
-            <button class="bottom-tab game-injected-btn" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph ph-gavel"></i></button>
-            <button class="bottom-tab game-injected-btn" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
-            <button class="bottom-tab game-injected-btn" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
-        `);
-    }
-
-    // 5. دالة التنقل المتطورة (تُحدث الصفحات، وأزرار الكمبيوتر، وأزرار الجوال معاً)
+    // 3. دالة التنقل المتطورة (تُحدث الصفحات، وأزرار الكمبيوتر، وأزرار الجوال معاً)
     window.switchGameTab = function(tabId, index) {
         document.querySelectorAll('.g-section-view').forEach(s => s.classList.remove('active'));
         const targetSec = document.getElementById(tabId);
         if(targetSec) targetSec.classList.add('active');
 
-        // تحديث أزرار الكمبيوتر
+        // تحديث أزرار الكمبيوتر المحقونة
         const dBtns = document.querySelectorAll('.sidebar .game-injected-btn');
         dBtns.forEach((b, i) => {
             b.classList.toggle('active', i === index);
@@ -152,8 +159,8 @@
             }
         });
 
-        // تحديث أزرار الجوال
-        const mBtns = document.querySelectorAll('.bottom-bar .game-injected-btn');
+        // تحديث أزرار الجوال البديلة
+        const mBtns = document.querySelectorAll('.game-mobile-bar .bottom-tab');
         mBtns.forEach((b, i) => {
             b.classList.toggle('active', i === index);
             const icon = b.querySelector('i');
@@ -164,7 +171,7 @@
         });
     };
 
-    // 6. المحرك الواجهي (محمي بـ Try Catch)
+    // 4. المحرك الواجهي لعرض البيانات
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
@@ -244,7 +251,7 @@
     }
     safeRender();
 
-    // 7. التنظيف العبقري: إعادة الأزرار الأصلية للموقع عند الخروج من اللعبة
+    // 5. التنظيف الذكي والمهم جداً لإعادة الموقع لشكله الأصلي عند المغادرة
     if(window.gameUIMutationObserver) window.gameUIMutationObserver.disconnect();
     window.gameUIMutationObserver = new MutationObserver(() => {
         if(!document.getElementById('game-master-root')) {
