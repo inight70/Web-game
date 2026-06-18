@@ -17,43 +17,80 @@
     }
 
     /* =========================================================================
-       2. الانتقالية السينمائية (Cinematic Intro)
+       2. الانتقالية السينمائية الفاخرة (الشعار + القليتش)
        ========================================================================= */
     .cinematic-intro {
         position: absolute; inset: 0; z-index: 1000000;
         background: var(--bg-base);
         display: flex; justify-content: center; align-items: center; flex-direction: column;
-        animation: cinematicFadeOut 0.8s 3.5s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        animation: cinematicFadeOut 0.5s 3.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
     }
+    
+    /* خلفية متوهجة خفيفة تزيد من الفخامة */
     .cinematic-intro::before {
         content: ''; position: absolute; inset: 0;
-        background: radial-gradient(circle, transparent 20%, rgba(242, 39, 123, 0.08) 100%);
-    }
-    .cinematic-content {
-        text-align: center;
-        animation: cinematicZoom 3s ease-out forwards;
-    }
-    .cinematic-title {
-        font-size: 4rem; font-weight: 900; color: white; letter-spacing: 10px; font-family: var(--font-en);
-        text-shadow: 0 0 40px var(--accent-red); margin-bottom: 15px; margin-right: -10px;
-    }
-    .cinematic-subtitle {
-        font-size: 1.2rem; color: var(--text-dim); font-weight: 800; letter-spacing: 2px;
+        background: radial-gradient(circle at center, rgba(242, 39, 123, 0.05) 0%, transparent 70%);
     }
 
+    .cinematic-logo-wrapper {
+        position: relative;
+        display: flex; justify-content: center; align-items: center;
+        margin-bottom: 25px;
+    }
+
+    /* الشعار يتفاعل مع الدارك واللايت مود */
+    body[data-theme="light"] .cinematic-logo-wrapper .logo-dark { display: none !important; }
+    body:not([data-theme="light"]) .cinematic-logo-wrapper .logo-light { display: none !important; }
+
+    .cinematic-logo-wrapper img {
+        height: 85px; width: auto; object-fit: contain;
+        /* الأنيميشن: زوم دخول -> ثبات -> قليتش فاخر وتلاشي */
+        animation: 
+            cineLogoEntry 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+            luxGlitch 0.4s 2.6s forwards;
+    }
+
+    .cinematic-subtitle {
+        font-size: 1.2rem; color: var(--text-dim); font-weight: 800; letter-spacing: 2px;
+        opacity: 0;
+        animation: cineTextEntry 1s 0.8s forwards, luxGlitchText 0.3s 2.7s forwards;
+    }
+
+    /* تأثير دخول الشعار (Zoom In مع توهج نيون) */
+    @keyframes cineLogoEntry {
+        0% { transform: scale(0.6); opacity: 0; filter: blur(15px); }
+        100% { transform: scale(1.6); opacity: 1; filter: blur(0) drop-shadow(0 0 25px rgba(242, 39, 123, 0.3)); }
+    }
+
+    /* تأثير القليتش الفاخر (انقسام RGB + اهتزاز + بلور) */
+    @keyframes luxGlitch {
+        0% { transform: scale(1.6) translate(0) skew(0deg); opacity: 1; filter: drop-shadow(0 0 25px rgba(242, 39, 123, 0.3)); }
+        20% { transform: scale(1.6) translate(-8px, 4px) skew(-5deg); filter: drop-shadow(-5px 0 0 #0984e3) drop-shadow(5px 0 0 #e84118); opacity: 0.9; }
+        40% { transform: scale(1.6) translate(8px, -4px) skew(5deg); filter: drop-shadow(5px 0 0 #0984e3) drop-shadow(-5px 0 0 #e84118); opacity: 0.9; }
+        60% { transform: scale(1.6) translate(-3px, -2px) skew(-2deg); opacity: 0.6; filter: blur(2px); }
+        80% { transform: scale(1.7) translate(3px, 2px) skew(2deg); opacity: 0.8; filter: blur(0); }
+        100% { transform: scale(2.2); opacity: 0; filter: blur(15px); }
+    }
+
+    /* تأثير النص */
+    @keyframes cineTextEntry {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes luxGlitchText {
+        0% { opacity: 1; transform: translate(0); }
+        50% { opacity: 0.5; transform: translate(-5px, 0); letter-spacing: 5px; }
+        100% { opacity: 0; transform: translate(5px, 0); filter: blur(5px); }
+    }
+
+    /* اختفاء الشاشة السينمائية كلياً */
     @keyframes cinematicFadeOut {
         0% { opacity: 1; pointer-events: auto; }
         100% { opacity: 0; pointer-events: none; visibility: hidden; }
     }
-    @keyframes cinematicZoom {
-        0% { transform: scale(0.8); opacity: 0; filter: blur(10px); }
-        20% { transform: scale(1); opacity: 1; filter: blur(0); }
-        80% { transform: scale(1.05); opacity: 1; filter: blur(0); }
-        100% { transform: scale(1.5); opacity: 0; filter: blur(10px); }
-    }
 
     /* =========================================================================
-       3. حاوية أقسام اللعبة (التي تضمن لك العزل التام للتصميم)
+       3. حاوية أقسام اللعبة (تضمن العزل التام للتصميم والتعديل المريح)
        ========================================================================= */
     .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; }
 
@@ -88,18 +125,20 @@
         .g-section-view { padding: 20px 15px 120px 15px; }
         .g-page-title { font-size: 1.5rem; }
         .game-mobile-bar { display: flex !important; z-index: 99999; }
-        .cinematic-title { font-size: 2.5rem; letter-spacing: 5px; margin-right: -5px;}
-        .cinematic-subtitle { font-size: 0.9rem; }
+        
+        .cinematic-logo-wrapper img { height: 60px; }
+        .cinematic-subtitle { font-size: 1rem; }
     }
 </style>
 
 <div class="g-master-container" id="game-master-root">
     
     <div class="cinematic-intro" id="cinematic-overlay">
-        <div class="cinematic-content">
-            <div class="cinematic-title">DECEPTION</div>
-            <div class="cinematic-subtitle">الليل يخيم.. والقاتل بيننا..</div>
+        <div class="cinematic-logo-wrapper">
+            <img src="assets/images/logo.png" class="logo-dark" alt="Deception Logo">
+            <img src="assets/images/logo2.png" class="logo-light" alt="Deception Logo">
         </div>
+        <div class="cinematic-subtitle">الليل يخيم.. والقاتل بيننا..</div>
     </div>
 
     <div id="tab-game-settings" class="g-section-view">
@@ -162,11 +201,13 @@
 </div>
 
 <script>
+    // نظام التنظيف يحذف كل شيء يخص اللعبة لإعادة الموقع لأصله
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
         document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
     };
 
+    // نظام الحقن الآمن (مع جعل زر "منصة الاتهام" هو المفعل رقم 2)
     window.initGameUI = function() {
         window.cleanupGameUI();
         document.body.classList.add('in-game-mode');
@@ -183,6 +224,7 @@
         }
     };
 
+    // نظام التنقل (يربط الكمبيوتر والجوال ويغير حالة التفعيل)
     window.switchGameTab = function(tabId, index) {
         document.querySelectorAll('.g-section-view').forEach(s => s.classList.remove('active'));
         const targetSec = document.getElementById(tabId);
@@ -203,6 +245,7 @@
         });
     };
 
+    // المحرك السحري لقراءة البيانات (محمي من الأخطاء الصامتة)
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
@@ -271,6 +314,7 @@
         } catch(e) { console.error("Error drawing UI", e); }
     };
 
+    // التشغيل التلقائي عند دخول الغرفة
     window.initGameUI();
     
     let retries = 0;
@@ -280,8 +324,4 @@
     }
     safeRender();
 
-    window.addEventListener('popstate', function cleanUp() {
-        if(window.cleanupGameUI) window.cleanupGameUI();
-        window.removeEventListener('popstate', cleanUp);
-    });
 </script>
