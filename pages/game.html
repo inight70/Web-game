@@ -1,6 +1,6 @@
 <style>
     /* =========================================================================
-       1. الإخفاء والتجهيز العام
+       1. الإخفاء الذكي والتمديد (بدون تدمير هيكلة الموقع)
        ========================================================================= */
     body.in-game-mode .right-sidebar, 
     body.in-game-mode .top-header { display: none !important; }
@@ -17,67 +17,67 @@
     }
 
     /* =========================================================================
-       2. الشاشة السينمائية (قليتش داكن فاخر بدون وميض مزعج)
+       2. الشاشة السينمائية الفاخرة (قليتش رقمي داكن بدون وميض)
        ========================================================================= */
     .cinematic-intro {
         position: fixed; inset: 0; z-index: 1000000;
-        background: #08080a; /* خلفية داكنة ثابتة */
+        background: #060608; /* خلفية داكنة ثابتة ومريحة للعين */
         display: flex; justify-content: center; align-items: center;
         opacity: 1; visibility: visible;
-        transition: opacity 0.4s ease, visibility 0.4s;
+        transition: opacity 0.5s ease, visibility 0.5s;
     }
     
     .glitch-container {
-        position: relative; width: 140px; height: 140px;
+        position: relative; width: 150px; height: 150px;
         display: flex; justify-content: center; align-items: center;
     }
     
     .glitch-img {
         position: absolute; width: 100%; height: auto; object-fit: contain;
-        opacity: 0; transform: scale(0.9);
-        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s;
+        opacity: 0; transform: scale(0.95);
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s;
     }
     
     .cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1); }
 
-    /* تأثير القليتش (فقط انقسام الألوان والاهتزاز الخفيف بدون تغيير الخلفية) */
-    .start-glitch .main-img { animation: mainGlitchAnim 0.3s linear infinite; }
+    /* تأثير القليتش (فقط انقسام RGB مع اهتزاز خفيف) */
+    .start-glitch .main-img { animation: mainGlitchAnim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; }
     
     .start-glitch .layer-red {
-        opacity: 0.8; transform: translateX(-6px) scale(1.02);
-        filter: drop-shadow(-3px 0 var(--accent-red));
+        opacity: 0.8; transform: translateX(-5px);
+        filter: drop-shadow(-2px 0 var(--accent-red)) saturate(1.5);
         animation: glitchSliceTop 0.2s linear infinite;
     }
     
     .start-glitch .layer-blue {
-        opacity: 0.8; transform: translateX(6px) scale(0.98);
-        filter: drop-shadow(3px 0 #00d2ff);
+        opacity: 0.8; transform: translateX(5px);
+        filter: drop-shadow(2px 0 #00d2ff) saturate(1.5);
         animation: glitchSliceBottom 0.25s linear infinite;
     }
 
     @keyframes glitchSliceTop {
-        0% { clip-path: inset(10% 0 60% 0); }
-        20% { clip-path: inset(40% 0 10% 0); }
-        40% { clip-path: inset(25% 0 50% 0); }
-        60% { clip-path: inset(70% 0 5% 0); }
-        80% { clip-path: inset(5% 0 80% 0); }
-        100% { clip-path: inset(50% 0 30% 0); }
+        0% { clip-path: inset(20% 0 60% 0); }
+        20% { clip-path: inset(50% 0 10% 0); }
+        40% { clip-path: inset(10% 0 70% 0); }
+        60% { clip-path: inset(80% 0 5% 0); }
+        80% { clip-path: inset(30% 0 50% 0); }
+        100% { clip-path: inset(60% 0 20% 0); }
     }
     
     @keyframes glitchSliceBottom {
-        0% { clip-path: inset(60% 0 5% 0); }
-        25% { clip-path: inset(15% 0 70% 0); }
-        50% { clip-path: inset(50% 0 20% 0); }
-        75% { clip-path: inset(5% 0 60% 0); }
-        100% { clip-path: inset(30% 0 45% 0); }
+        0% { clip-path: inset(60% 0 10% 0); }
+        25% { clip-path: inset(15% 0 80% 0); }
+        50% { clip-path: inset(70% 0 20% 0); }
+        75% { clip-path: inset(5% 0 50% 0); }
+        100% { clip-path: inset(40% 0 30% 0); }
     }
 
     @keyframes mainGlitchAnim {
-        0% { transform: translate(2px, 1px) skewX(1deg); }
-        25% { transform: translate(-1px, -2px) skewX(-2deg); }
-        50% { transform: translate(-2px, 1px) skewX(3deg); }
-        75% { transform: translate(1px, 2px) skewX(-1deg); }
-        100% { transform: translate(0px, 0px) skewX(0deg); }
+        0% { transform: translate(1px, 1px); }
+        25% { transform: translate(-1px, -1px); }
+        50% { transform: translate(-2px, 1px); }
+        75% { transform: translate(1px, -1px); }
+        100% { transform: translate(0px, 0px); }
     }
 
     .cinematic-intro.fade-out-complete { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -95,100 +95,130 @@
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
+    /* تصميم البطاقات لبقية الأقسام */
+    .g-native-card { background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.03); border-radius: 24px; padding: 25px; margin-bottom: 20px; box-shadow: var(--shadow-soft); transition: var(--trans-smooth); }
+    .g-page-title { color: var(--text-main); font-size: 1.8rem; margin-bottom: 25px; font-weight: 900; display: flex; align-items: center; gap: 12px; }
+    .g-page-title i { color: var(--accent-red); font-size: 2.2rem; }
+    .g-badge { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 14px; font-size: 0.9rem; color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+
     /* =========================================================================
-       4. منصة الاتهام (خلفية مخصصة وتصميم الشخصيات)
+       4. منصة الاتهام (Valorant Style)
        ========================================================================= */
-    
-    /* ضع اسم وتنسيق صورتك هنا */
     #tab-game-accuse {
-        background-image: url('assets/images/accuse-bg.jpg'); 
-        background-size: cover; background-position: center;
-    }
-    #tab-game-accuse::before {
-        content: ''; position: absolute; inset: 0; 
-        background: rgba(10, 10, 15, 0.85); /* تظليل داكن جداً للقراءة */
-        backdrop-filter: blur(10px); z-index: -1;
+        padding: 0 !important; overflow: hidden; background: #0b0b0e;
     }
 
-    .accuse-players-grid {
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px;
-        position: relative; z-index: 2;
+    /* الخلفية الديناميكية التي تتغير عند الوقوف على اللاعب */
+    .val-bg-container {
+        position: absolute; inset: 0; background-size: cover; background-position: top center;
+        transition: background-image 0.5s ease-in-out, opacity 0.5s; opacity: 0.3;
+        /* تدرج لوني لتظليل أسفل الصورة وجعلها مدمجة مع الواجهة */
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
     }
 
-    /* تصميم بطاقة الشخصية (مطابق للوبي) */
-    .accuse-char-card {
-        background: var(--bg-base); border: 2px solid rgba(255,255,255,0.05); 
-        border-radius: 18px; overflow: hidden; cursor: pointer; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-        position: relative; aspect-ratio: 3/4; box-shadow: 0 4px 15px rgba(0,0,0,0.4); 
-        -webkit-tap-highlight-color: transparent;
+    /* القائمة الجانبية اليسرى (شعار + أزرار) */
+    .val-left-menu {
+        position: absolute; top: 50px; left: 50px; z-index: 10;
+        display: flex; flex-direction: column; gap: 20px;
+        direction: ltr; /* للحفاظ على ترتيب Valorant */
     }
-    .accuse-char-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: 0.4s ease; }
     
-    .accuse-char-badge {
-        position: absolute; bottom: 0; left: 0; right: 0; 
-        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, transparent 100%); 
-        color: white; font-size: 0.95rem; font-weight: 900; text-align: center; 
-        padding: 40px 10px 15px 10px; transition: 0.3s;
+    .val-logo { width: 140px; height: auto; object-fit: contain; margin-bottom: 5px; }
+    .val-round-info { color: var(--text-dim); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; }
+    
+    .val-menu-items { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
+    .val-item {
+        color: rgba(255,255,255,0.5); font-size: 1rem; font-weight: 800; font-family: var(--font-ar);
+        cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s;
+    }
+    .val-item i { font-size: 1.4rem; transition: 0.3s; }
+    .val-item:hover, .val-item.active { color: white; transform: translateX(5px); }
+    .val-item:hover i, .val-item.active i { color: var(--accent-red); }
+
+    /* المربعات السفلية للاعبين (Roster) */
+    .val-bottom-roster {
+        position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+        display: flex; justify-content: center; gap: 15px; z-index: 10; width: max-content;
     }
 
-    .accuse-char-card:hover { border-color: var(--accent-red); transform: translateY(-5px); box-shadow: 0 12px 25px rgba(242, 39, 123, 0.3); }
-    .accuse-char-card:hover img { transform: scale(1.05); filter: contrast(1.1); }
-    .accuse-char-card:hover .accuse-char-badge { background: linear-gradient(to top, var(--accent-red) 0%, rgba(242, 39, 123, 0.5) 60%, transparent 100%); }
-
-    .is-me-badge {
-        position: absolute; top: 10px; right: 10px; background: var(--accent-green); 
-        color: white; font-size: 0.7rem; padding: 4px 10px; border-radius: 8px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.5); z-index: 2;
+    .val-char-box {
+        width: 190px; height: 80px;
+        background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.05); border-top: 3px solid transparent;
+        position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 15px;
+        cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        direction: ltr;
     }
+    
+    /* خط الديكور الأيسر */
+    .val-char-box::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: rgba(255,255,255,0.1); transition: 0.3s; z-index: 3; }
+    
+    /* تأثير الوقوف (Hover) */
+    .val-char-box:hover {
+        border-color: rgba(255,255,255,0.3); border-top-color: var(--accent-red);
+        background: rgba(25, 25, 30, 0.95); transform: translateY(-8px);
+    }
+    .val-char-box:hover::before { background: var(--accent-red); }
+
+    /* صورة الشخصية كخلفية للمربع */
+    .val-char-box img.bg-img {
+        position: absolute; right: -20px; top: -10px; height: 130%; width: auto;
+        opacity: 0.3; transition: 0.4s ease; z-index: 1;
+        mask-image: linear-gradient(to right, transparent 10%, black 80%);
+        -webkit-mask-image: linear-gradient(to right, transparent 10%, black 80%);
+    }
+    .val-char-box:hover img.bg-img { opacity: 0.8; transform: scale(1.1) translateX(-5px); }
+
+    /* النصوص داخل المربع */
+    .val-char-info { position: relative; z-index: 2; display: flex; flex-direction: column; width: 100%; text-align: left; }
+    .val-char-name { font-size: 1.1rem; font-weight: 900; color: white; letter-spacing: 1px; font-family: var(--font-en); text-transform: uppercase; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+    .val-char-role { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-family: var(--font-ar); font-weight: 700; margin-top: 2px; }
 
     /* =========================================================================
-       5. النافذة المنبثقة للاتهام (Modal)
+       5. النافذة المنبثقة (Modal) للاتهام
        ========================================================================= */
     .accuse-modal-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px);
+        position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         z-index: 100000; display: flex; justify-content: center; align-items: center;
         opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px;
     }
     .accuse-modal-overlay.show { opacity: 1; visibility: visible; }
     
     .accuse-modal-card {
-        background: var(--surface-panel); width: 100%; max-width: 450px; border-radius: 28px;
+        background: var(--surface-panel); width: 100%; max-width: 480px; border-radius: 28px;
         border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex; flex-direction: column;
     }
     .accuse-modal-overlay.show .accuse-modal-card { transform: scale(1) translateY(0); }
 
-    .a-modal-header { height: 180px; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px;}
+    .a-modal-header { height: 200px; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 25px; background: #000; }
     .a-modal-header img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);}
-    .a-modal-header h3 { position: relative; z-index: 2; font-size: 1.8rem; font-weight: 900; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+    .a-modal-header h3 { position: relative; z-index: 2; font-size: 2rem; font-weight: 900; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9); font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase;}
     
-    .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; transition: 0.2s;}
-    .btn-close-modal:hover { background: var(--accent-red); border-color: var(--accent-red); }
+    .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; transition: 0.2s;}
+    .btn-close-modal:hover { background: var(--accent-red); border-color: var(--accent-red); transform: rotate(90deg); }
 
     /* =========================================================================
-       6. تصميم باقي البطاقات
+       6. استجابة الجوال (Mobile)
        ========================================================================= */
-    .g-native-card { 
-        background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.03); 
-        border-radius: 24px; padding: 25px; margin-bottom: 20px; 
-        box-shadow: var(--shadow-soft); transition: var(--trans-smooth); 
-    }
-    .g-page-title { color: var(--text-main); font-size: 1.8rem; margin-bottom: 25px; font-weight: 900; display: flex; align-items: center; gap: 12px; position: relative; z-index: 2;}
-    .g-page-title i { color: var(--accent-red); font-size: 2.2rem; }
-    
-    .g-badge { 
-        background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); 
-        border-radius: 14px; padding: 10px 14px; font-size: 0.9rem; 
-        color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; 
-    }
-
     .game-mobile-bar { display: none !important; }
 
     @media (max-width: 900px) {
         .g-section-view { padding: 20px 15px 120px 15px; }
         .g-page-title { font-size: 1.5rem; }
         .game-mobile-bar { display: flex !important; z-index: 99999; }
-        .accuse-players-grid { grid-template-columns: repeat(2, 1fr); }
+        
+        /* تعديلات Valorant للجوال */
+        .val-left-menu { top: 20px; left: 20px; gap: 10px; }
+        .val-logo { width: 100px; }
+        .val-round-info { font-size: 0.65rem; padding-bottom: 10px; }
+        .val-item { font-size: 0.85rem; gap: 8px; }
+        .val-bottom-roster { bottom: 90px; width: 100%; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .val-char-box { width: 140px; height: 60px; padding: 0 10px; }
+        .val-char-name { font-size: 0.9rem; }
+        .val-char-role { font-size: 0.6rem; }
     }
 </style>
 
@@ -196,31 +226,30 @@
     
     <div class="cinematic-intro" id="cinematic-overlay">
         <div class="glitch-container">
-            <img src="assets/images/logo.png" class="glitch-img main-img" alt="Deception">
-            <img src="assets/images/logo.png" class="glitch-img layer-red" alt="Deception Glitch R">
-            <img src="assets/images/logo.png" class="glitch-img layer-blue" alt="Deception Glitch B">
+            <img src="assets/images/logo2.png" class="glitch-img main-img" alt="Deception">
+            <img src="assets/images/logo2.png" class="glitch-img layer-red" alt="Deception Glitch R">
+            <img src="assets/images/logo2.png" class="glitch-img layer-blue" alt="Deception Glitch B">
         </div>
     </div>
 
     <div class="accuse-modal-overlay" id="accuse-action-modal" onclick="if(event.target === this) closeAccuseModal()">
         <div class="accuse-modal-card">
             <button class="btn-close-modal" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
-            <div class="a-modal-header" id="a-modal-header-bg">
+            <div class="a-modal-header">
                 <img src="" id="a-modal-img" alt="Player">
-                <h3 id="a-modal-name">اسم اللاعب</h3>
+                <h3 id="a-modal-name">PLAYER</h3>
             </div>
-            <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+            <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
                 <div>
-                    <div style="font-size:0.9rem; color:var(--text-dim); margin-bottom:10px; font-weight:bold;">الأسلحة المتاحة:</div>
+                    <div style="font-size:0.95rem; color:var(--text-dim); margin-bottom:12px; font-weight:800;"><i class="ph-fill ph-crosshair" style="color:var(--accent-red); margin-left:5px;"></i> الأسلحة المتوفرة:</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-weapons"></div>
                 </div>
                 <div>
-                    <div style="font-size:0.9rem; color:var(--text-dim); margin-bottom:10px; font-weight:bold;">الأدلة المتاحة:</div>
+                    <div style="font-size:0.95rem; color:var(--text-dim); margin-bottom:12px; font-weight:800;"><i class="ph-fill ph-fingerprint" style="color:#3498db; margin-left:5px;"></i> الآثار والأدلة:</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-evidence"></div>
                 </div>
-                
-                <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem; margin-top: 10px;" onclick="submitAccusation()">
-                    <i class="ph-bold ph-gavel"></i> توجيه الاتهام
+                <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem; margin-top: 15px;" onclick="submitAccusation()">
+                    <i class="ph-bold ph-gavel"></i> تصويت للاتهام
                 </button>
             </div>
         </div>
@@ -247,11 +276,20 @@
     </div>
 
     <div id="tab-game-accuse" class="g-section-view active">
-        <div style="max-width: 1000px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-gavel"></i> منصة الاتهام</h2>
-            <div id="render-game-accuse" class="accuse-players-grid">
-                <div style="text-align:center; grid-column: 1/-1; padding: 50px;"><i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i></div>
+        <div class="val-bg-container" id="val-dynamic-bg" style="background-image: url('assets/images/accuse-bg.jpg');"></div>
+        
+        <div class="val-left-menu">
+            <img src="assets/images/logo2.png" class="val-logo" alt="Logo">
+            <div class="val-round-info">ROUND 01 // DECEPTION</div>
+            <div class="val-menu-items">
+                <div class="val-item active"><i class="ph-fill ph-gavel"></i> حق الاتهام المتبقي: 1</div>
+                <div class="val-item"><i class="ph-fill ph-clock-counter-clockwise"></i> السجل</div>
+                <div class="val-item"><i class="ph-fill ph-broadcast"></i> آخر التحديثات</div>
             </div>
+        </div>
+
+        <div class="val-bottom-roster" id="render-game-accuse">
+            <div style="color:var(--text-dim); padding: 20px;"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i></div>
         </div>
     </div>
 
@@ -287,7 +325,7 @@
 
 <script>
     // ========================================================
-    // 1. إدارة دورة حياة الأنيميشن السينمائي (قليتش خفيف ونظيف)
+    // 1. الأنيميشن السينمائي المعالج (يظهر مرة واحدة بدون وميض)
     // ========================================================
     (function handleCinematicTimeline() {
         const introOverlay = document.getElementById('cinematic-overlay');
@@ -301,17 +339,17 @@
             sessionStorage.setItem(sessionKey, 'true');
 
             setTimeout(() => { introOverlay.classList.add('show-logo'); }, 100);
-            setTimeout(() => { introOverlay.classList.add('start-glitch'); }, 2000);
+            setTimeout(() => { introOverlay.classList.add('start-glitch'); }, 1500);
             
             setTimeout(() => {
                 introOverlay.classList.add('fade-out-complete');
-                setTimeout(() => introOverlay.remove(), 400);
-            }, 3000); // اختصار الوقت ليكون خفيفاً وسريعاً
+                setTimeout(() => introOverlay.remove(), 500);
+            }, 2500); // سريع وحماسي
         }
     })();
 
     // ========================================================
-    // 2. نظام التحكم بالأشرطة
+    // 2. نظام التحكم بالأشرطة والتنقل
     // ========================================================
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
@@ -355,9 +393,9 @@
     };
 
     // ========================================================
-    // 3. التحكم بالنافذة المنبثقة (Modal) للاتهام
+    // 3. النافذة المنبثقة للاتهام
     // ========================================================
-    window.gameAccuseDataCache = {}; // لحفظ بيانات اللاعب مؤقتاً للزر
+    window.gameAccuseDataCache = {}; 
 
     window.openAccuseModal = function(playerName, imgSrc) {
         const modal = document.getElementById('accuse-action-modal');
@@ -366,8 +404,8 @@
         document.getElementById('a-modal-name').innerText = playerName;
         document.getElementById('a-modal-img').src = imgSrc;
         
-        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="g-badge"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('') : '';
-        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="g-badge"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('') : '';
+        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="g-badge" style="background:rgba(255,255,255,0.05); border:none;"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('') : '';
+        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="g-badge" style="background:rgba(255,255,255,0.05); border:none;"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('') : '';
         
         document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span style="color:var(--text-dim); font-size:0.85rem;">لا يوجد</span>';
         document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span style="color:var(--text-dim); font-size:0.85rem;">لا يوجد</span>';
@@ -381,12 +419,12 @@
     };
 
     window.submitAccusation = function() {
-        alert("تم تسجيل تصويتك ضد: " + window.gameAccuseDataCache.currentTarget + "\n(هذه الخاصية قيد التطوير)");
+        alert("تم تسجيل تصويتك ضد: " + window.gameAccuseDataCache.currentTarget);
         window.closeAccuseModal();
     };
 
     // ========================================================
-    // 4. محرك جلب الداتا وعرض البطاقات (مع خوارزمية عدم التكرار)
+    // 4. محرك الداتا ورسم منصة الاتهام الفاخرة (بدون تكرار صور)
     // ========================================================
     window.renderGameData = function() {
         try {
@@ -395,11 +433,53 @@
             const myName = window.currentUserData ? window.currentUserData.username_lower : 'unknown';
             const allPlayers = window.currentRoomData.players || [];
             
+            // رسم منصة الاتهام (Valorant Style)
+            const accuseGrid = document.getElementById('render-game-accuse');
+            let accuseHtml = '';
+            
+            // خوارزمية جلب الشخصيات ومنع التكرار
+            let allGameChars = (window.GAME_ASSETS && window.GAME_ASSETS.characters) ? [...window.GAME_ASSETS.characters] : [];
+            let dbSelections = window.currentRoomData.characterSelections || {};
+            let usedIds = Object.values(dbSelections);
+            let availableChars = allGameChars.filter(c => !usedIds.includes(c.id));
+
+            allPlayers.forEach(p => {
+                let charImgSrc = 'assets/images/default-avatar.png'; 
+                
+                if(dbSelections[p]) {
+                    let foundChar = allGameChars.find(c => c.id === dbSelections[p]);
+                    if(foundChar) charImgSrc = foundChar.src;
+                } else {
+                    if(availableChars.length > 0) {
+                        let pickedChar = availableChars.shift(); 
+                        charImgSrc = pickedChar.src;
+                    } else if (p.startsWith('Bot_')) {
+                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`;
+                    }
+                }
+
+                let isMe = (p.toLowerCase() === myName);
+                let roleText = isMe ? 'أنت (محقق)' : 'مشتبه به';
+                
+                accuseHtml += `
+                    <div class="val-char-box" 
+                         onmouseenter="document.getElementById('val-dynamic-bg').style.backgroundImage = 'url(${charImgSrc})'"
+                         onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
+                        <img src="${charImgSrc}" class="bg-img" onerror="this.src='assets/images/default-avatar.png';">
+                        <div class="val-char-info">
+                            <div class="val-char-name">${p}</div>
+                            <div class="val-char-role">${roleText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            accuseGrid.innerHTML = accuseHtml;
+
+            // رسم باقي البيانات (نفس الكود السابق للحفاظ على الاستقرار)
             let myRole = 'investigator';
             for (const [k, v] of Object.entries(window.currentRoomData.roles)) {
                 if (k.toLowerCase() === myName) { myRole = v; break; }
             }
-            
             let myItems = null;
             if(window.currentRoomData.items) {
                 for (const [k, v] of Object.entries(window.currentRoomData.items)) {
@@ -407,7 +487,6 @@
                 }
             }
 
-            // رسم الهوية (التاب 2)
             const roleDiv = document.getElementById('render-game-role');
             if(myRole === 'murderer') {
                 roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px; filter: drop-shadow(0 0 15px rgba(242, 39, 123, 0.4));"></i><h2 style="color:white; font-size:2.8rem; font-weight:900; margin-bottom:10px;">أنت القاتل</h2><p style="color:var(--text-dim); font-size:1.1rem; max-width:400px; margin: 0 auto;">اختر سلاحك ودليلك وقم بخداعهم.</p>`;
@@ -417,7 +496,6 @@
                 roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px; filter: drop-shadow(0 0 15px rgba(46, 204, 113, 0.4));"></i><h2 style="color:white; font-size:2.8rem; font-weight:900; margin-bottom:10px;">محقق</h2><p style="color:var(--text-dim); font-size:1.1rem; max-width:400px; margin: 0 auto;">اكتشف القاتل من خلال التلميحات والأدوات.</p>`;
             }
 
-            // رسم أدواتي (التاب 5)
             const itemsDiv = document.getElementById('render-game-items');
             if(myItems && myItems.weapons) {
                 let wHtml = myItems.weapons.map(w => `<span class="g-badge"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('');
@@ -431,55 +509,9 @@
                     </div>
                 `;
             }
-
-            // ==========================================
-            // رسم منصة الاتهام (بالشخصيات وبدون تكرار)
-            // ==========================================
-            const accuseGrid = document.getElementById('render-game-accuse');
-            let accuseHtml = '';
-            
-            // 1. جلب كل الشخصيات المتوفرة في اللعبة
-            let allGameChars = (window.GAME_ASSETS && window.GAME_ASSETS.characters) ? [...window.GAME_ASSETS.characters] : [];
-            // 2. جلب اختيارات اللاعبين المحفوظة في قاعدة البيانات
-            let dbSelections = window.currentRoomData.characterSelections || {};
-            
-            // 3. فلترة الشخصيات المتاحة (إزالة ما تم اختياره مسبقاً)
-            let usedIds = Object.values(dbSelections);
-            let availableChars = allGameChars.filter(c => !usedIds.includes(c.id));
-
-            allPlayers.forEach(p => {
-                let charImgSrc = 'assets/images/default-avatar.png'; // صورة افتراضية
-                
-                // إذا كان اللاعب قد اختار شخصية في اللوبي
-                if(dbSelections[p]) {
-                    let foundChar = allGameChars.find(c => c.id === dbSelections[p]);
-                    if(foundChar) charImgSrc = foundChar.src;
-                } else {
-                    // إذا لم يختَر (أو كان بوت)، نعطيه شخصية عشوائية من المتاح لمنع التكرار
-                    if(availableChars.length > 0) {
-                        let pickedChar = availableChars.shift(); // نأخذ أول شخصية متاحة ونحذفها من المتاح
-                        charImgSrc = pickedChar.src;
-                    } else if (p.startsWith('Bot_')) {
-                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`;
-                    }
-                }
-
-                let isMe = (p.toLowerCase() === myName) ? `<div class="is-me-badge">أنت</div>` : '';
-                
-                accuseHtml += `
-                    <div class="accuse-char-card" onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
-                        ${isMe}
-                        <img src="${charImgSrc}" onerror="this.src='assets/images/default-avatar.png';">
-                        <div class="accuse-char-badge">${p}</div>
-                    </div>
-                `;
-            });
-            accuseGrid.innerHTML = accuseHtml;
-
         } catch(e) { console.error("Error drawing UI", e); }
     };
 
-    // بدء التشغيل
     window.initGameUI();
     
     let retries = 0;
@@ -489,4 +521,8 @@
     }
     safeRender();
 
+    window.addEventListener('popstate', function cleanUp() {
+        if(window.cleanupGameUI) window.cleanupGameUI();
+        window.removeEventListener('popstate', cleanUp);
+    });
 </script>
