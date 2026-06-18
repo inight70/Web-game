@@ -1,249 +1,164 @@
 <style>
     /* =========================================================================
-       1. الإخفاء الذكي والتمديد (بدون تدمير هيكلة الموقع)
+       1. الإخفاء والتحضير (Integration)
        ========================================================================= */
     body.in-game-mode .right-sidebar, 
     body.in-game-mode .top-header { display: none !important; }
-    
-    @media (min-width: 901px) {
-        body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; }
-    }
-    
+    @media (min-width: 901px) { body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; } }
     body.in-game-mode .app-shell > .bottom-bar { display: none !important; }
-    
-    body.in-game-mode .dynamic-content { 
-        padding: 0 !important; overflow: hidden !important; 
-        height: 100vh !important; height: 100dvh !important;
-    }
+    body.in-game-mode .dynamic-content { padding: 0 !important; overflow: hidden !important; height: 100vh !important; height: 100dvh !important; }
 
     /* =========================================================================
-       2. الشاشة السينمائية الفاخرة (قليتش رقمي داكن بدون وميض وبشعارك الصحيح)
+       2. الشاشة السينمائية الفاخرة (Glitch)
        ========================================================================= */
-    .cinematic-intro {
-        position: fixed; inset: 0; z-index: 1000000;
-        background: #08080a; /* خلفية داكنة ثابتة ومريحة للعين */
-        display: flex; justify-content: center; align-items: center;
-        opacity: 1; visibility: visible;
-        transition: opacity 0.5s ease, visibility 0.5s;
-    }
-    
-    .glitch-container {
-        position: relative; width: 160px; height: 160px;
-        display: flex; justify-content: center; align-items: center;
-    }
-    
-    .glitch-img {
-        position: absolute; width: 100%; height: auto; object-fit: contain;
-        opacity: 0; transform: scale(0.95);
-        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s;
-    }
-    
+    .cinematic-intro { position: fixed; inset: 0; z-index: 1000000; background: #060608; display: flex; justify-content: center; align-items: center; opacity: 1; visibility: visible; transition: opacity 0.5s ease, visibility 0.5s; }
+    .glitch-container { position: relative; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; }
+    .glitch-img { position: absolute; width: 100%; height: auto; object-fit: contain; opacity: 0; transform: scale(0.95); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s; }
     .cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1); }
-
     .start-glitch .main-img { animation: mainGlitchAnim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; }
-    
-    .start-glitch .layer-red {
-        opacity: 0.8; transform: translateX(-5px);
-        filter: drop-shadow(-2px 0 var(--accent-red)) saturate(1.5);
-        animation: glitchSliceTop 0.2s linear infinite;
-    }
-    
-    .start-glitch .layer-blue {
-        opacity: 0.8; transform: translateX(5px);
-        filter: drop-shadow(2px 0 #00d2ff) saturate(1.5);
-        animation: glitchSliceBottom 0.25s linear infinite;
-    }
+    .start-glitch .layer-red { opacity: 0.8; transform: translateX(-5px); filter: drop-shadow(-2px 0 var(--accent-red)) saturate(1.5); animation: glitchSliceTop 0.2s linear infinite; }
+    .start-glitch .layer-blue { opacity: 0.8; transform: translateX(5px); filter: drop-shadow(2px 0 #00d2ff) saturate(1.5); animation: glitchSliceBottom 0.25s linear infinite; }
 
-    @keyframes glitchSliceTop {
-        0% { clip-path: inset(20% 0 60% 0); }
-        20% { clip-path: inset(50% 0 10% 0); }
-        40% { clip-path: inset(10% 0 70% 0); }
-        60% { clip-path: inset(80% 0 5% 0); }
-        80% { clip-path: inset(30% 0 50% 0); }
-        100% { clip-path: inset(60% 0 20% 0); }
-    }
-    
-    @keyframes glitchSliceBottom {
-        0% { clip-path: inset(60% 0 10% 0); }
-        25% { clip-path: inset(15% 0 80% 0); }
-        50% { clip-path: inset(70% 0 20% 0); }
-        75% { clip-path: inset(5% 0 50% 0); }
-        100% { clip-path: inset(40% 0 30% 0); }
-    }
-
-    @keyframes mainGlitchAnim {
-        0% { transform: translate(1px, 1px); }
-        25% { transform: translate(-1px, -1px); }
-        50% { transform: translate(-2px, 1px); }
-        75% { transform: translate(1px, -1px); }
-        100% { transform: translate(0px, 0px); }
-    }
-
+    @keyframes glitchSliceTop { 0% { clip-path: inset(20% 0 60% 0); } 20% { clip-path: inset(50% 0 10% 0); } 40% { clip-path: inset(10% 0 70% 0); } 60% { clip-path: inset(80% 0 5% 0); } 80% { clip-path: inset(30% 0 50% 0); } 100% { clip-path: inset(60% 0 20% 0); } }
+    @keyframes glitchSliceBottom { 0% { clip-path: inset(60% 0 10% 0); } 25% { clip-path: inset(15% 0 80% 0); } 50% { clip-path: inset(70% 0 20% 0); } 75% { clip-path: inset(5% 0 50% 0); } 100% { clip-path: inset(40% 0 30% 0); } }
+    @keyframes mainGlitchAnim { 0% { transform: translate(1px, 1px); } 25% { transform: translate(-1px, -1px); } 50% { transform: translate(-2px, 1px); } 75% { transform: translate(1px, -1px); } 100% { transform: translate(0px, 0px); } }
     .cinematic-intro.fade-out-complete { opacity: 0; visibility: hidden; pointer-events: none; }
 
     /* =========================================================================
-       3. الحاويات الأساسية للأقسام
+       3. لغة التصميم الجديدة (Sharp Angles & Cyberpunk AAA Style)
        ========================================================================= */
-    .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; }
-
-    .g-section-view {
-        position: absolute; inset: 0; padding: 40px; padding-bottom: 40px;
-        opacity: 0; visibility: hidden; transition: 0.2s ease-in-out;
-        overflow-y: auto; scrollbar-width: none; z-index: 1;
-    }
+    .g-master-container { position: relative; width: 100%; height: 100%; background: #0b0b0e; color: white; font-family: var(--font-ar); }
+    
+    .g-section-view { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: 0.1s; overflow-y: auto; scrollbar-width: none; z-index: 1; padding: 40px; padding-bottom: 80px;}
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
-    /* تصميم البطاقات العادية لبقية الأقسام */
-    .g-native-card { background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.03); border-radius: 24px; padding: 25px; margin-bottom: 20px; box-shadow: var(--shadow-soft); transition: var(--trans-smooth); }
-    .g-page-title { color: var(--text-main); font-size: 1.8rem; margin-bottom: 25px; font-weight: 900; display: flex; align-items: center; gap: 12px; }
-    .g-page-title i { color: var(--accent-red); font-size: 2.2rem; }
-    .g-badge { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 14px; font-size: 0.9rem; color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+    /* الدخول المتدرج للعناصر داخل القسم النشط */
+    .g-section-view.active .anim-elem { animation: staggerUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+    .g-section-view.active .anim-elem:nth-child(1) { animation-delay: 0.05s; }
+    .g-section-view.active .anim-elem:nth-child(2) { animation-delay: 0.15s; }
+    .g-section-view.active .anim-elem:nth-child(3) { animation-delay: 0.25s; }
+
+    @keyframes staggerUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* البطاقات المائلة الاحترافية */
+    .sharp-card { 
+        background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); 
+        padding: 30px; margin-bottom: 20px; position: relative;
+        /* القطع المائل في الزاوية اليمنى السفلى */
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        border-left: 3px solid rgba(255,255,255,0.1);
+        transition: 0.3s ease;
+    }
+    .sharp-card:hover { border-left-color: var(--accent-red); background: rgba(30, 30, 35, 0.9); box-shadow: -10px 0 20px rgba(242, 39, 123, 0.1); }
+
+    .sharp-title { font-family: var(--font-en); font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; display: inline-block;}
+    .sharp-title i { color: var(--accent-red); margin-right: 10px; }
+
+    .sharp-badge { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%); padding: 10px 15px; font-size: 0.9rem; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.8); }
+    .sharp-badge i { color: var(--accent-red); font-size: 1.2rem; }
 
     /* =========================================================================
-       4. منصة الاتهام (Valorant Style Layout - خفيفة الظلال)
+       4. منصة الاتهام (Valorant 2.0 Layout)
        ========================================================================= */
-    #tab-game-accuse {
-        padding: 0 !important; overflow: hidden; background: #0b0b0e;
-    }
+    #tab-game-accuse { padding: 0 !important; }
+    .val-bg-container { position: absolute; inset: 0; background-size: cover; background-position: top center; transition: background-image 0.5s ease-in-out; opacity: 0.85; z-index: 0; }
+    .val-bg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to right, rgba(11,11,14,0.95) 0%, rgba(11,11,14,0.3) 40%, transparent 100%), linear-gradient(to top, rgba(11,11,14,0.95) 0%, transparent 35%); }
 
-    /* الخلفية المتفاعلة (مخففة الظلال وتظهر بوضوح) */
-    .val-bg-container {
-        position: absolute; inset: 0; background-size: cover; background-position: top center;
-        transition: background-image 0.5s ease-in-out; opacity: 0.85; z-index: 0;
-    }
-    
-    /* تدرج لوني ذكي: أسود خفيف يسار (للقائمة) وأسفل (للاعبين)، وشفاف بالمنتصف لتتألق الصورة */
-    .val-bg-overlay {
-        position: absolute; inset: 0; z-index: 1; pointer-events: none;
-        background: 
-            linear-gradient(to right, rgba(11,11,14,0.95) 0%, rgba(11,11,14,0.3) 40%, transparent 100%),
-            linear-gradient(to top, rgba(11,11,14,0.95) 0%, transparent 35%);
-    }
-
-    /* الغلاف الهندسي (Flexbox للحفاظ على الترتيب) */
-    .val-layout-wrapper {
-        position: relative; z-index: 10; width: 100%; height: 100%;
-        display: flex; flex-direction: column; justify-content: space-between;
-        padding: 50px;
-    }
-
-    /* القائمة الجانبية اليسرى (نفس Valorant) */
-    .val-left-menu {
-        display: flex; flex-direction: column; gap: 20px;
-        direction: ltr; /* للحفاظ على ترتيب الأيقونات يساراً */
-    }
-    
-    .val-logo { width: 130px; height: auto; object-fit: contain; margin-bottom: 5px; }
+    .val-layout-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 50px; }
+    .val-left-menu { display: flex; flex-direction: column; gap: 20px; direction: ltr; }
+    .val-logo { width: 130px; height: auto; margin-bottom: 5px; }
     .val-round-info { color: var(--text-dim); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; width: max-content; }
     
     .val-menu-items { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
-    .val-item {
-        color: rgba(255,255,255,0.6); font-size: 1.05rem; font-weight: 800; font-family: var(--font-ar);
-        cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; width: max-content;
-    }
-    .val-item i { font-size: 1.5rem; transition: 0.3s; }
+    .val-item { color: rgba(255,255,255,0.6); font-size: 1.05rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; width: max-content; }
     .val-item:hover, .val-item.active { color: white; transform: translateX(5px); }
     .val-item:hover i, .val-item.active i { color: var(--accent-red); }
 
-    /* حاوية مربعات اللاعبين (بالأسفل والمنتصف) */
-    .val-roster-container {
-        align-self: center; width: 100%; max-width: 900px;
-        display: flex; flex-direction: column; align-items: center;
-    }
+    .val-roster-container { align-self: center; width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; }
+    .val-roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
 
-    /* الشبكة: صفين و 3 أعمدة (متناسقة جداً) */
-    .val-roster-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px; width: 100%;
-    }
-
-    /* تصميم مربع اللاعب (مطابق لصور DUSK و MIRAGE) */
+    /* المربعات السفلية بشكلها المائل الحاد */
     .val-char-box {
-        background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.08); 
-        border-top: 4px solid rgba(255,255,255,0.2); /* الخط العلوي */
-        border-radius: 6px; /* حواف شبه حادة كالصور */
+        border-top: 4px solid rgba(255,255,255,0.2); 
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
         padding: 12px; display: flex; align-items: center; gap: 15px;
         cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        direction: ltr; /* لضمان الصورة يسار والنص يمين */
+        direction: ltr; position: relative;
     }
-    
-    .val-char-box:hover {
-        background: rgba(30, 30, 35, 0.9);
-        border-top-color: var(--accent-red); /* التوهج عند الوقوف */
-        transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-    }
-
-    /* الصورة المصغرة داخل المربع */
-    .val-char-avatar {
-        width: 50px; height: 50px; border-radius: 4px;
-        object-fit: cover; object-position: top center;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: var(--surface-panel); flex-shrink: 0;
-    }
-
-    /* نصوص المربع */
+    .val-char-box:hover { background: rgba(30, 30, 35, 0.9); border-top-color: var(--accent-red); transform: translateY(-4px); }
+    .val-char-avatar { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; object-position: top center; border: 1px solid rgba(255,255,255,0.1); background: var(--surface-panel); flex-shrink: 0; }
     .val-char-info { display: flex; flex-direction: column; text-align: left; overflow: hidden; }
-    .val-char-name {
-        font-size: 1.1rem; font-family: var(--font-en); font-weight: 900;
-        color: white; letter-spacing: 1px; text-transform: uppercase;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .val-char-role {
-        font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700;
-        margin-top: 2px; font-family: var(--font-ar);
-    }
+    .val-char-name { font-size: 1.1rem; font-family: var(--font-en); font-weight: 900; color: white; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .val-char-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; }
 
     /* =========================================================================
-       5. النافذة المنبثقة (Modal) للتصويت والأدلة
+       5. نافذة الاستهداف (Cyberpunk Modal)
        ========================================================================= */
     .accuse-modal-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
         z-index: 100000; display: flex; justify-content: center; align-items: center;
         opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px;
     }
     .accuse-modal-overlay.show { opacity: 1; visibility: visible; }
     
-    .accuse-modal-card {
-        background: var(--surface-panel); width: 100%; max-width: 480px; border-radius: 28px;
-        border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        overflow: hidden; transform: scale(0.9) translateY(20px); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex; flex-direction: column;
+    .target-panel {
+        width: 100%; max-width: 500px; background: transparent;
+        transform: scale(0.9) translateX(50px); opacity: 0; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .accuse-modal-overlay.show .accuse-modal-card { transform: scale(1) translateY(0); }
+    .accuse-modal-overlay.show .target-panel { transform: scale(1) translateX(0); opacity: 1; }
 
-    .a-modal-header { height: 200px; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 25px; background: #000; }
-    .a-modal-header img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);}
-    .a-modal-header h3 { position: relative; z-index: 2; font-size: 2rem; font-weight: 900; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9); font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase;}
+    /* خطوط المسح (Scanlines) */
+    .target-header {
+        position: relative; height: 200px; 
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
+        background: #111; overflow: hidden; border: 2px solid var(--accent-red); border-bottom: none;
+    }
+    .target-header::after {
+        content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,76,106,0.1) 2px, rgba(255,76,106,0.1) 4px); pointer-events: none;
+    }
+    .target-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; filter: grayscale(50%) contrast(1.2); }
+    .target-name { position: absolute; bottom: 15px; left: 20px; font-size: 2.5rem; font-weight: 900; color: white; font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase; z-index: 2; text-shadow: 2px 2px 0px var(--accent-red); direction: ltr;}
     
-    .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; transition: 0.2s;}
-    .btn-close-modal:hover { background: var(--accent-red); border-color: var(--accent-red); transform: rotate(90deg); }
+    .target-body {
+        background: rgba(15, 15, 20, 0.95); padding: 30px;
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        border: 2px solid var(--accent-red); border-top: none;
+        backdrop-filter: blur(10px);
+    }
+    
+    .sharp-btn {
+        width: 100%; background: rgba(242, 39, 123, 0.1); border: 1px solid var(--accent-red);
+        color: var(--accent-red); font-size: 1.2rem; font-weight: 900; padding: 18px; cursor: pointer;
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+        transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+    }
+    .sharp-btn:hover { background: var(--accent-red); color: white; transform: scale(1.02); }
 
     /* =========================================================================
-       6. استجابة الجوال (Mobile) - واضحة وممتازة
+       6. استجابة الجوال 
        ========================================================================= */
     .game-mobile-bar { display: none !important; }
 
     @media (max-width: 900px) {
         .g-section-view { padding: 20px 15px 120px 15px; }
-        .g-page-title { font-size: 1.5rem; }
+        .sharp-title { font-size: 1.6rem; }
         .game-mobile-bar { display: flex !important; z-index: 99999; }
         
-        /* تعديلات منصة الاتهام للجوال */
-        .val-layout-wrapper { padding: 30px 20px 100px 20px; } /* مسافة للشريط السفلي */
-        .val-left-menu { gap: 10px; }
+        /* ضبط منصة Valorant للجوال */
+        .val-layout-wrapper { padding: 30px 20px 100px 20px; }
+        .val-left-menu { top: 20px; left: 20px; gap: 10px; }
         .val-logo { width: 100px; }
-        .val-round-info { font-size: 0.7rem; padding-bottom: 10px; }
-        .val-item { font-size: 0.9rem; gap: 8px; }
+        .val-round-info { font-size: 0.65rem; padding-bottom: 10px; }
+        .val-item { font-size: 0.85rem; gap: 8px; }
         
-        /* جعل الشبكة في الجوال عمودين (2 أعمدة مرتبة) ليكون حجمها واضح وسهل الضغط */
         .val-roster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .val-char-box { padding: 8px; gap: 10px; }
         .val-char-avatar { width: 40px; height: 40px; }
         .val-char-name { font-size: 0.9rem; }
-        .val-char-role { font-size: 0.65rem; }
+        .val-char-role { font-size: 0.6rem; }
     }
 </style>
 
@@ -258,34 +173,32 @@
     </div>
 
     <div class="accuse-modal-overlay" id="accuse-action-modal" onclick="if(event.target === this) closeAccuseModal()">
-        <div class="accuse-modal-card">
-            <button class="btn-close-modal" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
-            <div class="a-modal-header">
-                <img src="" id="a-modal-img" alt="Player">
-                <h3 id="a-modal-name">PLAYER</h3>
+        <div class="target-panel">
+            <button class="btn-close-modal" style="position:absolute; right: -15px; top: -15px;" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
+            <div class="target-header">
+                <img src="" id="a-modal-img" class="target-img" alt="Target">
+                <div class="target-name" id="a-modal-name">PLAYER</div>
             </div>
-            <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-base);">
-                <div>
-                    <div style="font-size:0.95rem; color:var(--text-dim); margin-bottom:12px; font-weight:800;"><i class="ph-fill ph-crosshair" style="color:var(--accent-red); margin-left:5px;"></i> الأسلحة المتوفرة:</div>
+            <div class="target-body">
+                <div style="margin-bottom: 25px;">
+                    <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:12px; font-weight:800; letter-spacing:1px;">[ DETECTED WEAPONS ]</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-weapons"></div>
                 </div>
-                <div>
-                    <div style="font-size:0.95rem; color:var(--text-dim); margin-bottom:12px; font-weight:800;"><i class="ph-fill ph-fingerprint" style="color:#3498db; margin-left:5px;"></i> الآثار والأدلة:</div>
+                <div style="margin-bottom: 25px;">
+                    <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:12px; font-weight:800; letter-spacing:1px;">[ CLASSIFIED EVIDENCE ]</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-evidence"></div>
                 </div>
-                <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem; margin-top: 15px;" onclick="submitAccusation()">
-                    <i class="ph-bold ph-gavel"></i> تصويت للاتهام
-                </button>
+                <button class="sharp-btn" onclick="submitAccusation()">ELIMINATE TARGET</button>
             </div>
         </div>
     </div>
 
     <div id="tab-game-settings" class="g-section-view">
         <div style="max-width: 600px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-gear"></i> الإعدادات</h2>
-            <div class="g-native-card">
-                <button class="modern-danger-btn" style="width: 100%; padding: 18px; font-size: 1.1rem;" onclick="window.gameEngine.requestLeaveGame()">
-                    <i class="ph-bold ph-sign-out"></i> الخروج من اللعبة الحالية
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> SETTINGS</div>
+            <div class="sharp-card anim-elem">
+                <button class="sharp-btn" style="border-color: rgba(255,255,255,0.2); color: white; background: rgba(255,255,255,0.05);" onclick="window.gameEngine.requestLeaveGame()">
+                    ABORT MISSION (LEAVE)
                 </button>
             </div>
         </div>
@@ -293,8 +206,8 @@
 
     <div id="tab-game-info" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-identification-card"></i> هويتي السرية</h2>
-            <div id="render-game-role" class="g-native-card" style="text-align: center; padding: 60px 20px;">
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-identification-card"></i> IDENTITY</div>
+            <div id="render-game-role" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
         </div>
@@ -302,8 +215,10 @@
 
     <div id="tab-game-accuse" class="g-section-view active">
         <div class="val-bg-container" id="val-dynamic-bg" style="background-image: url('assets/images/accuse-bg.jpg');"></div>
-        <div class="val-bg-overlay"></div> <div class="val-layout-wrapper">
-            <div class="val-left-menu">
+        <div class="val-bg-overlay"></div>
+        
+        <div class="val-layout-wrapper">
+            <div class="val-left-menu anim-elem">
                 <img src="assets/images/logo.png" class="val-logo" alt="Logo">
                 <div class="val-round-info">ROUND 01 // DECEPTION</div>
                 <div class="val-menu-items">
@@ -312,8 +227,7 @@
                     <div class="val-item"><i class="ph-fill ph-broadcast"></i> آخر التحديثات</div>
                 </div>
             </div>
-
-            <div class="val-roster-container">
+            <div class="val-roster-container anim-elem">
                 <div class="val-roster-grid" id="render-game-accuse">
                     <div style="color:var(--text-dim); text-align: center; grid-column: 1/-1;"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i></div>
                 </div>
@@ -323,19 +237,22 @@
 
     <div id="tab-game-evidence" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</h2>
-            <div class="g-native-card" style="text-align:center; padding: 80px 20px;">
-                <i class="ph-duotone ph-file-magnifying-glass" style="font-size:4rem; color:var(--text-dim); margin-bottom:15px; opacity:0.5;"></i>
-                <h3 style="color:var(--text-main); margin-bottom:10px;">لا توجد أدلة بعد</h3>
-                <p style="color:var(--text-dim);">تلميحات الطبيب الشرعي ستظهر هنا.</p>
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-microscope"></i> CRIME SCENE</div>
+            <div class="sharp-card anim-elem" style="text-align:center; padding: 80px 20px; border-left-color: #3498db;">
+                <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 20px auto; border-radius: 50%; border: 2px solid rgba(52, 152, 219, 0.3);">
+                    <div style="position: absolute; inset: 0; border-radius: 50%; border: 2px solid #3498db; border-top-color: transparent; animation: spinFast 1s linear infinite;"></div>
+                    <i class="ph-fill ph-radar" style="font-size:3rem; color:#3498db; line-height: 100px;"></i>
+                </div>
+                <h3 style="color:white; font-family: var(--font-en); letter-spacing: 2px;">SCANNING...</h3>
+                <p style="color:rgba(255,255,255,0.5);">في انتظار تقرير الطبيب الشرعي.</p>
             </div>
         </div>
     </div>
 
     <div id="tab-game-items" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <h2 class="g-page-title"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</h2>
-            <div id="render-game-items" class="g-native-card" style="text-align: center; padding: 60px 20px;">
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-briefcase"></i> INVENTORY</div>
+            <div id="render-game-items" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
         </div>
@@ -365,10 +282,8 @@
             introOverlay.remove();
         } else {
             sessionStorage.setItem(sessionKey, 'true');
-
             setTimeout(() => { introOverlay.classList.add('show-logo'); }, 100);
             setTimeout(() => { introOverlay.classList.add('start-glitch'); }, 1500);
-            
             setTimeout(() => {
                 introOverlay.classList.add('fade-out-complete');
                 setTimeout(() => introOverlay.remove(), 600);
@@ -377,7 +292,7 @@
     })();
 
     // ========================================================
-    // 2. نظام التحكم بالأشرطة والتنقل
+    // 2. نظام التنقل
     // ========================================================
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
@@ -403,7 +318,16 @@
     window.switchGameTab = function(tabId, index) {
         document.querySelectorAll('.g-section-view').forEach(s => s.classList.remove('active'));
         const targetSec = document.getElementById(tabId);
-        if(targetSec) targetSec.classList.add('active');
+        if(targetSec) {
+            targetSec.classList.add('active');
+            // إعادة تشغيل الأنيميشن المتدرج
+            const animElems = targetSec.querySelectorAll('.anim-elem');
+            animElems.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; /* Trigger reflow */
+                el.style.animation = null;
+            });
+        }
 
         const icons = ['ph-gear', 'ph-identification-card', 'ph-gavel', 'ph-microscope', 'ph-briefcase'];
 
@@ -421,7 +345,7 @@
     };
 
     // ========================================================
-    // 3. التحكم بالنافذة المنبثقة (Modal) للاتهام
+    // 3. التحكم بالنافذة المنبثقة للاتهام
     // ========================================================
     window.gameAccuseDataCache = {}; 
 
@@ -432,27 +356,21 @@
         document.getElementById('a-modal-name').innerText = playerName;
         document.getElementById('a-modal-img').src = imgSrc;
         
-        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="g-badge" style="background:rgba(255,255,255,0.05); border:none;"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('') : '';
-        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="g-badge" style="background:rgba(255,255,255,0.05); border:none;"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('') : '';
+        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge"><i class="ph-fill ph-crosshair"></i>${w}</span>`).join('') : '';
+        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('') : '';
         
-        document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span style="color:var(--text-dim); font-size:0.85rem;">لا يوجد</span>';
-        document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span style="color:var(--text-dim); font-size:0.85rem;">لا يوجد</span>';
+        document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span style="color:var(--text-dim);">لا يوجد</span>';
+        document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span style="color:var(--text-dim);">لا يوجد</span>';
         
         window.gameAccuseDataCache.currentTarget = playerName;
         modal.classList.add('show');
     };
 
-    window.closeAccuseModal = function() {
-        document.getElementById('accuse-action-modal').classList.remove('show');
-    };
-
-    window.submitAccusation = function() {
-        alert("تم تسجيل تصويتك ضد: " + window.gameAccuseDataCache.currentTarget);
-        window.closeAccuseModal();
-    };
+    window.closeAccuseModal = function() { document.getElementById('accuse-action-modal').classList.remove('show'); };
+    window.submitAccusation = function() { alert("تم تحديد الهدف: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
 
     // ========================================================
-    // 4. محرك الداتا ورسم المنصة (بدون تكرار صور)
+    // 4. محرك الداتا (بطاقات، هوية، أسلحة)
     // ========================================================
     window.renderGameData = function() {
         try {
@@ -461,11 +379,10 @@
             const myName = window.currentUserData ? window.currentUserData.username_lower : 'unknown';
             const allPlayers = window.currentRoomData.players || [];
             
-            // 🎯 رسم منصة الاتهام (Valorant Style - 2 Rows)
+            // 🎯 رسم منصة الاتهام (Valorant Style)
             const accuseGrid = document.getElementById('render-game-accuse');
             let accuseHtml = '';
             
-            // خوارزمية جلب الشخصيات ومنع التكرار
             let allGameChars = (window.GAME_ASSETS && window.GAME_ASSETS.characters) ? [...window.GAME_ASSETS.characters] : [];
             let dbSelections = window.currentRoomData.characterSelections || {};
             let usedIds = Object.values(dbSelections);
@@ -473,21 +390,16 @@
 
             allPlayers.forEach(p => {
                 let charImgSrc = 'assets/images/default-avatar.png'; 
-                
                 if(dbSelections[p]) {
                     let foundChar = allGameChars.find(c => c.id === dbSelections[p]);
                     if(foundChar) charImgSrc = foundChar.src;
                 } else {
-                    if(availableChars.length > 0) {
-                        let pickedChar = availableChars.shift(); 
-                        charImgSrc = pickedChar.src;
-                    } else if (p.startsWith('Bot_')) {
-                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`;
-                    }
+                    if(availableChars.length > 0) { charImgSrc = availableChars.shift().src; } 
+                    else if (p.startsWith('Bot_')) { charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`; }
                 }
 
                 let isMe = (p.toLowerCase() === myName);
-                let roleText = isMe ? 'YOU (INVESTIGATOR)' : 'SUSPECT';
+                let roleText = isMe ? 'YOU' : 'SUSPECT';
                 
                 accuseHtml += `
                     <div class="val-char-box" 
@@ -503,36 +415,36 @@
             });
             accuseGrid.innerHTML = accuseHtml;
 
-            // رسم باقي البيانات
+            // رسم الهوية
             let myRole = 'investigator';
-            for (const [k, v] of Object.entries(window.currentRoomData.roles)) {
-                if (k.toLowerCase() === myName) { myRole = v; break; }
-            }
-            let myItems = null;
-            if(window.currentRoomData.items) {
-                for (const [k, v] of Object.entries(window.currentRoomData.items)) {
-                    if (k.toLowerCase() === myName) { myItems = v; break; }
-                }
-            }
-
+            for (const [k, v] of Object.entries(window.currentRoomData.roles)) { if (k.toLowerCase() === myName) { myRole = v; break; } }
+            
             const roleDiv = document.getElementById('render-game-role');
             if(myRole === 'murderer') {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px; filter: drop-shadow(0 0 15px rgba(242, 39, 123, 0.4));"></i><h2 style="color:white; font-size:2.8rem; font-weight:900; margin-bottom:10px;">أنت القاتل</h2><p style="color:var(--text-dim); font-size:1.1rem; max-width:400px; margin: 0 auto;">اختر سلاحك ودليلك وقم بخداعهم.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px;"></i><h2 style="font-family:var(--font-en); font-size:3rem; font-weight:900; color:white; text-transform:uppercase; letter-spacing:2px; margin-bottom:10px;">MURDERER</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت القاتل. استخدم أدواتك بذكاء لتضليل البقية.</p>`;
+                roleDiv.style.borderLeftColor = 'var(--accent-red)';
             } else if(myRole === 'forensic') {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:6rem; color:#3498db; margin-bottom:15px; filter: drop-shadow(0 0 15px rgba(52, 152, 219, 0.4));"></i><h2 style="color:white; font-size:2.8rem; font-weight:900; margin-bottom:10px;">الطبيب الشرعي</h2><p style="color:var(--text-dim); font-size:1.1rem; max-width:400px; margin: 0 auto;">أنت تعرف القاتل. وجه المحققين عبر التلميحات.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:6rem; color:#3498db; margin-bottom:15px;"></i><h2 style="font-family:var(--font-en); font-size:3rem; font-weight:900; color:white; text-transform:uppercase; letter-spacing:2px; margin-bottom:10px;">FORENSIC</h2><p style="color:var(--text-dim); font-size:1.1rem;">الطبيب الشرعي. ساعد المحققين بالتلميحات الصامتة.</p>`;
+                roleDiv.style.borderLeftColor = '#3498db';
             } else {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px; filter: drop-shadow(0 0 15px rgba(46, 204, 113, 0.4));"></i><h2 style="color:white; font-size:2.8rem; font-weight:900; margin-bottom:10px;">محقق</h2><p style="color:var(--text-dim); font-size:1.1rem; max-width:400px; margin: 0 auto;">اكتشف القاتل من خلال التلميحات والأدوات.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px;"></i><h2 style="font-family:var(--font-en); font-size:3rem; font-weight:900; color:white; text-transform:uppercase; letter-spacing:2px; margin-bottom:10px;">INVESTIGATOR</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت المحقق. اكتشف القاتل قبل فوات الأوان.</p>`;
+                roleDiv.style.borderLeftColor = 'var(--accent-green)';
             }
 
+            // رسم الأدوات
+            let myItems = null;
+            if(window.currentRoomData.items) {
+                for (const [k, v] of Object.entries(window.currentRoomData.items)) { if (k.toLowerCase() === myName) { myItems = v; break; } }
+            }
             const itemsDiv = document.getElementById('render-game-items');
             if(myItems && myItems.weapons) {
-                let wHtml = myItems.weapons.map(w => `<span class="g-badge"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('');
-                let eHtml = myItems.evidence.map(e => `<span class="g-badge"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('');
+                let wHtml = myItems.weapons.map(w => `<span class="sharp-badge"><i class="ph-fill ph-crosshair"></i>${w}</span>`).join('');
+                let eHtml = myItems.evidence.map(e => `<span class="sharp-badge"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('');
                 itemsDiv.innerHTML = `
-                    <div style="text-align:right;">
-                        <h3 style="color:white; margin-bottom:15px; font-size:1.2rem;">الأسلحة المتاحة لك:</h3>
+                    <div style="text-align:left; direction: ltr;">
+                        <h3 style="color:rgba(255,255,255,0.5); font-family:var(--font-en); letter-spacing:1px; margin-bottom:15px; font-size:0.9rem;">[ WEAPONS ]</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:35px;">${wHtml}</div>
-                        <h3 style="color:white; margin-bottom:15px; font-size:1.2rem;">الآثار (الأدلة):</h3>
+                        <h3 style="color:rgba(255,255,255,0.5); font-family:var(--font-en); letter-spacing:1px; margin-bottom:15px; font-size:0.9rem;">[ EVIDENCE ]</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:12px;">${eHtml}</div>
                     </div>
                 `;
@@ -541,7 +453,6 @@
     };
 
     window.initGameUI();
-    
     let retries = 0;
     function safeRender() {
         if(window.currentRoomData && window.currentRoomData.roles) window.renderGameData();
