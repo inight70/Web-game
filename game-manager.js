@@ -27,11 +27,10 @@ window.gameEngine = {
 
         const players = window.currentRoomData.players || [];
         
-        // حماية الحد الأدنى للاعبين
-        if(players.length < 4) {
-            if(window.showTempModal) window.showTempModal("عدد غير كافٍ", "يجب أن يكون هناك 4 لاعبين على الأقل لبدء اللعبة.", "ph-bold ph-users", "#f1c40f");
-            // ملاحظة: يمكنك إزالة علامتي // من السطر التالي لتفعيل الحماية، حالياً معطلة لتسهيل تجربتك وحدك
-            // return; 
+        // --- التعديل هنا: تقليل الحد الأدنى إلى 2 للتجربة ---
+        if(players.length < 2) {
+            if(window.showTempModal) window.showTempModal("عدد غير كافٍ", "يجب أن يكون هناك لاعبان (2) على الأقل لبدء اللعبة للتجربة.", "ph-bold ph-users", "#f1c40f");
+            return; // تم تفعيل هذا السطر لمنع البدء بلاعب واحد
         }
 
         // تغيير شكل الزر لمنع الضغط المزدوج
@@ -49,25 +48,21 @@ window.gameEngine = {
             // === 2. توزيع الأدوار ===
             let assignedRoles = {};
             
-            // معالجة خاصة في حال كنت تجرب اللعبة وحدك لتجنب الأخطاء البرمجية
-            if (shuffledPlayers.length === 1) {
-                assignedRoles[shuffledPlayers[0]] = 'forensic';
-            } else {
-                assignedRoles[shuffledPlayers[0]] = 'forensic'; // الأول دائماً الطبيب الشرعي
-                assignedRoles[shuffledPlayers[1]] = 'murderer'; // الثاني دائماً القاتل
-                
-                let startIndex = 2;
-                // إذا كان العدد 6 فما فوق، نضيف الشريك والشاهد
-                if (players.length >= 6) {
-                    assignedRoles[shuffledPlayers[2]] = 'accomplice';
-                    assignedRoles[shuffledPlayers[3]] = 'witness';
-                    startIndex = 4;
-                }
+            // بما أن العدد 2، سيتوزع الأول طبيب والثاني قاتل
+            assignedRoles[shuffledPlayers[0]] = 'forensic'; // الأول دائماً الطبيب الشرعي
+            assignedRoles[shuffledPlayers[1]] = 'murderer'; // الثاني دائماً القاتل
+            
+            let startIndex = 2;
+            // إذا كان العدد 6 فما فوق مستقبلاً، نضيف الشريك والشاهد
+            if (players.length >= 6) {
+                assignedRoles[shuffledPlayers[2]] = 'accomplice';
+                assignedRoles[shuffledPlayers[3]] = 'witness';
+                startIndex = 4;
+            }
 
-                // البقية محققون
-                for (let i = startIndex; i < shuffledPlayers.length; i++) {
-                    assignedRoles[shuffledPlayers[i]] = 'investigator';
-                }
+            // البقية محققون (إذا كان العدد 3 أو 4 أو 5)
+            for (let i = startIndex; i < shuffledPlayers.length; i++) {
+                assignedRoles[shuffledPlayers[i]] = 'investigator';
             }
 
             // === 3. تحديث الغرفة في Firebase وبدء اللعبة ===
@@ -104,7 +99,6 @@ window.gameEngine = {
 // ==========================================
 // ربط المحرك بنظام المراقبة (Hook)
 // ==========================================
-// نعدل على دالة الاستماع للغرفة لنجعلها تراقب حالة بدء اللعبة أيضاً
 const originalRoomListener = window.listenToRoom;
 window.listenToRoom = function() {
     if(originalRoomListener) originalRoomListener();
