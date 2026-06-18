@@ -1,5 +1,5 @@
 // ==========================================
-// محرك اللعبة (Game Engine) - نسخة البوتات والتجربة
+// محرك اللعبة (Game Engine) - نسخة البوتات الشاملة (المصححة)
 // ==========================================
 
 window.gameEngine = {
@@ -12,7 +12,25 @@ window.gameEngine = {
         return shuffled.slice(0, count);
     },
 
-    // 2. دالة بدء اللعبة مع إضافة البوتات (للتجربة)
+    // 2. دالة المراقبة (الرادار) - هذه التي كانت مفقودة وتمنع الانتقال للعبة!
+    watchGameState: function() {
+        if(!window.currentRoomData) return;
+        const currentPath = sessionStorage.getItem('saved_branch_play');
+        
+        // الانتقال لصفحة اللعبة إذا تحولت الحالة إلى playing
+        if(window.currentRoomData.status === 'playing' && currentPath !== 'game') {
+            console.log("⚡ Game Started! Routing to Game Board...");
+            if(window.loadFragment) window.loadFragment('game', null);
+        }
+        
+        // العودة للوبي إذا انتهت اللعبة
+        if(window.currentRoomData.status === 'waiting' && currentPath === 'game') {
+            document.body.classList.remove('in-game-mode');
+            if(window.loadFragment) window.loadFragment('lobby', null);
+        }
+    },
+
+    // 3. دالة بدء اللعبة وتوزيع الأدوار (مع دعم البوتات)
     startGameWithBots: async function() {
         if(!window.currentRoomId || !window.authInstance || !window.authInstance.currentUser) return;
         
@@ -22,32 +40,35 @@ window.gameEngine = {
         }
 
         const startBtn = document.getElementById('btn-start-action');
-        if(startBtn) { startBtn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>'; startBtn.disabled = true; }
+        if(startBtn) { startBtn.innerHTML = '<i class="ph-bold ph-spinner ph-spin" style="font-size:1.3rem;"></i> <span>جاري التجهيز...</span>'; startBtn.disabled = true; }
 
         try {
             let realPlayers = window.currentRoomData.players || [];
             let allPlayers = [...realPlayers];
             
-            // إضافة البوتات ليكتمل العدد إلى 6 لاعبين
+            // إضافة البوتات ليكتمل العدد إلى 6 لاعبين (إذا لم تضفهم أنت يدوياً)
             const botNames = ['Bot_Alpha', 'Bot_Bravo', 'Bot_Charlie', 'Bot_Delta', 'Bot_Echo'];
             let botsNeeded = 6 - realPlayers.length;
             for(let i=0; i < botsNeeded; i++) {
-                allPlayers.push(botNames[i]);
+                if (!allPlayers.includes(botNames[i])) {
+                    allPlayers.push(botNames[i]);
+                }
             }
 
-            // خلط اللاعبين (الحقيقيين + البوتات)
+            // خلط اللاعبين لتوزيع الأدوار بسرية
             let shuffledPlayers = [...allPlayers].sort(() => Math.random() - 0.5);
 
-            // توزيع الأدوار لـ 6 لاعبين (حسب قواعد Deception)
+            // توزيع الأدوار (طبيب، قاتل، شريك، شاهد، ومحققين)
             let assignedRoles = {};
-            assignedRoles[shuffledPlayers[0]] = 'forensic';   // طبيب شرعي
-            assignedRoles[shuffledPlayers[1]] = 'murderer';   // قاتل
-            assignedRoles[shuffledPlayers[2]] = 'accomplice'; // شريك
-            assignedRoles[shuffledPlayers[3]] = 'witness';    // شاهد
-            assignedRoles[shuffledPlayers[4]] = 'investigator'; // محقق
-            assignedRoles[shuffledPlayers[5]] = 'investigator'; // محقق
+            assignedRoles[shuffledPlayers[0]] = 'forensic';
+            assignedRoles[shuffledPlayers[1]] = 'murderer';
+            assignedRoles[shuffledPlayers[2]] = 'accomplice';
+            assignedRoles[shuffledPlayers[3]] = 'witness';
+            for (let i = 4; i < shuffledPlayers.length; i++) {
+                assignedRoles[shuffledPlayers[i]] = 'investigator';
+            }
 
-            // توليد 4 أسلحة و 4 أدلة لكل لاعب (حتى البوتات)
+            // توليد الأسلحة والأدلة لجميع اللاعبين (بمن فيهم البوتات)
             let playersItems = {};
             allPlayers.forEach(pName => {
                 playersItems[pName] = {
@@ -56,11 +77,11 @@ window.gameEngine = {
                 };
             });
 
-            // تحديث قاعدة البيانات
+            // تحديث قاعدة البيانات (هنا نعطي الإشارة للرادار بالانتقال)
             const roomRef = window.docFunc(window.dbInstance, "rooms", window.currentRoomId);
             await window.updateDocFunc(roomRef, {
                 status: 'playing',
-                players: allPlayers, // تحديث قائمة اللاعبين لتشمل البوتات
+                players: allPlayers,
                 roles: assignedRoles,
                 items: playersItems,
                 currentRound: 1,
@@ -69,21 +90,37 @@ window.gameEngine = {
             
         } catch (error) {
             console.error("Error starting game:", error);
-            if(startBtn) { startBtn.innerHTML = '<i class="ph-bold ph-play"></i> بدء اللعبة'; startBtn.disabled = false; }
+            if(startBtn) { startBtn.innerHTML = '<i class="ph-fill ph-play" style="font-size:1.3rem;"></i> <span>بدء اللعبة</span>'; startBtn.disabled = false; }
         }
     },
 
-    // 3. الخروج من اللعبة وتفريغ الذاكرة
+    // 4. دالة المغادرة وإيقاف الرادار
     requestLeaveGame: function() {
         if(confirm("هل أنت متأكد أنك تريد مغادرة اللعبة؟")) {
             document.body.classList.remove('in-game-mode');
+            if(window._gameWatcher) { clearInterval(window._gameWatcher); window._gameWatcher = null; }
             if(window.leaveFirebaseRoom) window.leaveFirebaseRoom();
             else window.loadFragment('home'); 
         }
     }
 };
 
-// ربط المحرك بزر البدء في اللوبي مباشرة (تعديل سريع)
+// ==========================================
+// 5. ربط محرك اللعبة بنظام الغرف (تشغيل الرادار)
+// ==========================================
+const originalRoomListener = window.listenToRoom;
+window.listenToRoom = function() {
+    // تشغيل نظام الاستماع الأصلي
+    if(originalRoomListener) originalRoomListener();
+    
+    // تشغيل الرادار كل ثانية للبحث عن تغيير الحالة إلى "playing"
+    if(window._gameWatcher) clearInterval(window._gameWatcher);
+    window._gameWatcher = setInterval(() => {
+        if(window.gameEngine) window.gameEngine.watchGameState();
+    }, 1000);
+};
+
+// دالة بدء احتياطية (تستخدم من أزرار HTML)
 window.executeStartGame = function() {
     if(window.gameEngine) window.gameEngine.startGameWithBots();
 };
