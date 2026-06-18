@@ -1,33 +1,30 @@
 <style>
-    /* الإخفاء الذكي: نخفي ما لا نحتاجه دون تدمير حاوية الموقع */
+    /* الإخفاء الذكي لقوائم الموقع الأصلية */
     body.in-game-mode .right-sidebar, 
     body.in-game-mode .top-header { display: none !important; }
-    body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; }
-    body.in-game-mode .app-shell > .bottom-bar { display: none !important; }
     
-    /* تمديد مساحة اللعب لملء الشاشة */
+    /* إخفاء أزرار الموقع لإظهار أزرار اللعبة التي تم حقنها */
+    body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn),
+    body.in-game-mode .bottom-bar > button:not(.game-injected-btn) { display: none !important; }
+    
     body.in-game-mode .dynamic-content { 
-        padding: 0 !important; 
-        overflow: hidden !important; 
-        height: 100vh !important;
-        height: 100dvh !important;
+        padding: 0 !important; overflow: hidden !important; height: 100vh !important; height: 100dvh !important;
     }
 
     /* حاوية أقسام اللعبة */
     .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; }
 
     .g-section-view {
-        position: absolute; inset: 0; padding: 40px; padding-bottom: 40px;
+        position: absolute; inset: 0; padding: 40px; padding-bottom: 120px;
         opacity: 0; visibility: hidden; transition: 0.2s ease-in-out;
         overflow-y: auto; scrollbar-width: none;
     }
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
-    /* تصميم البطاقات الداخلي */
+    /* تصميم البطاقات الداخلي المطابق لموقعك */
     .g-native-card { 
-        background: var(--surface-panel); 
-        border: 1px solid rgba(255,255,255,0.03); 
+        background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.03); 
         border-radius: 24px; padding: 25px; margin-bottom: 20px; 
         box-shadow: var(--shadow-soft); transition: var(--trans-smooth); 
     }
@@ -42,12 +39,9 @@
         color: var(--text-main); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; 
     }
 
-    .game-mobile-bar { display: none !important; }
-
     @media (max-width: 900px) {
         .g-section-view { padding: 20px 15px 120px 15px; }
         .g-page-title { font-size: 1.5rem; }
-        .game-mobile-bar { display: flex !important; z-index: 99999; }
     }
 </style>
 
@@ -102,71 +96,13 @@
         </div>
     </div>
 
-    <nav class="bottom-bar game-mobile-bar">
-        <button class="bottom-tab active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph ph-gavel"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
-    </nav>
-
 </div>
 
 <script>
-    // 1. الدالة الأساسية لحقن الأزرار (مصممة للعمل بقوة كلما فتحت الصفحة)
-    window.injectGameNavigation = function() {
-        document.body.classList.add('in-game-mode');
-        
-        // تنظيف صارم لأي أزرار قديمة متبقية لمنع التكرار
-        document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
-
-        // حقن أزرار الكمبيوتر
-        const desktopMenu = document.querySelector('.sidebar .nav-menu');
-        if(desktopMenu) {
-            desktopMenu.insertAdjacentHTML('beforeend', `
-                <button class="nav-btn game-injected-btn active" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph-fill ph-gear"></i></button>
-                <button class="nav-btn game-injected-btn" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
-                <button class="nav-btn game-injected-btn" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph ph-gavel"></i></button>
-                <button class="nav-btn game-injected-btn" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
-                <button class="nav-btn game-injected-btn" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
-            `);
-        }
-
-        // تفعيل القسم الأول كافتراضي
-        window.switchGameTab('tab-game-settings', 0);
-    };
-
-    // 2. دالة التنقل المتطورة
-    window.switchGameTab = function(tabId, index) {
-        document.querySelectorAll('.g-section-view').forEach(s => s.classList.remove('active'));
-        const targetSec = document.getElementById(tabId);
-        if(targetSec) targetSec.classList.add('active');
-
-        const dBtns = document.querySelectorAll('.sidebar .game-injected-btn');
-        dBtns.forEach((b, i) => {
-            b.classList.toggle('active', i === index);
-            const icon = b.querySelector('i');
-            if(icon) {
-                if(i === index) { icon.classList.remove('ph'); icon.classList.add('ph-fill'); }
-                else { icon.classList.remove('ph-fill'); icon.classList.add('ph'); }
-            }
-        });
-
-        const mBtns = document.querySelectorAll('.game-mobile-bar .bottom-tab');
-        mBtns.forEach((b, i) => {
-            b.classList.toggle('active', i === index);
-            const icon = b.querySelector('i');
-            if(icon) {
-                if(i === index) { icon.classList.remove('ph'); icon.classList.add('ph-fill'); }
-                else { icon.classList.remove('ph-fill'); icon.classList.add('ph'); }
-            }
-        });
-    };
-
-    // 3. المحرك الواجهي (محمي ومُحدث)
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
+            
             const myName = window.currentUserData ? window.currentUserData.username_lower : 'unknown';
             const allPlayers = window.currentRoomData.players || [];
             
@@ -195,7 +131,14 @@
             if(myItems && myItems.weapons) {
                 let wHtml = myItems.weapons.map(w => `<span class="g-badge"><i class="ph-fill ph-crosshair" style="color:var(--accent-red);"></i>${w}</span>`).join('');
                 let eHtml = myItems.evidence.map(e => `<span class="g-badge"><i class="ph-fill ph-fingerprint" style="color:#3498db;"></i>${e}</span>`).join('');
-                itemsDiv.innerHTML = `<div style="text-align:right;"><h3 style="color:white; margin-bottom:15px; font-size:1.2rem;">الأسلحة المتاحة لك:</h3><div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:35px;">${wHtml}</div><h3 style="color:white; margin-bottom:15px; font-size:1.2rem;">الآثار (الأدلة):</h3><div style="display:flex; flex-wrap:wrap; gap:12px;">${eHtml}</div></div>`;
+                itemsDiv.innerHTML = `
+                    <div style="text-align:right;">
+                        <h3 style="color:white; margin-bottom:15px; font-size:1.2rem;">الأسلحة المتاحة لك:</h3>
+                        <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:35px;">${wHtml}</div>
+                        <h3 style="color:white; margin-bottom:15px; font-size:1.2rem;">الآثار (الأدلة):</h3>
+                        <div style="display:flex; flex-wrap:wrap; gap:12px;">${eHtml}</div>
+                    </div>
+                `;
             }
 
             const accuseGrid = document.getElementById('render-game-accuse');
@@ -205,39 +148,29 @@
                 let wList = pItems.weapons ? pItems.weapons.map(w => `<span class="g-badge" style="font-size:0.8rem; padding:6px 10px;">${w}</span>`).join('') : '';
                 let eList = pItems.evidence ? pItems.evidence.map(e => `<span class="g-badge" style="font-size:0.8rem; padding:6px 10px;">${e}</span>`).join('') : '';
                 let isMe = (p.toLowerCase() === myName) ? `<span style="color:var(--accent-green); font-size:0.85rem; margin-right:5px;">(أنت)</span>` : '';
-                accuseHtml += `<div class="g-native-card" style="margin-bottom:0; cursor:pointer;" onclick="alert('توجيه اتهام لـ: ${p}')"><div style="display:flex; align-items:center; gap:15px; margin-bottom:15px; border-bottom:1px dashed rgba(255,255,255,0.05); padding-bottom:15px;"><div style="width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.2rem; color:white;">${p.charAt(0).toUpperCase()}</div><div style="font-size:1.2rem; font-weight:800; color:white;">${p} ${isMe}</div></div><div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:8px;">الأسلحة:</div><div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;">${wList}</div><div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:8px;">الأدلة:</div><div style="display:flex; flex-wrap:wrap; gap:6px;">${eList}</div></div>`;
+                
+                accuseHtml += `
+                    <div class="g-native-card" style="margin-bottom:0; cursor:pointer;" onclick="alert('توجيه اتهام لـ: ${p}')">
+                        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px; border-bottom:1px dashed rgba(255,255,255,0.05); padding-bottom:15px;">
+                            <div style="width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.2rem; color:white;">${p.charAt(0).toUpperCase()}</div>
+                            <div style="font-size:1.2rem; font-weight:800; color:white;">${p} ${isMe}</div>
+                        </div>
+                        <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:8px;">الأسلحة:</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;">${wList}</div>
+                        <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:8px;">الأدلة:</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:6px;">${eList}</div>
+                    </div>
+                `;
             });
             accuseGrid.innerHTML = accuseHtml;
 
         } catch(e) { console.error("Error drawing UI", e); }
     };
 
-    // 4. آلية التشغيل المضمونة (تعمل في كل مرة تفتح فيها الصفحة)
-    setTimeout(() => {
-        window.injectGameNavigation();
-        let retries = 0;
-        function safeRender() {
-            if(window.currentRoomData && window.currentRoomData.roles) window.renderGameData();
-            else if(retries < 15) { retries++; setTimeout(safeRender, 500); }
-        }
-        safeRender();
-    }, 50);
-
-    // 5. التنظيف عند الخروج لتعود صفحة index لطبيعتها
-    if(window.gameUIMutationObserver) window.gameUIMutationObserver.disconnect();
-    window.gameUIMutationObserver = new MutationObserver(() => {
-        if(!document.getElementById('game-master-root')) {
-            document.body.classList.remove('in-game-mode');
-            document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
-            window.gameUIMutationObserver.disconnect();
-        }
-    });
-    const holder = document.getElementById('content-holder');
-    if(holder) window.gameUIMutationObserver.observe(holder, { childList: true, subtree: true });
-
-    window.addEventListener('popstate', function cleanUp() {
-        document.body.classList.remove('in-game-mode');
-        document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
-        window.removeEventListener('popstate', cleanUp);
-    });
+    let retries = 0;
+    function safeRender() {
+        if(window.currentRoomData && window.currentRoomData.roles) window.renderGameData();
+        else if(retries < 15) { retries++; setTimeout(safeRender, 500); }
+    }
+    safeRender();
 </script>
