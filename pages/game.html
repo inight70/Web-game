@@ -1,40 +1,38 @@
 <style>
     /* =========================================================================
-       1. الدمج المطلق (Seamless Integration) - الأشرطة الشفافة
+       1. التكامل مع الموقع (اللايت / الدارك مود)
        ========================================================================= */
     body.in-game-mode .right-sidebar, 
     body.in-game-mode .top-header { display: none !important; }
     
-    /* جعل شريط الكمبيوتر شفافاً تماماً وإلغاء أي خطوط فاصلة */
     @media (min-width: 901px) { 
-        body.in-game-mode .app-shell .sidebar { background: transparent !important; border: none !important; box-shadow: none !important; }
+        /* الشريط الجانبي يأخذ لونه من الموقع */
         body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; } 
     }
     
     body.in-game-mode .app-shell > .bottom-bar { display: none !important; }
     
+    /* المساحة تأخذ لون الموقع المتغير */
     body.in-game-mode .dynamic-content { 
-        padding: 0 !important; margin: 0 !important; border: none !important;
-        overflow: hidden !important; height: 100vh !important; height: 100dvh !important;
-        background: transparent !important; 
+        padding: 0 !important; overflow: hidden !important; 
+        height: 100vh !important; height: 100dvh !important;
+        background-color: var(--bg-base) !important; 
     }
 
     /* =========================================================================
-       2. الشاشة السينمائية الأولى (محمية ومحسنة)
+       2. الشاشة السينمائية (دائماً داكنة للحفاظ على الهيبة)
        ========================================================================= */
     .cinematic-intro {
-        position: fixed; inset: 0; z-index: 1000000; background: var(--bg-base);
+        position: fixed; inset: 0; z-index: 1000000; background: #050507;
         display: none; justify-content: center; align-items: center; opacity: 0;
         will-change: opacity, transform; transition: opacity 0.4s ease-out;
     }
-    
     .glitch-container { position: relative; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; }
     .glitch-img {
         position: absolute; width: 100%; height: auto; object-fit: contain;
         opacity: 0; transform: scale(0.95) translateZ(0);
         transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s;
     }
-    
     .cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1) translateZ(0); }
     .cinematic-intro.start-glitch .main-img { animation: smoothGlitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; }
 
@@ -48,15 +46,10 @@
     }
 
     /* =========================================================================
-       3. الحاويات الأساسية (تتفاعل مع اللايت/دارك مود)
+       3. الأقسام العادية (تتأثر باللايت/دارك مود)
        ========================================================================= */
-    .g-master-container { position: relative; width: 100%; height: 100%; background: var(--bg-base); color: var(--text-main); font-family: var(--font-ar); }
+    .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; color: var(--text-main); font-family: var(--font-ar); }
     
-    .g-master-container::after {
-        content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 9999;
-        background: repeating-linear-gradient(0deg, rgba(128,128,128,0.02), rgba(128,128,128,0.02) 1px, transparent 1px, transparent 2px);
-    }
-
     .g-section-view { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: 0.1s; overflow-y: auto; scrollbar-width: none; z-index: 1; padding: 40px; padding-bottom: 80px;}
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
@@ -67,87 +60,95 @@
     .g-section-view.active .anim-elem:nth-child(3) { animation-delay: 0.15s; }
     @keyframes staggerUp { to { opacity: 1; transform: translateY(0) translateZ(0); } }
 
+    /* البطاقات المائلة */
     .sharp-card { 
-        background: var(--surface-panel); border: 1px solid rgba(128,128,128,0.1); 
+        background: var(--surface-panel); border: 1px solid rgba(150,150,150,0.1); 
         padding: 30px; margin-bottom: 20px; position: relative;
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
-        border-left: 3px solid rgba(128,128,128,0.2); transition: 0.3s ease; box-shadow: var(--shadow-soft);
+        border-left: 3px solid rgba(150,150,150,0.2); transition: 0.3s ease;
     }
-    .sharp-card:hover { border-left-color: var(--accent-red); box-shadow: var(--shadow-glow); }
+    .sharp-card:hover { border-left-color: var(--accent-red); box-shadow: var(--shadow-soft); }
 
-    .sharp-title { font-family: var(--font-ar); font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; border-bottom: 1px solid rgba(128,128,128,0.1); padding-bottom: 15px; display: inline-block; color: var(--text-main); }
-    .sharp-title i { color: var(--accent-red); margin-right: 10px; }
+    .sharp-title { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; border-bottom: 1px solid rgba(150,150,150,0.1); padding-bottom: 15px; display: inline-block;}
+    .sharp-title i { color: var(--accent-red); margin-left: 10px; }
+    
+    .sharp-badge { background: rgba(150,150,150,0.1); border: 1px solid rgba(150,150,150,0.2); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%); padding: 10px 15px; font-size: 0.9rem; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; color: var(--text-main); }
+    .sharp-badge i { font-size: 1.2rem; }
 
     /* =========================================================================
-       4. فرض الثيم الداكن السينمائي على (الاتهام ومسرح الجريمة) فقط
+       4. الاستثناءات: منصة الاتهام ومسرح الجريمة (دائماً أسود)
        ========================================================================= */
     #tab-game-accuse, #tab-game-evidence { background: #050507 !important; color: #fff !important; }
+    #tab-game-evidence .sharp-card { background: rgba(15,15,20,0.8); border-color: rgba(255,255,255,0.05); color: #fff; }
     #tab-game-evidence .sharp-title { color: #fff; border-bottom-color: rgba(255,255,255,0.1); }
-    #tab-game-evidence .sharp-card { background: rgba(15, 15, 20, 0.8); border-color: rgba(255,255,255,0.05); color: white; }
 
     /* =========================================================================
-       5. منصة الاتهام (خلفية تملأ الشاشة بالكامل + مربعات أسماء مطورة)
+       5. منصة الاتهام (Valorant Layout - أسود نقي بالكامل)
        ========================================================================= */
     
-    /* جعل الخلفية ثابتة (Fixed) لتمتد تحت الأشرطة بدون أي خطوط فاصلة */
+    /* الخلفية أصبحت سوداء نقية ولا يوجد أي صور افتراضية */
     .val-bg-container { 
-        position: fixed; inset: 0; background-size: cover; background-position: top center; 
-        opacity: 0.5; z-index: 0; filter: grayscale(10%) contrast(1.1); will-change: background-image;
+        position: absolute; inset: 0; background-color: #050507; background-size: cover; background-position: top center; 
+        opacity: 0; z-index: 0; filter: grayscale(10%) contrast(1.1); will-change: background-image, opacity;
         mask-image: radial-gradient(ellipse at top, black 50%, transparent 100%);
         -webkit-mask-image: radial-gradient(ellipse at top, black 50%, transparent 100%);
+        transition: opacity 0.5s ease;
+    }
+    /* التدرج يذيب الصورة في الأسود */
+    .val-bg-overlay { 
+        position: absolute; inset: 0; z-index: 1; pointer-events: none; 
+        background: linear-gradient(to right, #050507 0%, rgba(5,5,7,0.3) 40%, transparent 100%), 
+                    linear-gradient(to top, #050507 0%, transparent 40%); 
     }
 
-    /* القليتش السلس الخاص بتغيير الخلفية (بدون وميض أبيض) */
+    /* تأثير القليتش الناعم عند تغيير الصور الكبيره */
     .bg-glitch-anim { animation: smoothBgGlitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
     @keyframes smoothBgGlitch {
-        0% { transform: scale(1); filter: drop-shadow(0 0 0 transparent) grayscale(10%); opacity: 0.5; }
-        30% { transform: translate(-3px, 2px) scale(1.02); filter: drop-shadow(-3px 0 rgba(242,39,123,0.2)) drop-shadow(3px 0 rgba(0,210,255,0.2)) grayscale(0%); opacity: 0.7; }
-        60% { transform: translate(2px, -2px) scale(0.98); filter: drop-shadow(3px 0 rgba(242,39,123,0.2)) drop-shadow(-3px 0 rgba(0,210,255,0.2)) grayscale(0%); opacity: 0.8; }
-        100% { transform: scale(1) translate(0); filter: drop-shadow(0 0 0 transparent) grayscale(10%); opacity: 0.5; }
+        0% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); opacity: 0; }
+        30% { transform: translate(-3px, 2px) scale(1.02); filter: drop-shadow(-3px 0 rgba(242,39,123,0.3)) drop-shadow(3px 0 rgba(0,210,255,0.3)); opacity: 0.6; }
+        60% { transform: translate(2px, -2px) scale(0.98); filter: drop-shadow(3px 0 rgba(242,39,123,0.3)) drop-shadow(-3px 0 rgba(0,210,255,0.3)); opacity: 0.7; }
+        100% { transform: scale(1) translate(0); filter: drop-shadow(0 0 0 transparent); opacity: 0.5; }
     }
 
     .val-layout-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 50px; }
-    
     .val-left-menu { display: flex; flex-direction: column; gap: 20px; direction: ltr; }
-    .val-logo { width: 130px; height: auto; margin-bottom: 5px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));}
-    .val-round-info { color: rgba(255,255,255,0.6); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; width: max-content; }
-    
+    .val-logo { width: 130px; height: auto; margin-bottom: 5px; }
+    .val-round-info { color: rgba(255,255,255,0.5); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; width: max-content; }
     .val-menu-items { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
-    .val-item { color: rgba(255,255,255,0.5); font-size: 1.05rem; font-weight: 800; font-family: var(--font-ar); cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; width: max-content; }
-    .val-item:hover, .val-item.active { color: white; transform: translateX(5px); }
+    .val-item { color: rgba(255,255,255,0.6); font-size: 1.1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; width: max-content; direction: rtl;}
+    .val-item:hover, .val-item.active { color: white; transform: translateX(-5px); }
     .val-item:hover i, .val-item.active i { color: var(--accent-red); }
 
     .val-roster-container { align-self: center; width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; }
     .val-roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
 
-    /* "مربعات الأسماء": تصميم مطور بصورة أكبر بدون إطار */
+    /* "مربعات الأسماء": صورة بدون إطار وتذوب تدريجياً، وأسماء مكبرة */
     .val-char-box {
         background: rgba(15, 15, 18, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid rgba(255,255,255,0.1); 
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
-        height: 75px; display: flex; align-items: center;
+        height: 80px; display: flex; align-items: center;
         cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         direction: ltr; position: relative; overflow: hidden;
     }
     .val-char-box:hover { background: rgba(25, 25, 30, 0.9); border-top-color: var(--accent-red); transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
     
-    /* الصورة أصبحت كبيرة، يمين المربع، وبدون إطارات تماماً (مدمجة) */
     .val-char-avatar { 
         position: absolute; right: 0; top: 0; width: 55%; height: 100%; 
         object-fit: cover; object-position: center top; z-index: 1; border: none;
-        mask-image: linear-gradient(to left, black 60%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+        mask-image: linear-gradient(to left, black 50%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
     }
     
-    .val-char-info { position: relative; z-index: 2; width: 60%; padding-left: 15px; display: flex; flex-direction: column; text-align: left; }
-    .val-char-name { font-size: 1.25rem; font-family: var(--font-en); font-weight: 900; color: white; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-    .val-char-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; font-family: var(--font-ar); }
+    .val-char-info { position: relative; z-index: 2; width: 60%; padding-left: 15px; display: flex; flex-direction: column; text-align: left;}
+    .val-char-name { font-size: 1.3rem; font-family: var(--font-en); font-weight: 900; color: white; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .val-char-role { font-size: 0.8rem; color: rgba(255,255,255,0.6); font-weight: 700; margin-top: 2px; font-family: var(--font-ar); }
 
     /* =========================================================================
-       6. نافذة الشخصية (نور الشمس #FDFAF6) - نظيفة ومرتبة
+       6. "نافذة الشخصية" (نور الشمس #FCFCFC)
        ========================================================================= */
     .accuse-modal-overlay {
-        position: fixed; inset: 0; background: rgba(5, 5, 7, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        position: fixed; inset: 0; background: rgba(5, 5, 7, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         z-index: 100000; display: flex; justify-content: center; align-items: center;
         opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 20px;
         will-change: opacity;
@@ -161,50 +162,47 @@
     }
     .accuse-modal-overlay.show .target-panel { transform: scale(1) translateY(0); opacity: 1; }
 
-    /* الهيدر الأبيض المشع (نور الشمس) */
     .target-header {
         position: relative; height: 240px; 
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
         background: #050507; overflow: hidden; 
-        border: 2px solid #FDFAF6; border-bottom: none;
-        box-shadow: 0 -5px 40px rgba(253, 250, 246, 0.15);
+        border: 2px solid #FCFCFC; border-bottom: none;
+        box-shadow: 0 -5px 40px rgba(252, 252, 252, 0.15); 
     }
-    .target-header::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(253,250,246,0.03) 2px, rgba(253,250,246,0.03) 4px); pointer-events: none; }
     
-    /* الصورة في أقصى اليمين */
+    /* الصورة يمين، الاسم يسار */
     .target-img { 
-        position: absolute; right: 0; top: 0; width: 70%; height: 100%; 
+        position: absolute; right: 0; top: 0; width: 65%; height: 100%; 
         object-fit: cover; object-position: top center; opacity: 0.9; 
         mask-image: linear-gradient(to left, black 60%, transparent 100%);
         -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
     }
     
-    /* الاسم في اليسار بدون ظل ملون */
     .target-name { 
         position: absolute; bottom: 20px; left: 25px; 
-        font-size: 2.8rem; font-weight: 900; color: #FDFAF6; 
+        font-size: 2.8rem; font-weight: 900; color: #FCFCFC; 
         font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase; 
-        z-index: 2; text-shadow: 0 4px 15px rgba(0,0,0,0.9); direction: ltr; max-width: 60%; line-height: 1;
+        z-index: 2; text-shadow: none; direction: ltr; max-width: 60%; line-height: 1;
     }
     
     .target-body {
-        background: rgba(10, 10, 12, 0.95); padding: 35px 30px;
+        background: rgba(15, 15, 20, 0.95); padding: 35px 30px;
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
-        border: 2px solid #FDFAF6; border-top: none; backdrop-filter: blur(10px);
-        box-shadow: 0 5px 40px rgba(253, 250, 246, 0.15); 
+        border: 2px solid #FCFCFC; border-top: none; backdrop-filter: blur(10px);
+        box-shadow: 0 5px 40px rgba(252, 252, 252, 0.15); 
     }
     
-    .sharp-btn {
-        width: 100%; background: transparent; border: 1px solid #FDFAF6; border-left: 4px solid #FDFAF6;
-        color: #FDFAF6; font-size: 1.1rem; font-weight: 900; padding: 18px; cursor: pointer;
+    .sharp-btn-modal {
+        width: 100%; background: transparent; border: 1px solid #FCFCFC; border-left: 4px solid #FCFCFC;
+        color: #FCFCFC; font-size: 1.1rem; font-weight: 900; padding: 18px; cursor: pointer;
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
         transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; font-family: var(--font-ar);
         display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;
     }
-    .sharp-btn:hover { background: rgba(253, 250, 246, 0.1); transform: scale(1.02); box-shadow: 0 0 20px rgba(253, 250, 246, 0.3); }
+    .sharp-btn-modal:hover { background: rgba(252, 252, 252, 0.1); transform: scale(1.02); box-shadow: 0 0 20px rgba(252, 252, 252, 0.3); }
 
     /* =========================================================================
-       7. استجابة الجوال (شريط سفلي شفاف تماماً)
+       7. استجابة الجوال (Mobile)
        ========================================================================= */
     .game-mobile-bar { display: none !important; }
 
@@ -212,20 +210,19 @@
         .g-section-view { padding: 20px 15px 120px 15px; }
         .sharp-title { font-size: 1.6rem; }
         
-        /* شريط الجوال شفاف تماماً ليذوب فوق الشاشة */
-        .game-mobile-bar { display: flex !important; z-index: 99999; background: transparent !important; backdrop-filter: blur(10px); border-top: none !important; }
+        .game-mobile-bar { display: flex !important; z-index: 99999; }
         
         .val-layout-wrapper { padding: 30px 20px 100px 20px; }
-        .val-left-menu { top: 20px; left: 20px; gap: 10px; }
-        .val-logo { width: 100px; }
+        .val-left-menu { top: 20px; right: 20px; left: auto; gap: 10px; align-items: flex-end; direction: rtl;}
+        .val-logo { width: 90px; }
         .val-round-info { font-size: 0.65rem; padding-bottom: 10px; }
         .val-item { font-size: 0.85rem; gap: 8px; }
         
         .val-roster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .val-char-box { height: 65px; }
         .val-char-info { padding-left: 10px; }
-        .val-char-name { font-size: 1rem; }
-        .val-char-role { font-size: 0.6rem; }
+        .val-char-name { font-size: 1.1rem; }
+        .val-char-role { font-size: 0.65rem; }
         
         .target-name { font-size: 2rem; }
     }
@@ -243,30 +240,30 @@
 
     <div class="accuse-modal-overlay" id="accuse-action-modal" onclick="if(event.target === this) closeAccuseModal()">
         <div class="target-panel">
-            <button class="btn-close-modal" style="position:absolute; right: 15px; top: 15px; background: rgba(0,0,0,0.6); color: #FDFAF6; border: 1px solid rgba(253,250,246,0.3); width: 35px; height: 35px; border-radius: 8px; z-index: 100; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#FDFAF6'; this.style.color='#000';" onmouseout="this.style.background='rgba(0,0,0,0.6)'; this.style.color='#FDFAF6';" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
+            <button class="btn-close-modal" style="position:absolute; right: 15px; top: 15px; background: rgba(0,0,0,0.6); color: #FCFCFC; border: 1px solid rgba(252,252,252,0.3); width: 35px; height: 35px; border-radius: 8px; z-index: 100; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#FCFCFC'; this.style.color='#000';" onmouseout="this.style.background='rgba(0,0,0,0.6)'; this.style.color='#FCFCFC';" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
             <div class="target-header">
                 <img src="" id="a-modal-img" class="target-img" alt="Target">
                 <div class="target-name" id="a-modal-name">PLAYER</div>
             </div>
             <div class="target-body">
                 <div style="margin-bottom: 25px;">
-                    <div style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;">[ DETECTED WEAPONS ]</div>
+                    <div style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;">الأسلحة المكتشفة</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-weapons"></div>
                 </div>
                 <div style="margin-bottom: 30px;">
-                    <div style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;">[ CLASSIFIED EVIDENCE ]</div>
+                    <div style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;">الأدلة السرية</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-evidence"></div>
                 </div>
-                <button class="sharp-btn" onclick="submitAccusation()"><i class="ph-bold ph-gavel"></i> توجيه الاتهام</button>
+                <button class="sharp-btn-modal" onclick="submitAccusation()"><i class="ph-bold ph-gavel"></i> توجيه الاتهام</button>
             </div>
         </div>
     </div>
 
     <div id="tab-game-settings" class="g-section-view">
         <div style="max-width: 600px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> الإعدادات</div>
+            <div class="sharp-title anim-elem">الإعدادات</div>
             <div class="sharp-card anim-elem">
-                <button class="sharp-btn" style="border-left-color: rgba(128,128,128,0.3); justify-content: flex-start; color: var(--text-main); border-color:rgba(128,128,128,0.2);" onclick="window.gameEngine.requestLeaveGame()">
+                <button class="modern-danger-btn" style="width:100%; padding:18px; font-size:1.1rem; border-radius:8px;" onclick="window.gameEngine.requestLeaveGame()">
                     <i class="ph-bold ph-sign-out"></i> مغادرة الغرفة
                 </button>
             </div>
@@ -275,15 +272,20 @@
 
     <div id="tab-game-info" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-identification-card"></i> الهوية السرية</div>
-            <div id="render-game-role" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;">
-                <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
-            </div>
+            <div class="sharp-title anim-elem">الهوية السرية</div>
+            <div id="render-game-role" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;"></div>
+        </div>
+    </div>
+
+    <div id="tab-game-items" class="g-section-view">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="sharp-title anim-elem">الأدوات الخاصة</div>
+            <div id="render-game-items" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;"></div>
         </div>
     </div>
 
     <div id="tab-game-accuse" class="g-section-view active">
-        <div class="val-bg-container" id="val-dynamic-bg" style="background-image: url('assets/images/accuse-bg.jpg');"></div>
+        <div class="val-bg-container" id="val-dynamic-bg"></div>
         <div class="val-bg-overlay"></div>
         
         <div class="val-layout-wrapper">
@@ -297,16 +299,14 @@
                 </div>
             </div>
             <div class="val-roster-container anim-elem">
-                <div class="val-roster-grid" id="render-game-accuse">
-                    <div style="color:rgba(255,255,255,0.5); text-align: center; grid-column: 1/-1;"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i></div>
-                </div>
+                <div class="val-roster-grid" id="render-game-accuse"></div>
             </div>
         </div>
     </div>
 
     <div id="tab-game-evidence" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</div>
+            <div class="sharp-title anim-elem">مسرح الجريمة</div>
             <div class="sharp-card anim-elem" style="text-align:center; padding: 80px 20px; border-left-color: #00d2ff;">
                 <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 20px auto; border-radius: 50%; border: 2px solid rgba(0, 210, 255, 0.3);">
                     <div style="position: absolute; inset: 0; border-radius: 50%; border: 2px solid #00d2ff; border-top-color: transparent; animation: spinFast 1.5s linear infinite;"></div>
@@ -318,43 +318,17 @@
         </div>
     </div>
 
-    <div id="tab-game-items" class="g-section-view">
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-briefcase"></i> أسلحتي وآثاري</div>
-            <div id="render-game-items" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;">
-                <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
-            </div>
-        </div>
-    </div>
-
-    <nav class="bottom-bar game-mobile-bar">
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-settings', 0)"><i class="ph ph-gear"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-info', 1)"><i class="ph ph-identification-card"></i></button>
-        <button class="bottom-tab active" onclick="window.switchGameTab('tab-game-accuse', 2)"><i class="ph-fill ph-gavel"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-evidence', 3)"><i class="ph ph-microscope"></i></button>
-        <button class="bottom-tab" onclick="window.switchGameTab('tab-game-items', 4)"><i class="ph ph-briefcase"></i></button>
-    </nav>
-
 </div>
 
 <script>
-    // ========================================================
-    // 1. الأنيميشن السينمائي
-    // ========================================================
+    // 1. الأنيميشن السينمائي (مسرّع وآمن)
     window.playCinematicIntro = function() {
         const overlay = document.getElementById('cinematic-overlay');
         if (!overlay) return;
-
         const sessionKey = 'deception_intro_played_' + (window.currentRoomId || 'global');
-
-        if (sessionStorage.getItem(sessionKey)) {
-            overlay.style.display = 'none';
-            return;
-        }
-
+        if (sessionStorage.getItem(sessionKey)) { overlay.style.display = 'none'; return; }
         sessionStorage.setItem(sessionKey, 'true');
         overlay.style.display = 'flex';
-        
         requestAnimationFrame(() => {
             overlay.style.opacity = '1';
             setTimeout(() => { overlay.classList.add('show-logo'); }, 50);
@@ -366,9 +340,7 @@
         });
     };
 
-    // ========================================================
-    // 2. نظام التنقل المحكم
-    // ========================================================
+    // 2. التنظيف والتنقل
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
         document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
@@ -377,7 +349,6 @@
     window.initGameUI = function() {
         window.cleanupGameUI();
         document.body.classList.add('in-game-mode');
-
         const desktopMenu = document.querySelector('.sidebar .nav-menu');
         if(desktopMenu) {
             desktopMenu.insertAdjacentHTML('beforeend', `
@@ -397,47 +368,38 @@
         if(targetSec) {
             targetSec.classList.add('active');
             const animElems = targetSec.querySelectorAll('.anim-elem');
-            animElems.forEach(el => {
-                el.style.animation = 'none'; el.offsetHeight; el.style.animation = null;
-            });
+            animElems.forEach(el => { el.style.animation = 'none'; el.offsetHeight; el.style.animation = null; });
         }
-
         const icons = ['ph-gear', 'ph-identification-card', 'ph-gavel', 'ph-microscope', 'ph-briefcase'];
-
-        document.querySelectorAll('.sidebar .game-injected-btn').forEach((b, i) => {
-            b.classList.toggle('active', i === index);
+        document.querySelectorAll('.sidebar .game-injected-btn, .game-mobile-bar .bottom-tab').forEach((b, i) => {
+            const btnIdx = i % 5;
+            b.classList.toggle('active', btnIdx === index);
             const icon = b.querySelector('i');
-            if(icon) icon.className = (i === index) ? `ph-fill ${icons[i]}` : `ph ${icons[i]}`;
-        });
-
-        document.querySelectorAll('.game-mobile-bar .bottom-tab').forEach((b, i) => {
-            b.classList.toggle('active', i === index);
-            const icon = b.querySelector('i');
-            if(icon) icon.className = (i === index) ? `ph-fill ${icons[i]}` : `ph ${icons[i]}`;
+            if(icon) icon.className = (btnIdx === index) ? `ph-fill ${icons[btnIdx]}` : `ph ${icons[btnIdx]}`;
         });
     };
 
-    // ========================================================
-    // 3. الدالة السحرية لتغيير الخلفية (تجاهل التغيير في الجوال لمنع المشاكل)
-    // ========================================================
+    // 3. قليتش الخلفية (يعمل في الكمبيوتر فقط لحل مشكلة الجوال)
     window.triggerBgGlitch = function(imgSrc) {
-        // حماية للجوال: لا تغير الخلفية عند اللمس لمنع وميض الخروج
-        if(window.innerWidth <= 900) return; 
-
+        if(window.innerWidth <= 900) return; // تعطيل تغيير الخلفية في الجوال لمنع وميض إغلاق النافذة
         const bg = document.getElementById('val-dynamic-bg');
         if(!bg) return;
-        
         bg.classList.remove('bg-glitch-anim');
         void bg.offsetWidth; 
-        bg.style.backgroundImage = `url(${imgSrc})`;
-        bg.classList.add('bg-glitch-anim');
+        
+        if(imgSrc) {
+            bg.style.backgroundImage = `url(${imgSrc})`;
+            bg.style.opacity = '0.5';
+            bg.classList.add('bg-glitch-anim');
+        } else {
+            // مسح الخلفية للعودة للسواد النقي
+            bg.style.backgroundImage = 'none';
+            bg.style.opacity = '0';
+        }
     };
 
-    // ========================================================
-    // 4. "نافذة الشخصية"
-    // ========================================================
+    // 4. نافذة الشخصية
     window.gameAccuseDataCache = {}; 
-
     window.openAccuseModal = function(playerName, imgSrc) {
         const modal = document.getElementById('accuse-action-modal');
         const pItems = window.currentRoomData.items ? window.currentRoomData.items[playerName] : {weapons:[], evidence:[]};
@@ -445,29 +407,26 @@
         document.getElementById('a-modal-name').innerText = playerName;
         document.getElementById('a-modal-img').src = imgSrc;
         
-        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-crosshair" style="color:rgba(255,255,255,0.3);"></i>${w}</span>`).join('') : '';
-        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-fingerprint" style="color:rgba(255,255,255,0.3);"></i>${e}</span>`).join('') : '';
+        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge" style="border:none; color:white;"><i class="ph-fill ph-crosshair" style="color:var(--text-dim);"></i>${w}</span>`).join('') : '';
+        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge" style="border:none; color:white;"><i class="ph-fill ph-fingerprint" style="color:var(--text-dim);"></i>${e}</span>`).join('') : '';
         
-        document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span style="color:rgba(255,255,255,0.3);">NO DATA</span>';
-        document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span style="color:rgba(255,255,255,0.3);">NO DATA</span>';
+        document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span style="color:rgba(255,255,255,0.4);">لا يوجد</span>';
+        document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span style="color:rgba(255,255,255,0.4);">لا يوجد</span>';
         
         window.gameAccuseDataCache.currentTarget = playerName;
         modal.classList.add('show');
     };
-
     window.closeAccuseModal = function() { document.getElementById('accuse-action-modal').classList.remove('show'); };
     window.submitAccusation = function() { alert("TARGET LOCKED: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
 
-    // ========================================================
-    // 5. محرك الداتا و "مربعات الأسماء"
-    // ========================================================
+    // 5. محرك البيانات (الرسم)
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
-            
             const myName = window.currentUserData ? window.currentUserData.username_lower : 'unknown';
             const allPlayers = window.currentRoomData.players || [];
             
+            // 🎯 رسم منصة الاتهام
             const accuseGrid = document.getElementById('render-game-accuse');
             let accuseHtml = '';
             
@@ -492,7 +451,7 @@
                 accuseHtml += `
                     <div class="val-char-box" 
                          onmouseenter="window.triggerBgGlitch('${charImgSrc}')"
-                         onmouseleave="window.triggerBgGlitch('assets/images/accuse-bg.jpg')"
+                         onmouseleave="window.triggerBgGlitch(null)"
                          onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
                         <img src="${charImgSrc}" class="val-char-avatar" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="val-char-info">
@@ -504,19 +463,19 @@
             });
             accuseGrid.innerHTML = accuseHtml;
 
-            // رسم باقي البيانات
+            // باقي الأقسام
             let myRole = 'investigator';
             for (const [k, v] of Object.entries(window.currentRoomData.roles)) { if (k.toLowerCase() === myName) { myRole = v; break; } }
             
             const roleDiv = document.getElementById('render-game-role');
             if(myRole === 'murderer') {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(242, 39, 123, 0.3));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:var(--text-main); text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">MURDERER</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت القاتل. استخدم أدواتك بذكاء لتضليل البقية.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(242, 39, 123, 0.5));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:white; text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">MURDERER</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت القاتل. استخدم أدواتك بذكاء لتضليل البقية.</p>`;
                 roleDiv.style.borderLeftColor = 'var(--accent-red)';
             } else if(myRole === 'forensic') {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:6rem; color:#00d2ff; margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.3));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:var(--text-main); text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">FORENSIC</h2><p style="color:var(--text-dim); font-size:1.1rem;">الطبيب الشرعي. ساعد المحققين بالتلميحات الصامتة.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:6rem; color:#00d2ff; margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:white; text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">FORENSIC</h2><p style="color:var(--text-dim); font-size:1.1rem;">الطبيب الشرعي. ساعد المحققين بالتلميحات الصامتة.</p>`;
                 roleDiv.style.borderLeftColor = '#00d2ff';
             } else {
-                roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(46, 204, 113, 0.3));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:var(--text-main); text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">INVESTIGATOR</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت المحقق. اكتشف القاتل قبل فوات الأوان.</p>`;
+                roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(46, 204, 113, 0.5));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:white; text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">INVESTIGATOR</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت المحقق. اكتشف القاتل قبل فوات الأوان.</p>`;
                 roleDiv.style.borderLeftColor = 'var(--accent-green)';
             }
 
@@ -529,10 +488,10 @@
                 let wHtml = myItems.weapons.map(w => `<span class="sharp-badge"><i class="ph-fill ph-crosshair"></i>${w}</span>`).join('');
                 let eHtml = myItems.evidence.map(e => `<span class="sharp-badge"><i class="ph-fill ph-fingerprint" style="color:#00d2ff;"></i>${e}</span>`).join('');
                 itemsDiv.innerHTML = `
-                    <div style="text-align:left; direction: ltr;">
-                        <h3 style="color:rgba(128,128,128,0.6); font-family:var(--font-en); letter-spacing:2px; margin-bottom:15px; font-size:0.8rem;">[ ASSIGNED WEAPONS ]</h3>
+                    <div style="text-align:right;">
+                        <h3 style="color:rgba(255,255,255,0.4); letter-spacing:1px; margin-bottom:15px; font-size:0.9rem;">الأسلحة المخصصة</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:35px;">${wHtml}</div>
-                        <h3 style="color:rgba(128,128,128,0.6); font-family:var(--font-en); letter-spacing:2px; margin-bottom:15px; font-size:0.8rem;">[ COLLECTED EVIDENCE ]</h3>
+                        <h3 style="color:rgba(255,255,255,0.4); letter-spacing:1px; margin-bottom:15px; font-size:0.9rem;">الأدلة المجمعة</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:12px;">${eHtml}</div>
                     </div>
                 `;
