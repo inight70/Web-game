@@ -1,56 +1,37 @@
 <style>
     /* =========================================================================
-       1. الإخفاء الجذري، تدمير الـ Grid القديم، وفرض اللون الأسود (Void Black)
+       1. الإخفاء الذكي وفرض اللون الأسود (القضاء على أي ألوان قديمة)
        ========================================================================= */
-    body.in-game-mode, 
-    body.in-game-mode .app-shell, 
-    body.in-game-mode .main-viewport, 
+    /* القاعدة النووية: تحويل كل الحاويات الأساسية للأسود النقي أثناء اللعب */
+    body.in-game-mode,
+    body.in-game-mode .app-shell,
+    body.in-game-mode .main-viewport,
     body.in-game-mode .dynamic-content { 
-        background-color: #09090C !important; 
+        background: #000 !important; 
+        background-color: #000 !important; 
         background-image: none !important;
-        box-shadow: none !important;
-        border: none !important;
+        margin: 0 !important; padding: 0 !important; 
+        overflow: hidden !important; 
+        height: 100vh !important; height: 100dvh !important;
     }
     
     body.in-game-mode .right-sidebar, 
     body.in-game-mode .top-header { display: none !important; }
     
-    /* تدمير الـ Grid الخاص بالموقع وتحويله لـ Flex لكي يملأ الشاشة بلا فراغات ملونة */
-    body.in-game-mode .app-shell {
-        display: flex !important; 
-        width: 100vw !important;
-        height: 100vh !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    body.in-game-mode .main-viewport {
-        flex: 1 !important; /* يتمدد لابتلاع أي مساحة فارغة خلف الأشرطة المخفية */
-        max-width: 100% !important;
-        border-radius: 0 !important; /* إلغاء الزوايا الدائرية القديمة */
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    body.in-game-mode .dynamic-content { 
-        padding: 0 !important; overflow: hidden !important; 
-        height: 100vh !important; height: 100dvh !important;
-    }
-
-    /* جعل شريط الكمبيوتر شفافاً تماماً للاندماج */
+    /* فرض اللون الأسود على شريط الكمبيوتر وإزالة حدوده */
     @media (min-width: 901px) { 
-        body.in-game-mode .sidebar { background-color: transparent !important; border-right: none !important; }
+        body.in-game-mode .sidebar { background: #000 !important; border-right: none !important; box-shadow: none !important; }
         body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; } 
     }
     
+    /* إخفاء شريط الجوال القديم */
     body.in-game-mode .app-shell > .bottom-bar { display: none !important; }
 
     /* =========================================================================
-       2. الشاشة السينمائية الأولى (قليتش خفيف وناعم)
+       2. الشاشة السينمائية الفاخرة (نظيفة، داكنة، محمية من التعليق)
        ========================================================================= */
     .cinematic-intro {
-        position: fixed; inset: 0; z-index: 1000000; background: #09090C;
+        position: fixed; inset: 0; z-index: 1000000; background: #000;
         display: none; justify-content: center; align-items: center; opacity: 0;
         will-change: opacity, transform; transition: opacity 0.4s ease-out;
     }
@@ -59,6 +40,7 @@
     .glitch-img {
         position: absolute; width: 100%; height: auto; object-fit: contain;
         opacity: 0; transform: scale(0.95) translateZ(0);
+        will-change: transform, opacity, filter;
         transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s;
     }
     
@@ -75,11 +57,11 @@
     }
 
     /* =========================================================================
-       3. الحاويات وتصميم الأقسام (Cyberpunk DNA)
+       3. الحاويات الأساسية للأقسام
        ========================================================================= */
-    .g-master-container { position: relative; width: 100%; height: 100%; background: transparent; color: white; font-family: var(--font-ar); }
+    .g-master-container { position: relative; width: 100%; height: 100%; background: #000; color: white; font-family: var(--font-ar); }
     
-    /* شبكة وهمية خفيفة جداً تدمج التصميم */
+    /* شبكة وهمية (Scanlines) خفيفة جداً تدمج التصميم */
     .g-master-container::after {
         content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 9999;
         background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015), rgba(255,255,255,0.015) 1px, transparent 1px, transparent 2px);
@@ -89,7 +71,7 @@
     .g-section-view::-webkit-scrollbar { display: none; }
     .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; }
 
-    /* أنيميشن دخول متدرج مسرع بالـ GPU */
+    /* أنيميشن دخول متدرج مدعوم بالـ GPU */
     .g-section-view.active .anim-elem { animation: staggerUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px) translateZ(0); will-change: transform, opacity; }
     .g-section-view.active .anim-elem:nth-child(1) { animation-delay: 0.05s; }
     .g-section-view.active .anim-elem:nth-child(2) { animation-delay: 0.1s; }
@@ -110,17 +92,17 @@
     /* =========================================================================
        4. منصة الاتهام (Valorant Layout) مع القليتش المتفاعل للخلفية
        ========================================================================= */
-    #tab-game-accuse { padding: 0 !important; background: transparent; }
+    #tab-game-accuse { padding: 0 !important; background: #000; }
     
-    /* قناع متقدم (CSS Masking) يذيب الصورة في لون #09090C بدون حواف! */
+    /* قناع متقدم (CSS Masking) يذيب الصورة في الأسود النقي */
     .val-bg-container { 
         position: absolute; inset: 0; background-size: cover; background-position: top center; 
-        opacity: 0.6; z-index: 0; filter: grayscale(10%); will-change: background-image;
+        opacity: 0.6; z-index: 0; filter: grayscale(10%); will-change: background-image, filter, transform;
         mask-image: radial-gradient(ellipse at top, black 50%, transparent 100%);
         -webkit-mask-image: radial-gradient(ellipse at top, black 50%, transparent 100%);
     }
 
-    /* تأثير القليتش الناعم عند تغيير الصور الكبيره */
+    /* تأثير القليتش السلس للخلفية */
     .bg-glitch-anim { animation: smoothBgGlitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
     @keyframes smoothBgGlitch {
         0% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); opacity: 0.6; }
@@ -132,7 +114,7 @@
     .val-layout-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 50px; }
     .val-left-menu { display: flex; flex-direction: column; gap: 20px; direction: ltr; }
     .val-logo { width: 130px; height: auto; margin-bottom: 5px; }
-    .val-round-info { color: var(--text-dim); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; width: max-content; }
+    .val-round-info { color: rgba(255,255,255,0.5); letter-spacing: 4px; font-family: var(--font-en); font-size: 0.8rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; width: max-content; }
     .val-menu-items { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
     .val-item { color: rgba(255,255,255,0.6); font-size: 1.05rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; width: max-content; }
     .val-item:hover, .val-item.active { color: white; transform: translateX(5px); }
@@ -141,17 +123,17 @@
     .val-roster-container { align-self: center; width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; }
     .val-roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
 
-    /* "مربعات الأسماء" المطورة */
+    /* مربعات الأسماء المحدثة (الصورة تذوب في الاسم بدون إطار) */
     .val-char-box {
         background: rgba(15, 15, 18, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid rgba(255,255,255,0.1); 
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
-        height: 75px; display: flex; align-items: center;
-        cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        direction: ltr; position: relative; overflow: hidden;
+        height: 75px; display: flex; align-items: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        direction: ltr; position: relative; overflow: hidden; will-change: transform;
     }
     .val-char-box:hover { background: rgba(25, 25, 30, 0.9); border-top-color: var(--accent-red); transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
     
+    /* الصورة في المربع: تملأ اليمين بالكامل وتتلاشى بروعة لليسار */
     .val-char-avatar { 
         position: absolute; right: 0; top: 0; width: 50%; height: 100%; 
         object-fit: cover; object-position: center top; z-index: 1;
@@ -159,15 +141,16 @@
         -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
     }
     
-    .val-char-info { position: relative; z-index: 2; width: 55%; padding-left: 15px; display: flex; flex-direction: column; text-align: left;}
-    .val-char-name { font-size: 1.25rem; font-family: var(--font-en); font-weight: 900; color: white; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-    .val-char-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; font-family: var(--font-ar); }
+    /* نصوص المربع (في اليسار) تم تكبيرها */
+    .val-char-info { position: relative; z-index: 2; width: 60%; padding-left: 15px; display: flex; flex-direction: column; text-align: left;}
+    .val-char-name { font-size: 1.35rem; font-family: var(--font-en); font-weight: 900; color: white; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 4px #000;}
+    .val-char-role { font-size: 0.8rem; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; font-family: var(--font-ar); text-shadow: 0 1px 2px #000;}
 
     /* =========================================================================
-       5. "نافذة الشخصية" (Cyberpunk Glitch Modal + Sunlight Glow)
+       5. نافذة الشخصية (نور الشمس الأبيض + تأثير القليتش السريع)
        ========================================================================= */
     .accuse-modal-overlay {
-        position: fixed; inset: 0; background: rgba(9, 9, 12, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         z-index: 100000; display: flex; justify-content: center; align-items: center;
         opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 20px;
         will-change: opacity;
@@ -176,36 +159,33 @@
     
     .target-panel {
         width: 100%; max-width: 500px; background: transparent;
-        opacity: 0; 
-        /* حالة البداية قبل أنيميشن القليتش */
-        transform: scale(0.9) translate(10px, 10px);
-        will-change: transform, opacity, filter, clip-path;
+        opacity: 0; will-change: transform, opacity, clip-path;
     }
     
-    /* الأنيميشن العنيف والفاخر جداً للنافذة */
-    .accuse-modal-overlay.show .target-panel { 
-        animation: cyberModalGlitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+    /* تأثير القليتش السلس المدعوم بالـ GPU عند فتح النافذة */
+    .accuse-modal-overlay.show .target-panel {
+        animation: modalGlitchOpen 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
-    
-    @keyframes cyberModalGlitch {
-        0% { transform: scale(0.9) translate(15px, 15px); opacity: 0; clip-path: inset(10% 0 60% 0); filter: drop-shadow(-5px 0 var(--accent-red)); }
-        20% { transform: scale(1.05) translate(-10px, -10px); opacity: 0.8; clip-path: inset(60% 0 10% 0); filter: drop-shadow(5px 0 #00d2ff); }
-        40% { transform: scale(0.95) translate(5px, 10px); opacity: 1; clip-path: inset(20% 0 50% 0); filter: drop-shadow(-3px 0 var(--accent-red)); }
-        60% { transform: scale(1.02) translate(-5px, -5px); clip-path: inset(80% 0 5% 0); filter: drop-shadow(3px 0 #00d2ff); }
-        80% { transform: scale(0.98) translate(2px, 2px); clip-path: inset(0 0 0 0); filter: none; }
-        100% { transform: scale(1) translate(0); opacity: 1; clip-path: inset(0 0 0 0); filter: none; }
+    @keyframes modalGlitchOpen {
+        0% { transform: scale(0.9) translateY(20px); opacity: 0; clip-path: inset(20% 0 80% 0); filter: hue-rotate(90deg); }
+        20% { transform: scale(1.05) translate(-5px, 5px); opacity: 0.8; clip-path: inset(80% 0 10% 0); filter: hue-rotate(-90deg); }
+        40% { transform: scale(0.95) translate(5px, -5px); opacity: 1; clip-path: inset(10% 0 50% 0); filter: hue-rotate(0deg); }
+        60% { transform: scale(1.02) translate(-2px, 2px); clip-path: inset(50% 0 20% 0); }
+        80% { transform: scale(0.98) translate(2px, -2px); clip-path: inset(5% 0 70% 0); }
+        100% { transform: scale(1) translateY(0); opacity: 1; clip-path: inset(0 0 0 0); filter: none; }
     }
 
-    /* الهيدر الأبيض المشع */
+    /* الهيدر الأبيض المشع (#FDFAF6) */
     .target-header {
         position: relative; height: 240px; 
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
-        background: #09090C; overflow: hidden; 
+        background: #000; overflow: hidden; 
         border: 2px solid #FDFAF6; border-bottom: none;
         box-shadow: 0 -5px 40px rgba(253, 250, 246, 0.15); 
     }
     .target-header::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(253,250,246,0.03) 2px, rgba(253,250,246,0.03) 4px); pointer-events: none; }
     
+    /* الصورة يمين وتتلاشى يساراً */
     .target-img { 
         position: absolute; right: 0; top: 0; width: 65%; height: 100%; 
         object-fit: cover; object-position: top center; opacity: 0.9; 
@@ -213,6 +193,7 @@
         -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
     }
     
+    /* الاسم يسار بدون ظلال وردية */
     .target-name { 
         position: absolute; bottom: 20px; left: 25px; 
         font-size: 2.8rem; font-weight: 900; color: #FDFAF6; 
@@ -237,7 +218,7 @@
     .sharp-btn:hover { background: rgba(253, 250, 246, 0.1); transform: scale(1.02); box-shadow: 0 0 20px rgba(253, 250, 246, 0.3); }
 
     /* =========================================================================
-       6. استجابة الجوال (Mobile) مع شريط شفاف تماماً
+       6. استجابة الجوال (Mobile) مع شريط أسود شفاف
        ========================================================================= */
     .game-mobile-bar { display: none !important; }
 
@@ -245,10 +226,11 @@
         .g-section-view { padding: 20px 15px 120px 15px; }
         .sharp-title { font-size: 1.6rem; }
         
-        .game-mobile-bar { display: flex !important; z-index: 99999; background: transparent !important; backdrop-filter: blur(15px); border-top: none !important; }
+        /* شريط الجوال باللون الأسود النقي لتدمج مع اللعبة */
+        .game-mobile-bar { display: flex !important; z-index: 99999; background: #000 !important; border-top: 1px solid rgba(255,255,255,0.05) !important; }
         
         .val-layout-wrapper { padding: 30px 20px 100px 20px; }
-        .val-left-menu { gap: 10px; }
+        .val-left-menu { top: 20px; left: 20px; gap: 10px; }
         .val-logo { width: 100px; }
         .val-round-info { font-size: 0.65rem; padding-bottom: 10px; }
         .val-item { font-size: 0.85rem; gap: 8px; }
@@ -256,8 +238,8 @@
         .val-roster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .val-char-box { height: 65px; }
         .val-char-info { padding-left: 10px; }
-        .val-char-name { font-size: 1rem; }
-        .val-char-role { font-size: 0.6rem; }
+        .val-char-name { font-size: 1.1rem; }
+        .val-char-role { font-size: 0.65rem; }
         
         .target-name { font-size: 2rem; }
     }
@@ -316,7 +298,6 @@
 
     <div id="tab-game-accuse" class="g-section-view active">
         <div class="val-bg-container" id="val-dynamic-bg" style="background-image: url('assets/images/accuse-bg.jpg');"></div>
-        <div class="val-bg-overlay"></div>
         
         <div class="val-layout-wrapper">
             <div class="val-left-menu anim-elem">
@@ -371,7 +352,7 @@
 
 <script>
     // ========================================================
-    // 1. الأنيميشن السينمائي (محمي من التعليق)
+    // 1. الأنيميشن السينمائي (يحدث مرة واحدة بدون تعليق)
     // ========================================================
     window.playCinematicIntro = function() {
         const overlay = document.getElementById('cinematic-overlay');
@@ -461,7 +442,7 @@
     };
 
     // ========================================================
-    // 4. "نافذة الشخصية"
+    // 4. نافذة الشخصية المدعومة بالـ GPU
     // ========================================================
     window.gameAccuseDataCache = {}; 
 
@@ -472,8 +453,8 @@
         document.getElementById('a-modal-name').innerText = playerName;
         document.getElementById('a-modal-img').src = imgSrc;
         
-        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-crosshair" style="color:rgba(255,255,255,0.4);"></i>${w}</span>`).join('') : '';
-        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-fingerprint" style="color:rgba(255,255,255,0.4);"></i>${e}</span>`).join('') : '';
+        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge"><i class="ph-fill ph-crosshair" style="color:rgba(255,255,255,0.4);"></i>${w}</span>`).join('') : '';
+        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge"><i class="ph-fill ph-fingerprint" style="color:rgba(255,255,255,0.4);"></i>${e}</span>`).join('') : '';
         
         document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span style="color:rgba(255,255,255,0.4);">NO DATA</span>';
         document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span style="color:rgba(255,255,255,0.4);">NO DATA</span>';
