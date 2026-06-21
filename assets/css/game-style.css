@@ -1,5 +1,5 @@
 /* =========================================================================
-   1. الإخفاء والتهيئة الأساسية (تدمير الهوامش ليكون أسود من الحافة للحافة)
+   1. الإخفاء والتهيئة الأساسية لصفحة اللعبة
    ========================================================================= */
 body.in-game-mode { background-color: var(--bg-base) !important; }
 body.in-game-mode .right-sidebar, body.in-game-mode .top-header { display: none !important; }
@@ -22,12 +22,12 @@ body.in-game-mode .dynamic-content {
 }
 
 /* =========================================================================
-   2. الشاشة السينمائية الأولى (محسنة الأداء)
+   2. الشاشة السينمائية (قليتش خفيف وناعم)
    ========================================================================= */
 .cinematic-intro {
     position: fixed; inset: 0; z-index: 1000000; background: var(--bg-base);
     display: none; justify-content: center; align-items: center; opacity: 0;
-    will-change: opacity; transition: opacity 0.3s ease-out;
+    will-change: opacity, transform; transition: opacity 0.4s ease-out;
 }
 
 .glitch-container { position: relative; width: 180px; height: 180px; display: flex; justify-content: center; align-items: center; }
@@ -38,18 +38,18 @@ body.in-game-mode .dynamic-content {
 
 .cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1); }
 
-.cinematic-intro.start-glitch .main-img { animation: liteGlitchBase 0.2s infinite; }
-.cinematic-intro.start-glitch .layer-red { opacity: 0.8; transform: translateX(-4px); animation: liteGlitchSlice 0.15s linear infinite reverse; mix-blend-mode: screen; }
-.cinematic-intro.start-glitch .layer-blue { opacity: 0.8; transform: translateX(4px); animation: liteGlitchSlice 0.2s linear infinite; mix-blend-mode: screen; }
+.cinematic-intro.start-glitch .main-img { animation: introGlitchBase 0.2s infinite; }
+.cinematic-intro.start-glitch .layer-red { opacity: 0.8; transform: translateX(-4px); animation: introGlitchSlice 0.15s linear infinite reverse; mix-blend-mode: screen; }
+.cinematic-intro.start-glitch .layer-blue { opacity: 0.8; transform: translateX(4px); animation: introGlitchSlice 0.2s linear infinite; mix-blend-mode: screen; }
 
-@keyframes liteGlitchSlice {
+@keyframes introGlitchSlice {
     0% { clip-path: inset(10% 0 80% 0); }
     25% { clip-path: inset(60% 0 15% 0); }
     50% { clip-path: inset(25% 0 50% 0); }
     75% { clip-path: inset(80% 0 5% 0); }
     100% { clip-path: inset(40% 0 30% 0); }
 }
-@keyframes liteGlitchBase {
+@keyframes introGlitchBase {
     0% { transform: translate(2px, 0) skewX(1deg); }
     50% { transform: translate(-2px, 0) skewX(-1deg); }
     100% { transform: translate(0, 0) skewX(0deg); }
@@ -78,15 +78,14 @@ body.in-game-mode .dynamic-content {
 .sharp-title i { color: var(--accent-red); margin-right: 10px; }
 
 /* =========================================================================
-   4. منصة الاتهام (خلفية صافية وتأثير اختفاء قاطع بدون تمطط)
+   4. منصة الاتهام (خلفية صافية وتغيير ناعم ومريح للعين بدون تمطط)
    ========================================================================= */
 #tab-game-accuse, #tab-game-evidence { padding: 0 !important; background: transparent; }
 
+/* تمت إزالة الـ transition لمنع التمطط، التغيير يتم بالقليتش فقط */
 .val-bg-container { 
     position: absolute; inset: 0; background-size: cover; background-position: top center; 
-    opacity: 0.65; z-index: 0; 
-    /* تمت إزالة الـ transition لمنع التمطط المزعج! */
-    will-change: background-image, clip-path;
+    opacity: 0.5; z-index: 0; will-change: background-image, filter, clip-path;
 }
 .val-bg-overlay { 
     position: absolute; inset: 0; z-index: 1; pointer-events: none; 
@@ -94,14 +93,14 @@ body.in-game-mode .dynamic-content {
                 linear-gradient(to top, var(--bg-base) 0%, transparent 30%); 
 }
 
-/* قليتش نقي يعتمد على Clip-path ولا يجهد البطارية */
-.bg-pure-glitch { animation: bgDigitalGlitch 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-@keyframes bgDigitalGlitch {
-    0% { clip-path: inset(0 0 0 0); transform: translateX(0); }
-    25% { clip-path: inset(20% 0 60% 0); transform: translateX(-4px); }
-    50% { clip-path: inset(60% 0 10% 0); transform: translateX(4px); }
+/* القليتش الصارم للخلفية (يمنع التمطط) */
+.bg-glitch-anim { animation: bgHardGlitch 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+@keyframes bgHardGlitch {
+    0% { clip-path: inset(0 0 0 0); filter: drop-shadow(0 0 0 transparent); }
+    25% { clip-path: inset(20% 0 60% 0); transform: translateX(-5px); filter: drop-shadow(-4px 0 rgba(242,39,123,0.8)); }
+    50% { clip-path: inset(60% 0 10% 0); transform: translateX(5px); filter: drop-shadow(4px 0 rgba(0,210,255,0.8)); }
     75% { clip-path: inset(10% 0 40% 0); transform: translateX(-2px); }
-    100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+    100% { clip-path: inset(0 0 0 0); transform: translate(0); filter: drop-shadow(0 0 0 transparent); }
 }
 
 .val-layout-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 50px; }
@@ -137,10 +136,10 @@ body.in-game-mode .dynamic-content {
 .val-char-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; font-family: 'Guesswhat', var(--font-ar); }
 
 /* =========================================================================
-   5. النوافذ المنبثقة (Modal) - أنيقة وخفيفة للعين
+   5. نافذة الشخصية ونوافذ التأكيد (أنيقة، خفيفة، ولا تستهلك البطارية)
    ========================================================================= */
 .accuse-modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
     z-index: 100000; display: flex; justify-content: center; align-items: center;
     opacity: 0; visibility: hidden; transition: opacity 0.2s ease;
     will-change: opacity;
@@ -152,44 +151,46 @@ body.in-game-mode .dynamic-content {
     will-change: transform, opacity, clip-path;
 }
 
-/* دخول النافذة بقلتش أنيق وخفيف غير مرهق */
-.accuse-modal-overlay.show .target-panel { animation: elegantModalGlitch 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+/* تأثير القليتش الأنيق الخفيف (Elegant Glitch) */
+.accuse-modal-overlay.show .target-panel {
+    animation: elegantModalGlitch 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
 @keyframes elegantModalGlitch {
-    0% { opacity: 0; transform: scale(0.95); clip-path: inset(10% 0 40% 0); }
-    30% { opacity: 0.5; transform: scale(1.02) translateX(4px); clip-path: inset(50% 0 10% 0); }
-    60% { opacity: 0.8; transform: scale(0.98) translateX(-2px); clip-path: inset(5% 0 60% 0); }
-    100% { opacity: 1; transform: scale(1) translateX(0); clip-path: inset(0 0 0 0); }
+    0% { opacity: 0; transform: scale(0.98) translateY(10px); clip-path: inset(20% 0 80% 0); }
+    30% { opacity: 1; transform: scale(1.01) translateX(3px); clip-path: inset(50% 0 10% 0); }
+    60% { transform: scale(0.99) translateX(-3px); clip-path: inset(10% 0 60% 0); }
+    100% { opacity: 1; transform: scale(1) translateY(0); clip-path: inset(0 0 0 0); }
 }
 
 .target-header {
     position: relative; height: 240px; 
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
-    background: var(--surface-panel); overflow: hidden; 
+    background: #000; overflow: hidden; 
     border: 2px solid #FDFAF6; border-bottom: none;
+    box-shadow: 0 -5px 40px rgba(253, 250, 246, 0.15); 
 }
+.target-header::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(253,250,246,0.03) 2px, rgba(253,250,246,0.03) 4px); pointer-events: none; }
+
 .target-img { 
     position: absolute; right: 0; top: 0; width: 65%; height: 100%; 
     object-fit: cover; object-position: top center; opacity: 0.9; 
     mask-image: linear-gradient(to left, black 60%, transparent 100%);
     -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
 }
+
 .target-name { 
     position: absolute; bottom: 20px; left: 25px; 
     font-size: 2.8rem; font-weight: 900; color: #FDFAF6; 
     font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase; 
-    z-index: 2; direction: ltr; max-width: 60%; line-height: 1;
+    z-index: 2; text-shadow: 0 4px 10px rgba(0,0,0,0.8); direction: ltr; max-width: 60%; line-height: 1;
 }
-
-/* ستايل نافذة المغادرة لتكون حمراء مرعبة */
-.target-header.leave-header { border-color: var(--accent-red); background: #110505; height: 150px; display:flex; align-items:center; padding-left:25px;}
-.target-header.leave-header .target-name { position: static; color: var(--accent-red); font-size: 2rem; }
-.target-body.leave-body { border-color: var(--accent-red); }
 
 .target-body {
     background: var(--surface-panel); padding: 35px 30px; color: #fff;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
     border: 2px solid #FDFAF6; border-top: none;
+    box-shadow: 0 5px 40px rgba(253, 250, 246, 0.15);
 }
 
 .sharp-btn {
@@ -200,33 +201,36 @@ body.in-game-mode .dynamic-content {
     display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;
 }
 .sharp-btn:hover { background: rgba(253, 250, 246, 0.1); transform: scale(1.02); }
-.sharp-btn.danger-mode { border-color: var(--accent-red); color: var(--accent-red); }
-.sharp-btn.danger-mode:hover { background: var(--accent-red); color: white; }
+
+/* نافذة التأكيد المصغرة للخروج من الغرفة */
+.confirm-panel {
+    background: var(--surface-panel); border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid var(--accent-red);
+    padding: 30px; border-radius: 12px; max-width: 400px; width: 100%; text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+.confirm-title { font-size: 1.5rem; font-weight: bold; color: white; margin-bottom: 15px; }
+.confirm-desc { color: var(--text-dim); margin-bottom: 25px; font-size: 0.95rem; }
+.confirm-actions { display: flex; gap: 15px; }
 
 /* =========================================================================
-   6. تصميم عناصر قسم الإعدادات
+   6. تصميم عناصر الإعدادات (Settings UI) والامبلمات
    ========================================================================= */
-.settings-group { margin-bottom: 30px; }
-.settings-group h3 { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 15px; letter-spacing: 1px; }
+.settings-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+.settings-label { font-size: 1rem; color: var(--text-main); font-weight: bold; display: flex; align-items: center; gap: 10px; }
+.settings-control select { background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 6px; outline: none; font-family: inherit; }
+.settings-control input[type="checkbox"] { width: 40px; height: 20px; appearance: none; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; outline: none; cursor: pointer; transition: 0.3s; }
+.settings-control input[type="checkbox"]::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; }
+.settings-control input[type="checkbox"]:checked { background: var(--accent-green); }
+.settings-control input[type="checkbox"]:checked::after { transform: translateX(20px); }
 
-/* الامبلم (Emblem) */
-.emblem-row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
-.emblem-card { width: 80px; height: 110px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; }
-.emblem-card img { width: 50px; height: 50px; object-fit: contain; }
-.emblem-card span { font-size: 0.7rem; color: white; font-weight: bold; width: 100%; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 5px;}
-.emblem-card.me-emblem { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.1); }
-
-/* أزرار الإعدادات (Toggles) */
-.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px; }
-.setting-label { font-weight: 800; font-size: 1rem; color: white; }
-.cyber-select { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 15px; font-family: inherit; font-weight: bold; outline: none; border-radius: 4px; }
-.cyber-toggle { appearance: none; width: 50px; height: 26px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.2); border-radius: 15px; position: relative; cursor: pointer; transition: 0.3s; }
-.cyber-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: rgba(255,255,255,0.5); border-radius: 50%; transition: 0.3s; }
-.cyber-toggle:checked { background: rgba(46, 204, 113, 0.2); border-color: var(--accent-green); }
-.cyber-toggle:checked::after { left: 26px; background: var(--accent-green); }
+/* الأوسمة (Emblems) */
+.emblem-grid { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
+.emblem-item { width: 60px; height: 60px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px; position: relative; }
+.emblem-item img { width: 35px; height: 35px; object-fit: contain; }
+.emblem-item.me { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.1); }
 
 /* =========================================================================
-   7. استجابة الجوال
+   7. استجابة الجوال والأشرطة الشفافة
    ========================================================================= */
 .game-mobile-bar { display: none !important; }
 
