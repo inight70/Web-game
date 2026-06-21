@@ -29,11 +29,58 @@
         </div>
     </div>
 
+    <div class="accuse-modal-overlay" id="leave-confirm-modal" onclick="if(event.target === this) closeLeaveModal()">
+        <div class="target-panel" style="max-width: 400px;">
+            <div class="target-body" style="border: 2px solid var(--accent-red); border-top: 2px solid var(--accent-red);">
+                <h3 style="text-align:center; font-size:1.5rem; margin-bottom:15px; color:white;"><i class="ph-fill ph-warning-circle" style="color:var(--accent-red); font-size:2rem; display:block; margin-bottom:10px;"></i> تحذير مغادرة</h3>
+                <p style="text-align:center; color:var(--text-dim); margin-bottom:25px;">هل أنت متأكد من رغبتك في الانسحاب؟ هذا سيؤثر على فريقك.</p>
+                <button class="sharp-btn" style="border-color:var(--accent-red); margin-bottom:10px;" onclick="confirmLeaveGame()">تأكيد الانسحاب</button>
+                <button class="sharp-btn danger" onclick="closeLeaveModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <div id="tab-game-settings" class="g-section-view">
         <div style="max-width: 600px; margin: 0 auto;">
             <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> الإعدادات</div>
+            
             <div class="sharp-card anim-elem">
-                <button class="sharp-btn" style="border-left-color: rgba(150,150,150,0.3); justify-content: flex-start; border-color:rgba(150,150,150,0.1); color:var(--text-main);" onclick="window.gameEngine.requestLeaveGame()">
+                <div class="cyber-setting-row">
+                    <span>حجم الهيكل والخط</span>
+                    <select class="cyber-select">
+                        <option>افتراضي</option>
+                        <option>كبير</option>
+                        <option>صغير</option>
+                    </select>
+                </div>
+                <div class="cyber-setting-row">
+                    <span>اللغة</span>
+                    <select class="cyber-select">
+                        <option>العربية</option>
+                        <option>English</option>
+                    </select>
+                </div>
+                <div class="cyber-setting-row">
+                    <span>موسيقى اللعبة (OST)</span>
+                    <input type="range" class="cyber-range" min="0" max="100" value="50" oninput="if(window.gameOST) window.gameOST.volume = this.value / 100;">
+                </div>
+                <div class="cyber-setting-row">
+                    <span>المؤثرات الحركية (القليتش)</span>
+                    <label class="cyber-switch">
+                        <input type="checkbox" checked>
+                        <span class="cyber-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="sharp-card anim-elem">
+                <h3 style="font-size: 1rem; color:var(--text-dim); margin-bottom: 10px;">أوسمة اللاعبين</h3>
+                <div id="settings-players-roster" class="emblems-grid">
+                    </div>
+            </div>
+
+            <div class="sharp-card anim-elem" style="padding:0; border:none; background:transparent;">
+                <button class="sharp-btn" style="border-left-color: rgba(150,150,150,0.3); justify-content: center; border-color:rgba(150,150,150,0.1); color:var(--text-main);" onclick="openLeaveModal()">
                     <i class="ph-bold ph-sign-out"></i> مغادرة الغرفة
                 </button>
             </div>
@@ -106,7 +153,26 @@
 
 <script>
     // ========================================================
-    // 1. الأنيميشن السينمائي (يعمل بسلاسة ومحمي)
+    // 1. نظام الموسيقى (OST)
+    // ========================================================
+    window.playGameOST = function() {
+        if(!window.gameOST) {
+            window.gameOST = new Audio('assets/audio/game-ost.mp3');
+            window.gameOST.loop = true;
+            window.gameOST.volume = 0.5;
+        }
+        window.gameOST.play().catch(e => console.log("المتصفح منع التشغيل التلقائي للصوت", e));
+    };
+
+    window.stopGameOST = function() {
+        if(window.gameOST) {
+            window.gameOST.pause();
+            window.gameOST.currentTime = 0;
+        }
+    };
+
+    // ========================================================
+    // 2. نظام السينمائية (آمن وخفيف)
     // ========================================================
     window.playCinematicIntro = function() {
         const overlay = document.getElementById('cinematic-overlay');
@@ -126,18 +192,19 @@
             setTimeout(() => { overlay.classList.add('show-logo'); }, 50);
             setTimeout(() => { overlay.classList.add('start-glitch'); }, 1200); 
             setTimeout(() => {
-                overlay.style.opacity = '0';
-                setTimeout(() => { overlay.style.display = 'none'; }, 300);
+                overlay.classList.add('fade-out-complete');
+                setTimeout(() => { overlay.style.display = 'none'; overlay.remove(); }, 500);
             }, 2000); 
         });
     };
 
     // ========================================================
-    // 2. نظام التنقل (معزز بالـ RequestAnimationFrame للسلاسة)
+    // 3. نظام التنقل والتهيئة المانع للتعليق
     // ========================================================
     window.cleanupGameUI = function() {
         document.body.classList.remove('in-game-mode');
         document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
+        window.stopGameOST(); // إيقاف الموسيقى عند الخروج
     };
 
     window.initGameUI = function(attempts = 0) {
@@ -157,6 +224,7 @@
             `);
         }
         window.playCinematicIntro();
+        window.playGameOST(); // تشغيل الموسيقى فور نجاح التهيئة
     };
 
     window.switchGameTab = function(tabId, index) {
@@ -186,19 +254,19 @@
     };
 
     // ========================================================
-    // 3. تغيير الخلفية (Crossfade ناعم ولا يسبب دوخة)
+    // 4. النوافذ المنبثقة (الاتهام والخروج) وتأثير تغيير الخلفية
     // ========================================================
-    window.triggerBgChange = function(imgSrc) {
+    window.triggerBgChangeGlitch = function(imgSrc) {
         const bg = document.getElementById('val-dynamic-bg');
         if(!bg) return;
-        bg.style.backgroundImage = `url(${imgSrc})`;
+        bg.classList.remove('bg-glitch-action');
+        void bg.offsetWidth;
+        // نغير الصورة في منتصف الأنيميشن
+        setTimeout(() => { bg.style.backgroundImage = `url(${imgSrc})`; }, 100);
+        bg.classList.add('bg-glitch-action');
     };
 
-    // ========================================================
-    // 4. النافذة المنبثقة (سريعة بدون قليتش مزعج)
-    // ========================================================
     window.gameAccuseDataCache = {}; 
-
     window.openAccuseModal = function(playerName, imgSrc) {
         const modal = document.getElementById('accuse-action-modal');
         const pItems = window.currentRoomData.items ? window.currentRoomData.items[playerName] : {weapons:[], evidence:[]};
@@ -218,13 +286,23 @@
 
     window.closeAccuseModal = function() { 
         document.getElementById('accuse-action-modal').classList.remove('show'); 
-        window.triggerBgChange('assets/images/accuse-bg.jpg'); 
+        window.triggerBgChangeGlitch('assets/images/accuse-bg.jpg'); // قليتش الاختفاء الصافي
     };
     
-    window.submitAccusation = function() { alert("TARGET LOCKED: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
+    window.submitAccusation = function() { alert("تم تحديد الهدف: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
+
+    /* نافذة الخروج */
+    window.openLeaveModal = function() { document.getElementById('leave-confirm-modal').classList.add('show'); };
+    window.closeLeaveModal = function() { document.getElementById('leave-confirm-modal').classList.remove('show'); };
+    window.confirmLeaveGame = function() { 
+        window.closeLeaveModal();
+        if(window.cleanupGameUI) window.cleanupGameUI();
+        if(window.leaveFirebaseRoom) window.leaveFirebaseRoom();
+        else if(window.loadFragment) window.loadFragment('home'); 
+    };
 
     // ========================================================
-    // 5. محرك الداتا ورسم المنصة
+    // 5. محرك الداتا (رسم المنصة والأوسمة)
     // ========================================================
     window.renderGameData = function() {
         try {
@@ -234,14 +312,19 @@
             const allPlayers = window.currentRoomData.players || [];
             
             const accuseGrid = document.getElementById('render-game-accuse');
+            const emblemsGrid = document.getElementById('settings-players-roster');
             let accuseHtml = '';
+            let emblemsHtml = '';
             
             let allGameChars = (window.GAME_ASSETS && window.GAME_ASSETS.characters) ? [...window.GAME_ASSETS.characters] : [];
             let dbSelections = window.currentRoomData.characterSelections || {};
             let usedIds = Object.values(dbSelections);
             let availableChars = allGameChars.filter(c => !usedIds.includes(c.id));
 
-            allPlayers.forEach(p => {
+            // ترتيب اللاعبين: المستخدم الحالي أولاً للرسم في الإعدادات
+            let sortedPlayers = [...allPlayers].sort((a, b) => (a.toLowerCase() === myName ? -1 : (b.toLowerCase() === myName ? 1 : 0)));
+
+            sortedPlayers.forEach(p => {
                 let charImgSrc = 'assets/images/default-avatar.png'; 
                 if(dbSelections[p]) {
                     let foundChar = allGameChars.find(c => c.id === dbSelections[p]);
@@ -254,10 +337,11 @@
                 let isMe = (p.toLowerCase() === myName);
                 let roleText = isMe ? 'أنت / محقق' : 'مشتبه به';
                 
+                // إضافة المربع لمنصة الاتهام
                 accuseHtml += `
                     <div class="val-char-box" 
-                         onmouseenter="window.triggerBgChange('${charImgSrc}')"
-                         onmouseleave="window.triggerBgChange('assets/images/accuse-bg.jpg')"
+                         onmouseenter="window.triggerBgChangeGlitch('${charImgSrc}')"
+                         onmouseleave="window.triggerBgChangeGlitch('assets/images/accuse-bg.jpg')"
                          onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
                         <img src="${charImgSrc}" class="val-char-avatar" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="val-char-info">
@@ -266,8 +350,17 @@
                         </div>
                     </div>
                 `;
+
+                // إضافة الوسام (Emblem) لقسم الإعدادات
+                emblemsHtml += `
+                    <div class="emblem-box ${isMe ? 'is-me' : ''}" title="${p}">
+                        <img src="${charImgSrc}" onerror="this.src='assets/images/default-avatar.png';">
+                        <div class="emblem-name">${p}</div>
+                    </div>
+                `;
             });
             accuseGrid.innerHTML = accuseHtml;
+            if(emblemsGrid) emblemsGrid.innerHTML = emblemsHtml;
 
             let myRole = 'investigator';
             for (const [k, v] of Object.entries(window.currentRoomData.roles)) { if (k.toLowerCase() === myName) { myRole = v; break; } }
