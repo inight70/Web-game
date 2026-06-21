@@ -1,29 +1,59 @@
 /* =========================================================================
-   1. الإخفاء واللون العالمي 
+   1. الإخفاء والتهيئة الأساسية (تدمير الهوامش ليكون أسود من الحافة للحافة)
    ========================================================================= */
-body.in-game-mode { background-color: #09090C !important; }
+body.in-game-mode { background-color: var(--bg-base) !important; }
 body.in-game-mode .right-sidebar, body.in-game-mode .top-header { display: none !important; }
+
 @media (min-width: 901px) { 
     body.in-game-mode .sidebar { background-color: transparent !important; border-right: none !important; }
     body.in-game-mode .sidebar .nav-menu > button:not(.game-injected-btn) { display: none !important; } 
 }
+
 body.in-game-mode .app-shell > .bottom-bar { display: none !important; }
-body.in-game-mode .dynamic-content { padding: 0 !important; overflow: hidden !important; height: 100vh !important; height: 100dvh !important; background-color: #09090C !important; }
-.g-master-container { position: relative; width: 100%; height: 100%; background: transparent; color: var(--text-main); font-family: 'Guesswhat', var(--font-ar), sans-serif; }
+body.in-game-mode .dynamic-content { 
+    padding: 0 !important; overflow: hidden !important; 
+    height: 100vh !important; height: 100dvh !important;
+    background-color: var(--bg-base) !important; 
+}
+
+.g-master-container { 
+    position: relative; width: 100%; height: 100%; background: transparent; color: var(--text-main); 
+    font-family: 'Guesswhat', var(--font-ar), sans-serif; 
+}
 
 /* =========================================================================
-   2. الانترو السينمائي (قليتش ناعم)
+   2. الشاشة السينمائية الأولى (محسنة الأداء)
    ========================================================================= */
-.cinematic-intro { position: fixed; inset: 0; z-index: 1000000; background: #09090C; display: none; justify-content: center; align-items: center; opacity: 0; will-change: opacity, transform; transition: opacity 0.4s ease-out; }
-.glitch-container { position: relative; width: 180px; height: 180px; display: flex; justify-content: center; align-items: center; }
-.glitch-img { position: absolute; width: 100%; height: auto; object-fit: contain; opacity: 0; transform: scale(0.95) translateZ(0); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s; }
-.cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1) translateZ(0); }
-.cinematic-intro.start-glitch .main-img { animation: proGlitchBase 0.25s infinite; filter: contrast(1.1); }
-.cinematic-intro.start-glitch .layer-red { opacity: 0.7; transform: translateX(-4px); filter: drop-shadow(-2px 0 var(--accent-red)); animation: proGlitchSlice 0.2s linear infinite reverse; mix-blend-mode: screen; }
-.cinematic-intro.start-glitch .layer-blue { opacity: 0.7; transform: translateX(4px); filter: drop-shadow(2px 0 #00d2ff); animation: proGlitchSlice 0.25s linear infinite; mix-blend-mode: screen; }
+.cinematic-intro {
+    position: fixed; inset: 0; z-index: 1000000; background: var(--bg-base);
+    display: none; justify-content: center; align-items: center; opacity: 0;
+    will-change: opacity; transition: opacity 0.3s ease-out;
+}
 
-@keyframes proGlitchSlice { 0% { clip-path: inset(10% 0 80% 0); } 20% { clip-path: inset(80% 0 5% 0); } 40% { clip-path: inset(30% 0 50% 0); } 60% { clip-path: inset(60% 0 10% 0); } 80% { clip-path: inset(15% 0 60% 0); } 100% { clip-path: inset(50% 0 30% 0); } }
-@keyframes proGlitchBase { 0% { transform: translate(1px, 0); } 25% { transform: translate(-1px, 1px); } 50% { transform: translate(2px, -1px); } 75% { transform: translate(-2px, 0); } 100% { transform: translate(0, 0); } }
+.glitch-container { position: relative; width: 180px; height: 180px; display: flex; justify-content: center; align-items: center; }
+.glitch-img {
+    position: absolute; width: 100%; height: auto; object-fit: contain; opacity: 0; transform: scale(0.95);
+    will-change: transform, opacity, clip-path; transition: opacity 0.4s;
+}
+
+.cinematic-intro.show-logo .main-img { opacity: 1; transform: scale(1); }
+
+.cinematic-intro.start-glitch .main-img { animation: liteGlitchBase 0.2s infinite; }
+.cinematic-intro.start-glitch .layer-red { opacity: 0.8; transform: translateX(-4px); animation: liteGlitchSlice 0.15s linear infinite reverse; mix-blend-mode: screen; }
+.cinematic-intro.start-glitch .layer-blue { opacity: 0.8; transform: translateX(4px); animation: liteGlitchSlice 0.2s linear infinite; mix-blend-mode: screen; }
+
+@keyframes liteGlitchSlice {
+    0% { clip-path: inset(10% 0 80% 0); }
+    25% { clip-path: inset(60% 0 15% 0); }
+    50% { clip-path: inset(25% 0 50% 0); }
+    75% { clip-path: inset(80% 0 5% 0); }
+    100% { clip-path: inset(40% 0 30% 0); }
+}
+@keyframes liteGlitchBase {
+    0% { transform: translate(2px, 0) skewX(1deg); }
+    50% { transform: translate(-2px, 0) skewX(-1deg); }
+    100% { transform: translate(0, 0) skewX(0deg); }
+}
 
 /* =========================================================================
    3. الحاويات العامة
@@ -31,31 +61,47 @@ body.in-game-mode .dynamic-content { padding: 0 !important; overflow: hidden !im
 .g-section-view { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow-y: auto; scrollbar-width: none; z-index: 1; padding: 40px; padding-bottom: 80px; will-change: opacity, visibility;}
 .g-section-view::-webkit-scrollbar { display: none; }
 .g-section-view.active { opacity: 1; visibility: visible; z-index: 10; transition: opacity 0.2s ease-out; }
+
 .g-section-view.active .anim-elem { animation: staggerUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px); will-change: transform, opacity; }
 .g-section-view.active .anim-elem:nth-child(1) { animation-delay: 0.05s; }
 .g-section-view.active .anim-elem:nth-child(2) { animation-delay: 0.1s; }
 .g-section-view.active .anim-elem:nth-child(3) { animation-delay: 0.15s; }
 @keyframes staggerUp { to { opacity: 1; transform: translateY(0); } }
 
-.sharp-card { background: var(--surface-panel); border: 1px solid rgba(150,150,150,0.1); padding: 30px; margin-bottom: 20px; position: relative; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); border-left: 3px solid rgba(150,150,150,0.3); transition: border-color 0.3s ease; }
+.sharp-card { 
+    background: var(--surface-panel); border: 1px solid rgba(150,150,150,0.1); 
+    padding: 30px; margin-bottom: 20px; position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+    border-left: 3px solid rgba(150,150,150,0.3); transition: border-color 0.3s ease;
+}
 .sharp-title { font-family: var(--font-en); font-size: 2rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 25px; border-bottom: 1px solid rgba(150,150,150,0.1); padding-bottom: 15px; display: inline-block;}
 .sharp-title i { color: var(--accent-red); margin-right: 10px; }
 
 /* =========================================================================
-   4. منصة الاتهام وتغيير الخلفية بالقليتش الصافي (بدون تمدد)
+   4. منصة الاتهام (خلفية صافية وتأثير اختفاء قاطع بدون تمطط)
    ========================================================================= */
 #tab-game-accuse, #tab-game-evidence { padding: 0 !important; background: transparent; }
-.val-bg-container { position: absolute; inset: 0; background-size: cover; background-position: top center; opacity: 0.65; z-index: 0; will-change: background-image, filter; }
-.val-bg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to right, var(--bg-base) 0%, rgba(0,0,0,0.2) 40%, transparent 100%), linear-gradient(to top, var(--bg-base) 0%, transparent 40%); }
 
-/* القليتش السريع للخلفية (إلغاء transition التمدد والاعتماد على الفلاتر اللحظية) */
-.bg-glitch-action { animation: bgFastGlitch 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-@keyframes bgFastGlitch {
-    0% { filter: contrast(1) hue-rotate(0deg); transform: translateX(0); }
-    25% { filter: contrast(1.5) hue-rotate(90deg); transform: translateX(5px); }
-    50% { filter: contrast(0.5) hue-rotate(-90deg); transform: translateX(-5px); clip-path: inset(10% 0 10% 0); }
-    75% { filter: contrast(1.2) hue-rotate(45deg); transform: translateX(2px); clip-path: inset(0 0 0 0); }
-    100% { filter: contrast(1) hue-rotate(0deg); transform: translateX(0); }
+.val-bg-container { 
+    position: absolute; inset: 0; background-size: cover; background-position: top center; 
+    opacity: 0.65; z-index: 0; 
+    /* تمت إزالة الـ transition لمنع التمطط المزعج! */
+    will-change: background-image, clip-path;
+}
+.val-bg-overlay { 
+    position: absolute; inset: 0; z-index: 1; pointer-events: none; 
+    background: linear-gradient(to right, var(--bg-base) 0%, rgba(0,0,0,0.1) 50%, transparent 100%), 
+                linear-gradient(to top, var(--bg-base) 0%, transparent 30%); 
+}
+
+/* قليتش نقي يعتمد على Clip-path ولا يجهد البطارية */
+.bg-pure-glitch { animation: bgDigitalGlitch 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+@keyframes bgDigitalGlitch {
+    0% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+    25% { clip-path: inset(20% 0 60% 0); transform: translateX(-4px); }
+    50% { clip-path: inset(60% 0 10% 0); transform: translateX(4px); }
+    75% { clip-path: inset(10% 0 40% 0); transform: translateX(-2px); }
+    100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
 }
 
 .val-layout-wrapper { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 50px; }
@@ -66,6 +112,7 @@ body.in-game-mode .dynamic-content { padding: 0 !important; overflow: hidden !im
 .val-item { color: rgba(255,255,255,0.5); font-size: 1.05rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; width: max-content; }
 .val-item:hover, .val-item.active { color: white; transform: translateX(5px); }
 .val-item:hover i, .val-item.active i { color: var(--accent-red); }
+
 .val-roster-container { align-self: center; width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; }
 .val-roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
 
@@ -77,83 +124,129 @@ body.in-game-mode .dynamic-content { padding: 0 !important; overflow: hidden !im
     direction: ltr; position: relative; overflow: hidden; will-change: transform;
 }
 .val-char-box:hover { background: rgba(25, 25, 30, 0.9); border-top-color: var(--accent-red); transform: translateY(-4px); }
-.val-char-avatar { position: absolute; right: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: center top; z-index: 1; mask-image: linear-gradient(to left, black 50%, transparent 100%); -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%); }
+
+.val-char-avatar { 
+    position: absolute; right: 0; top: 0; width: 50%; height: 100%; 
+    object-fit: cover; object-position: center top; z-index: 1;
+    mask-image: linear-gradient(to left, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
+}
+
 .val-char-info { position: relative; z-index: 2; width: 60%; padding-left: 15px; display: flex; flex-direction: column; text-align: left;}
 .val-char-name { font-size: 1.25rem; font-family: var(--font-en); font-weight: 900; color: white; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .val-char-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; font-family: 'Guesswhat', var(--font-ar); }
 
 /* =========================================================================
-   5. النوافذ المنبثقة (أنيقة، خفيفة، قليتش ناعم جداً)
+   5. النوافذ المنبثقة (Modal) - أنيقة وخفيفة للعين
    ========================================================================= */
 .accuse-modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-    z-index: 100000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.2s ease; will-change: opacity;
+    z-index: 100000; display: flex; justify-content: center; align-items: center;
+    opacity: 0; visibility: hidden; transition: opacity 0.2s ease;
+    will-change: opacity;
 }
 .accuse-modal-overlay.show { opacity: 1; visibility: visible; }
-.target-panel { width: 100%; max-width: 500px; background: transparent; opacity: 0; will-change: transform, opacity, filter; }
 
-/* قليتش خفيف ومريح للعين لدخول النوافذ */
-.accuse-modal-overlay.show .target-panel { animation: elegantModalGlitch 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-@keyframes elegantModalGlitch {
-    0% { opacity: 0; transform: scale(0.95); clip-path: inset(20% 0 80% 0); filter: hue-rotate(90deg); }
-    50% { opacity: 1; transform: scale(1.01) translateX(2px); clip-path: inset(50% 0 10% 0); filter: hue-rotate(-90deg); }
-    100% { opacity: 1; transform: scale(1) translateX(0); clip-path: inset(0 0 0 0); filter: none; }
+.target-panel {
+    width: 100%; max-width: 500px; background: transparent; opacity: 0; 
+    will-change: transform, opacity, clip-path;
 }
 
-/* هيدر نافذة الشخصية (نور الشمس) */
-.target-header { position: relative; height: 240px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%); background: var(--surface-panel); overflow: hidden; border: 2px solid #FDFAF6; border-bottom: none; }
-.target-img { position: absolute; right: 0; top: 0; width: 65%; height: 100%; object-fit: cover; object-position: top center; opacity: 0.9; mask-image: linear-gradient(to left, black 60%, transparent 100%); -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%); }
-.target-name { position: absolute; bottom: 20px; left: 25px; font-size: 2.8rem; font-weight: 900; color: #FDFAF6; font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase; z-index: 2; direction: ltr; max-width: 60%; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
-.target-body { background: var(--surface-panel); padding: 35px 30px; color: #fff; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); border: 2px solid #FDFAF6; border-top: none; }
-.sharp-btn { width: 100%; background: transparent; border: 1px solid #FDFAF6; border-left: 4px solid #FDFAF6; color: #FDFAF6; font-size: 1.1rem; font-weight: 900; padding: 18px; cursor: pointer; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%); transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; font-family: 'Guesswhat', var(--font-ar); display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; }
+/* دخول النافذة بقلتش أنيق وخفيف غير مرهق */
+.accuse-modal-overlay.show .target-panel { animation: elegantModalGlitch 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes elegantModalGlitch {
+    0% { opacity: 0; transform: scale(0.95); clip-path: inset(10% 0 40% 0); }
+    30% { opacity: 0.5; transform: scale(1.02) translateX(4px); clip-path: inset(50% 0 10% 0); }
+    60% { opacity: 0.8; transform: scale(0.98) translateX(-2px); clip-path: inset(5% 0 60% 0); }
+    100% { opacity: 1; transform: scale(1) translateX(0); clip-path: inset(0 0 0 0); }
+}
+
+.target-header {
+    position: relative; height: 240px; 
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
+    background: var(--surface-panel); overflow: hidden; 
+    border: 2px solid #FDFAF6; border-bottom: none;
+}
+.target-img { 
+    position: absolute; right: 0; top: 0; width: 65%; height: 100%; 
+    object-fit: cover; object-position: top center; opacity: 0.9; 
+    mask-image: linear-gradient(to left, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+}
+.target-name { 
+    position: absolute; bottom: 20px; left: 25px; 
+    font-size: 2.8rem; font-weight: 900; color: #FDFAF6; 
+    font-family: var(--font-en); letter-spacing: 2px; text-transform: uppercase; 
+    z-index: 2; direction: ltr; max-width: 60%; line-height: 1;
+}
+
+/* ستايل نافذة المغادرة لتكون حمراء مرعبة */
+.target-header.leave-header { border-color: var(--accent-red); background: #110505; height: 150px; display:flex; align-items:center; padding-left:25px;}
+.target-header.leave-header .target-name { position: static; color: var(--accent-red); font-size: 2rem; }
+.target-body.leave-body { border-color: var(--accent-red); }
+
+.target-body {
+    background: var(--surface-panel); padding: 35px 30px; color: #fff;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+    border: 2px solid #FDFAF6; border-top: none;
+}
+
+.sharp-btn {
+    width: 100%; background: transparent; border: 1px solid #FDFAF6; border-left: 4px solid #FDFAF6;
+    color: #FDFAF6; font-size: 1.1rem; font-weight: 900; padding: 18px; cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+    transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; font-family: 'Guesswhat', var(--font-ar);
+    display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;
+}
 .sharp-btn:hover { background: rgba(253, 250, 246, 0.1); transform: scale(1.02); }
-
-/* زر الإلغاء للنافذة */
-.sharp-btn.danger { border-color: rgba(255,255,255,0.1); border-left-color: rgba(255,255,255,0.3); color: var(--text-main); }
-.sharp-btn.danger:hover { background: rgba(255,255,255,0.05); }
+.sharp-btn.danger-mode { border-color: var(--accent-red); color: var(--accent-red); }
+.sharp-btn.danger-mode:hover { background: var(--accent-red); color: white; }
 
 /* =========================================================================
-   6. تصميم إعدادات اللعبة (Settings UI) والأوسمة
+   6. تصميم عناصر قسم الإعدادات
    ========================================================================= */
-.cyber-setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 1rem; color: var(--text-main); }
-.cyber-setting-row:last-child { border-bottom: none; }
+.settings-group { margin-bottom: 30px; }
+.settings-group h3 { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 15px; letter-spacing: 1px; }
 
-/* Toggle Switch */
-.cyber-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-.cyber-switch input { opacity: 0; width: 0; height: 0; }
-.cyber-slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(255,255,255,0.1); transition: .4s; clip-path: polygon(0 0, 100% 0, 100% 100%, 4px 100%, 0 calc(100% - 4px)); }
-.cyber-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; clip-path: polygon(0 0, 100% 0, 100% 100%, 2px 100%, 0 calc(100% - 2px)); }
-.cyber-switch input:checked + .cyber-slider { background-color: var(--accent-red); }
-.cyber-switch input:checked + .cyber-slider:before { transform: translateX(20px); }
+/* الامبلم (Emblem) */
+.emblem-row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+.emblem-card { width: 80px; height: 110px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; }
+.emblem-card img { width: 50px; height: 50px; object-fit: contain; }
+.emblem-card span { font-size: 0.7rem; color: white; font-weight: bold; width: 100%; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 5px;}
+.emblem-card.me-emblem { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.1); }
 
-/* Select / Range */
-.cyber-select { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 5px 10px; font-family: var(--font-ar); outline: none; border-radius: 4px; }
-.cyber-range { width: 100px; accent-color: var(--accent-red); }
-
-/* شبكة الأوسمة (Emblems Roster) */
-.emblems-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; margin-top: 15px; }
-.emblem-box { position: relative; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); background: #000; }
-.emblem-box.is-me { border-color: var(--accent-green); box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
-.emblem-box img { width: 100%; height: 100%; object-fit: cover; }
-.emblem-name { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 0.55rem; text-align: center; padding: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* أزرار الإعدادات (Toggles) */
+.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 8px; }
+.setting-label { font-weight: 800; font-size: 1rem; color: white; }
+.cyber-select { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 15px; font-family: inherit; font-weight: bold; outline: none; border-radius: 4px; }
+.cyber-toggle { appearance: none; width: 50px; height: 26px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.2); border-radius: 15px; position: relative; cursor: pointer; transition: 0.3s; }
+.cyber-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: rgba(255,255,255,0.5); border-radius: 50%; transition: 0.3s; }
+.cyber-toggle:checked { background: rgba(46, 204, 113, 0.2); border-color: var(--accent-green); }
+.cyber-toggle:checked::after { left: 26px; background: var(--accent-green); }
 
 /* =========================================================================
-   7. الجوال (شريط مطابق)
+   7. استجابة الجوال
    ========================================================================= */
 .game-mobile-bar { display: none !important; }
+
 @media (max-width: 900px) {
     .g-section-view { padding: 20px 15px 120px 15px; }
     .sharp-title { font-size: 1.6rem; }
+    
     .game-mobile-bar { display: flex !important; z-index: 99999; }
+    
     .val-layout-wrapper { padding: 30px 20px 100px 20px; }
     .val-left-menu { gap: 10px; }
     .val-logo { width: 100px; }
     .val-round-info { font-size: 0.65rem; padding-bottom: 10px; }
     .val-item { font-size: 0.85rem; gap: 8px; }
+    
     .val-roster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .val-char-box { height: 65px; }
     .val-char-info { padding-left: 10px; }
     .val-char-name { font-size: 1rem; }
     .val-char-role { font-size: 0.6rem; }
+    
     .target-name { font-size: 2rem; }
 }
