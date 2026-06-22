@@ -44,60 +44,59 @@
     </div>
 
     <div id="tab-game-settings" class="g-section-view">
-        <div style="max-width: 600px; margin: 0 auto;">
+        <div style="max-width: 700px; margin: 0 auto;">
             <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> الإعدادات</div>
             
             <div class="sharp-card anim-elem" style="padding: 20px;">
-                <h3 style="font-size:1.1rem; margin-bottom: 15px; color:var(--text-main);">اللاعبون (الأوسمة)</h3>
-                <div class="emblems-row" id="settings-emblems-container">
-                    </div>
+                <h3 style="font-size:1.1rem; margin-bottom: 15px; color:var(--text-main);">اللاعبون</h3>
+                <div class="emblems-grid" id="settings-emblems-container">
+                    <div style="color:var(--text-dim); text-align:center;"><i class="ph-bold ph-spinner ph-spin" style="font-size:2rem;"></i></div>
+                </div>
             </div>
 
             <div class="sharp-card anim-elem">
-                <div class="settings-group">
-                    <div class="setting-item">
-                        <div class="setting-label"><i class="ph-fill ph-text-aa"></i> حجم الخط</div>
-                        <div class="setting-control">
-                            <select id="set-font-size">
-                                <option value="small">صغير</option>
-                                <option value="medium" selected>متوسط</option>
-                                <option value="large">كبير</option>
-                            </select>
-                        </div>
+                <div class="setting-row">
+                    <div class="setting-label"><i class="ph-fill ph-text-aa"></i> حجم الخط</div>
+                    <div class="seg-control">
+                        <button class="seg-btn" onclick="updateGameSetting('font', '0.85rem', this)">صغير</button>
+                        <button class="seg-btn active" onclick="updateGameSetting('font', '1rem', this)">طبيعي</button>
+                        <button class="seg-btn" onclick="updateGameSetting('font', '1.15rem', this)">كبير</button>
                     </div>
-                    <div class="setting-item">
-                        <div class="setting-label"><i class="ph-fill ph-app-window"></i> حجم الهيكل</div>
-                        <div class="setting-control">
-                            <select id="set-layout-size">
-                                <option value="compact">مدمج</option>
-                                <option value="normal" selected>طبيعي</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-label"><i class="ph-fill ph-translate"></i> اللغة</div>
-                        <div class="setting-control">
-                            <select id="set-language">
-                                <option value="ar" selected>العربية</option>
-                                <option value="en">English</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-label"><i class="ph-fill ph-music-notes"></i> الموسيقى (OST)</div>
-                        <div class="setting-control">
-                            <div class="toggle-switch active" id="toggle-music" onclick="toggleGameMusic(this)"></div>
-                        </div>
-                    </div>
-                    <div class="setting-item" style="border:none;">
-                        <div class="setting-label"><i class="ph-fill ph-magic-wand"></i> المؤثرات الحركية</div>
-                        <div class="setting-control">
-                            <div class="toggle-switch active" id="toggle-fx" onclick="this.classList.toggle('active')"></div>
-                        </div>
+                </div>
+                
+                <div class="setting-row">
+                    <div class="setting-label"><i class="ph-fill ph-app-window"></i> حجم الهيكل</div>
+                    <div class="seg-control">
+                        <button class="seg-btn" onclick="updateGameSetting('gap', '10px', this)">مدمج</button>
+                        <button class="seg-btn active" onclick="updateGameSetting('gap', '20px', this)">طبيعي</button>
+                        <button class="seg-btn" onclick="updateGameSetting('gap', '30px', this)">واسع</button>
                     </div>
                 </div>
 
-                <button class="sharp-btn" style="border-left-color: var(--accent-red); justify-content: center; border-color:var(--accent-red); color:var(--accent-red); margin-top:20px;" onclick="showLeaveModal()">
+                <div class="setting-row">
+                    <div class="setting-label"><i class="ph-fill ph-translate"></i> اللغة</div>
+                    <div class="seg-control">
+                        <button class="seg-btn active">العربية</button>
+                        <button class="seg-btn" onclick="alert('English localization coming soon.')">English</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+                    <div style="display:flex; justify-content: space-between; width:100%; align-items:center;">
+                        <div class="setting-label"><i class="ph-fill ph-music-notes"></i> الموسيقى (OST)</div>
+                        <div class="seg-control">
+                            <button class="seg-btn active" id="btn-ost-on" onclick="toggleGameOST(true)">تشغيل</button>
+                            <button class="seg-btn" id="btn-ost-off" onclick="toggleGameOST(false)">إيقاف</button>
+                        </div>
+                    </div>
+                    <div class="vol-container">
+                        <i class="ph-fill ph-speaker-low" style="color:var(--text-dim);"></i>
+                        <input type="range" min="0" max="1" step="0.1" value="0.3" class="cyber-slider" id="ost-volume-slider" oninput="changeOSTVolume(this.value)">
+                        <i class="ph-fill ph-speaker-high" style="color:var(--text-dim);"></i>
+                    </div>
+                </div>
+
+                <button class="sharp-btn" style="border-left-color: var(--accent-red); justify-content: center; border-color:var(--accent-red); color:var(--accent-red); margin-top:25px;" onclick="showLeaveModal()">
                     <i class="ph-bold ph-sign-out"></i> الانسحاب من الغرفة
                 </button>
             </div>
@@ -170,28 +169,50 @@
 
 <script>
     // ========================================================
-    // نظام الموسيقى والأصوات (OST)
+    // 1. نظام الموسيقى (التشغيل بعد أول لمسة للتوافق مع المتصفحات)
     // ========================================================
     window.gameAudioState = true;
-    function playOST() {
-        const ost = document.getElementById('game-ost-player');
-        if(ost && window.gameAudioState) {
-            ost.volume = 0.3; // صوت هادئ كخلفية
-            ost.play().catch(e => console.log("Audio autoplay prevented by browser"));
+    
+    function initAudioOnInteraction() {
+        if(window.gameAudioState) {
+            const ost = document.getElementById('game-ost-player');
+            if(ost && ost.paused) { ost.volume = document.getElementById('ost-volume-slider').value || 0.3; ost.play().catch(e => console.log("Audio blocked")); }
         }
+        document.removeEventListener('click', initAudioOnInteraction);
     }
-    function stopOST() {
+
+    window.toggleGameOST = function(isOn) {
+        window.gameAudioState = isOn;
         const ost = document.getElementById('game-ost-player');
-        if(ost) { ost.pause(); ost.currentTime = 0; }
-    }
-    window.toggleGameMusic = function(btn) {
-        btn.classList.toggle('active');
-        window.gameAudioState = btn.classList.contains('active');
-        if(window.gameAudioState) playOST(); else stopOST();
+        
+        document.getElementById('btn-ost-on').classList.toggle('active', isOn);
+        document.getElementById('btn-ost-off').classList.toggle('active', !isOn);
+        
+        if(isOn && ost) { ost.play().catch(e => console.log(e)); } 
+        else if (ost) { ost.pause(); }
+    };
+
+    window.changeOSTVolume = function(val) {
+        const ost = document.getElementById('game-ost-player');
+        if(ost) ost.volume = val;
     };
 
     // ========================================================
-    // نظام الخروج الآمن (Modal)
+    // 2. نظام الإعدادات (تغيير الـ CSS Variables)
+    // ========================================================
+    window.updateGameSetting = function(type, value, btnElem) {
+        const root = document.getElementById('game-master-root');
+        
+        // إزالة الكلاس active من إخوة الزر الحالي
+        Array.from(btnElem.parentNode.children).forEach(b => b.classList.remove('active'));
+        btnElem.classList.add('active');
+
+        if(type === 'font') { root.style.setProperty('--game-font-size', value); }
+        if(type === 'gap') { root.style.setProperty('--game-layout-gap', value); }
+    };
+
+    // ========================================================
+    // 3. نظام الخروج الآمن
     // ========================================================
     window.showLeaveModal = function() { document.getElementById('leave-confirm-modal').classList.add('show'); };
     window.executeLeaveGame = function() {
@@ -202,14 +223,17 @@
     };
 
     // ========================================================
-    // الأنيميشن السينمائي (قليتش خفيف ومحمي)
+    // 4. الأنيميشن السينمائي (يظهر للغرفة الجديدة)
     // ========================================================
     window.playCinematicIntro = function() {
         const overlay = document.getElementById('cinematic-overlay');
         if (!overlay) return;
 
         const sessionKey = 'deception_intro_played_' + (window.currentRoomId || 'global');
-        if (sessionStorage.getItem(sessionKey)) { overlay.style.display = 'none'; return; }
+
+        if (sessionStorage.getItem(sessionKey)) {
+            overlay.style.display = 'none'; return;
+        }
 
         sessionStorage.setItem(sessionKey, 'true');
         overlay.style.display = 'flex';
@@ -219,18 +243,18 @@
             setTimeout(() => { overlay.classList.add('show-logo'); }, 50);
             setTimeout(() => { overlay.classList.add('start-glitch'); }, 1200); 
             setTimeout(() => {
-                overlay.classList.remove('start-glitch');
                 overlay.style.opacity = '0';
                 setTimeout(() => { overlay.style.display = 'none'; }, 300);
-            }, 1800); 
+            }, 2000); 
         });
     };
 
     // ========================================================
-    // نظام التنقل (معزز بالسلاسة)
+    // 5. نظام التنقل والتهيئة
     // ========================================================
     window.cleanupGameUI = function() {
-        stopOST(); // إيقاف الموسيقى عند الخروج
+        const ost = document.getElementById('game-ost-player');
+        if(ost) ost.pause(); // إيقاف الموسيقى عند الخروج للوبي
         document.body.classList.remove('in-game-mode');
         document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
     };
@@ -241,7 +265,9 @@
 
         window.cleanupGameUI();
         document.body.classList.add('in-game-mode');
-        playOST(); // تشغيل الموسيقى
+        
+        // استماع للضغطة الأولى لتشغيل الموسيقى
+        document.addEventListener('click', initAudioOnInteraction);
 
         if(desktopMenu) {
             desktopMenu.insertAdjacentHTML('beforeend', `
@@ -276,7 +302,7 @@
     };
 
     // ========================================================
-    // تغيير الخلفية بالقليتش السلس
+    // 6. تغيير الخلفية بالقليتش السلس
     // ========================================================
     window.triggerBgGlitch = function(imgSrc) {
         const bg = document.getElementById('val-dynamic-bg');
@@ -288,9 +314,10 @@
     };
 
     // ========================================================
-    // نافذة الشخصية
+    // 7. نافذة الشخصية
     // ========================================================
     window.gameAccuseDataCache = {}; 
+
     window.openAccuseModal = function(playerName, imgSrc) {
         const modal = document.getElementById('accuse-action-modal');
         const pItems = window.currentRoomData.items ? window.currentRoomData.items[playerName] : {weapons:[], evidence:[]};
@@ -312,10 +339,10 @@
         document.getElementById('accuse-action-modal').classList.remove('show'); 
         window.triggerBgGlitch('assets/images/accuse-bg.jpg'); 
     };
-    window.submitAccusation = function() { alert("تم تحديد الهدف: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
+    window.submitAccusation = function() { alert("TARGET LOCKED: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
 
     // ========================================================
-    // محرك الداتا (الرندر الشامل: لاعبين + أوسمة)
+    // 8. محرك الداتا (رسم منصة الاتهام، الإعدادات، الهوية)
     // ========================================================
     window.renderGameData = function() {
         try {
@@ -325,7 +352,8 @@
             const allPlayers = window.currentRoomData.players || [];
             
             const accuseGrid = document.getElementById('render-game-accuse');
-            const emblemsRow = document.getElementById('settings-emblems-container');
+            const emblemsContainer = document.getElementById('settings-emblems-container');
+            
             let accuseHtml = '';
             let emblemsHtml = '';
             
@@ -334,7 +362,7 @@
             let usedIds = Object.values(dbSelections);
             let availableChars = allGameChars.filter(c => !usedIds.includes(c.id));
 
-            // ترتيب اللاعبين ليكون "أنت" في البداية
+            // ترتيب اللاعبين لوضع (أنت) في البداية
             let sortedPlayers = [...allPlayers].sort((a, b) => {
                 if(a.toLowerCase() === myName) return -1;
                 if(b.toLowerCase() === myName) return 1;
@@ -343,26 +371,25 @@
 
             sortedPlayers.forEach(p => {
                 let charImgSrc = 'assets/images/default-avatar.png'; 
-                let emblemSrc = 'assets/images/default-avatar.png'; // مؤقتاً لحين ربطها بقاعدة بيانات الأوسمة الحقيقية
+                let bannerSrc = 'assets/images/accuse-bg.jpg'; // بنر افتراضي
 
                 if(dbSelections[p]) {
                     let foundChar = allGameChars.find(c => c.id === dbSelections[p]);
-                    if(foundChar) { charImgSrc = foundChar.src; emblemSrc = foundChar.src; }
+                    if(foundChar) { charImgSrc = foundChar.src; bannerSrc = foundChar.src; }
                 } else {
                     if(availableChars.length > 0) { 
-                        let pc = availableChars.shift();
-                        charImgSrc = pc.src; emblemSrc = pc.src;
-                    } 
-                    else if (p.startsWith('Bot_')) { 
-                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`;
-                        emblemSrc = charImgSrc;
+                        let picked = availableChars.shift(); 
+                        charImgSrc = picked.src; bannerSrc = picked.src; 
+                    } else if (p.startsWith('Bot_')) { 
+                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`; 
+                        bannerSrc = charImgSrc;
                     }
                 }
 
                 let isMe = (p.toLowerCase() === myName);
                 let roleText = isMe ? 'أنت / محقق' : 'مشتبه به';
                 
-                // رسم مربعات منصة الاتهام
+                // 1. رسم بطاقة منصة الاتهام
                 accuseHtml += `
                     <div class="val-char-box" 
                          onmouseenter="window.triggerBgGlitch('${charImgSrc}')"
@@ -376,18 +403,23 @@
                     </div>
                 `;
 
-                // رسم الأوسمة في الإعدادات
+                // 2. رسم بطاقة الوسام (البنر) في الإعدادات
                 emblemsHtml += `
-                    <div class="emblem-box ${isMe ? 'me' : ''}">
-                        <img src="${emblemSrc}" class="emblem-img" onerror="this.src='assets/images/default-avatar.png';">
-                        <span class="emblem-name">${isMe ? 'أنت' : p}</span>
+                    <div class="emblem-card ${isMe ? 'me' : ''}">
+                        <img src="${bannerSrc}" class="emblem-bg" onerror="this.src='assets/images/accuse-bg.jpg';">
+                        <img src="${charImgSrc}" class="emblem-avatar" onerror="this.src='assets/images/default-avatar.png';">
+                        <div class="emblem-info">
+                            <span class="emblem-name">${isMe ? 'أنت' : p}</span>
+                            <span class="emblem-role">${roleText}</span>
+                        </div>
                     </div>
                 `;
             });
-
+            
             if(accuseGrid) accuseGrid.innerHTML = accuseHtml;
-            if(emblemsRow) emblemsRow.innerHTML = emblemsHtml;
+            if(emblemsContainer) emblemsContainer.innerHTML = emblemsHtml;
 
+            // رسم الهوية
             let myRole = 'investigator';
             for (const [k, v] of Object.entries(window.currentRoomData.roles)) { if (k.toLowerCase() === myName) { myRole = v; break; } }
             
@@ -405,6 +437,7 @@
                 }
             }
 
+            // رسم الأدوات
             let myItems = null;
             if(window.currentRoomData.items) {
                 for (const [k, v] of Object.entries(window.currentRoomData.items)) { if (k.toLowerCase() === myName) { myItems = v; break; } }
