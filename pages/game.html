@@ -24,7 +24,7 @@
 
     <div class="accuse-modal-overlay" id="accuse-action-modal" onclick="if(event.target === this) closeAccuseModal()">
         <div class="target-panel">
-            <button class="btn-close-modal" style="position:absolute; right: 15px; top: 15px; background: rgba(0,0,0,0.6); color: #FDFAF6; border: 1px solid rgba(253,250,246,0.3); width: 35px; height: 35px; border-radius: 8px; z-index: 100; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#FDFAF6'; this.style.color='#000';" onmouseout="this.style.background='rgba(0,0,0,0.6)'; this.style.color='#FDFAF6';" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
+            <button class="btn-close-modal" onclick="closeAccuseModal()"><i class="ph-bold ph-x"></i></button>
             <div class="target-header">
                 <img src="" id="a-modal-img" class="target-img" alt="Target">
                 <div class="target-name" id="a-modal-name">PLAYER</div>
@@ -48,7 +48,7 @@
             <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> الإعدادات</div>
             
             <div class="sharp-card anim-elem" style="padding: 20px;">
-                <h3 style="font-size:1.1rem; margin-bottom: 15px; color:var(--text-main);">اللاعبون</h3>
+                <h3 style="font-size:1.1rem; margin-bottom: 15px; color:var(--text-main); font-family: var(--font-ar);">أوسمة اللاعبين</h3>
                 <div class="emblems-grid" id="settings-emblems-container">
                     <div style="color:var(--text-dim); text-align:center;"><i class="ph-bold ph-spinner ph-spin" style="font-size:2rem;"></i></div>
                 </div>
@@ -60,14 +60,14 @@
                     <div class="seg-control">
                         <button class="seg-btn" onclick="updateGameSetting('font', '0.85rem', this)">صغير</button>
                         <button class="seg-btn active" onclick="updateGameSetting('font', '1rem', this)">طبيعي</button>
-                        <button class="seg-btn" onclick="updateGameSetting('font', '1.15rem', this)">كبير</button>
+                        <button class="seg-btn" onclick="updateGameSetting('font', '1.2rem', this)">كبير</button>
                     </div>
                 </div>
                 
                 <div class="setting-row">
                     <div class="setting-label"><i class="ph-fill ph-app-window"></i> حجم الهيكل</div>
                     <div class="seg-control">
-                        <button class="seg-btn" onclick="updateGameSetting('scale', '0.85', this)">مدمج</button>
+                        <button class="seg-btn" onclick="updateGameSetting('scale', '0.8', this)">مدمج</button>
                         <button class="seg-btn active" onclick="updateGameSetting('scale', '1', this)">طبيعي</button>
                         <button class="seg-btn" onclick="updateGameSetting('scale', '1.15', this)">واسع</button>
                     </div>
@@ -88,6 +88,11 @@
                             <button class="seg-btn active" id="btn-ost-on" onclick="toggleGameOST(true)">تشغيل</button>
                             <button class="seg-btn" id="btn-ost-off" onclick="toggleGameOST(false)">إيقاف</button>
                         </div>
+                    </div>
+                    <div class="vol-container">
+                        <i class="ph-fill ph-speaker-low" style="color:var(--text-dim); font-size:1.1rem;"></i>
+                        <input type="range" min="0" max="1" step="0.05" value="0.3" class="cyber-slider" id="ost-volume-slider" oninput="changeOSTVolume(this.value)">
+                        <i class="ph-fill ph-speaker-high" style="color:var(--text-dim); font-size:1.1rem;"></i>
                     </div>
                 </div>
 
@@ -133,7 +138,7 @@
         <div style="max-width: 800px; margin: 0 auto;">
             <div class="sharp-title anim-elem"><i class="ph-fill ph-microscope"></i> مسرح الجريمة</div>
             <div class="sharp-card anim-elem" style="background: rgba(15,15,20,0.5); text-align:center; padding: 80px 20px; border-left-color: #00d2ff;">
-                <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 20px auto; border-radius: 50%; border: 2px solid rgba(0, 210, 255, 0.3);">
+                <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 20px auto; border-radius: 50%; border: 2px solid rgba(0, 210, 255, 0.2);">
                     <div style="position: absolute; inset: 0; border-radius: 50%; border: 2px solid #00d2ff; border-top-color: transparent; animation: spinFast 1.5s linear infinite;"></div>
                     <i class="ph-fill ph-radar" style="font-size:3rem; color:#00d2ff; line-height: 100px;"></i>
                 </div>
@@ -164,15 +169,12 @@
 
 <script>
     // ========================================================
-    // 1. نظام التحميل المسبق (Preloader) والانترو
+    // 1. نظام التحميل المسبق وتفعيل الشاشة لكل غرفة جديدة
     // ========================================================
     window.preloadGameAssets = async function(imagesArray) {
         const promises = imagesArray.map(src => {
             return new Promise((resolve) => {
-                const img = new Image();
-                img.src = src;
-                img.onload = resolve;
-                img.onerror = resolve; // تجنب تعليق الشاشة في حال خطأ صورة
+                const img = new Image(); img.src = src; img.onload = resolve; img.onerror = resolve;
             });
         });
         await Promise.all(promises);
@@ -182,6 +184,7 @@
         const overlay = document.getElementById('cinematic-overlay');
         if (!overlay) return;
 
+        // التحقق الذكي عبر معرف الغرفة الفريد لتعمل الشاشة لكل جيم جديد
         const sessionKey = 'deception_intro_played_' + (window.currentRoomId || 'global');
         if (sessionStorage.getItem(sessionKey)) { overlay.style.display = 'none'; return; }
 
@@ -190,24 +193,21 @@
         requestAnimationFrame(() => {
             overlay.style.opacity = '1';
             setTimeout(() => { overlay.classList.add('show-logo'); }, 50);
-            
-            // بدء التحميل المسبق والقليتش معاً
             overlay.classList.add('start-glitch');
             
             window.preloadGameAssets(imagesToLoad).then(() => {
-                // نضمن مرور ثانيتين كحد أدنى للشكل الجمالي
                 setTimeout(() => {
                     sessionStorage.setItem(sessionKey, 'true');
                     overlay.classList.remove('start-glitch');
                     overlay.style.opacity = '0';
-                    setTimeout(() => { overlay.style.display = 'none'; }, 400);
-                }, 1500); 
+                    setTimeout(() => { overlay.style.display = 'none'; overlay.remove(); }, 300);
+                }, 1300); 
             });
         });
     };
 
     // ========================================================
-    // 2. نظام الإعدادات (تغيير الـ CSS Variables فعلياً)
+    // 2. تفعيل الإعدادات الحقيقية (التحكم بالـ Variables للـ CSS)
     // ========================================================
     window.updateGameSetting = function(type, value, btnElem) {
         const root = document.getElementById('game-master-root');
@@ -219,13 +219,13 @@
     };
 
     // ========================================================
-    // 3. نظام الموسيقى (التشغيل بعد أول لمسة للتوافق مع المتصفحات)
+    // 3. محرك مشغل الصوت الفعلي والتحكم بمستواه
     // ========================================================
     window.gameAudioState = true;
     function initAudioOnInteraction() {
         if(window.gameAudioState) {
             const ost = document.getElementById('game-ost-player');
-            if(ost && ost.paused) { ost.volume = 0.3; ost.play().catch(e => console.log("Audio blocked")); }
+            if(ost && ost.paused) { ost.volume = document.getElementById('ost-volume-slider').value; ost.play().catch(e => console.log("Audio Blocked")); }
         }
         document.removeEventListener('click', initAudioOnInteraction);
     }
@@ -236,9 +236,13 @@
         document.getElementById('btn-ost-off').classList.toggle('active', !isOn);
         if(isOn && ost) { ost.play().catch(e => console.log(e)); } else if (ost) { ost.pause(); }
     };
+    window.changeOSTVolume = function(val) {
+        const ost = document.getElementById('game-ost-player');
+        if(ost) ost.volume = val;
+    };
 
     // ========================================================
-    // 4. نظام الخروج الآمن
+    // 4. نظام الخروج الآمن والتبديل
     // ========================================================
     window.showLeaveModal = function() { document.getElementById('leave-confirm-modal').classList.add('show'); };
     window.executeLeaveGame = function() {
@@ -248,9 +252,6 @@
         else window.loadFragment('home'); 
     };
 
-    // ========================================================
-    // 5. نظام التنقل
-    // ========================================================
     window.cleanupGameUI = function() {
         const ost = document.getElementById('game-ost-player');
         if(ost) ost.pause();
@@ -298,16 +299,25 @@
     };
 
     // ========================================================
-    // 6. تغيير الخلفية بسلاسة
+    // 5. دالة تغيير الخلفية بقليتش خاطف خفيف ومنع التمدد تماماً
     // ========================================================
-    window.triggerBgChange = function(imgSrc) {
+    window.triggerBgGlitch = function(imgSrc, isOut = false) {
         const bg = document.getElementById('val-dynamic-bg');
         if(!bg) return;
-        bg.style.backgroundImage = `url(${imgSrc})`;
+        bg.classList.remove('bg-glitch-anim', 'bg-glitch-out-anim');
+        void bg.offsetWidth; 
+        
+        if(isOut) {
+            bg.classList.add('bg-glitch-out-anim');
+            setTimeout(() => { bg.style.backgroundImage = `url(${imgSrc})`; }, 50);
+        } else {
+            bg.style.backgroundImage = `url(${imgSrc})`;
+            bg.classList.add('bg-glitch-anim');
+        }
     };
 
     // ========================================================
-    // 7. نافذة الشخصية وإصلاح تعليق الجوال
+    // 6. التحكم بالهدف وإغلاق الجوال بذكاء
     // ========================================================
     window.gameAccuseDataCache = {}; 
     window.openAccuseModal = function(playerName, imgSrc) {
@@ -317,8 +327,8 @@
         document.getElementById('a-modal-name').innerText = playerName;
         document.getElementById('a-modal-img').src = imgSrc;
         
-        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:var(--text-main);"><i class="ph-fill ph-crosshair" style="color:var(--text-dim);"></i>${w}</span>`).join('') : '';
-        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:var(--text-main);"><i class="ph-fill ph-fingerprint" style="color:var(--text-dim);"></i>${e}</span>`).join('') : '';
+        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-crosshair" style="color:var(--text-dim);"></i>${w}</span>`).join('') : '';
+        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-fingerprint" style="color:var(--text-dim);"></i>${e}</span>`).join('') : '';
         
         document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span style="color:var(--text-dim);">لا يوجد</span>';
         document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span style="color:var(--text-dim);">لا يوجد</span>';
@@ -329,29 +339,13 @@
 
     window.closeAccuseModal = function() { 
         document.getElementById('accuse-action-modal').classList.remove('show'); 
-        window.triggerBgChange('assets/images/accuse-bg.jpg'); // يعالج تعليق الجوال
+        window.triggerBgGlitch('assets/images/accuse-bg.jpg', true); // اختفاء الصورة الكبيرة بقليتش فوراً
     };
-    window.submitAccusation = function() { alert("تم تحديد الهدف: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
+    window.submitAccusation = function() { alert("تم قفل الهدف: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
 
     // ========================================================
-    // 8. محرك الداتا (رسم المنصة + جلب الأوسمة من اللوبي)
+    // 7. محرك البيانات الشامل (سحب هيكل امبلمات موقعك بالكامل)
     // ========================================================
-    window.getEmblemSrc = function(playerName) {
-        // هذه الدالة تبحث عن شعار اللاعب (Emblem) بنفس طريقة اللوبي
-        let emblemId = 'default';
-        if(window.currentRoomData && window.currentRoomData.emblems && window.currentRoomData.emblems[playerName]) {
-            emblemId = window.currentRoomData.emblems[playerName];
-        } else if(window.globalUsersData && window.globalUsersData[playerName] && window.globalUsersData[playerName].emblem) {
-            emblemId = window.globalUsersData[playerName].emblem;
-        }
-        
-        if(window.GAME_ASSETS && window.GAME_ASSETS.emblems) {
-            let foundEmb = window.GAME_ASSETS.emblems.find(e => e.id === emblemId);
-            if(foundEmb) return foundEmb.src;
-        }
-        return 'assets/images/accuse-bg.jpg'; // خلفية افتراضية للوسام
-    };
-
     window.renderGameData = function() {
         try {
             if(!window.currentRoomData || !window.currentRoomData.roles) return;
@@ -371,36 +365,42 @@
             let usedIds = Object.values(dbSelections);
             let availableChars = allGameChars.filter(c => !usedIds.includes(c.id));
 
+            // ترتيب اللاعبين ليكون (أنت) هو الأول في القائمة والأوسمة
             let sortedPlayers = [...allPlayers].sort((a, b) => {
-                if(a.toLowerCase() === myName) return -1;
-                if(b.toLowerCase() === myName) return 1;
-                return 0;
+                if(a.toLowerCase() === myName) return -1; if(b.toLowerCase() === myName) return 1; return 0;
             });
 
             sortedPlayers.forEach(p => {
                 let charImgSrc = 'assets/images/default-avatar.png'; 
-
-                if(dbSelections[p]) {
-                    let foundChar = allGameChars.find(c => c.id === dbSelections[p]);
-                    if(foundChar) charImgSrc = foundChar.src;
-                } else {
-                    if(availableChars.length > 0) { 
-                        charImgSrc = availableChars.shift().src; 
-                    } else if (p.startsWith('Bot_')) { 
-                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`; 
-                    }
+                
+                // سحب الامبلم الخلفي الحقيقي الخاص باللاعب من الـ GAME_ASSETS واللوبي
+                let emblemId = 'default';
+                if(window.currentRoomData.emblems && window.currentRoomData.emblems[p]) { emblemId = window.currentRoomData.emblems[p]; }
+                else if (window.globalUsersData && window.globalUsersData[p] && window.globalUsersData[p].emblem) { emblemId = window.globalUsersData[p].emblem; }
+                
+                let realEmblemSrc = 'assets/images/accuse-bg.jpg'; // فالبداية افتراضي
+                if(window.GAME_ASSETS && window.GAME_ASSETS.emblems) {
+                    let foundEmb = window.GAME_ASSETS.emblems.find(e => e.id === emblemId);
+                    if(foundEmb) realEmblemSrc = foundEmb.src;
                 }
 
-                imagesToLoad.push(charImgSrc); // إضافتها للتحميل المسبق
+                if(dbSelections[p]) {
+                    let foundChar = allGameChars.find(c => c.id === dbSelections[p]); if(foundChar) charImgSrc = foundChar.src;
+                } else {
+                    if(availableChars.length > 0) { charImgSrc = availableChars.shift().src; } 
+                    else if (p.startsWith('Bot_')) { charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`; }
+                }
+
+                imagesToLoad.push(charImgSrc); imagesToLoad.push(realEmblemSrc);
                 
                 let isMe = (p.toLowerCase() === myName);
-                let roleText = isMe ? 'أنت / محقق' : 'مشتبه به';
-                let emblemSrc = window.getEmblemSrc(p); // سحب الوسام
+                let roleText = isMe ? 'أنت / محقق' : 'مشمشتبه به';
                 
+                // أ) رندر كروت منصة الاتهام (بالتعريب الكامل وبدون تمطيط)
                 accuseHtml += `
                     <div class="val-char-box" 
-                         onmouseenter="window.triggerBgChange('${charImgSrc}')"
-                         onmouseleave="window.triggerBgChange('assets/images/accuse-bg.jpg')"
+                         onmouseenter="window.triggerBgGlitch('${charImgSrc}')"
+                         onmouseleave="window.triggerBgGlitch('assets/images/accuse-bg.jpg', true)"
                          onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
                         <img src="${charImgSrc}" class="val-char-avatar" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="val-char-info">
@@ -410,9 +410,10 @@
                     </div>
                 `;
 
+                // ب) رندر الامبلم الأصلي المستدعى بنفس منطق لوبي وصفحة البروفايل
                 emblemsHtml += `
                     <div class="emblem-card ${isMe ? 'me' : ''}">
-                        <img src="${emblemSrc}" class="emblem-bg" onerror="this.src='assets/images/accuse-bg.jpg';">
+                        <img src="${realEmblemSrc}" class="emblem-bg" onerror="this.src='assets/images/accuse-bg.jpg';">
                         <img src="${charImgSrc}" class="emblem-avatar" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="emblem-info">
                             <span class="emblem-name">${isMe ? 'أنت' : p}</span>
@@ -425,7 +426,7 @@
             if(accuseGrid) accuseGrid.innerHTML = accuseHtml;
             if(emblemsContainer) emblemsContainer.innerHTML = emblemsHtml;
 
-            // تشغيل الشاشة الانتقالية وتمرير الصور لتحميلها
+            // تشغيل شاشة التحميل السينمائية فوراً وحقن صور الجيم
             window.playCinematicIntro(imagesToLoad);
 
             let myRole = 'investigator';
@@ -466,15 +467,9 @@
     };
 
     window.initGameUI();
-    let retries = 0;
-    function safeRender() {
+    let retries = 0; function safeRender() {
         if(window.currentRoomData && window.currentRoomData.roles) window.renderGameData();
         else if(retries < 15) { retries++; setTimeout(safeRender, 500); }
     }
     safeRender();
-
-    window.addEventListener('popstate', function cleanUp() {
-        if(window.cleanupGameUI) window.cleanupGameUI();
-        window.removeEventListener('popstate', cleanUp);
-    });
 </script>
