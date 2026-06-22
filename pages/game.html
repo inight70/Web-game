@@ -1,6 +1,6 @@
 <audio id="game-ost-player" src="assets/audio/game-ost.mp3" loop preload="auto"></audio>
 
-<div class="g-master-container" id="game-master-root">
+<div class="g-master-container" id="game-master-root" style="--font-scale: 1; --layout-scale: 1;">
     
     <div class="cinematic-intro" id="cinematic-overlay">
         <div class="glitch-container">
@@ -14,7 +14,7 @@
         <div class="confirm-box">
             <i class="ph-duotone ph-warning" style="font-size: 4rem; color: var(--accent-red); margin-bottom: 10px;"></i>
             <div class="confirm-title">تأكيد الانسحاب</div>
-            <p style="color: var(--text-dim); font-size: 0.9rem;">هل أنت متأكد أنك تريد مغادرة الغرفة؟ سيتم اعتبارك منسحباً.</p>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">هل أنت متأكد أنك تريد مغادرة الغرفة؟ سيتم اعتبارك منسحباً وقد تخسر نقاط التقييم.</p>
             <div class="confirm-actions">
                 <button class="btn-cancel" onclick="document.getElementById('leave-confirm-modal').classList.remove('show')">إلغاء</button>
                 <button class="btn-confirm" onclick="executeLeaveGame()">مغادرة</button>
@@ -48,7 +48,7 @@
             <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> الإعدادات</div>
             
             <div class="sharp-card anim-elem" style="padding: 20px;">
-                <h3 style="font-size:1.1rem; margin-bottom: 15px; color:var(--text-main);">اللاعبون</h3>
+                <h3 style="font-size:1.1rem; margin-bottom: 15px; color:var(--text-main); font-weight:bold;">الأوسمة (اللاعبون)</h3>
                 <div class="emblems-grid" id="settings-emblems-container">
                     <div style="color:var(--text-dim); text-align:center;"><i class="ph-bold ph-spinner ph-spin" style="font-size:2rem;"></i></div>
                 </div>
@@ -58,18 +58,18 @@
                 <div class="setting-row">
                     <div class="setting-label"><i class="ph-fill ph-text-aa"></i> حجم الخط</div>
                     <div class="seg-control">
-                        <button class="seg-btn" onclick="updateGameSetting('font', '0.85rem', this)">صغير</button>
-                        <button class="seg-btn active" onclick="updateGameSetting('font', '1rem', this)">طبيعي</button>
-                        <button class="seg-btn" onclick="updateGameSetting('font', '1.15rem', this)">كبير</button>
+                        <button class="seg-btn" onclick="updateGameSetting('font', '0.85', this)">صغير</button>
+                        <button class="seg-btn active" onclick="updateGameSetting('font', '1', this)">طبيعي</button>
+                        <button class="seg-btn" onclick="updateGameSetting('font', '1.15', this)">كبير</button>
                     </div>
                 </div>
                 
                 <div class="setting-row">
                     <div class="setting-label"><i class="ph-fill ph-app-window"></i> حجم الهيكل</div>
                     <div class="seg-control">
-                        <button class="seg-btn" onclick="updateGameSetting('gap', '10px', this)">مدمج</button>
-                        <button class="seg-btn active" onclick="updateGameSetting('gap', '20px', this)">طبيعي</button>
-                        <button class="seg-btn" onclick="updateGameSetting('gap', '30px', this)">واسع</button>
+                        <button class="seg-btn" onclick="updateGameSetting('layout', '0.9', this)">مدمج</button>
+                        <button class="seg-btn active" onclick="updateGameSetting('layout', '1', this)">طبيعي</button>
+                        <button class="seg-btn" onclick="updateGameSetting('layout', '1.1', this)">واسع</button>
                     </div>
                 </div>
 
@@ -96,7 +96,7 @@
                     </div>
                 </div>
 
-                <button class="sharp-btn" style="border-left-color: var(--accent-red); justify-content: center; border-color:var(--accent-red); color:var(--accent-red); margin-top:25px;" onclick="showLeaveModal()">
+                <button class="sharp-btn" style="border-left-color: var(--accent-red); justify-content: center; border-color:rgba(150,150,150,0.1); color:var(--accent-red); margin-top:25px; font-family: 'Guesswhat', var(--font-ar);" onclick="showLeaveModal()">
                     <i class="ph-bold ph-sign-out"></i> الانسحاب من الغرفة
                 </button>
             </div>
@@ -142,8 +142,8 @@
                     <div style="position: absolute; inset: 0; border-radius: 50%; border: 2px solid #00d2ff; border-top-color: transparent; animation: spinFast 1.5s linear infinite;"></div>
                     <i class="ph-fill ph-radar" style="font-size:3rem; color:#00d2ff; line-height: 100px;"></i>
                 </div>
-                <h3 style="color:var(--text-main); font-family: var(--font-en); letter-spacing: 2px;">SCANNING...</h3>
-                <p style="color:var(--text-dim);">في انتظار تقرير الطبيب الشرعي.</p>
+                <h3 style="color:white; font-family: var(--font-en); letter-spacing: 2px;">SCANNING...</h3>
+                <p style="color:rgba(255,255,255,0.4);">في انتظار تقرير الطبيب الشرعي.</p>
             </div>
         </div>
     </div>
@@ -169,7 +169,7 @@
 
 <script>
     // ========================================================
-    // 1. نظام الموسيقى (التشغيل بعد أول لمسة للتوافق مع المتصفحات)
+    // 1. نظام الموسيقى والإعدادات الفعلي
     // ========================================================
     window.gameAudioState = true;
     
@@ -197,22 +197,24 @@
         if(ost) ost.volume = val;
     };
 
-    // ========================================================
-    // 2. نظام الإعدادات (تغيير الـ CSS Variables)
-    // ========================================================
+    // تغيير الإعدادات محلياً باستخدام CSS Variables
     window.updateGameSetting = function(type, value, btnElem) {
         const root = document.getElementById('game-master-root');
         
-        // إزالة الكلاس active من إخوة الزر الحالي
+        // تغيير لون الزر الفعال
         Array.from(btnElem.parentNode.children).forEach(b => b.classList.remove('active'));
         btnElem.classList.add('active');
 
-        if(type === 'font') { root.style.setProperty('--game-font-size', value); }
-        if(type === 'gap') { root.style.setProperty('--game-layout-gap', value); }
+        if(type === 'font') { root.style.setProperty('--font-scale', value); }
+        if(type === 'layout') { 
+            root.style.setProperty('--layout-scale', value); 
+            // تعديل المسافات للحفاظ على التناسق
+            root.style.setProperty('--game-layout-gap', value === '1.1' ? '25px' : (value === '0.9' ? '15px' : '20px'));
+        }
     };
 
     // ========================================================
-    // 3. نظام الخروج الآمن
+    // 2. نظام الخروج الآمن
     // ========================================================
     window.showLeaveModal = function() { document.getElementById('leave-confirm-modal').classList.add('show'); };
     window.executeLeaveGame = function() {
@@ -223,17 +225,14 @@
     };
 
     // ========================================================
-    // 4. الأنيميشن السينمائي (يظهر للغرفة الجديدة)
+    // 3. الأنيميشن السينمائي (شاشة تحميل ذكية)
     // ========================================================
     window.playCinematicIntro = function() {
         const overlay = document.getElementById('cinematic-overlay');
         if (!overlay) return;
 
         const sessionKey = 'deception_intro_played_' + (window.currentRoomId || 'global');
-
-        if (sessionStorage.getItem(sessionKey)) {
-            overlay.style.display = 'none'; return;
-        }
+        if (sessionStorage.getItem(sessionKey)) { overlay.style.display = 'none'; return; }
 
         sessionStorage.setItem(sessionKey, 'true');
         overlay.style.display = 'flex';
@@ -241,20 +240,37 @@
         requestAnimationFrame(() => {
             overlay.style.opacity = '1';
             setTimeout(() => { overlay.classList.add('show-logo'); }, 50);
-            setTimeout(() => { overlay.classList.add('start-glitch'); }, 1200); 
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-                setTimeout(() => { overlay.style.display = 'none'; }, 300);
-            }, 2000); 
+            setTimeout(() => { overlay.classList.add('start-glitch'); }, 500); 
+            
+            // هنا ننتظر تحميل الصور خفيةً أثناء القليتش
+            let imgsToLoad = ['assets/images/logo.png', 'assets/images/accuse-bg.jpg'];
+            let loaded = 0;
+            const finishIntro = () => {
+                overlay.classList.remove('start-glitch');
+                overlay.classList.add('fade-out-complete');
+                setTimeout(() => { overlay.style.display = 'none'; overlay.remove(); }, 500);
+            };
+
+            imgsToLoad.forEach(src => {
+                let img = new Image();
+                img.onload = img.onerror = () => {
+                    loaded++;
+                    if(loaded === imgsToLoad.length) {
+                        // إعطاء وقت أدنى للقليتش للاستمتاع به حتى لو كان النت سريعاً جداً
+                        setTimeout(finishIntro, 1500);
+                    }
+                };
+                img.src = src;
+            });
         });
     };
 
     // ========================================================
-    // 5. نظام التنقل والتهيئة
+    // 4. نظام التنقل والتهيئة
     // ========================================================
     window.cleanupGameUI = function() {
         const ost = document.getElementById('game-ost-player');
-        if(ost) ost.pause(); // إيقاف الموسيقى عند الخروج للوبي
+        if(ost) { ost.pause(); ost.currentTime = 0; }
         document.body.classList.remove('in-game-mode');
         document.querySelectorAll('.game-injected-btn').forEach(b => b.remove());
     };
@@ -266,7 +282,6 @@
         window.cleanupGameUI();
         document.body.classList.add('in-game-mode');
         
-        // استماع للضغطة الأولى لتشغيل الموسيقى
         document.addEventListener('click', initAudioOnInteraction);
 
         if(desktopMenu) {
@@ -302,22 +317,18 @@
     };
 
     // ========================================================
-    // 6. تغيير الخلفية بالقليتش السلس
+    // 5. تغيير الخلفية بسلاسة تامة (Smooth Crossfade)
     // ========================================================
-    window.triggerBgGlitch = function(imgSrc) {
+    window.triggerBgChange = function(imgSrc) {
         const bg = document.getElementById('val-dynamic-bg');
         if(!bg) return;
-        bg.classList.remove('bg-glitch-anim');
-        void bg.offsetWidth; 
         bg.style.backgroundImage = `url(${imgSrc})`;
-        bg.classList.add('bg-glitch-anim');
     };
 
     // ========================================================
-    // 7. نافذة الشخصية
+    // 6. نافذة الشخصية (بدون قليتش مزعج، نعومة GPU)
     // ========================================================
     window.gameAccuseDataCache = {}; 
-
     window.openAccuseModal = function(playerName, imgSrc) {
         const modal = document.getElementById('accuse-action-modal');
         const pItems = window.currentRoomData.items ? window.currentRoomData.items[playerName] : {weapons:[], evidence:[]};
@@ -337,12 +348,12 @@
 
     window.closeAccuseModal = function() { 
         document.getElementById('accuse-action-modal').classList.remove('show'); 
-        window.triggerBgGlitch('assets/images/accuse-bg.jpg'); 
+        window.triggerBgChange('assets/images/accuse-bg.jpg'); // عودة سلسة
     };
-    window.submitAccusation = function() { alert("TARGET LOCKED: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
+    window.submitAccusation = function() { alert("تم تحديد الهدف: " + window.gameAccuseDataCache.currentTarget); window.closeAccuseModal(); };
 
     // ========================================================
-    // 8. محرك الداتا (رسم منصة الاتهام، الإعدادات، الهوية)
+    // 7. محرك الداتا (الرندر الشامل: لاعبين + أوسمة حقيقية)
     // ========================================================
     window.renderGameData = function() {
         try {
@@ -362,7 +373,7 @@
             let usedIds = Object.values(dbSelections);
             let availableChars = allGameChars.filter(c => !usedIds.includes(c.id));
 
-            // ترتيب اللاعبين لوضع (أنت) في البداية
+            // ترتيب اللاعبين ليكون "أنت" في البداية
             let sortedPlayers = [...allPlayers].sort((a, b) => {
                 if(a.toLowerCase() === myName) return -1;
                 if(b.toLowerCase() === myName) return 1;
@@ -371,29 +382,39 @@
 
             sortedPlayers.forEach(p => {
                 let charImgSrc = 'assets/images/default-avatar.png'; 
-                let bannerSrc = 'assets/images/accuse-bg.jpg'; // بنر افتراضي
+                let bannerSrc = 'assets/images/accuse-bg.jpg'; 
+                let emblemIconSrc = 'assets/images/default-avatar.png'; 
 
+                // 1. سحب الشخصية المختارة من اللوبي
                 if(dbSelections[p]) {
                     let foundChar = allGameChars.find(c => c.id === dbSelections[p]);
                     if(foundChar) { charImgSrc = foundChar.src; bannerSrc = foundChar.src; }
                 } else {
                     if(availableChars.length > 0) { 
-                        let picked = availableChars.shift(); 
-                        charImgSrc = picked.src; bannerSrc = picked.src; 
-                    } else if (p.startsWith('Bot_')) { 
-                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`; 
+                        let pc = availableChars.shift();
+                        charImgSrc = pc.src; bannerSrc = pc.src;
+                    } 
+                    else if (p.startsWith('Bot_')) { 
+                        charImgSrc = `https://api.dicebear.com/9.x/bottts/svg?seed=${p}&backgroundColor=transparent`;
                         bannerSrc = charImgSrc;
                     }
+                }
+
+                // 2. سحب الـ Emblem الحقيقي من بيانات الغرفة (playersData) التي أنشئت في اللوبي
+                if(window.currentRoomData.playersData && window.currentRoomData.playersData[p] && window.currentRoomData.playersData[p].emblem) {
+                    emblemIconSrc = window.currentRoomData.playersData[p].emblem;
+                } else {
+                    emblemIconSrc = charImgSrc; // fallback
                 }
 
                 let isMe = (p.toLowerCase() === myName);
                 let roleText = isMe ? 'أنت / محقق' : 'مشتبه به';
                 
-                // 1. رسم بطاقة منصة الاتهام
+                // رسم مربعات منصة الاتهام
                 accuseHtml += `
                     <div class="val-char-box" 
-                         onmouseenter="window.triggerBgGlitch('${charImgSrc}')"
-                         onmouseleave="window.triggerBgGlitch('assets/images/accuse-bg.jpg')"
+                         onmouseenter="window.triggerBgChange('${charImgSrc}')"
+                         onmouseleave="window.triggerBgChange('assets/images/accuse-bg.jpg')"
                          onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
                         <img src="${charImgSrc}" class="val-char-avatar" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="val-char-info">
@@ -403,23 +424,22 @@
                     </div>
                 `;
 
-                // 2. رسم بطاقة الوسام (البنر) في الإعدادات
+                // رسم الأوسمة الحقيقية في الإعدادات
                 emblemsHtml += `
-                    <div class="emblem-card ${isMe ? 'me' : ''}">
-                        <img src="${bannerSrc}" class="emblem-bg" onerror="this.src='assets/images/accuse-bg.jpg';">
-                        <img src="${charImgSrc}" class="emblem-avatar" onerror="this.src='assets/images/default-avatar.png';">
+                    <div class="emblem-wrapper ${isMe ? 'me' : ''}">
+                        <img src="${bannerSrc}" class="emblem-banner" onerror="this.src='assets/images/accuse-bg.jpg';">
+                        <img src="${emblemIconSrc}" class="emblem-icon" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="emblem-info">
-                            <span class="emblem-name">${isMe ? 'أنت' : p}</span>
-                            <span class="emblem-role">${roleText}</span>
+                            <span class="emblem-player-name">${isMe ? 'أنت' : p}</span>
+                            <span class="emblem-player-role">${roleText}</span>
                         </div>
                     </div>
                 `;
             });
-            
+
             if(accuseGrid) accuseGrid.innerHTML = accuseHtml;
             if(emblemsContainer) emblemsContainer.innerHTML = emblemsHtml;
 
-            // رسم الهوية
             let myRole = 'investigator';
             for (const [k, v] of Object.entries(window.currentRoomData.roles)) { if (k.toLowerCase() === myName) { myRole = v; break; } }
             
@@ -437,7 +457,6 @@
                 }
             }
 
-            // رسم الأدوات
             let myItems = null;
             if(window.currentRoomData.items) {
                 for (const [k, v] of Object.entries(window.currentRoomData.items)) { if (k.toLowerCase() === myName) { myItems = v; break; } }
