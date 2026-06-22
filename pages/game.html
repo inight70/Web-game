@@ -13,11 +13,11 @@
     <div class="confirm-modal" id="leave-confirm-modal">
         <div class="confirm-box">
             <i class="ph-duotone ph-warning" style="font-size: 4rem; color: var(--accent-red); margin-bottom: 10px;"></i>
-            <div class="confirm-title" data-text-key="confirm_title">تأكيد الانسحاب</div>
-            <p style="color: var(--text-dim); font-size: 0.9rem;" data-text-key="confirm_desc">هل أنت متأكد أنك تريد مغادرة الغرفة؟ سيتم اعتبارك منسحباً.</p>
+            <div class="confirm-title" data-loc="confirm_title">تأكيد الانسحاب</div>
+            <p style="color: var(--text-dim); font-size: 0.9rem;" data-loc="confirm_desc">هل أنت متأكد أنك تريد مغادرة الغرفة؟ سيتم اعتبارك منسحباً.</p>
             <div class="confirm-actions">
-                <button class="btn-cancel" onclick="document.getElementById('leave-confirm-modal').classList.remove('show')" data-text-key="cancel">إلغاء</button>
-                <button class="btn-confirm" onclick="executeLeaveGame()" data-text-key="confirm">مغادرة</button>
+                <button class="btn-cancel" data-loc="cancel" onclick="document.getElementById('leave-confirm-modal').classList.remove('show')">إلغاء</button>
+                <button class="btn-confirm" data-loc="leave" onclick="executeLeaveGame()">مغادرة</button>
             </div>
         </div>
     </div>
@@ -29,59 +29,57 @@
                 <img src="" id="a-modal-img" class="target-img" alt="Target">
                 <div class="target-name" id="a-modal-name">PLAYER</div>
             </div>
-            <div class="target-body" style="background: var(--surface-panel);">
+            <div class="target-body">
                 <div style="margin-bottom: 25px;">
-                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;">[ DETECTED WEAPONS ]</div>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;" data-loc="weapons-title">[ DETECTED WEAPONS ]</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-weapons"></div>
                 </div>
                 <div style="margin-bottom: 30px;">
-                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;">[ CLASSIFIED EVIDENCE ]</div>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:12px; font-weight:800; font-family:var(--font-en); letter-spacing:1px;" data-loc="evidence-title">[ CLASSIFIED EVIDENCE ]</div>
                     <div style="display:flex; flex-wrap:wrap; gap:8px;" id="a-modal-evidence"></div>
                 </div>
-                <button class="modern-danger-btn" onclick="submitAccusation()">
-                    <i class="ph-bold ph-gavel"></i> <span data-text-key="accuse_btn">توجيه الاتهام</span>
-                </button>
+                <button class="modern-danger-btn" onclick="submitAccusation()"><i class="ph-bold ph-gavel"></i> <span data-loc="accuse_action_btn">توجيه الاتهام</span></button>
             </div>
         </div>
     </div>
 
     <div id="tab-game-settings" class="g-section-view">
         <div style="max-width: 700px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> <span data-text-key="settings_title">الإعدادات</span></div>
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-gear"></i> <span data-loc="settings">الإعدادات</span></div>
             
             <div class="sharp-card anim-elem">
                 <div class="setting-row">
-                    <div class="setting-label"><i class="ph-fill ph-text-aa"></i> <span data-text-key="font_size">حجم الخط</span></div>
+                    <div class="setting-label"><i class="ph-fill ph-text-aa"></i> <span data-loc="font_size_lbl">حجم الخط</span></div>
                     <div class="seg-control">
-                        <button class="seg-btn" onclick="updateGameSetting('font', '0.85rem', this)">صغير</button>
-                        <button class="seg-btn active" onclick="updateGameSetting('font', '1rem', this)">طبيعي</button>
-                        <button class="seg-btn" onclick="updateGameSetting('font', '1.2rem', this)">كبير</button>
+                        <button class="seg-btn" onclick="updateGameSetting('font', '14px', this)" data-loc="small">صغير</button>
+                        <button class="seg-btn active" onclick="updateGameSetting('font', '16px', this)" data-loc="normal">طبيعي</button>
+                        <button class="seg-btn" onclick="updateGameSetting('font', '19px', this)" data-loc="large">كبير</button>
                     </div>
                 </div>
                 
                 <div class="setting-row">
-                    <div class="setting-label"><i class="ph-fill ph-app-window"></i> <span data-text-key="structure_size">حجم الهيكل</span></div>
+                    <div class="setting-label"><i class="ph-fill ph-app-window"></i> <span data-loc="layout_size_lbl">حجم الهيكل</span></div>
                     <div class="seg-control">
-                        <button class="seg-btn" onclick="updateGameSetting('scale', 'compact', this)">مدمج</button>
-                        <button class="seg-btn active" onclick="updateGameSetting('scale', 'normal', this)">طبيعي</button>
-                        <button class="seg-btn" onclick="updateGameSetting('scale', 'large', this)">كبير</button>
+                        <button class="seg-btn" onclick="updateGameSetting('scale', '0.85', this)" data-loc="compact">مدمج</button>
+                        <button class="seg-btn active" onclick="updateGameSetting('scale', '1', this)" data-loc="normal_layout">طبيعي</button>
+                        <button class="seg-btn" onclick="updateGameSetting('scale', '1.15', this)" data-loc="wide">كبير</button>
                     </div>
                 </div>
 
                 <div class="setting-row">
-                    <div class="setting-label"><i class="ph-fill ph-translate"></i> <span data-text-key="lang_label">اللغة</span></div>
+                    <div class="setting-label"><i class="ph-fill ph-translate"></i> <span data-loc="lang_lbl">اللغة</span></div>
                     <div class="seg-control">
-                        <button class="seg-btn active" id="btn-lang-ar" onclick="setGameLanguage('ar', this)">العربية</button>
-                        <button class="seg-btn" id="btn-lang-en" onclick="setGameLanguage('en', this)">English</button>
+                        <button class="seg-btn active" onclick="switchGameLanguage('ar', this)">العربية</button>
+                        <button class="seg-btn" onclick="switchGameLanguage('en', this)">English</button>
                     </div>
                 </div>
 
-                <div class="setting-row" style="flex-direction: column; align-items: flex-start; border:none;">
+                <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
                     <div style="display:flex; justify-content: space-between; width:100%; align-items:center;">
-                        <div class="setting-label"><i class="ph-fill ph-music-notes"></i> <span data-text-key="music_label">الموسيقى (OST)</span></div>
+                        <div class="setting-label"><i class="ph-fill ph-music-notes"></i> <span data-loc="music_lbl">الموسيقى (OST)</span></div>
                         <div class="seg-control">
-                            <button class="seg-btn active" id="btn-ost-on" onclick="toggleGameOST(true)">تشغيل</button>
-                            <button class="seg-btn" id="btn-ost-off" onclick="toggleGameOST(false)">إيقاف</button>
+                            <button class="seg-btn active" id="btn-ost-on" onclick="toggleGameOST(true)" data-loc="play">تشغيل</button>
+                            <button class="seg-btn" id="btn-ost-off" onclick="toggleGameOST(false)" data-loc="stop">إيقاف</button>
                         </div>
                     </div>
                     <div class="vol-container">
@@ -92,12 +90,12 @@
                 </div>
 
                 <button class="modern-danger-btn" style="margin-top:25px;" onclick="showLeaveModal()">
-                    <i class="ph-bold ph-sign-out"></i> <span data-text-key="leave_btn">الخروج من اللعبة الحالية</span>
+                    <i class="ph-bold ph-sign-out"></i> <span data-loc="leave_btn">الانسحاب من الغرفة</span>
                 </button>
             </div>
 
-            <div class="sharp-card anim-elem">
-                <h3 style="font-size:1.15rem; margin-bottom: 20px; color:var(--text-main); font-weight:900;" data-text-key="players_box_title">قائمة الأوسمة</h3>
+            <div class="sharp-card anim-elem" style="padding: 20px;">
+                <h3 style="font-size:1.1rem; margin-bottom: 15px; color:var(--text-main); font-weight:900;" data-loc="players_title">اللاعبون المتصلون</h3>
                 <div class="lobby-emblems-container" id="settings-emblems-container">
                     <div style="color:var(--text-dim); text-align:center;"><i class="ph-bold ph-spinner ph-spin" style="font-size:2rem;"></i></div>
                 </div>
@@ -108,7 +106,7 @@
 
     <div id="tab-game-info" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-identification-card"></i> <span data-text-key="identity_title">هويتي السرية</span></div>
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-identification-card"></i> <span data-loc="identity">هويتي السرية</span></div>
             <div id="render-game-role" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
@@ -124,9 +122,9 @@
                 <img src="assets/images/logo.png" class="val-logo" alt="Logo">
                 <div class="val-round-info">ROUND 01 // DECEPTION</div>
                 <div class="val-menu-items">
-                    <div class="val-item active"><i class="ph-fill ph-gavel"></i> <span id="ui-accuse-right">حق الاتهام المتبقي: 1</span></div>
-                    <div class="val-item"><i class="ph-fill ph-clock-counter-clockwise"></i> <span id="ui-log-right">السجل</span></div>
-                    <div class="val-item"><i class="ph-fill ph-broadcast"></i> <span id="ui-update-right">آخر التحديثات</span></div>
+                    <div class="val-item active"><i class="ph-fill ph-gavel"></i> <span data-loc="accuse_rights">حق الاتهام المتبقي: 1</span></div>
+                    <div class="val-item"><i class="ph-fill ph-clock-counter-clockwise"></i> <span data-loc="logs">السجل</span></div>
+                    <div class="val-item"><i class="ph-fill ph-broadcast"></i> <span data-loc="updates">آخر التحديثات</span></div>
                 </div>
             </div>
             <div class="val-roster-container anim-elem">
@@ -139,21 +137,21 @@
 
     <div id="tab-game-evidence" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-microscope"></i> <span data-text-key="evidence_title">مسرح الجريمة</span></div>
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-microscope"></i> <span data-loc="evidence">مسرح الجريمة</span></div>
             <div class="sharp-card anim-elem" style="background: rgba(15,15,20,0.5); text-align:center; padding: 80px 20px; border-left-color: #00d2ff;">
                 <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 20px auto; border-radius: 50%; border: 2px solid rgba(0, 210, 255, 0.2);">
                     <div style="position: absolute; inset: 0; border-radius: 50%; border: 2px solid #00d2ff; border-top-color: transparent; animation: spinFast 1.5s linear infinite;"></div>
                     <i class="ph-fill ph-radar" style="font-size:3rem; color:#00d2ff; line-height: 100px;"></i>
                 </div>
-                <h3 style="color:var(--text-main); font-family: var(--font-en); letter-spacing: 2px;">SCANNING...</h3>
-                <p style="color:var(--text-dim);" id="ui-waiting-forensic">في انتظار تقرير الطبيب الشرعي.</p>
+                <h3 style="color:var(--text-main); font-family: var(--font-en); letter-spacing: 2px;" data-loc="scanning">SCANNING...</h3>
+                <p style="color:var(--text-dim);" data-loc="waiting_forensic">في انتظار تقرير الطبيب الشرعي.</p>
             </div>
         </div>
     </div>
 
     <div id="tab-game-items" class="g-section-view">
         <div style="max-width: 800px; margin: 0 auto;">
-            <div class="sharp-title anim-elem"><i class="ph-fill ph-briefcase"></i> <span data-text-key="items_title">أسلحتي وآثاري</span></div>
+            <div class="sharp-title anim-elem"><i class="ph-fill ph-briefcase"></i> <span data-loc="inventory">أسلحتي وآثاري</span></div>
             <div id="render-game-items" class="sharp-card anim-elem" style="text-align: center; padding: 60px 20px;">
                 <i class="ph-duotone ph-spinner ph-spin" style="font-size:3rem; color:var(--text-dim);"></i>
             </div>
@@ -172,60 +170,52 @@
 
 <script>
     // ========================================================
-    // 1. مصفوفة الترجمة الفعالة للغتين (AR / EN)
+    // 1. نظام الترجمة والتعريب الفعلي (Localization Matrix)
     // ========================================================
-    window.gameLang = 'ar';
-    window.gameTranslations = {
+    window.gameCurrentLocale = 'ar';
+    const localizationDictionary = {
         ar: {
-            settings_title: 'الإعدادات', identity_title: 'هويتي السرية', accuse_title: 'منصة الاتهام',
-            evidence_title: 'مسرح الجريمة', items_title: 'أسلحتي وآثاري', font_size: 'حجم الخط',
-            structure_size: 'حجم الهيكل', lang_label: 'اللغة', music_label: 'الموسيقى (OST)',
-            leave_btn: 'الخروج من اللعبة الحالية', accuse_btn: 'توجيه الاتهام',
-            confirm_title: 'تأكيد الانسحاب', confirm_desc: 'هل أنت متأكد أنك تريد مغادرة الغرفة؟ سيتم اعتبارك منسحباً.',
-            cancel: 'إلغاء', confirm: 'مغادرة', players_box_title: 'قائمة الأوسمة'
+            settings: "الإعدادات", identity: "هويتي السرية", accuse: "منصة الاتهام",
+            evidence: "مسرح الجريمة", inventory: "أسلحتي وآثاري", leave_btn: "الانسحاب من الغرفة",
+            accuse_action_btn: "توجيه الاتهام", "weapons-title": "[ الأسلحة المكتشفة ]",
+            "evidence-title": "[ الأدلة السرية ]", scanning: "جاري الفحص...",
+            waiting_forensic: "في انتظار تقرير الطبيب الشرعي.", players_title: "اللاعبون المتصلون",
+            font_size_lbl: "حجم الخط", layout_size_lbl: "حجم الهيكل", lang_lbl: "اللغة",
+            music_lbl: "الموسيقى (OST)", confirm_title: "تأكيد الانسحاب",
+            confirm_desc: "هل أنت متأكد أنك تريد مغادرة الغرفة؟ سيتم اعتبارك منسحباً.",
+            cancel: "إلغاء", leave: "مغادرة", small: "صغير", normal: "طبيعي", large: "كبير",
+            compact: "مدمج", normal_layout: "طبيعي", wide: "كبير", play: "تشغيل", stop: "إيقاف",
+            accuse_rights: "حق الاتهام المتبقي: 1", logs: "السجل", updates: "آخر التحديثات"
         },
         en: {
-            settings_title: 'SETTINGS', identity_title: 'CLASSIFIED IDENTITY', accuse_title: 'ACCUSATION PLATFORM',
-            evidence_title: 'CRIME SCENE', items_title: 'MY INVENTORY', font_size: 'FONT SIZE',
-            structure_size: 'LAYOUT SCALE', lang_label: 'LANGUAGE', music_label: 'MUSIC (OST)',
-            leave_btn: 'LEAVE CURRENT GAME', accuse_btn: 'SUBMIT ACCUSATION',
-            confirm_title: 'CONFIRM LEAVE', confirm_desc: 'Are you sure you want to leave the room? You will be marked as abandoned.',
-            cancel: 'CANCEL', confirm: 'LEAVE', players_box_title: 'PLAYER EMBLEMS'
+            settings: "SETTINGS", identity: "IDENTITY REPORT", accuse: "ACCUSE PLATFORM",
+            evidence: "CRIME SCENE", inventory: "INVENTORY ITEMS", leave_btn: "ABORT MISSION",
+            accuse_action_btn: "LOCK TARGET & ACCUSE", "weapons-title": "[ DETECTED WEAPONS ]",
+            "evidence-title": "[ CLASSIFIED EVIDENCE ]", scanning: "SCANNING AIRWAVES...",
+            waiting_forensic: "Awaiting Forensic Pathology dispatch.", players_title: "CONNECTED ROSTER",
+            font_size_lbl: "FONT SIZE", layout_size_lbl: "GRAPHICS SCALE", lang_lbl: "INTERFACE LANGUAGE",
+            music_lbl: "BACKGROUND MUSIC", confirm_title: "ABORT WARNING",
+            confirm_desc: "Are you sure you want to abandon this operation?",
+            cancel: "CANCEL", leave: "ABORT", small: "SMALL", normal: "NORMAL", large: "LARGE",
+            compact: "COMPACT", normal_layout: "NORMAL", wide: "LARGE", play: "PLAY", stop: "STOP",
+            accuse_rights: "ACCUSE INTEL LEFT: 1", logs: "LOGS", updates: "BROADCASTS"
         }
     };
 
-    window.setGameLanguage = function(lang, btnElem) {
-        window.gameLang = lang;
-        if(btnElem) {
-            Array.from(btnElem.parentNode.children).forEach(b => b.classList.remove('active'));
-            btnElem.classList.add('active');
-        }
-        
-        // تبديل النصوص الحية بالصفحة
-        document.querySelectorAll('[data-text-key]').forEach(el => {
-            const key = el.getAttribute('data-text-key');
-            if(window.gameTranslations[lang] && window.gameTranslations[lang][key]) {
-                el.innerText = window.gameTranslations[lang][key];
-            }
-        });
-        
-        // تبديل نصوص المحرك اليدوية لضمان التعريب الكامل
-        const isAr = lang === 'ar';
-        const accuseRight = document.getElementById('ui-accuse-right');
-        const logRight = document.getElementById('ui-log-right');
-        const updateRight = document.getElementById('ui-update-right');
-        const waitingForensic = document.getElementById('ui-waiting-forensic');
-        
-        if(accuseRight) accuseRight.innerText = isAr ? 'حق الاتهام المتبقي: 1' : 'ACCUSE RIGHTS LEFT: 1';
-        if(logRight) logRight.innerText = isAr ? 'السجل' : 'GAME LOGS';
-        if(updateRight) updateRight.innerText = isAr ? 'آخر التحديثات' : 'LATEST UPDATES';
-        if(waitingForensic) waitingForensic.innerText = isAr ? 'في انتظار تقرير الطبيب الشرعي.' : 'Waiting for forensic report.';
+    window.switchGameLanguage = function(lang, btnElem) {
+        window.gameCurrentLocale = lang;
+        Array.from(btnElem.parentNode.children).forEach(b => b.classList.remove('active'));
+        btnElem.classList.add('active');
 
-        if(window.currentRoomData) window.renderGameData();
+        document.querySelectorAll('[data-loc]').forEach(el => {
+            const key = el.getAttribute('data-loc');
+            if(localizationDictionary[lang][key]) el.innerText = localizationDictionary[lang][key];
+        });
+        window.renderGameData(); // إعادة كتابة أسماء اللاعبين وتصنيفهم طبقاً للغة
     };
 
     // ========================================================
-    // 2. نظام التحميل المسبق للأصول (Asset Preloader) والانترو
+    // 2. التحميل المسبق للأصول (Asset Preloader) والسينمائية لكل غرفة جديدة
     // ========================================================
     window.preloadGameAssets = function(imagesArray) {
         return Promise.all(imagesArray.map(src => {
@@ -243,7 +233,6 @@
         if (sessionStorage.getItem(sessionKey)) { overlay.style.display = 'none'; return; }
 
         overlay.style.display = 'flex';
-        
         requestAnimationFrame(() => {
             overlay.style.opacity = '1';
             setTimeout(() => { overlay.classList.add('show-logo'); }, 50);
@@ -255,36 +244,25 @@
                     overlay.classList.remove('start-glitch');
                     overlay.style.opacity = '0';
                     setTimeout(() => { overlay.style.display = 'none'; overlay.remove(); }, 300);
-                }, 1400); 
+                }, 1500); 
             });
         });
     };
 
     // ========================================================
-    // 3. نظام تشغيل الإعدادات الحركية الفعالة (الهيكل والخط)
+    // 3. نظام الإعدادات الفعلي والتحجيم الهيكلي
     // ========================================================
     window.updateGameSetting = function(type, value, btnElem) {
         const root = document.getElementById('game-master-root');
         Array.from(btnElem.parentNode.children).forEach(b => b.classList.remove('active'));
         btnElem.classList.add('active');
 
-        if(type === 'font') { root.style.setProperty('--game-font-size', value); }
-        if(type === 'scale') { 
-            if(value === 'compact') {
-                root.style.setProperty('--game-ui-scale', '0.85');
-                root.style.setProperty('--game-img-size', '40px');
-            } else if(value === 'normal') {
-                root.style.setProperty('--game-ui-scale', '1');
-                root.style.setProperty('--game-img-size', '50px');
-            } else if(value === 'large') {
-                root.style.setProperty('--game-ui-scale', '1.15');
-                root.style.setProperty('--game-img-size', '65px');
-            }
-        }
+        if(type === 'font') root.style.setProperty('--game-font-size', value);
+        if(type === 'scale') root.style.setProperty('--game-ui-scale', value);
     };
 
     // ========================================================
-    // 4. نظام مشغل الصوت (OST) 
+    // 4. مشغل الصوت (OST) والتحكم الصوتي
     // ========================================================
     window.gameAudioState = true;
     function initAudioOnInteraction() {
@@ -307,18 +285,7 @@
     };
 
     // ========================================================
-    // 5. نظام الخروج الآمن الفعال
-    // ========================================================
-    window.showLeaveModal = function() { document.getElementById('leave-confirm-modal').classList.add('show'); };
-    window.executeLeaveGame = function() {
-        document.getElementById('leave-confirm-modal').classList.remove('show');
-        if(window.cleanupGameUI) window.cleanupGameUI();
-        if(window.leaveFirebaseRoom) window.leaveFirebaseRoom();
-        else window.loadFragment('home'); 
-    };
-
-    // ========================================================
-    // 6. نظام التنقل والتهيئة
+    // 5. نظام التنقل والتحكم بالقوائم
     // ========================================================
     window.cleanupGameUI = function() {
         const ost = document.getElementById('game-ost-player'); if(ost) ost.pause();
@@ -354,6 +321,7 @@
                 const animElems = targetSec.querySelectorAll('.anim-elem');
                 animElems.forEach(el => { el.style.animation = 'none'; el.offsetHeight; el.style.animation = null; });
             }
+
             const icons = ['ph-gear', 'ph-identification-card', 'ph-gavel', 'ph-microscope', 'ph-briefcase'];
             document.querySelectorAll('.sidebar .game-injected-btn, .game-mobile-bar .bottom-tab').forEach((b, i) => {
                 const targetIndex = i % 5; 
@@ -364,24 +332,21 @@
         });
     };
 
-    // تبديل الخلفية الصافية فوري بدون تمطيط
-    window.triggerBgChange = function(imgSrc, isOut = false) {
-        const bg = document.getElementById('val-dynamic-bg');
-        if(!bg) return;
-        bg.classList.remove('bg-glitch-out-anim');
-        void bg.offsetWidth; 
-        if(isOut) {
-            bg.classList.add('bg-glitch-out-anim');
-            setTimeout(() => { bg.style.backgroundImage = `url(${imgSrc})`; }, 80);
-        } else {
-            bg.style.backgroundImage = `url(${imgSrc})`;
-        }
+    window.triggerBgChange = function(imgSrc) {
+        const bg = document.getElementById('val-dynamic-bg'); if(!bg) return;
+        bg.style.backgroundImage = `url(${imgSrc})`;
     };
 
     // ========================================================
-    // 7. نافذة الشخصية والأفعال المعتمدة
+    // 6. النافذة المنبثقة للاستهداد وتأكيد الخروج
     // ========================================================
-    window.gameAccuseDataCache = {}; 
+    window.showLeaveModal = function() { document.getElementById('leave-confirm-modal').classList.add('show'); };
+    window.executeLeaveGame = function() {
+        document.getElementById('leave-confirm-modal').classList.remove('show');
+        if(window.cleanupGameUI) window.cleanupGameUI();
+        if(window.leaveFirebaseRoom) window.leaveFirebaseRoom(); else window.loadFragment('home'); 
+    };
+
     window.openAccuseModal = function(playerName, imgSrc) {
         const modal = document.getElementById('accuse-action-modal');
         const pItems = window.currentRoomData.items ? window.currentRoomData.items[playerName] : {weapons:[], evidence:[]};
@@ -389,28 +354,22 @@
         document.getElementById('a-modal-name').innerText = playerName;
         document.getElementById('a-modal-img').src = imgSrc;
         
-        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-crosshair" style="color:var(--text-dim);"></i>${w}</span>`).join('') : '';
-        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge" style="background:rgba(255,255,255,0.05); border:none; color:white;"><i class="ph-fill ph-fingerprint" style="color:var(--text-dim);"></i>${e}</span>`).join('') : '';
+        const wHtml = pItems.weapons ? pItems.weapons.map(w => `<span class="sharp-badge"><i class="ph-fill ph-crosshair"></i>${w}</span>`).join('') : '';
+        const eHtml = pItems.evidence ? pItems.evidence.map(e => `<span class="sharp-badge"><i class="ph-fill ph-fingerprint" style="color:#00d2ff;"></i>${e}</span>`).join('') : '';
         
         document.getElementById('a-modal-weapons').innerHTML = wHtml || '<span>NO DATA</span>';
         document.getElementById('a-modal-evidence').innerHTML = eHtml || '<span>NO DATA</span>';
-        
-        window.gameAccuseDataCache.currentTarget = playerName;
         modal.classList.add('show');
     };
 
     window.closeAccuseModal = function() { 
         document.getElementById('accuse-action-modal').classList.remove('show'); 
-        window.triggerBgChange('assets/images/accuse-bg.jpg', true); 
+        window.triggerBgChange('assets/images/accuse-bg.jpg'); 
     };
-    window.submitAccusation = function() { 
-        const isAr = window.gameLang === 'ar';
-        alert(isAr ? ("تم تسجيل اتهامك ضد: " + window.gameAccuseDataCache.currentTarget) : ("ACCUSATION FILED AGAINST: " + window.gameAccuseDataCache.currentTarget)); 
-        window.closeAccuseModal(); 
-    };
+    window.submitAccusation = function() { alert("تم تسجيل تصويتك الفعلي ضد الهدف بنجاح."); window.closeAccuseModal(); };
 
     // ========================================================
-    // 8. محرك رندر الداتا وجلب الأوسمة (Emblems) الحقيقية للوبي
+    // 7. سحب الأوسمة الحقيقية (Emblems/Banners) كما في اللوبي تماماً
     // ========================================================
     window.getPlayerEmblemSrc = function(playerName) {
         let emblemId = 'default';
@@ -419,6 +378,7 @@
         } else if(window.globalUsersData && window.globalUsersData[playerName] && window.globalUsersData[playerName].emblem) {
             emblemId = window.globalUsersData[playerName].emblem;
         }
+        
         if(window.GAME_ASSETS && window.GAME_ASSETS.emblems) {
             let foundEmb = window.GAME_ASSETS.emblems.find(e => e.id === emblemId);
             if(foundEmb) return foundEmb.src;
@@ -460,15 +420,14 @@
                 imagesToLoad.push(charImgSrc);
                 
                 let isMe = (p.toLowerCase() === myName);
-                const isAr = window.gameLang === 'ar';
-                let roleText = isMe ? (isAr ? 'أنت / محقق' : 'YOU / INVESTIGATOR') : (isAr ? 'مشتبه به' : 'SUSPECT');
+                let roleText = isMe ? (window.gameCurrentLocale === 'ar' ? 'أنت / محقق' : 'YOU / INVESTIGATOR') : (window.gameCurrentLocale === 'ar' ? 'مشتبه به' : 'SUSPECT');
+                let playerBanner = window.getPlayerEmblemSrc(p); 
                 
-                let playerBanner = window.getPlayerEmblemSrc(p); // سحب بنر الوسام الحقيقي لموقعك
-                
+                // أ) رندر مربعات الأسماء السفلية
                 accuseHtml += `
                     <div class="val-char-box" 
                          onmouseenter="window.triggerBgChange('${charImgSrc}')"
-                         onmouseleave="window.triggerBgChange('assets/images/accuse-bg.jpg', true)"
+                         onmouseleave="window.triggerBgChange('assets/images/accuse-bg.jpg')"
                          onclick="window.openAccuseModal('${p}', '${charImgSrc}')">
                         <img src="${charImgSrc}" class="val-char-avatar" onerror="this.src='assets/images/default-avatar.png';">
                         <div class="val-char-info">
@@ -478,11 +437,21 @@
                     </div>
                 `;
 
-                // هيكلة الأوسمة المعتمدة والمطابقة للوبي (بنر خلفي مستطيل بدون إضافات عشوائية، الاسم يسار)
+                // ب) رندر الأوسمة (البنرات المستطيلة) المأخوذة من اللوبي بدون أي ظل والاسم يسار البنر
                 emblemsHtml += `
-                    <div class="emblem-row-item ${isMe ? 'is-current-user' : ''}">
-                        <img src="${playerBanner}" class="emblem-row-bg" onerror="this.src='assets/images/accuse-bg.jpg';">
-                        <span class="emblem-row-username">${isMe ? (isAr ? 'أنت' : 'YOU') : p}</span>
+                    <div class="player-row-item ${isMe ? 'is-current-user' : ''}">
+                        <img src="${playerBanner}" class="emblem-bg" onerror="this.src='assets/images/accuse-bg.jpg';">
+                        <div class="player-identity-group">
+                            <div style="display:flex; justify-content: space-between; width: 100%; align-items: center; padding-left: 10px;">
+                                <div class="user-lobby-info">
+                                    <div class="user-lobby-name">${isMe ? (window.gameCurrentLocale === 'ar' ? 'أنت' : 'YOU') : p}</div>
+                                    <div class="user-lobby-status">${roleText}</div>
+                                </div>
+                                <div style="width: 120px; height: 35px; background: rgba(255,255,255,0.05); border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); position:relative; overflow:hidden;">
+                                    <img src="${playerBanner}" style="width:100%; height:100%; object-fit:cover; opacity:0.8;">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -497,15 +466,14 @@
             
             const roleDiv = document.getElementById('render-game-role');
             if(roleDiv) {
-                const isAr = window.gameLang === 'ar';
                 if(myRole === 'murderer') {
-                    roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(242, 39, 123, 0.5));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:var(--text-main); text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">${isAr ? 'القاتل' : 'MURDERER'}</h2><p style="color:var(--text-dim); font-size:1.1rem;">${isAr ? 'أنت القاتل. استخدم أدواتك بذكاء لتضليل البقية.' : 'You are the murderer. Fool everyone with your items.'}</p>`;
+                    roleDiv.innerHTML = `<i class="ph-duotone ph-knife" style="font-size:6rem; color:var(--accent-red); margin-bottom:15px;"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">القاتل</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت القاتل. استخدم أدواتك بذكاء لتضليل البقية.</p>`;
                     roleDiv.style.borderLeftColor = 'var(--accent-red)';
                 } else if(myRole === 'forensic') {
-                    roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:6rem; color:#00d2ff; margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:var(--text-main); text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">${isAr ? 'الطبيب الشرعي' : 'FORENSIC'}</h2><p style="color:var(--text-dim); font-size:1.1rem;">${isAr ? 'أنت تعرف القاتل. وجه المحققين عبر التلميحات.' : 'You know the murderer. Guide investigators silently.'}</p>`;
+                    roleDiv.innerHTML = `<i class="ph-duotone ph-microscope" style="font-size:6rem; color:#00d2ff; margin-bottom:15px;"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">الطبيب الشرعي</h2><p style="color:var(--text-dim); font-size:1.1rem;">أنت تعرف القاتل. وجه المحققين عبر التلميحات.</p>`;
                     roleDiv.style.borderLeftColor = '#00d2ff';
                 } else {
-                    roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px; filter: drop-shadow(0 0 20px rgba(46, 204, 113, 0.5));"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; color:var(--text-main); text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">${isAr ? 'محقق' : 'INVESTIGATOR'}</h2><p style="color:var(--text-dim); font-size:1.1rem;">${isAr ? 'اكتشف القاتل قبل فوات الأوان.' : 'Find the murderer before it is too late.'}</p>`;
+                    roleDiv.innerHTML = `<i class="ph-duotone ph-magnifying-glass" style="font-size:6rem; color:var(--accent-green); margin-bottom:15px;"></i><h2 style="font-family:var(--font-en); font-size:3.5rem; font-weight:900; text-transform:uppercase; letter-spacing:4px; margin-bottom:10px;">محقق</h2><p style="color:var(--text-dim); font-size:1.1rem;">اكتشف القاتل قبل فوات الأوان.</p>`;
                     roleDiv.style.borderLeftColor = 'var(--accent-green)';
                 }
             }
@@ -537,9 +505,4 @@
         else if(retries < 15) { retries++; setTimeout(safeRender, 500); }
     }
     safeRender();
-
-    window.addEventListener('popstate', function cleanUp() {
-        if(window.cleanupGameUI) window.cleanupGameUI();
-        window.removeEventListener('popstate', cleanUp);
-    });
 </script>
