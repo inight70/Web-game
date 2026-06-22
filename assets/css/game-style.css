@@ -1,5 +1,5 @@
 /* =========================================================================
-   1. التهيئة والاندماج التام مع ألوان أندكس (var(--bg-base))
+   1. التهيئة والاندماج التام مع ألوان موقعك الأساسي
    ========================================================================= */
 body.in-game-mode { background-color: var(--bg-base) !important; }
 body.in-game-mode .right-sidebar, body.in-game-mode .top-header { display: none !important; }
@@ -26,7 +26,7 @@ body.in-game-mode .dynamic-content {
 }
 
 /* =========================================================================
-   2. الانترو السينمائي (قليتش احترافي ناعم وموفر للطاقة)
+   2. الانترو السينمائي (قليتش خفيف وموفر للطاقة)
    ========================================================================= */
 .cinematic-intro {
     position: fixed; inset: 0; z-index: 1000000; background: var(--bg-base);
@@ -54,7 +54,7 @@ body.in-game-mode .dynamic-content {
 }
 
 /* =========================================================================
-   3. الأقسام والحاويات (تتأثر بالإعدادات الحقيقية)
+   3. الأقسام والحاويات المتجاوبة
    ========================================================================= */
 .g-section-view { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow-y: auto; scrollbar-width: none; z-index: 1; padding: 40px; padding-bottom: 80px; will-change: opacity, visibility;}
 .g-section-view::-webkit-scrollbar { display: none; }
@@ -76,14 +76,13 @@ body.in-game-mode .dynamic-content {
 .sharp-title i { color: var(--accent-red); margin-right: 10px; }
 
 /* =========================================================================
-   4. منصة الاتهام (خلفية صافية بدون أي تغبيش أو ظلال قوية)
+   4. منصة الاتهام (تدرج الاندماج والشبكة)
    ========================================================================= */
 #tab-game-accuse, #tab-game-evidence { padding: 0 !important; background: transparent; }
 
 .val-bg-container { 
     position: absolute; inset: 0; background-size: cover; background-position: top center; 
     opacity: 0.4; z-index: 0; will-change: background-image, clip-path;
-    /* صافية تماماً بدون فلاتر بلور أو ظلال تتداخل مع لون أندكس الأصلي */
 }
 .val-bg-overlay { 
     position: absolute; inset: 0; z-index: 1; pointer-events: none; 
@@ -91,7 +90,6 @@ body.in-game-mode .dynamic-content {
                 linear-gradient(to top, var(--bg-base) 0%, transparent 30%); 
 }
 
-/* قليتش الاختفاء الهندسي الخفيف (بدون تمطيط وبدون إرهاق للعين) */
 .bg-glitch-out-anim { animation: bgGlitchOut 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 @keyframes bgGlitchOut {
     0% { clip-path: inset(0 0 0 0); transform: translateX(0); }
@@ -112,7 +110,6 @@ body.in-game-mode .dynamic-content {
 .val-roster-container { align-self: center; width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; }
 .val-roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--game-gap); width: 100%; }
 
-/* "مربعات الأسماء" السفلية */
 .val-char-box {
     background: rgba(15, 15, 18, 0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid rgba(255,255,255,0.1); 
@@ -133,7 +130,7 @@ body.in-game-mode .dynamic-content {
 .val-char-role { font-size: calc(0.75rem * var(--game-ui-scale)); color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; font-family: 'Guesswhat', var(--font-ar); }
 
 /* =========================================================================
-   5. "نافذة الشخصية" الاصلية (نور الشمس الأبيض الفاخر #FDFAF6)
+   5. نافذة الشخصية الاصلية (نور الشمس الأبيض الفاخر #FDFAF6) والأزرار
    ========================================================================= */
 .accuse-modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
@@ -150,7 +147,6 @@ body.in-game-mode .dynamic-content {
 }
 .accuse-modal-overlay.show .target-panel { opacity: 1; transform: scale(1) translateY(0) translateZ(0); }
 
-/* الهيدر الأبيض المشع المحتفظ بهويته بالكامل */
 .target-header {
     position: relative; height: calc(240px * var(--game-ui-scale)); 
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
@@ -164,7 +160,7 @@ body.in-game-mode .dynamic-content {
     position: absolute; right: 0; top: 0; width: 65%; height: 100%; 
     object-fit: cover; object-position: top center; opacity: 0.9; 
     mask-image: linear-gradient(to left, black 60%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to left, black 60% transition, transparent 100%);
 }
 .target-name { 
     position: absolute; bottom: 20px; left: 25px; 
@@ -180,33 +176,43 @@ body.in-game-mode .dynamic-content {
     box-shadow: 0 5px 40px rgba(253, 250, 246, 0.15);
 }
 
+/* الأزرار حادة الحواف بنور الشمس الأبيض المعتمد */
+.sharp-btn {
+    width: 100%; background: transparent; border: 1px solid #FDFAF6; border-left: 4px solid #FDFAF6;
+    color: #FDFAF6; font-size: calc(1.1rem * var(--game-ui-scale)); font-weight: 900; padding: 18px; cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+    transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; font-family: 'Guesswhat', var(--font-ar);
+    display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;
+}
+.sharp-btn:hover { background: rgba(253, 250, 246, 0.1); transform: scale(1.02); }
+
+/* زر الخروج الأحمر المتناسق مع الطابع */
+.sharp-btn.danger-style {
+    border-color: var(--accent-red); border-left-color: var(--accent-red); color: var(--accent-red);
+}
+.sharp-btn.danger-style:hover { background: rgba(242, 39, 123, 0.1); }
+
 /* =========================================================================
-   6. الأوسمة (Emblems) المطابقة لصفحة اللوبي وبروفايل موقعك حرفياً
+   6. الأوسمة (Emblems) - مطابقة تماماً للوبي وبروفايل الموقع (بدون أي تعديل)
    ========================================================================= */
 .lobby-emblems-container {
-    display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;
+    display: flex; flex-direction: column; gap: 15px;
+    margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;
 }
-/* سحب كلاسات وتركيبة الأوسمة الأصلية للوبي الخاص بك */
-.player-row-item {
-    display: flex; align-items: center; justify-content: space-between;
-    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-    padding: 10px 15px; border-radius: 12px; position: relative; overflow: hidden;
+.player-emblem-row {
+    display: flex; align-items: center; justify-content: flex-start; gap: 12px;
+    direction: ltr; /* يضمن وضع الاسم يسار الوسام تلقائياً */
 }
-.player-row-item.is-current-user { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.03); }
-
-.player-identity-group { display: flex; align-items: center; gap: 15px; position: relative; z-index: 2; }
-/* دائرة الوسام (Emblem) كما في اللوبي */
-.user-lobby-emblem {
-    width: 45px; height: 45px; border-radius: 50%; object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.1); background: var(--bg-base);
+.game-emblem-name {
+    font-size: 1.1rem; font-weight: 800; color: white; font-family: var(--font-en); text-transform: uppercase;
 }
-.player-row-item.is-current-user .user-lobby-emblem { border-color: var(--accent-green); }
-
-.user-lobby-name { font-size: 1.1rem; font-weight: 800; color: white; }
-.user-lobby-status { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+.game-emblem-img {
+    width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: transparent; border: 2px solid rgba(255,255,255,0.1);
+}
+.player-emblem-row.is-me .game-emblem-img { border-color: var(--accent-green); }
 
 /* =========================================================================
-   7. أزرار الإعدادات العصرية وعناصر تحكم الصوت (Segmented Controls)
+   7. عناصر التحكم العصري للإعدادات (Segmented)
    ========================================================================= */
 .setting-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px 0; flex-wrap: wrap; gap: 15px;}
 .setting-label { font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
@@ -217,7 +223,6 @@ body.in-game-mode .dynamic-content {
 .seg-btn:hover { color: white; background: rgba(255,255,255,0.02); }
 .seg-btn.active { background: var(--surface-panel); color: white; border-bottom: 2px solid var(--accent-red); }
 
-/* التحكم بالصوت */
 .vol-container { width: 100%; display: flex; align-items: center; gap: 15px; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);}
 .cyber-slider { -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.1); outline: none; border-radius: 2px; }
 .cyber-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; background: #fff; cursor: pointer; border-radius: 2px; transform: rotate(45deg); transition: 0.2s; }
@@ -236,7 +241,7 @@ body.in-game-mode .dynamic-content {
 .btn-confirm { flex: 1; background: var(--accent-red); border: none; color: white; padding: 12px; cursor: pointer; font-weight: bold; font-family: var(--font-ar); }
 
 /* =========================================================================
-   9. استجابة الجوال (Mobile Roster)
+   9. استجابة الجوال
    ========================================================================= */
 .game-mobile-bar { display: none !important; }
 
